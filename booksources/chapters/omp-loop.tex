@@ -32,25 +32,36 @@ adjust the loop bounds:
     numthreads = omp_get_num_threads();
   int low = N*threadnum/numthreads,
     high = N*(threadnum+1)/numthreads;
-  for (i=low; i<high; i++)
+  for (int i=low; i<high; i++)
     // do something with i
 }
 \end{lstlisting}
-In effect, this is how you would parallelize a loop in MPI.
+In effect, this is how you would parallelize a loop in MPI:
+the \indexpragma{parallel} pragma creates a team of threads,
+each thread executes the block of code,
+and based on its thread number finds a unique block of work to do.
+
 \begin{exercise}
   What is an important difference between the resulting OpenMP and MPI code?
 \end{exercise}
 
 A more natural option is to use the
-\indexpragma{for} pragma:
+\indexpragma{for} pragma
+where OpenMP does the above chopping of the loop
+for you:
 \begin{lstlisting}
 #pragma omp parallel
 #pragma omp for
-for (i=0; i<N; i++) {
+for (int i=0; i<N; i++) {
   // do something with i
 }
 \end{lstlisting}
-This has several advantages. For one, you don't have to calculate the loop bounds
+(In this example the loop variable is declared in the loop header,
+as is the preferred practice, but if you don't do it this way,
+the loop variable is automatically made private to the threads.)
+
+Leaving the work distribution to OpenMP has several advantages.
+For one, you don't have to calculate the loop bounds
 for the threads yourself, but you can also tell OpenMP to assign the loop
 iterations according to different schedules (section~\ref{sec:schedule}).
 
@@ -74,7 +85,7 @@ Figure~\ref{fig:omp-par-do} shows the execution on four threads of
 {
   code1();
 #pragma omp for
-  for (i=1; i<=4*N; i++) {
+  for (int i=1; i<=4*N; i++) {
     code2();
   }
   code3();
@@ -107,7 +118,7 @@ It is also possible to have a combined
 \n{omp parallel for} or \n{omp parallel do} directive.
 \begin{lstlisting}
 #pragma omp parallel for
-  for (i=0; .....
+  for (int i=0; .....
 \end{lstlisting}
 
 \Level 1 {Loops are static}
@@ -117,11 +128,12 @@ able to determine in advance how many iterations there will be.
 \begin{itemize}
 \item The loop can not contains \n{break}, \n{return}, \n{exit} statements, or
   \n{goto} to a label outside the loop.
-\item The \indextermttnote{continue|in OpenMP loops} (for~C/C++)
-  or \indextermttnote{cycle|in OpenMP loops} (for Fortran)
+\item The \indextermtt{continue} (for~C/C++)
+  or \indextermtt{cycle} (for Fortran)
   statement is allowed.
 \item The index update has to be an increment (or decrement) by a fixed amount.
-\item The loop index variable is automatically private, and not changes to it
+\item The loop index variable is automatically private (section~\ref{sec:omp-private}),
+  and no changes to it
   inside the loop are allowed.
   The following loop is not parallelizable in OpenMP:
     \begin{lstlisting}
@@ -303,7 +315,7 @@ For reference, the commandlines executed were:
 \begin{cppnote}{Range syntax}
   Parallel loops in can use range-based syntax as of \ompstandard{5.0}:
   %
-  \cxxverbatimsnippet{ompcxxloop}
+  \cxxverbatimsnippet{omprangeloop}
   %
   Tests not reported here show exactly the same speedup as the C~code.
 \end{cppnote}
@@ -406,15 +418,16 @@ leave it to the runtime library by specifying
 
 \begin{multicols}{2}
 \begin{lstlisting}
-for (i=0; i<nsteps; i++) {
+for (int i=0; i<nsteps; i++) {
     double
-    x = i*h,x2 = (i+1)*h,
-    y = sqrt(1-x*x),y2 = sqrt(1-x2*x2),
-    slope = (y-y2)/h;
+      x = i*h,x2 = (i+1)*h,
+      y = sqrt(1-x*x),
+      y2 = sqrt(1-x2*x2),
+      slope = (y-y2)/h;
     if (slope>15) slope = 15;
     int
     samples = 1+(int)slope, is;
-    for (is=0; is<samples; is++) {
+    for (int is=0; is<samples; is++) {
         double
         hs = h/samples,
         xs = x+ is*hs,
@@ -523,7 +536,9 @@ So far we have focused on loops with independent iterations.
 Reductions are a common type of loop with dependencies.
 There is an extended discussion of reductions in section~\ref{sec:reduction}.
 
-\Level 0 {Collapsing nested loops}
+\Level 0 {Nested loops}
+
+\Level 1 {Collapsing nested loops}
 
 In general, the more work there is to divide over a number of threads,
 the more efficient the parallelization will be. In the context of
@@ -532,8 +547,8 @@ parallelizing all levels of loops instead of just the outer one.
 
 Example: in
 \begin{lstlisting}
-for ( i=0; i<N; i++ )
-  for ( j=0; j<N; j++ )
+for ( int i=0; i<N; i++ )
+  for ( int j=0; j<N; j++ )
     A[i][j] = B[i][j] + C[i][j] 
 \end{lstlisting}
 all $N^2$ iterations are independent, but a regular \lstinline{omp for}
@@ -541,7 +556,7 @@ directive will only parallelize one level. The \indexclause{collapse}
 clause will parallelize more than one level:
 \begin{lstlisting}
 #pragma omp for collapse(2)
-for ( i=0; i<N; i++ )
+for ( int i=0; i<N; i++ )
   for ( j=0; j<N; j++ )
     A[i][j] = B[i][j] + C[i][j] 
 \end{lstlisting}
@@ -550,9 +565,9 @@ loop body of the outer loop can consist only of the inner loop; there
 can be no statements before or after the inner loop in the loop body
 of the outer loop. That is, the two loops in
 \begin{lstlisting}
-for (i=0; i<N; i++) {
+for ( int i=0; i<N; i++ ) {
   y[i] = 0.;
-  for (j=0; j<N; j++)
+  for ( int j=0; j<N; j++)
     y[i] += A[i][j] * x[j]
 }
 \end{lstlisting}
@@ -561,10 +576,10 @@ can not be collapsed.
 \begin{exercise}
   You could rewrite the above code as
 \begin{lstlisting}
-for (i=0; i<N; i++)
+for (inti=0; i<N; i++)
   y[i] = 0.;
-for (i=0; i<N; i++) {
-  for (j=0; j<N; j++)
+for (int i=0; i<N; i++) {
+  for (int j=0; j<N; j++)
     y[i] += A[i][j] * x[j]
 }
 \end{lstlisting}
@@ -593,6 +608,40 @@ Assuming that the \lstinline{src} and \lstinline{dst}
 array are disjoint, which loops are parallel, and how many
 levels can you collapse?
 \end{exercise}
+
+\Level 1 {Array traversal}
+\label{sec:omp-row-col-major}
+
+Consider arrays 
+\begin{lstlisting}
+  float Amat[N][N];
+  float xvec[N],yvec[N];  
+\end{lstlisting}
+and the operation $s\leftarrow y^tAx$.
+
+\begin{enumerate}
+\item Code this as an OpenMP parallel double loop.
+\item Argue that the matrix $A$ can be traversed two ways:
+  by rows and columns, or by columns and rows, both
+  giving the same result (in exact arithmetic).
+\item Argue that the loops can be collapsed with \indexompshow{collapse}
+  directory.
+\item So now you have 4 variants in addition to the sequential code.
+  Time these.
+\end{enumerate}
+
+You should find that the row/column (or \indexterm{row-major}) variant
+is faster. Can you find reasons for this?
+
+\Level 1 {Affinity}
+
+Since OpenMP is based on shared memory, each thread
+can access any item of memory.
+However, that does not imply that it can do so at equal cost.
+The topic of where a thread executes versus where its data is located
+is known as \indexterm{affinity}.
+We will explore this in great detail in chapter~\ref{ch:affinity};
+see in particular the loop tests in section~\ref{sec:loop-affinity}.
 
 \Level 0 {Ordered iterations}
 \label{sec:omp-ordered}
@@ -635,6 +684,13 @@ each iteration can encounter only one \indexompshow{ordered} directive.
 \Level 0 {\texttt{nowait}}
 \label{sec:omp-nowait}
 
+An OpenMP loop is a worksharing construct,
+after which execution in the parallel region goes back
+to replicated execution.
+To synchronize this, OpenMP inserts a \indexompshow{barrier},
+meaning that threads wait for each other to reach this point.
+See section~\ref{sec:ompbarrierimpl} for details.
+
 The implicit barrier at the end of a work sharing construct
 can be cancelled with a
 \indexclause{nowait}\index[omp]{barrier!cancelled by nowait} clause.
@@ -644,7 +700,9 @@ with the next code in the parallel region:
 #pragma omp parallel
 {
 #pragma omp for nowait
-  for (i=0; i<N; i++) { ... }
+  for (int i=0; i<N; i++) {
+    ...
+  }
   // more parallel code
 }
 \end{lstlisting}
@@ -658,11 +716,11 @@ identical scheduling of iterations over threads:
 {
   x = local_computation()
 #pragma omp for schedule(static) nowait
-  for (i=0; i<N; i++) { 
+  for (int i=0; i<N; i++) { 
     x[i] = ... 
   }
 #pragma omp for schedule(static)
-  for (i=0; i<N; i++) { 
+  for (int i=0; i<N; i++) { 
     y[i] = ... x[i] ...
   }
 }
@@ -682,7 +740,7 @@ We replace the while loop by a for loop that examines all locations:
 \begin{lstlisting}
 result = -1;
 #pragma omp parallel for
-for (i=0; i<imax; i++) {
+for (int i=0; i<imax; i++) {
   if (a[i]!=0 && result<0) result = i;
 }
 \end{lstlisting}
@@ -697,200 +755,12 @@ A~more efficient solution uses the \indexpragma{lastprivate} pragma:
 \begin{lstlisting}
 result = -1;
 #pragma omp parallel for lastprivate(result)
-for (i=0; i<imax; i++) {
+for (int i=0; i<imax; i++) {
   if (a[i]!=0) result = i;
 }
 \end{lstlisting}
 You have now solved a slightly different problem: the result variable
 contains the \emph{last} location where \n{a[i]} is zero.
-
-\Level 0 {Tests}
-
-\Level 1 {Scaling tests}
-
-We take a simple loop and consider the influence of binding parameters.
-
-\cverbatimsnippet{ompsineloop}
-
-\Level 1 {Lonestar 6}
-
-Lonestar 6, dual socket \indextermbus{AMD}{Milan}, total 112 cores:
-figure~\ref{fig:ls6-bind}.
-
-\begin{figure}[t]
-  \begin{tikzpicture}  
-    \begin{axis}
-      [  
-        enlargelimits=0.15,
-        xlabel={\#Threads},
-        ylabel={Speedup},
-        symbolic x coords={1,8,16,24,32,40,48,56,64,72,80,88,96,104,112,120,128},
-        xtick=data,  ytick={1,25,50,100,110},
-        nodes near coords,  
-        nodes near coords align={vertical},  
-      ]  
-      \addplot coordinates {(1, 1.00) (8, 8.20) (16, 16.03) (24, 27.43) (32, 33.21) (40, 38.47) (48, 41.41) (56, 38.27) (64, 35.68) (72, 34.89) (80, 41.03) (88, 38.41) (96, 29.10) (104, 37.03) (112, 31.80) (120, 27.92) (128, 28.93) };
-      \addplot coordinates {(1, 1.00) (8, 8.39) (16, 16.29) (24, 27.91) (32, 36.43) (40, 44.17) (48, 51.47) (56, 58.54) (64, 65.29) (72, 63.50) (80, 69.55) (88, 78.54) (96, 80.53) (104, 85.82) (112, 90.17) (120, 93.41) (128, 88.75) };        
-      \addplot coordinates {(1, 1.00) (8, 8.15) (16, 16.56) (24, 25.65) (32, 33.06) (40, 39.71) (48, 44.69) (56, 50.21) (64, 57.34) (72, 62.30) (80, 64.67) (88, 73.69) (96, 75.67) (104, 84.61) (112, 88.58) (120, 91.90) (128, 96.04  ) }; 
-      \legend{false, close, spread}
-    \end{axis}
-  \end{tikzpicture}  
-  \caption{Speedup as function of thread count, Lonestar 6 cluster, different binding parameters}
-  \label{fig:ls6-bind}
-\end{figure}
-
-\Level 1 {Frontera}
-
-\indextermbus{Intel}{Cascade Lake}, dual socket, 56 cores total;
-figure~\ref{fig:frontera-bind}.
-
-For all core counts to half the total,
-performance for all binding strategies seems equal.
-After that , \n{close} and \n{spread} perform equally,
-but the speedup for the \n{false} value gives erratic numbers.
-
-\begin{figure}[t]
-  \begin{tikzpicture}  
-    \begin{axis}
-      [  
-        enlargelimits=0.15,
-        xlabel={\#Threads},
-        ylabel={Speedup},
-        symbolic x coords={1,7,14,21,28,35,42,49,56},
-        xtick=data,  ytick={1,20,40,60},
-        nodes near coords,  
-        nodes near coords align={vertical},  
-      ]  
-      \addplot coordinates {(1, 1.00) (7, 7.22) (14, 15.13) (21, 27.46) (28, 37.32) (35, 45.82) (42, 28.96) (49, 60.41) (56, 54.99) };
-      \addplot coordinates {(1, 1.00) (7, 7.29) (14, 15.30) (21, 26.69) (28, 38.21) (35, 46.40) (42, 54.88) (49, 63.04) (56, 70.93) };
-      \addplot coordinates {(1, 1.00) (7, 7.24) (14, 15.21) (21, 26.68) (28, 37.74) (35, 46.35) (42, 54.66) (49, 62.61) (56, 70.75) };
-      \legend{false, close, spread}
-    \end{axis}
-  \end{tikzpicture}  
-  \caption{Speedup as function of thread count, Frontera cluster, different binding parameters}
-  \label{fig:frontera-bind}
-\end{figure}
-
-\Level 1 {Stampede2 skylake}
-
-Dual 24-core \indextermbus{Intel}{Skylake};
-figure~\ref{fig:skx-bind}.
-
-We see that \n{close} binding gives worse performance than \n{spread}.
-Setting binding to \n{false} only gives bad performance for large core counts.
-
-\begin{figure}[t]
-  \begin{tikzpicture}  
-    \begin{axis}
-      [  
-        enlargelimits=0.15,
-        xlabel={\#Threads},
-        ylabel={Speedup},
-        symbolic x coords={1,6,12,18,24,30,36,42,48},
-        xtick=data,  ytick={1,10,20,30,40,50},
-        nodes near coords,  
-        nodes near coords align={vertical},  
-      ]  
-      \addplot coordinates { (1, 1.02) (6, 5.92) (12, 12.08) (18, 17.60) (24, 22.96) (30, 27.86) (36, 32.56) (42, 27.27) (48, 34.78) };
-      \addplot coordinates { (1, 0.97) (6, 4.66) (12, 9.35) (18, 13.52) (24, 18.28) (30, 22.82) (36, 27.05) (42, 32.99) (48, 35.13) };
-      \addplot coordinates { (1, 1.01) (6, 6.05) (12, 11.37) (18, 17.48) (24, 20.63) (30, 26.20) (36, 30.99) (42, 33.11) (48, 37.67) };
-      \legend{false, close, spread}
-    \end{axis}
-  \end{tikzpicture}  
-  \caption{Speedup as function of thread count, Stampede2 skylake cluster, different binding parameters}
-  \label{fig:skx-bind}
-\end{figure}
-
-\Level 1 {Stampede2 Knights Landing}
-
-Single socket 68-core \indextermbus{Intel}{Knights Landing};
-\ref{fig:knl-bind}.
-
-Since this is a single socket design,
-we don't distinguish between the \n{close} and \n{spread} binding.
-However, the binding value of \n{true} shows good speedup
---~in fact beyond the core count~--
-while \n{false} gives worse performance than in other architectures.
-
-Single 68 core
-
-\begin{figure}[t]
-  \begin{tikzpicture}  
-    \begin{axis}
-      [  
-        enlargelimits=0.15,
-        xlabel={\#Threads},
-        ylabel={Speedup},
-        symbolic x coords={1,9,19,29,38,48,58,68},
-        xtick=data,  ytick={1,10,20,30,40,50},
-        nodes near coords,  
-        nodes near coords align={vertical},  
-      ]  
-      \addplot coordinates { (1, 1.00) (9, 7.68) (19, 16.77) (29, 26.31) (38, 29.82) (48, 36.69) (58, 39.96) (68, 36.42) };
-      \addplot coordinates { (1, 1.00) (9, 9.32) (19, 22.20) (29, 39.20) (38, 48.90) (48, 61.79) (58, 73.92) (68, 86.52) };
-      \legend{false, true}
-    \end{axis}
-  \end{tikzpicture}  
-  \caption{Speedup as function of thread count, Stampede2 Knights Landing cluster, different binding parameters}
-  \label{fig:knl-bind}
-\end{figure}
-
-\Level 1 {Longhorn}
-
-Dual 20-core \indextermbus{IBM}{Power9}, 4~hyperthreads;
-\ref{fig:longhorn-bind}
-
-Unlike the Intel processors, here we use the hyperthreads.
-Figure~\ref{fig:longhorn-bind} shows dip in the speedup
-at 40 threads.
-For higher thread counts the speedup increases to well beyond the
-physical core count of~$40$.
-
-\begin{figure}[t]
-  \begin{tikzpicture}  
-    \begin{axis}
-      [  
-        enlargelimits=0.15,
-        xlabel={\#Threads},
-        ylabel={Speedup},
-        symbolic x coords={1,10,20,30,40,50,60,70,80},
-        xtick=data,  ytick={1,20,40,60},
-        nodes near coords,  
-        nodes near coords align={vertical},  
-      ]  
-      \addplot coordinates { (1, 1.00) (10, 10.08) (20, 17.40) (30, 19.70) (40, 26.36) (50, 23.60) (60, 27.57) (70, 32.91) (80, 42.08) };
-      \addplot coordinates { (1, 0.98) (10, 10.19) (20, 17.45) (30, 28.83) (40, 35.17) (50, 30.54) (60, 38.73) (70, 44.24) (80, 56.09) };
-      \addplot coordinates { (1, 1.00) (10, 10.10) (20, 20.29) (30, 25.01) (40, 35.06) (50, 31.83) (60, 38.12) (70, 43.31) (80, 56.00) };
-      \legend{false, close, spread}
-    \end{axis}
-  \end{tikzpicture}  
-  \caption{Speedup as function of thread count, Longhorn cluster, different binding parameters}
-  \label{fig:longhorn-bind}
-\end{figure}
-
-\Level 1 {Array traversal}
-\label{sec:omp-row-col-major}
-
-Consider arrays 
-\begin{lstlisting}
-  float Amat[N][N];
-  float xvec[N],yvec[N];  
-\end{lstlisting}
-and the operation $s\leftarrow y^tAx$.
-
-\begin{enumerate}
-\item Code this as an OpenMP parallel double loop.
-\item Argue that the matrix $A$ can be traversed two ways:
-  by rows and columns, or by columns and rows, both
-  giving the same result (in exact arithmetic).
-\item Argue that the loops can be collapsed with \indexompshow{collapse}
-  directory.
-\item So now you have 4 variants in addition to the sequential code.
-  Time these.
-\end{enumerate}
-
-You should find that the row/column (or \indexterm{row-major}) variant
-is faster. Can you find reasons for this?
 
 \Level 0 {Review questions}
 
@@ -899,9 +769,9 @@ is faster. Can you find reasons for this?
   Is it correct to add the directive \lstinline+collapse(2)+?
 
 \begin{lstlisting}
-for (i=0; i<N; i++) {
+for (int i=0; i<N; i++) {
   y[i] = 0.;
-  for (j=0; j<N; j++)
+  for (int j=0; j<N; j++)
   y[i] += A[i][j] * x[j]
 }
 \end{lstlisting}
@@ -911,10 +781,10 @@ for (i=0; i<N; i++) {
   Same question for the nested loop here:
 
 \begin{lstlisting}
-for (i=0; i<N; i++)
+for (int i=0; i<N; i++)
 y[i] = 0.;
-for (i=0; i<N; i++) {
-  for (j=0; j<N; j++)
+for (int i=0; i<N; i++) {
+  for (int j=0; j<N; j++)
   y[i] += A[i][j] * x[j]
 }
 \end{lstlisting}

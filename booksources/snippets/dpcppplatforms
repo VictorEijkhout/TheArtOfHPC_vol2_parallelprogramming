@@ -5,4 +5,5 @@ for (const auto &plat : platforms) {
   std::cout << "Platform: "
             << plat.get_info<sycl::info::platform::name>() << " "
             << plat.get_info<sycl::info::platform::vendor>() << " "
-            << plat.get_info<sycl::info::platform::version>() << std::endl;
+            << plat.get_info<sycl::info::platform::version>() 
+	      << '\n';

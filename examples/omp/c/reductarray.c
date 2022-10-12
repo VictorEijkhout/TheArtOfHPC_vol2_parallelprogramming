@@ -24,7 +24,7 @@ int main(int argc,char **argv) {
 #pragma omp single
   nthreads = omp_get_num_threads();
 
-  {
+  { // C static
     int data[nthreads];
     for (int i=0; i<nthreads; i++)
       data[i] = 0;
@@ -40,7 +40,7 @@ int main(int argc,char **argv) {
     printf("\n");
   }
 
-  {
+  { // C dynamic
     int *alloced = (int*)malloc( nthreads*sizeof(int) );
     for (int i=0; i<nthreads; i++)
       alloced[i] = 0;

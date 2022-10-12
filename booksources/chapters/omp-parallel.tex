@@ -15,8 +15,10 @@
 
 \Level 0 {Creating parallelism with parallel regions}
 
-The simplest way to create parallelism in OpenMP is to use
-the \indexpragma{parallel} pragma. A~block preceded by the \n{omp parallel} pragma
+In OpenMP you need to indicate explicitly what passages are
+parallel. Creating parallelism, which here means: creating a team of threads,
+is done with the \indexpragma{parallel} pragma.
+A~block preceded by the \n{omp parallel} pragma
 is called a \emph{parallel region}; it
 is executed by a newly created team of threads. 
 This is an instance of the \indexac{SPMD} model: all threads execute the same
@@ -27,14 +29,30 @@ segment of code.
   // this is executed by a team of threads
 }
 \end{lstlisting}
+
 It would be pointless to have the block be executed identically by
-all threads. One way to get a meaningful parallel code is to use the function
-\indexompshow{omp_get_thread_num}, to find out which thread you are,
+all threads.
+One way to get a meaningful parallel code is to use the function
+\indexompshow{omp_get_thread_num} to find out which thread you are,
 and execute work that is individual to that thread.
 This function gives a number relative to the current team;
 recall from figure~\ref{fig:forkjoin} that new teams can be created recursively.
 
-For instance, if you program computes
+There is also a function
+\indexompshow{omp_get_num_threads} to find out the total number of threads.
+
+The first thing we want to do is create a team of threads. This
+is done with a \indexterm{parallel region}.
+Here is a very simple example:
+\cverbatimsnippet[examples/omp/c/hello.c]{hello-omp}
+or in Fortran
+\fverbatimsnippet[examples/omp/f/hellocount.F90]{hello-who-omp-f}
+or in C++
+\cxxverbatimsnippet[examples/omp/cxx/hello.cxx]{hello-omp-cxx}
+(Note the use of \indextermtt{stringstream}: without that
+the output lines from the various threads may get mixed up.)
+
+The following example uses parallelism for an actual calculation:
 \begin{lstlisting}
 result = f(x)+g(x)+h(x)
 \end{lstlisting}
@@ -49,21 +67,6 @@ double result,fresult,gresult,hresult;
 }
 result = fresult + gresult + hresult;
 \end{lstlisting}
-
-The first thing we want to do is create a team of threads. This
-is done with a \indexterm{parallel region}.
-Here is a very simple example:
-\cverbatimsnippet[examples/omp/c/hello.c]{hello-omp}
-or in Fortran
-\fverbatimsnippet[examples/omp/f/hellocount.F90]{hello-who-omp-f}
-or in C++
-\cxxverbatimsnippet[examples/omp/cxx/hello.cxx]{hello-omp-cxx}
-(Note the use of \indextermtt{stringstream}: without that
-the output lines from the various threads may get mixed up.)
-
-There is also a function
-\indexompshow{omp_get_num_threads} to find out the total number of threads.
-
 
 This code corresponds to the model we just discussed:
 \begin{itemize}
@@ -91,42 +94,9 @@ This code corresponds to the model we just discussed:
 \end{remark}
 
 \begin{exercise}
-  Make a full program based on this fragment. Insert different print statements
-  before, inside, and after the parallel region.
-  Run this example. How many times is each print statement executed?
-\end{exercise}
-
-You see that the \indexompshow{parallel} directive
-\begin{itemize}
-\item Is preceded by a special marker: a \n{#pragma omp} for~C/C++,
-  and the \n{!$OMP} \indexterm{sentinel} for Fortran;
-\item Is followed by a single statement or a block in~C/C++,
-  or followed by a block in Fortran which is delimited by an \n{!$omp end} directive.
-\end{itemize}
-
-Directives look like \indextermsub{cpp}{directives}, but they
-are actually handled by the compiler, not the preprocessor.
-
-\begin{exercise}
-  Take the `hello world' program above, and modify it so that you get
-  multiple messages to you screen, saying
-\begin{verbatim}
-  Hello from thread 0 out of 4!
-  Hello from thread 1 out of 4!
-\end{verbatim}
-  and so on. (The messages may very well appear out of sequence.)
-
-
-  What happens if you set your number of threads larger than the available
-  cores on your computer?
-\end{exercise}
-
-\begin{exercise}
   What happens if you call \indexompshow{omp_get_thread_num} and \indexompshow{omp_get_num_threads}
   outside a parallel region?
 \end{exercise}
-
-See also \indexompshow{OMP_WAIT_POLICY} values: \n{ACTIVE,PASSIVE}
 
 \Level 0 {Nested parallelism}
 \label{sec:omp-levels}
@@ -161,10 +131,12 @@ Equivalently, there are functions
 \indexompdef{omp_set_max_active_levels} and \indexompdef{omp_get_max_active_levels}:
 \begin{verbatim}
 OMP_MAX_ACTIVE_LEVELS=3
- or
+\end{verbatim}
+or
+\begin{lstlisting}
 void omp_set_max_active_levels(int);
 int omp_get_max_active_levels(void);
-\end{verbatim}
+\end{lstlisting}
 
 \begin{remark}
   A deprecated mechanism is to

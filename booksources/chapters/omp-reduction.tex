@@ -182,12 +182,18 @@ Logical operator reductions in Fortran:
 \label{sec:omp-array-reduct}
 
 Starting with the \ompstandard{4.5} standard, you can reduce
-on statically allocated arrays:
-\begin{lstlisting}
-int ar[N];
-#pragma omp parallel for reduction(+:ar[:N])
-\end{lstlisting}
+on statically and dynamically allocated arrays:
+\cxxverbatimsnippet{creductstatic}
+\cxxverbatimsnippet{creductdynamic}
 
+\begin{cppnote}{Reductions on vectors}
+  Use the \lstinline{data} method to extract the array
+  on which to reduce.
+  Also, the reduction clause wants a variable, not an expression,
+  for the array, so you need an extra bare pointer:
+  %
+  \cxxverbatimsnippet{cxxreductvector}
+\end{cppnote}
 
 \Level 1 {Types}
 

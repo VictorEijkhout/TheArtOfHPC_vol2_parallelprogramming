@@ -46,11 +46,17 @@ CFLAGS =
 CXXFLAGS =
 FFLAGS =
 
-C_STD_FLAGS = -std=c99
+CSTANDARD = 99
+ifeq "${TACC_FAMILY_COMPILER}" "cuda"
+    C_STD_FLAGS = 
+else ifeq "${TACC_FAMILY_COMPILER}" "nvhpc"
+    C_STD_FLAGS = 
+else
+    C_STD_FLAGS = -std=c99
+endif
 CFLAGS   += ${C_STD_FLAGS}
 
 CPPSTANDARD = 17
-CSTANDARD = 99
 CXX_STD_FLAGS = -std=c++${CPPSTANDARD}
 CXXFLAGS += ${CXX_STD_FLAGS}
 
@@ -81,10 +87,6 @@ else
       C_COMPILER   = ${MPI_C_COMPILER}
       CXX_COMPILER = ${MPI_CXX_COMPILER}
       F_COMPILER   = ${MPI_F_COMPILER}
-    else ifeq "${MODE}" "cuda"
-      C_COMPILER   = nvcc
-      CXX_COMPILER = nvcc
-      F_COMPILER   = /bin/false
     else ifeq "${MODE}" "1api"
       ifeq "${TACC_SYSTEM}" "frontera"
         CXX_COMPILER = syclcc
@@ -155,6 +157,14 @@ else
 	  C_COMPILER   = clang
 	  CXX_COMPILER = clang++
 	  F_COMPILER   = gfortran
+        else ifeq "${TACC_FAMILY_COMPILER}" "cuda"
+          C_COMPILER   = nvc
+          CXX_COMPILER = nvc++
+          F_COMPILER   = /bin/false
+        else ifeq "${TACC_FAMILY_COMPILER}" "nvhpc"
+          C_COMPILER   = nvcc
+          CXX_COMPILER = nvcc
+          F_COMPILER   = /bin/false
 	else ifeq "${TACC_FAMILY_COMPILER}" "xl"
 	  C_COMPILER   = xlc
 	  CXX_COMPILER = xlc++
@@ -169,6 +179,8 @@ OMPFLAGS_intel    = -qopenmp
 OMPFLAGS_oneapi   = -qopenmp 
 OMPFLAGS_gcc      = -ggdb -fopenmp
 OMPFLAGS_clang    = -fopenmp
+OMPFLAGS_cuda     = -mp=gpu
+OMPFLAGS_nvhpc    = -fopenmp
 OMPFLAGS_xl       = -qsmp=omp -qoffload
 OMPFLAGS = ${OMPFLAGS_${TACC_FAMILY_COMPILER}}
 

@@ -19,7 +19,7 @@ info ::
 info ::
 	@echo
 	@echo "make app (where app=${APPS})"
-APPS = hello hellocount reducttype private threadprivate
+APPS = hello hellocount version reducttype private threadprivate
 LANGUAGE = F
 MODE = omp
 include ../../../makefiles/Make.compile

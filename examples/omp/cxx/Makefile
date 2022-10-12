@@ -16,7 +16,7 @@ info ::
 info ::
 	@echo
 	@echo "make app (where app=${APPS})"
-APPS = hello hellocount pi pivector speedup \
+APPS = hello hellocount pi pivector speedup vecdata \
     link treesearch taskreduct taskreductwrong \
     reductpositive reductcomplex \
     heat heatalloc heatptr \

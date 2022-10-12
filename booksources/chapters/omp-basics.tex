@@ -61,13 +61,13 @@ attached to
 each of the two sockets; all of the sixteen cores have access to all
 that memory.)
 OpenMP makes it easy to explore all these cores in the same program.
-In version \ompstandard{5.0}, OpenMP also made it possible
+The \ompstandard{5.0} standard also added the possibility
 to offload computations to the GPU or other accelerator.
 
 To summarize the structure of the architecture that OpenMP targets:
 \begin{itemize}
-\item A node has up to four sockets;
-\item each socket has up to~60 cores;
+\item A node has a number of sockets, typically 1, 2, or~4;
+\item each socket has a number of cores, as of 2022 this can be up to~64;
 \item each core is an independent processing unit, with access to all
   the memory on the node.
 \item There can be an accelerator, which can be used to offload computations to.
@@ -105,7 +105,7 @@ meaningful parallel computations with threads.
 
 This brings us to the third important concept: that of \indexterm{work sharing}
 constructs. In a team of threads, initially there will be replicated execution;
-a work sharing construct divides available parallelism over the threads.
+a work sharing construct divides available work over the threads.
 
 \begin{quote}
   So there you have it: OpenMP uses teams of threads, and inside
@@ -144,11 +144,11 @@ efficiently you would let the number of OpenMP threads be
 \Level 1 {Compiling}
 \index{OpenMP!compiling|(}
 
-Your file or Fortran module needs to contain
+A C program needs to contain:
 \begin{lstlisting}
 #include "omp.h"
 \end{lstlisting}
-in C, and 
+while a Fortran program needs to contain:
 \begin{lstlisting}
 use omp_lib
 \end{lstlisting}
@@ -156,7 +156,6 @@ or
 \begin{lstlisting}
 #include "omp_lib.h"
 \end{lstlisting}
-for Fortran.
 
 OpenMP is handled by extensions to your regular compiler, typically by
 adding an option to your commandline:
@@ -186,6 +185,7 @@ see section~\ref{sec:omp-standards}.
 
 \begin{fortrannote}{OpenMP version}
   The parameter \indexompdef{openmp_version} contains the version in \n{yyyymm} format.
+  \fverbatimsnippet{ompstandardf}
 \end{fortrannote}
 
 \index{OpenMP!compiling|)}
@@ -200,6 +200,9 @@ The most important one is \indexompshow{OMP_NUM_THREADS}:
 export OMP_NUM_THREADS=8
 \end{verbatim}
 which sets the number of threads that a program will use.
+You would typically set this equal to the number of cores
+in your hardware, and hope for approximately linear speedup.
+
 See section~\ref{ref:omp-environ} for a list of all environment variables.
 
 \index{OpenMP!running|)}
@@ -257,10 +260,9 @@ Fortran does not have code blocks, so there is an explicit
 
 If you break a directive over more than one line, all but the last line
 need to have a continuation character, and each line needs to have the sentinel:
-\begin{lstlisting}
-!$OMP parallel do &
-!%OMP   copyin(x),copyout(y)
-\end{lstlisting}
+%
+\fverbatimsnippet{sentinelcont}
+
 The directives are case-insensitive.
 In
 \indextermbus{Fortran}{fixed-form source} files
@@ -298,10 +300,6 @@ all threads execute (redundantly) the same segment of code.
   can you set the value higher?
 \end{exercise}
 
-We will go into much more detail in chapter~\ref{ch:omp-parallel}.
-
-\Level 1 {An actual OpenMP program!}
-
 Let's start exploring how OpenMP handles parallelism,
 using the following functions:
 \begin{itemize}
@@ -333,7 +331,8 @@ using the following functions:
 \end{exercise}
 
 If the above puzzles you, read about \indexterm{race condition}s
-in section~\ref{sec:mpi-atomic}.
+in section~\ref{sec:mpi-atomic},
+or \HPSCref{sec:shared-lock}.
 
 \Level 1 {Code and execution structure}
 \label{sec:omp-code-structure}
@@ -462,7 +461,7 @@ There are two ways of doing this:
   The division of the work over the threads
   is controlled by \indexterm{work sharing construct};
   see chapter~\ref{ch:omp-share}.
-\item Alternatively, you can use tasks and indicating one parallel
+\item Alternatively, you can use tasks and specify one parallel
   activity at a time. You will see this in section~\ref{ch:omp-task}.
 \end{enumerate}
 
@@ -488,8 +487,7 @@ for variables and functions mentioned in this section).
     #pragma omp parallel num_threads(ndata)
   \end{lstlisting}
 \end{itemize}
-If you specify a greater amount of parallelism than the hardware supports,
-the runtime system will probably ignore your specification and choose a lower value.
+
 To ask how much parallelism is actually used in your parallel region,
 use \indexompdef{omp_get_num_threads}. To query these hardware limits,
 use \indexompdef{omp_get_num_procs}.

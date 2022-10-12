@@ -117,17 +117,12 @@ a \lstinline+sycl::+\indexsyclshow{runtime_error} exception will be thrown.
   \end{lstlisting}
 \end{dpcppnote}
 
-\Level 1 {Queue execution}
+\Level 1 {Queue submission and execution}
 
 It seems that queue kernels will also be executed when only they
 go out of scope, but not the queue:
-\begin{lstlisting}
-cpu_selector selector;
-queue q(selector);
-{
-  q.submit( /* some kernel */ );
-} // here the kernel executes
-\end{lstlisting}
+%
+\cxxverbatimsnippet{dpcppsubmitbuf}
 
 \Level 1 {Kernel ordering}
 

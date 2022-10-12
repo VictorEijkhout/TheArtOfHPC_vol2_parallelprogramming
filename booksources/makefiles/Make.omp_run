@@ -63,7 +63,6 @@ omp_scaling :
 	        make --no-print-directory omp_run NP=$$t PROGRAM=${PROGRAM} \
 	                ECHO=${ECHO} NEST=${NEST} \
 	                RUN_OPTIONS="${RUN_OPTIONS}" \
-	         && echo \
 	    ; done \
 	    ) | tee $$results \
 	 && cat $$results | awk '/threads/ { t = $$4 } /speedup=/ { print t " " $$6 }' \

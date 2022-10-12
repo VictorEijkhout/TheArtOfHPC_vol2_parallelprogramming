@@ -330,11 +330,18 @@ Here is the correspondence between the value of OpenMP versions
 (given by the \indexompshow{_OPENMP} macro)
 and the standard versions:
 
-\begin{itemize}
-\item \n{201511} \ompstandard{4.5},
-\item \n{201611} Technical report 4: information about the \ompstandard{5.0}
-  but not yet mandated.
-\item \n{201811} \ompstandard{5.0}
-\item \n{202011} \ompstandard{5.1},
-\item \n{202111} \ompstandard{5.2}.
-\end{itemize}
+\begin{multicols}{2}
+  \begin{itemize}
+  \item \n{201511} \ompstandard{4.5},
+  \item \n{201611} Technical report 4: information about the \ompstandard{5.0}
+    but not yet mandated.
+  \item \n{201811} \ompstandard{5.0}
+  \item \n{202011} \ompstandard{5.1},
+  \item \n{202111} \ompstandard{5.2}.
+  \end{itemize}
+  \columnbreak
+  \cverbatimsnippet{ompstandard}
+\end{multicols}
+
+The \indextermtt{openmp.org} website maintains a record of which compilers
+support which standards: \url{https://www.openmp.org/resources/openmp-compilers-tools/}.

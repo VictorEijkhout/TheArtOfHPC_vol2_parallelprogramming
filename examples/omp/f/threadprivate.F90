@@ -19,7 +19,8 @@ Program Private
   integer :: tp
 !$omp threadprivate(/threaddata/)
 
-!$omp parallel num_threads(7)
+!$omp parallel &
+!$omp     num_threads(7)
   tp = omp_get_thread_num()
 !$omp end parallel
 

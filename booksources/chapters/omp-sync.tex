@@ -58,6 +58,9 @@ This can be guaranteed with a \indexpragma{barrier} pragma:
 }
 \end{lstlisting}
 
+\Level 1 {Implicit barriers}
+\label{sec:ompbarrierimpl}
+
 Apart from the barrier directive, which inserts an explicit barrier,
 OpenMP has \emph{implicit barriers}\index[omp]{omp!barrier!implicit} after
 a load sharing construct. Thus the following code is well defined:
@@ -269,27 +272,7 @@ a critical section: it guarantees that some instructions can only be performed b
 process at a time. However, a critical section is indeed about code; a~lock is about data.
 With a lock you make sure that some data elements can only be touched by one process at a time.
 
-One simple example of the use of locks is generation of a \indexterm{histogram}.
-A~histogram consists of a number of bins, that get updated depending on some data.
-Here is the basic structure of such a code:
-\begin{lstlisting}
-int count[100];
-float x = some_function();
-int ix = (int)x;
-if (ix>=100)
-  error();
-else
-  count[ix]++;
-\end{lstlisting}
-It would be possible to guard the last line:
-\begin{lstlisting}
-#pragma omp critical
-  count[ix]++;
-\end{lstlisting}
-but that is unnecessarily restrictive. If there are enough bins in the
-histogram, and if the \n{some_function} takes enough time, there are unlikely to be
-conflicting writes. The solution then is to create an array of locks, with
-one lock for each \n{count} location.
+\Level 1 {Routines}
 
 Create/destroy:
 \begin{lstlisting}
@@ -352,20 +335,6 @@ Lock operations implicitly have a \indexpragma{flush}.
 \end{lstlisting}
 \end{exercise}
 
-\Level 1 {Nested locks}
-
-A lock as explained above can not be locked if it is already locked.
-A~\indextermsub{nested}{lock} can be locked multiple times by the same
-thread before being unlocked.
-
-\begin{itemize}
-\item \indexompdef{omp_init_nest_lock}
-\item \indexompdef{omp_destroy_nest_lock}
-\item \indexompdef{omp_set_nest_lock}
-\item \indexompdef{omp_unset_nest_lock}
-\item \indexompdef{omp_test_nest_lock}
-\end{itemize}
-
 \Level 1 {Example: object with atomic update}
 
 \ac{OO} languages such as C++ allow for syntactic simplification,
@@ -380,6 +349,49 @@ the update operator.
 
   \cverbatimsnippet[examples/omp/cxx/lockobject.cxx]{lockobjectuse}
 \end{cppnote}
+
+\Level 1 {Example: histogram / binning}
+
+One simple example of the use of locks is generation of a \indexterm{histogram}
+(also known as the \emph{binning}\index{binning|see{histogram}} problem).
+A~histogram consists of a number of bins, that get updated depending on some data.
+Here is the basic structure of such a code:
+\begin{lstlisting}
+int count[100];
+float x = some_function();
+int ix = (int)x;
+if (ix>=100)
+  error();
+else
+  count[ix]++;
+\end{lstlisting}
+It would be possible to guard the last line:
+\begin{lstlisting}
+#pragma omp critical
+  count[ix]++;
+\end{lstlisting}
+but that is unnecessarily restrictive. If there are enough bins in the
+histogram, and if the \n{some_function} takes enough time, there are unlikely to be
+conflicting writes. The solution then is to create an array of locks, with
+one lock for each \n{count} location.
+
+Another solution would be to give each thread a local copy
+of the result array, and perform a reduction on these.
+See section~\ref{sec:omp-array-reduct}.
+
+\Level 1 {Nested locks}
+
+A lock as explained above can not be locked if it is already locked.
+A~\indextermsub{nested}{lock} can be locked multiple times by the same
+thread before being unlocked.
+
+\begin{itemize}
+\item \indexompdef{omp_init_nest_lock}
+\item \indexompdef{omp_destroy_nest_lock}
+\item \indexompdef{omp_set_nest_lock}
+\item \indexompdef{omp_unset_nest_lock}
+\item \indexompdef{omp_test_nest_lock}
+\end{itemize}
 
 \indexterm{lock|)}
 

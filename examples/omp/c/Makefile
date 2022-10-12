@@ -19,7 +19,7 @@ info ::
 info ::
 	@echo
 	@echo "make app (where app=${APPS})"
-APPS = hello hellocount compliant proccount pi speedup scaling \
+APPS = hello hellocount version proccount pi speedup scaling \
     parfor critfun reductexpr reductpar taskreduct \
     private alloc sharing race taskfor scan \
     threadprivate ireduct ireductinit ureduct reductpositive reductarray \
@@ -30,6 +30,11 @@ LANGUAGE = C
 include ../../../makefiles/Make.compile
 
 include  ../../../makefiles/Make.omp_run
+RUNS += run_version
+.PHONY: run_version
+run_version : version
+	@make --no-print-directory omp_run PROGRAM=version
+
 RUNS += run_parfor
 .PHONY: run_parfor
 run_parfor : parfor
