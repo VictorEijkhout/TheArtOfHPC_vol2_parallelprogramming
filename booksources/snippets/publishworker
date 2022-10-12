@@ -1,0 +1,4 @@
+char myport[MPI_MAX_PORT_NAME];
+MPI_Lookup_name( service_name,MPI_INFO_NULL,myport );
+MPI_Comm intercomm;
+MPI_Comm_connect( myport,MPI_INFO_NULL,0,comm_work,&intercomm );

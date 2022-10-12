@@ -1,0 +1,38 @@
+Synopsis:
+write at current file pointer
+MPI_File_write: non-collective
+MPI_File_write_all : collective
+
+C Syntax
+#include <mpi.h>
+int MPI_File_write
+int MPI_File_write_all(MPI_File fh, const void *buf,
+    int count, MPI_Datatype datatype,
+    MPI_Status *status)
+
+Input parameters:
+buf : Initial address of buffer (choice). 
+count : Number of elements in buffer (integer). 
+datatype : Data type of each buffer element (handle). 
+
+Output parameters:
+status : Status object (status). 
+IERROR : Fortran only: Error status (integer). 
+
+USE mpi_f08
+MPI_File_write
+MPI_File_write_all(fh, buf, count, datatype, status, ierror)
+    TYPE(MPI_File), INTENT(IN) :: fh
+    TYPE(*), DIMENSION(..), INTENT(IN) :: buf
+    INTEGER, INTENT(IN) :: count
+    TYPE(MPI_Datatype), INTENT(IN) :: datatype
+    TYPE(MPI_Status) :: status
+    INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+
+USE MPI
+! or the older form: INCLUDE ’mpif.h’
+MPI_FILE_WRITE(FH, BUF, COUNT,
+    DATATYPE, STATUS, IERROR)
+    <type>    BUF(*)
+    INTEGER    FH, COUNT, DATATYPE, STATUS(MPI_STATUS_SIZE), IERROR
+

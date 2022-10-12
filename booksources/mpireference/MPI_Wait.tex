@@ -1,0 +1,21 @@
+Semantics:
+MPI_Wait( request, status)
+
+INOUT request: request object (handle)
+OUT status: status objects (handle)
+
+C:
+int MPI_Wait(
+    MPI_Request *requests,
+    MPI_Status *statuses)
+
+Fortran:
+MPI_Wait( request, status, ierror)
+TYPE(MPI_Request), INTENT(INOUT) :: requests
+TYPE(MPI_Status),INTENT(OUT) :: statuses
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+
+Python:
+MPI.Request.Wait(type cls, request, status=None)
+
+Use MPI_STATUS_IGNORE to ignore

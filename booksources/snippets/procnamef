@@ -1,0 +1,6 @@
+!! procname.F90
+  Character(len=MPI_MAX_PROCESSOR_NAME) :: proc_name
+  Integer :: len
+  len = MPI_MAX_PROCESSOR_NAME
+  call MPI_Get_processor_name(proc_name,len)
+  print *,"Proc",procid,"runs on ",proc_name(1:len),"."

@@ -1,0 +1,32 @@
+// commdupall.c
+  ierr = MPI_Isend(&sdata,1,MPI_INT,right,1,comm,&(request[0])); CHK(ierr);
+  function_start(comm,&ctx);
+  ierr = MPI_Irecv(&rdata,1,MPI_INT,left,MPI_ANY_TAG,comm,&(request[1])); CHK(ierr);
+  ierr = MPI_Waitall(2,request,status); CHK(ierr);
+  function_end(comm,ctx);
+int function_start(MPI_Comm comm,void **ctx) {
+int procno,nprocs,left,right, sdata=6,rdata, ierr;
+MPI_Request *request;
+MPI_Comm_rank(comm,&procno);
+MPI_Comm_size(comm,&nprocs);
+
+left = procno-1; if (left<0) left = MPI_PROC_NULL;
+right = procno+1; if (right>=nprocs) right = MPI_PROC_NULL;
+
+request = (MPI_Request*) malloc(2*sizeof(MPI_Request)); *ctx = (void*)request;
+
+ierr = MPI_Isend(&sdata,1,MPI_INT,right,2,comm,&(request[0])); CHK(ierr);
+ierr = MPI_Irecv(&rdata,1,MPI_INT,MPI_ANY_SOURCE,MPI_ANY_TAG,comm,&(request[1])); CHK(ierr);
+return 0;
+}
+
+int function_end(MPI_Comm comm,void *ctx) {
+MPI_Request *request = (MPI_Request*)ctx;
+MPI_Status status[2];
+int procno,nprocs,ierr;
+MPI_Comm_rank(comm,&procno);
+MPI_Comm_size(comm,&nprocs);
+ierr = MPI_Waitall(2,request,status); CHK(ierr);
+free(request);
+return 0;
+}

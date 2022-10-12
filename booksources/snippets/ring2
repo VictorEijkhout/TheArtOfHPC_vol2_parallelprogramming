@@ -1,0 +1,5 @@
+// ring2.c
+MPI_Request req;
+MPI_Irecv(&y,1,MPI_DOUBLE,prev,0,comm,&req);
+MPI_Ssend(&x,1,MPI_DOUBLE,next,0,comm);
+MPI_Wait(&req,MPI_STATUS_IGNORE);

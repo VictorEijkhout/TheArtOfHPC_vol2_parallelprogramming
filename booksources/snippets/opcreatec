@@ -1,0 +1,3 @@
+MPI_Op rwz;
+MPI_Op_create(reduce_without_zero,1,&rwz);
+MPI_Allreduce(data+procno,&positive_minimum,1,MPI_INT,rwz,comm);

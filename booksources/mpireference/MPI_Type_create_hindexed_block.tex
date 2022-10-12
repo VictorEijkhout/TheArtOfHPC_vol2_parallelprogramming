@@ -1,0 +1,13 @@
+int MPI_Type_create_hindexed_block
+   (int count,int blocklength,
+    const MPI_Aint array_of_displacements[],
+    MPI_Datatype oldtype, MPI_Datatype *newtype)
+
+Input Parameters:
+count : length of array of displacements (integer)
+blocklength : size of block (integer)
+array_of_displacements : array of displacements (array of integer)
+oldtype : old datatype (handle)
+
+Output Parameter:
+newtype : new datatype (handle)

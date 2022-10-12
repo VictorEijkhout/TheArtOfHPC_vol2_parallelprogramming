@@ -1,0 +1,513 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-9
+%%%%
+%%%% make.tex : tutorial about Gnu Make
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The \indextermstart{Make} utility helps you manage the building of
+projects: its main task is to facilitate rebuilding only those parts 
+of a multi-file project that need to be recompiled or rebuilt.
+This can save lots of time, since it
+can replace a minutes-long full installation by a single file
+compilation. \emph{Make} can also help maintaining multiple
+installations of a program on a single machine, for instance compiling
+a library with more than one compiler, or compiling a program in debug
+and optimized mode.
+
+\emph{Make} is a Unix utility with a long history, and traditionally
+there are variants with slightly different behaviour, 
+for instance on the various
+flavours of Unix such as HP-UX, AUX, IRIX. 
+These days, it is advisable, no
+matter the platform, to use the GNU version of Make which has some
+very powerful extensions; it is available on all Unix platforms
+(on Linux it is the only available variant), and it is a {\it de
+  facto} standard. The manual is available at
+\url{http://www.gnu.org/software/make/manual/make.html}, or you can
+read the book~\cite{OReilly-GnuMake}.
+
+There are other build systems, most notably Scons and Bjam. We will
+not discuss those here. The examples in this tutorial will be for the
+C and Fortran languages, but \emph{Make} can work with any language,
+and in fact with things like \TeX\ that are not really a language at
+all; see section~\ref{sec:latex-make}.
+
+\Level 0 {A simple example}
+
+\begin{purpose}
+In this section you will see a simple example, just to give the flavour of
+\emph{Make}.
+\end{purpose}
+
+\Level 1 {C}
+
+Make the following files:
+
+\listing{foo.c}{tutorials/makefiles/1c/foo.c}
+\listing{bar.c}{tutorials/makefiles/1c/bar.c}
+\listing{bar.h}{tutorials/makefiles/1c/bar.h}
+and a makefile:
+\listing{Makefile}{tutorials/makefiles/1c/Makefile}
+
+The makefile has a number of rules like
+\begin{verbatim}
+foo.o : foo.c
+<TAB>cc -c foo.c
+\end{verbatim}
+which have the general form
+\begin{verbatim}
+target : prerequisite(s)
+<TAB>rule(s)
+\end{verbatim}
+where the rule lines are indented by a \n{TAB} character.
+
+A rule, such as above, states that a `target' file \n{foo.o} is made
+from a `prerequisite' \n{foo.c}, namely by executing the command \n{cc
+  -c foo.c}. The precise definition of the rule is:
+\begin{itemize}
+\item if the target \n{foo.o} does not exist or is older than the
+  prerequisite \n{foo.c},
+\item then the command part of the rule is executed: \n{cc -c foo.c}
+\item If the prerequisite is itself the target of another rule, than that
+  rule is executed first.
+\end{itemize}
+Probably the best way to interpret a rule is:
+\begin{itemize}
+\item if any prerequisite has changed,
+\item then the target needs to be remade,
+\item and that is done by executing the commands of the rule.
+\end{itemize}
+
+If you call \n{make} without any arguments,
+the first rule in the makefile is evaluated. You can execute other
+rules by explicitly invoking them, for instance \n{make foo.o} to
+compile a single file.
+
+\practical{Call \n{make}.}
+  {The above rules are applied: \n{make} without arguments tries to
+    build the first target, \n{fooprog}. In order to build this, it
+    needs the prerequisites \n{foo.o} and \n{bar.o}, which do not
+    exist. However, there are rules for making them, which \n{make}
+    recursively invokes. Hence you see two compilations, for \n{foo.o}
+    and \n{bar.o}, and a link command for \n{fooprog}.}
+  {Typos in the makefile or in file names can cause various
+    errors. In particular, make sure you use tabs and not spaces for
+    the rule lines. Unfortunately, debugging a makefile is not simple. 
+    \emph{Make}'s error message will usually give 
+    you the line number in the make file where the error was detected.}
+
+\practical{Do \n{make clean}, followed by \n{mv foo.c boo.c} and
+  \n{make} again. Explain the error message. Restore the original file
+  name.}
+  {\emph{Make} will complain that there is no rule to make
+    \n{foo.c}. This error was caused when \n{foo.c} was a
+    prerequisite, and was found not to exist. \emph{Make} then went
+    looking for a rule to make it.}{}
+
+Now add a second argument to the function \n{bar}. This requires you
+to edit \n{bar.c} and \n{bar.h}: go ahead and make these
+edits. However, it also requires you to edit \n{foo.c}, but let us for
+now `forget' to do that. We will see how \emph{Make} can help you find
+the resulting error.
+
+\practical{Call \n{make} to recompile your program. Did it recompile
+  \n{foo.c}?}{Even through conceptually \n{foo.c} would need to be
+  recompiled since it uses the \n{bar} function,
+  \emph{Make} did not do so because the makefile had no
+  rule that forced it.}{}
+
+In the makefile, change the line
+\begin{verbatim}
+foo.o : foo.c
+\end{verbatim}
+to
+\begin{verbatim}
+foo.o : foo.c bar.h
+\end{verbatim}
+which adds \n{bar.h} as a prerequisite for \n{foo.o}. This means that,
+in this case where \n{foo.o} already exists, \emph{Make} will check
+that \n{foo.o} is not older than any of its prerequisites. Since
+\n{bar.h} has been edited, it is younger than \n{foo.o}, so \n{foo.o}
+needs to be reconstructed.
+
+\practical{Confirm that the new makefile indeed causes \n{foo.o} to be
+  recompiled if \n{bar.h} is changed. This compilation will now give
+  an error, since you `forgot' to edit the use of the \n{bar} function.}{}{}
+
+\Level 1 {Fortran}
+
+Make the following files:
+
+\listing{foomain.F}{tutorials/makefiles/1f/foomain.F}
+\listing{foomod.F}{tutorials/makefiles/1f/foomod.F}
+and a makefile:
+\listing{Makefile}{tutorials/makefiles/1f/Makefile}
+If you call \n{make}, the first rule in the makefile is executed. Do
+this, and explain what happens.
+
+\practical{Call \n{make}.}
+  {The above rules are applied: \n{make} without arguments tries to
+    build the first target, \n{foomain}. In order to build this, it
+    needs the prerequisites \n{foomain.o} and \n{foomod.o}, which do not
+    exist. However, there are rules for making them, which \n{make}
+    recursively invokes. Hence you see two compilations, for \n{foomain.o}
+    and \n{foomod.o}, and a link command for \n{fooprog}.}
+  {Typos in the makefile or in file names can cause various
+    errors. Unfortunately, debugging a makefile is not simple. You
+    will just have to understand the errors, and make the
+    corrections.}
+
+\practical{Do \n{make clean}, followed by \n{mv foo.c boo.c} and
+  \n{make} again. Explain the error message. Restore the original file
+  name.}
+  {\emph{Make} will complain that there is no rule to make
+    \n{foo.c}. This error was caused when \n{foo.c} was a
+    prerequisite, and was found not to exist. \emph{Make} then went
+    looking for a rule to make it.}{}
+
+Now add an extra
+parameter to \n{func} in \n{foomod.F} and recompile. 
+
+\practical{Call \n{make} to recompile your program. Did it recompile
+  \n{foomain.F}?}{Even through conceptually \n{foomain.F} would need to be
+  recompiled, \emph{Make} did not do so because the makefile had no
+  rule that forced it.}{}
+
+Change the line
+\begin{verbatim}
+foomain.o : foomain.F
+\end{verbatim}
+to
+\begin{verbatim}
+foomain.o : foomain.F foomod.F
+\end{verbatim}
+which adds \n{foomod.F} as a prerequisite for \n{foomain.o}. This
+means that, in this case where \n{foomain.o} already exists,
+\emph{Make} will check that \n{foomain.o} is not older than any of its
+prerequisites. Since \n{foomod.F} has ben edited, it is younger than
+\n{foomain.o}, so \n{foomain.o} needs to be reconstructed.
+
+\practical{Confirm that the corrected makefile indeed causes
+  \n{foomain.F} to be recompiled.}{}{}
+
+\Level 0 {Variables and template rules}
+
+\begin{purpose}
+  In this section you will learn various work-saving mechanism in
+  \emph{Make}, such as the use of variables, and of template rules.
+\end{purpose}
+
+\Level 1 {Makefile variables}
+
+It is convenient to introduce variables in your makefile.
+For instance, 
+instead of spelling out the compiler explicitly every time, introduce a
+variable in the makefile:
+\begin{verbatim}
+CC = gcc
+FC = gfortran
+\end{verbatim}
+and use \verb+${CC}+ or \verb+${FC}+ on the compile lines:
+\begin{verbatim}
+foo.o : foo.c
+        ${CC} -c foo.c
+foomain.o : foomain.F
+        ${FC} -c foomain.F
+\end{verbatim}
+\practical{Edit your makefile as indicated. First do \n{make clean},
+  then \n{make foo} (C) or \n{make fooprog} (Fortran).}
+  {You should see the exact same compile and link lines as before.}
+  {Unlike in the shell, where braces are optional, variable names in a
+    makefile have to be in
+    braces or parentheses. Experiment with what hapens if you forget
+    the braces around a variable name.}
+
+One
+advantage of using variables is that you can now change the compiler
+from the commandline:
+\begin{verbatim}
+make CC="icc -O2"
+make FC="gfortran -g"
+\end{verbatim}
+
+\practical{Invoke \emph{Make} as suggested (after \n{make clean}). Do
+  you see the difference in your screen output?}
+  {The compile lines now show the added compiler option \n{-O2} or \n{-g}.}{}
+
+\emph{Make} also has built-in variables:
+\begin{itemize}
+\item [\n{\$@}] The target. Use this in the link line for the main
+  program. % (See section \ref{sec:target-prereq} for some trickery
+  % with~\verb+$@+.)
+\item [\n{\$\char`\^}] The list of prerequisites. Use this also in the link
+  line for the program.
+\item [\n{\$<}] The first prerequisite. Use this in the compile
+  commands for the individual object files.
+\end{itemize}
+Using these variables, the rule for \n{fooprog} becomes
+\begin{verbatim}
+fooprog : foo.o bar.o
+        ${CC} -o $@ $^
+\end{verbatim}
+and a typical compile line becomes
+\begin{verbatim}
+foo.o : foo.c bar.h
+        ${CC} -c $<
+\end{verbatim}
+
+You can also declare a variable
+\begin{verbatim}
+THEPROGRAM = fooprog
+\end{verbatim}
+and use this variable instead of the program name in your
+makefile. This makes it easier to change your mind about the name of
+the executable later. 
+
+\practical{Construct a commandline so that your makefile will build the
+  executable \n{fooprog\_v2}.}{You need to specify the \n{THEPROGRAM}
+  variable on the commandline using the syntax \n{make VAR=value}.}
+  {Make sure that there are no spaces around the equals sign in your
+    commandline.}
+
+\Level 1 {Template rules}
+
+In your makefile, the rules for the object files are practically
+identical:
+\begin{itemize}
+\item the rule header (\n{foo.o : foo.c}) states that a source file is a
+  prerequisite for the object file with the same base name;
+\item and the instructions for compiling (\n{\$\{CC\} -c \$<}) 
+  are even character-for-character the
+  same, now that you are using \emph{Make}'s built-in variables;
+\item the only rule with a difference is 
+\begin{verbatim}
+foo.o : foo.c bar.h
+        ${CC} -c $<
+\end{verbatim}
+  where the object file depends on the source file and another file.
+\end{itemize}
+We can take the commonalities and summarize them in one rule\footnote
+{This mechanism is the first instance you'll see that only exists in
+  GNU make, though in this particular case there is a similar
+  mechanism in standard make. That will not be the case for the
+  wildcard mechanism in the next section.}:
+\begin{verbatim}
+%.o : %.c
+        ${CC} -c $<
+%.o : %.F
+        ${FC} -c $<
+\end{verbatim}
+This states that any object file depends on the C or Fortran file with
+the same base name. To regenerate the object file, invoke the C or
+Fortran compiler with the \n{-c} flag.
+These template rules can function as a replacement for the multiple
+specific targets in the makefiles above, except for the rule for \n{foo.o}.
+
+The dependence of \n{foo.o} on \n{bar.h} can be handled by adding a rule
+\begin{verbatim}
+foo.o : bar.h
+\end{verbatim}
+with no further instructions. This rule states, `if the prerequisite file
+\n{bar.h} changed, file \n{foo.o} needs updating'. \emph{Make} will
+then search the makefile for a different
+rule that states how this updating is done. 
+
+\practical{Change your makefile to incorporate these ideas, and test.}{}{}
+
+\Level 0 {Wildcards}
+
+Your makefile now uses one general rule for compiling all your source
+files. Often, these source files will be all the \n{.c} or \n{.F}
+files in your directory, so is there a way to state `compile
+everything in this directory'? Indeed there is. Add the following lines
+to your makefile, and use the variable \n{COBJECTS} or \n{FOBJECTS}
+wherever appropriate.
+\begin{verbatim}
+# wildcard: find all files that match a pattern
+CSOURCES := ${wildcard *.c}
+# pattern substitution: replace one pattern string by another
+COBJECTS := ${patsubst %.c,%.o,${SRC}}
+
+FSOURCES := ${wildcard *.F}
+FOBJECTS := ${patsubst %.F,%.o,${SRC}}
+\end{verbatim}
+
+\Level 0 {Miscellania}
+
+\Level 1 {What does this makefile do?}
+
+Above you learned that issuing the \n{make} command will automatically
+execute the first rule in the makefile. This is convenient in one
+sense\footnote {There is a convention among software developers that a
+  package can be installed by the sequence \n{./configure ; make ;
+    make install}, meaning: Configure the build process for this
+  computer, Do the actual build, Copy files to some system directory
+  such as \n{/usr/bin}.}, and inconvenient in another: the only way to
+find out what possible actions a makefile allows is to read the
+makefile itself, or the --~usually insufficient~-- documentation.
+
+A better idea is to start the makefile with a target
+\begin{verbatim}
+info :
+        @echo "The following are possible:"
+        @echo "  make"
+        @echo "  make clean"
+\end{verbatim}
+Now \n{make} without explicit targets informs you of the capabilities
+of the makefile. The at-sign at the start of the commandline means `do
+not echo this command to the terminal', which makes for cleaner
+terminal output; remove the at signs and observe the difference in
+behaviour.
+
+\Level 1 {Phony targets}
+
+The example makefile contained a target \n{clean}. This uses
+the \emph{Make} mechanisms to accomplish some actions that are not
+related to file creation: calling \n{make clean} causes \emph{Make} to
+reason `there is no file called \n{clean}, so the following
+instructions need to be performed'. However, this does not actually
+cause a file \n{clean} to spring into being, so calling \n{make clean}
+again will make the same instructions being executed.
+
+To indicate that this rule does not actually make the target, declare
+\begin{verbatim}
+.PHONY : clean
+\end{verbatim}
+One benefit of declaring a target to be phony, is that the \emph{Make}
+rule will still work, even if you have a file named \n{clean}.
+
+\Level 1 {Predefined variables and rules}
+
+Calling \n{make -p yourtarget} causes make to print out all its
+actions, as well as the values of all variables and rules, both in
+your makefile and ones that are predefined. If you do this in a
+directory where there is no makefile, you'll see that make actually
+already knows how to compile \n{.c} or \n{.F} files. Find this rule
+and find the definition of the variables in it.
+
+You see that you can customize make by setting such variables as
+\n{CFLAGS} or \n{FFLAGS}. Confirm this with some experimentation. If
+you want to make a second makefile for the same sources, you can call
+\n{make -f othermakefile} to use this instead of the default
+\n{Makefile}.
+
+\Level 1 {Using the target as prerequisite}
+
+Suppose you have two different targets that are treated largely the
+same. You would want to write:
+\begin{verbatim}
+PROGS = myfoo other
+${PROGS} : $@.o
+        ${CC} -o $@ $@.o ${list of libraries goes here}
+\end{verbatim}
+and saying \n{make myfoo} would cause 
+\begin{verbatim}
+cc -c myfoo.c
+cc -o myfoo myfoo.o ${list of libraries}
+\end{verbatim}
+and likewise for \n{make other}. What goes wrong here is the use of
+\verb+$@.o+ as prerequisite. In Gnu Make, you can repair this as
+follows:
+\begin{verbatim}
+.SECONDEXPANSION:
+${PROGS} : $$@.o
+\end{verbatim}
+%% (Make will now look at lines twice: the first time \verb+$$+ gets
+%% converted to a single~\verb+$+, and in the second pass \verb+$@+
+%% becomes the name of the target.)
+
+\Level 0 {Shell scripting in a Makefile}
+
+\begin{purpose}
+  In this section you will see an example of a longer shell script
+  appearing in a makefile rule.
+\end{purpose}
+
+In the makefiles you have seen so far, the command part was a single
+line. You can actually have as many lines there as you want.
+For example, let us make a rule for making backups of the program you
+are building.
+
+Add a \n{backup}  rule to your makefile. The first thing it needs to
+do is make a backup directory:
+\begin{verbatim}
+.PHONY : backup
+backup :
+        if [ ! -d backup ] ; then 
+          mkdir backup
+        fi
+\end{verbatim}
+Did you type this? Unfortunately it does not work: every line in the
+command part of a makefile rule gets executed as a single
+program. Therefore, you need to write the whole command on one line:
+\begin{verbatim}
+backup :
+        if [ ! -d backup ] ; then mkdir backup ; fi
+\end{verbatim}
+or if the line gets too long:
+\begin{verbatim}
+backup :
+        if [ ! -d backup ] ; then \
+          mkdir backup ; \
+        fi
+\end{verbatim}
+Next we do the actual copy:
+\begin{verbatim}
+backup :
+        if [ ! -d backup ] ; then mkdir backup ; fi
+        cp myprog backup/myprog
+\end{verbatim}
+But this backup scheme only saves one version. Let us make a version
+that has the date in the name of the saved program. 
+
+The Unix \n{date} command can customize its output by accepting a
+format string. Type the following: 
+%
+\verb+date +%Y%m%d+. 
+%
+This can be used in the makefile.
+
+\practical {Edit the {\tt cp} command line so that the name of the
+  backup file includes the current date.}{Hint: you need the
+  backquote. Consult the Unix tutorial if you do not remember what
+  backquotes do.}{}
+
+If you are defining shell variables in the command section of a
+makefile rule, you need to be aware of the following. Extend your
+\n{backup} rule with a loop to copy the object files:
+\begin{verbatim}
+backup :
+        if [ ! -d backup ] ; then mkdir backup ; fi
+        cp myprog backup/myprog
+        for f in ${OBJS} ; do \
+          cp $f backup ; \
+        done
+\end{verbatim}
+(This is not the best way to copy, but we use it for the purpose of
+demonstration.) This leads to an error message, caused by the fact
+that \emph{Make} interprets \verb+$f+ as an environment variable of
+the outer process. What works is:
+\begin{verbatim}
+backup :
+        if [ ! -d backup ] ; then mkdir backup ; fi
+        cp myprog backup/myprog
+        for f in ${OBJS} ; do \
+          cp $$f backup ; \
+        done
+\end{verbatim}
+(In this case \emph{Make} replaces the double dollar by a single one
+when it scans the commandline. During the execution of the
+commandline, \n{\$f} then expands to the proper filename.)
+
+\Level 0 {A Makefile for \LaTeX}
+\label{sec:latex-make}
+
+
+\indextermend{Make}

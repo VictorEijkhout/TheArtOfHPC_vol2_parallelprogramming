@@ -1,0 +1,44 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% introduction.tex : general blah
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The term `parallel computing' means different things
+depending on the application area. In this book we focus
+on parallel computing
+--~and more specifically parallel \emph{programming};
+we will not discuss a lot of theory~--
+in the context of scientific computing.
+
+Two of the most common software systems for parallel programming
+in scientific computing are MPI and OpenMP.
+They target different types of parallelism,
+and use very different constructs. 
+Thus, by covering both of them in one book
+we can offer a treatment of parallelism that
+spans a large range of possible applications.
+
+Finally, we also discuss the PETSc
+(Portable Toolkit for Scientific Computing)
+library, which offers an abstraction level higher than
+MPI or OpenMP, geared specifically towards
+parallel linear algebra,
+and very specifically the sort of linear algebra
+computations arising from Partial Differential Equation modeling.
+
+The main languages in scientific computing are C/C++ and Fortran.
+We will discuss both MPI and OpenMP with many examples in these two languages.
+For MPI and the PETSc library we will also discuss the Python interfaces.
+
+\begin{quotation}
+  \textbf{Comments} This book is in perpetual state of revision and refinement.
+  Please send comments of any kind to \texttt{eijkhout@tacc.utexas.edu}.
+\end{quotation}

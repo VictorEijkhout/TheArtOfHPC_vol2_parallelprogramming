@@ -1,0 +1,8 @@
+// matyax.cxx
+Kokkos::parallel_reduce
+  ( "ytAx product",
+    Kokkos::MDRangePolicy<Kokkos::Rank<2>>( {0,0}, {m,n} ),
+    KOKKOS_LAMBDA (int i,int j,double &partial ) {
+        partial += yvec(i) * matrix(i,j) * xvec(j); },
+    sum
+    );

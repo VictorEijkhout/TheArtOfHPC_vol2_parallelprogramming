@@ -1,0 +1,16 @@
+## passive.py
+if procid==repository:
+    # repository process creates a table of inputs
+    # and associates it with the window
+    win_mem = np.empty( ninputs,dtype=np.float32 )
+    win = MPI.Win.Create( win_mem,comm=comm )
+else:
+    # everyone else has an empty window
+    win = MPI.Win.Create( None,comm=comm )
+if procid!=repository:
+    contribution = np.empty( 1,dtype=np.float32 )
+    contribution[0] = 1.*procid
+    table_element = np.empty( 1,dtype=np.float32 )
+    win.Lock( repository,lock_type=MPI.LOCK_EXCLUSIVE )
+    win.Fetch_and_op( contribution,table_element,repository,0,MPI.SUM)
+    win.Unlock( repository )

@@ -1,0 +1,11 @@
+#include "petscsnes.h"  
+PetscErrorCode  SNESSetJacobian(SNES snes,Mat Amat,Mat Pmat,PetscErrorCode (*J)(SNES,Vec,Mat,Mat,void*),void *ctx)
+
+Logically Collective on SNES
+
+Input Parameters
+snes - the SNES context
+Amat - the matrix that defines the (approximate) Jacobian
+Pmat - the matrix to be used in constructing the preconditioner, usually the same as Amat.
+J    - Jacobian evaluation routine (if NULL then SNES retains any previously set value)
+ctx  - [optional] user-defined context for private data for the Jacobian evaluation routine

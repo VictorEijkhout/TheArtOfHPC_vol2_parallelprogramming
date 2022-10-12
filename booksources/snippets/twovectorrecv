@@ -1,0 +1,5 @@
+MPI_Recv( recvbuffer,max_elements,MPI_INT, sender,0, comm,&status );
+int count; MPI_Get_count(&status,MPI_INT,&count);
+printf("Receive %d elements:",count);
+for (int i=0; i<count; i++) printf(" %d",recvbuffer[i]);
+printf("\n");

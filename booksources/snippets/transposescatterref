@@ -1,0 +1,6 @@
+// itransposeblock.c
+for (int iproc=0; iproc<nprocs; iproc++) {
+  MPI_Scatter( regular,1,MPI_DOUBLE,
+		 &(transpose[iproc]),1,MPI_DOUBLE,
+		 iproc,comm);
+}

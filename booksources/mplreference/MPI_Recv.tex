@@ -1,0 +1,5 @@
+template<typename T >
+status mpl::communicator::recv
+   ( T &,int,tag = tag(0) ) const inline
+   ( T *,const layout< T > &,int,tag = tag(0) ) const
+   ( iterT  begin,iterT  end,int  source, tag  t = tag(0) ) const

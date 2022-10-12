@@ -1,0 +1,89 @@
+% -*- latex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2021-2022
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%% acromacs : acronym definitions
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{acronym}
+\newwrite\acrowrite
+\openout\acrowrite=acronyms.tex
+\def\acroitem#1#2{\acrodef{#1}{#2}
+    \write\acrowrite{\message{defining #1}\noexpand\acitem{#1}{#2}}
+}
+\acroitem{API}{Application Programmer Interface}
+\acroitem{AMG}{Algebraic MultiGrid}
+\acroitem{AVX}{Advanced Vector Extensions}
+\acroitem{BLAS}{Basic Linear Algebra Subprograms}
+\acroitem{BSP}{Bulk Synchronous Parallel}
+\acroitem{CAF}{Co-array Fortran}
+\acroitem{CPP}{C PreProcessor}
+\acroitem{CRS}{Compressed Row Storage}
+\acroitem{CSP}{Communicating Sequential Processes}
+\acroitem{CG}{Conjugate Gradients}
+\acroitem{CUDA}{Compute-Unified Device Architecture}
+\acroitem{DAG}{Directed Acyclic Graph}
+\acroitem{DFS}{Depth First Search}
+\acroitem{DPCPP}{Data Parallel C++}
+\acroitem{DSP}{Digital Signal Processing}
+\acroitem{FEM}{Finite Element Method}
+\acroitem{FIFO}{First-In~/ First-Out}
+\acroitem{FPU}{Floating Point Unit}
+\acroitem{FFT}{Fast Fourier Transform}
+\acroitem{FSA}{Finite State Automaton}
+\acroitem{GPU}{Graphics Processing Unit}
+\acroitem{HPC}{High-Performance Computing}
+\acroitem{HPF}{High Performance Fortran}
+\acroitem{HPL}{High Performance Linpack}
+\acroitem{ICV}{Internal Control Variable}
+\acroitem{LAPACK}{Linear Algebra Package}
+\acroitem{MG}{Multi-Grid}
+\acroitem{MIC}{Many Integrated Cores}
+\acroitem{MIMD}{Multiple Instruction Multiple Data}
+\acroitem{MPI}{Message Passing Interface}
+\acroitem{MPL}{Message Passing Layer}
+\acroitem{MPMD}{Multiple Program Multiple Data}
+\acroitem{MTA}{Multi-Threaded Architecture}
+\acroitem{NIC}{Network Interface Card}
+\acroitem{NUMA}{Non-Uniform Memory Access}
+\acroitem{OO}{Object-Oriented}
+\acroitem{OOP}{Object-Oriented Programming}
+\acroitem{OS}{Operating System}
+\acroitem{PGAS}{Partitioned Global Address Space}
+\acroitem{PDE}{Partial Diffential Equation}
+\acroitem{PRAM}{Parallel Random Access Machine}
+\acroitem{RDMA}{Remote Direct Memory Access}
+\acroitem{RMA}{Remote Memory Access}
+\acroitem{SAN}{Storage Area Network}
+\acroitem{SaaS}{Software as-a Service}
+\acroitem{SFC}{Space-Filling Curve}
+\acroitem{SIMD}{Single Instruction Multiple Data}
+\acroitem{SIMT}{Single Instruction Multiple Thread}
+\acroitem{SLURM}{Simple Linux Utility for Resource Management}
+\acroitem{SM}{Streaming Multiprocessor}
+\acroitem{SMP}{Symmetric Multi Processing}
+\acroitem{SOR}{Successive Over-Relaxation}
+\acroitem{SP}{Streaming Processor}
+\acroitem{SPMD}{Single Program Multiple Data}
+\acroitem{SPD}{symmetric positive definite}
+\acroitem{SSE}{SIMD Streaming Extensions}
+\acroitem{STL}{Standard Template Library}
+\acroitem{TACC}{Texas Advanced Computing Center}
+\acroitem{TLB}{Translation Look-aside Buffer}
+\acroitem{UMA}{Uniform Memory Access}
+\acroitem{UPC}{Unified Parallel C}
+\acroitem{URI}{Uniform Resource Identifier}
+\acroitem{WAN}{Wide Area Network}
+\acresetall
+\closeout\acrowrite
+

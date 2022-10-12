@@ -1,0 +1,8 @@
+## pi.py
+def calc_pi1(pi,n):
+    for i in range(n):
+        x = random.random()
+        y = random.random()
+        with pi.get_lock():
+            if x*x+y*y<1:
+                pi.value += 1.

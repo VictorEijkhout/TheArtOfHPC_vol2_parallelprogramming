@@ -1,0 +1,21 @@
+Semantics:
+MPI_COMM_DUP(comm, newcomm)
+MPI_COMM_IDUP(comm, newcomm, request)
+IN comm: communicator (handle)
+OUT newcomm: copy of comm (handle)
+OUT request: request (handle)
+
+C:
+int MPI_Comm_dup(MPI_Comm comm, MPI_Comm *newcomm)
+int MPI_Comm_idup(MPI_Comm comm, MPI_Comm *newcomm, MPI_Request *request)
+
+F:
+MPI_Comm_dup(comm, newcomm, ierror)
+MPI_Comm_idup(comm, newcomm, request, ierror)
+TYPE(MPI_Comm), INTENT(IN) :: comm
+TYPE(MPI_Comm), INTENT(OUT) :: newcomm
+TYPE(MPI_Request), INTENT(OUT) :: request
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+
+Py:
+newcomm = oldcomm.Dup(Info info=None)

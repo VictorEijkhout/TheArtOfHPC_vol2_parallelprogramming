@@ -1,0 +1,3 @@
+// transposeblock.cxx
+mpl::strided_vector_layout<int>
+  sourceblock( blocksize_j,blocksize_i,isize );

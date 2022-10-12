@@ -1,0 +1,11 @@
+// allgatherv.c
+MPI_Allgather
+  ( &my_count,1,MPI_INT,
+    recv_counts,1,MPI_INT, comm );
+int accumulate = 0;
+for (int i=0; i<nprocs; i++) {
+  recv_displs[i] = accumulate; accumulate += recv_counts[i]; }
+int *global_array = (int*) malloc(accumulate*sizeof(int));
+MPI_Allgatherv
+  ( my_array,procno+1,MPI_INT,
+    global_array,recv_counts,recv_displs,MPI_INT, comm );

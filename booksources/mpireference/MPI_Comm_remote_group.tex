@@ -1,0 +1,16 @@
+Semantics:
+MPI_COMM_REMOTE_GROUP(comm, group)
+IN comm: inter-communicator (handle)
+OUT group: group of processes in the remote group of comm
+
+C:
+int MPI_Comm_remote_group(MPI_Comm comm, MPI_Group *group)
+
+Fortran:
+MPI_Comm_remote_group(comm, group, ierror)
+TYPE(MPI_Comm), INTENT(IN) ::  comm
+TYPE(MPI_Group), INTENT(OUT) ::  group
+INTEGER, OPTIONAL, INTENT(OUT) ::  ierror
+
+Python:
+Intercomm.Get_remote_group(self)

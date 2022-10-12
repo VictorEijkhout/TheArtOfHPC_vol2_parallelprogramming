@@ -1,0 +1,5 @@
+// taskgroup0.c
+for (int i=2; i<N; i++)
+  {
+    fibo_values[i] = fibo_values[i-1]+fibo_values[i-2];
+  }

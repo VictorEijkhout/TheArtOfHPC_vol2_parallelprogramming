@@ -1,0 +1,20 @@
+#include "petscmat.h"
+PetscErrorCode  MatSeqAIJSetPreallocation
+  (Mat B,PetscInt nz,const PetscInt nnz[])
+PetscErrorCode  MatMPIAIJSetPreallocation
+  (Mat B,PetscInt d_nz,const PetscInt d_nnz[],
+   PetscInt o_nz,const PetscInt o_nnz[])
+
+Input Parameters
+
+B - the matrix
+nz/d_nz/o_nz - number of nonzeros per row in matrix or
+    diagonal/off-diagonal portion of local submatrix
+nnz/d_nnz/o_nnz - array containing the number of nonzeros in the various rows of
+    the sequential matrix / diagonal / offdiagonal part of the local submatrix
+    or NULL (PETSC_NULL_INTEGER in Fortran) if nz/d_nz/o_nz is used.
+
+Python:
+PETSc.Mat.setPreallocationNNZ(self, [nnz_d,nnz_o] )
+PETSc.Mat.setPreallocationCSR(self, csr)
+PETSc.Mat.setPreallocationDense(self, array)

@@ -1,0 +1,3 @@
+// pi.cxx
+Kokkos::initialize(argc,argv);
+Kokkos::finalize();

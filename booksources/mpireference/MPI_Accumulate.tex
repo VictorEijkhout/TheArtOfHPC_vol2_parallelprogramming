@@ -1,0 +1,49 @@
+C:
+int MPI_Accumulate
+   (const void *origin_addr, int origin_count,MPI_Datatype origin_datatype,
+    int target_rank,MPI_Aint target_disp, int target_count,MPI_Datatype target_datatype,
+    MPI_Op op, MPI_Win win)
+int MPI_Raccumulate
+   (const void *origin_addr, int origin_count,MPI_Datatype origin_datatype, 
+    int target_rank,MPI_Aint target_disp, int target_count,MPI_Datatype target_datatype, 
+    MPI_Op op, MPI_Win win,MPI_Request *request)
+
+Input Parameters
+
+origin_addr : Initial address of buffer (choice).
+origin_count : Number of entries in buffer (nonnegative integer).
+origin_datatype : Data type of each buffer entry (handle).
+target_rank : Rank of target (nonnegative integer).
+target_disp : Displacement from start of window to beginning of target buffer (nonnegative integer).
+target_count : Number of entries in target buffer (nonnegative integer).
+target_datatype : Data type of each entry in target buffer (handle).
+op : Reduce operation (handle).
+win : Window object (handle).
+
+Output Parameter
+
+MPI_Raccumulate: RMA request
+IERROR (Fortran only): Error status (integer).
+
+Fortran:
+
+MPI_ACCUMULATE
+   (ORIGIN_ADDR, ORIGIN_COUNT, ORIGIN_DATATYPE,
+    TARGET_RANK,TARGET_DISP, TARGET_COUNT, TARGET_DATATYPE, 
+    OP, WIN, IERROR)
+<type> ORIGIN_ADDR(*)
+INTEGER(KIND=MPI_ADDRESS_KIND) :: TARGET_DISP
+INTEGER :: ORIGIN_COUNT, ORIGIN_DATATYPE, 
+           TARGET_RANK, TARGET_COUNT,TARGET_DATATYPE, 
+           OP, WIN, IERROR
+MPI_RACCUMULATE
+   (ORIGIN_ADDR, ORIGIN_COUNT, ORIGIN_DATATYPE,
+    TARGET_RANK,TARGET_DISP, TARGET_COUNT, TARGET_DATATYPE, 
+    OP, WIN, REQUEST, IERROR)
+<type> ORIGIN_ADDR(*)
+INTEGER(KIND=MPI_ADDRESS_KIND) :: TARGET_DISP
+INTEGER :: ORIGIN_COUNT, ORIGIN_DATATYPE, TARGET_RANK, TARGET_COUNT, TARGET_DATATYPE,
+           OP, WIN, REQUEST, IERROR
+
+Python:
+MPI.Win.Accumulate(self, origin, int target_rank, target=None, Op op=SUM)

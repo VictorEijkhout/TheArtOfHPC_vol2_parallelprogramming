@@ -1,0 +1,10 @@
+Semantics:
+
+int MPI_Type_get_extent(
+    MPI_Datatype datatype,
+    MPI_Aint *lb, MPI_Aint *extent
+    );
+
+datatype: [in] datatype to get information on (handle)
+lb: [out] lower bound of datatype (integer)
+extent: [out] extent of datatype (integer)

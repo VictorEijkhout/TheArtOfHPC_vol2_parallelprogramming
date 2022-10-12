@@ -1,0 +1,109 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% petsc-objects.tex : petsc tangible-ish objects
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Level 0 {Installation with GPUs}
+
+PETSc can be configured with options
+\begin{verbatim}
+--with-cuda   --with-cudac=nvcc?
+\end{verbatim}
+You can test the presence of CUDA with:
+
+\cverbatimsnippet{petsccudavar}
+
+Some GPUs can accomodate MPI by being directly connected to the network
+through \indexterm{GPUDirect} \ac{RMA}.
+If not, use this runtime option:
+\begin{verbatim}
+-use_gpu_aware_mpi 0
+\end{verbatim}
+More conveniently, add this to your \n{.petscrc} file;
+section~\ref{sec:petscrc}.
+
+\Level 0 {Setup for GPU}
+
+GPUs need to be initialized.
+This can be done implicitly when a GPU object is created,
+or explicitly through \indexpetscdef{PetscCUDAInitialize}.
+
+\cverbatimsnippet{pcudainit}
+
+\Level 0 {Distributed objects}
+
+Objects such as matrices and vectors need to be create
+explicitly with a CUDA type.
+After that, most PETSc calls are independent of the presence of GPUs.
+
+Should you need to test, there is a \ac{CPP} macro
+\indexpetscshow{PETSC_HAVE_CUDA}.
+
+\Level 1 {Vectors}
+
+Analogous to vector creation as before,
+there are specific create calls
+\indexpetscdef{VecCreateSeqCUDA},
+\indexpetscdef{VecCreateMPICUDAWithArray},
+or the type can be set in \indexpetscshow{VecSetType}:
+
+\cverbatimsnippet{veccreatecuda}
+
+The type
+\indexpetscdef{VECCUDA} 
+is sequential or parallel dependent on the run;
+specific types are 
+\indexpetscdef{VECSEQCUDA},
+\indexpetscdef{VECMPICUDA}.
+
+\Level 1 {Matrices}
+
+\cverbatimsnippet{matcreatecuda}
+
+Dense matrices can be created with specific calls
+\indexpetscdef{MatCreateDenseCUDA},
+\indexpetscdef{MatCreateSeqDenseCUDA},
+or by setting types
+\indexpetscdef{MATDENSECUDA},
+\indexpetscdef{MATSEQDENSECUDA},
+\indexpetscdef{MATMPIDENSECUDA}.
+
+Sparse matrices:
+\indexpetscdef{MATAIJCUSPARSE}
+which is sequential or distributed
+depending on how the program is started.
+Specific types are:
+\indexpetscdef{MATMPIAIJCUSPARSE},
+\indexpetscdef{MATSEQAIJCUSPARSE}.
+
+\Level 1 {Array access}
+
+All sorts of `array' operations such as
+\indexpetscdef{MatDenseCUDAGetArray},
+\indexpetscdef{VecCUDAGetArray},
+
+Set \indexpetscshow{PetscMalloc} to use the GPU:
+\indexpetscdef{PetscMallocSetCUDAHost},
+and switch back with
+\indexpetscdef{PetscMallocResetCUDAHost}.
+
+\Level 0 {Other}
+\label{sec:petsc-malloc-gpu}
+
+The memories of a CPU and GPU are not coherent.
+This means that routines such as \indexpetscshow{PetscMalloc1}
+can not immediately be used for GPU allocation.
+Use the routines \indexpetscshow{PetscMallocSetCUDAHost}
+and \indexpetscshow{PetscMallocResetCUDAHost}
+to switch the allocator to GPU memory and back.
+
+\cverbatimsnippet{pccudaalloc}
+

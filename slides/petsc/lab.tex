@@ -1,0 +1,147 @@
+% -*- latex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This TeX file is part of the tutorial
+%%%% `Introduction to the PETSc library'
+%%%% Victor Eijkhout, eijkhout@tacc.utexas.edu
+%%%% copyright Victor Eijkhout 2012-6
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt]{artikel3}
+
+\usepackage{pslatex,hyperref}
+\def\n{\bgroup\catcode`\_=12 \tt \let\next=}
+
+\begin{document}
+
+\title{Lab exercises for the PETSc short course}
+\author{Victor Eijkhout -- Texas Advanced Computing Center}
+\date{January 2010}
+\maketitle 
+
+In the \n{exercises} directory you see four subdirectories, with the
+exercises and the solutions, in both C and Fortran. To compile and
+run:
+\begin{itemize}
+\item Once per login session, do \n{module load petsc/3.0.0-debug}.
+\item Go into one of the subdirectories, for instance \n{csources}.
+\item To compile an exercise, for instance \n{basic}, do
+\begin{verbatim}
+  make exercise SOURCE=basic
+\end{verbatim}
+or in the solutions directory
+\begin{verbatim}
+  make solution SOURCE=basic
+\end{verbatim}
+\item edit the provided jobscript:
+  \begin{itemize}
+  \item insert the program name and options
+    \item determine the parallelism for the job: \n{1way} for
+      sequential; higher for parallel, up to \n{16way}.
+  \end{itemize}
+\item Submit the script to the queue with \n{qsub jobscript} and use
+  \n{watch qstat} to see if you job is waiting (status \n{qw}) or
+  running (\n{r}).
+\end{itemize}
+
+\section{A simple main program}
+
+Compile and run \n{basic.c} on more than one processor. Check the output.
+
+Look up the command \n{PetscPrintf} and use it. Check the output
+again.
+
+Run the executable with \n{-get_total_flop -options_left}. Check the
+output. Oops. Look up the man page for \n{PetscInitialize} and correct
+the error. It is a good idea to use \n{-options_left} for every run;
+you can add this option to a \n{.petscrc} file in the current
+directory or your home directory.
+
+\section{Matrix vector operations}
+
+Take a look at \n{mat.c} or \n{mat.F}. Insert a call to
+\n{MatSetValue} or \n{MatSetValues} to construct the matrix elements
+as a function of \n{i,j}, for instance $1./(i+j+1.)$ (make sure this
+is a floating point expression). Run your
+code; the \n{MatView} call will give a crude display of the
+matrix. Remove it after you have seen it in action; it is only useful
+for small matrices.
+
+Next, create a vector of the same size as the matrix, and insert some
+values, for instance using \n{VecSet} or \n{VecSetValues}. 
+Use \n{MatMult} to multiply the matrix and the vector. Run your code
+with the option \n{-malloc_dump}. Is PETSc complaining about something?
+What can you do about it? It is a good idea to use this option on
+every run.
+
+There is a block of code immediately after the matrix construction
+that is commented out. Activate it, run your code, and see that a
+binary file is created. Now write the mirroring code that will read
+that file into a matrix if no \n{-n} option is given. See the man page
+for \n{MatView} to discover what call to use.
+
+\section{Commandline options, matrix construction, solver
+  experimentation}
+
+Take the file \n{ksp.c} or \n{ksp.F}. Compile it and run it. The
+program has an argument for setting the matrix size:
+\begin{verbatim}
+  ./ksp -n 25
+\end{verbatim}
+
+First experiment with commandline options for changing the solver.
+\begin{itemize}
+\item Use \verb+-ksp_monitor+ to view the convergence behaviour. If
+  the code reports non-convergence, find the code in
+  \verb+$PETSC_ARCH/include/petscksp.h+.
+\item Set \verb+-pc_type lu+. How fast does the iterative method
+  converge?
+\item Set \verb+-pc_type ilu+ and run your code in parallel. Do you
+  understand the error message?
+\item Run your code with \n{-pc_type ilu -ksp_view}. Study the output.
+\end{itemize}
+
+Now make the following changes to the source:
+\begin{enumerate}
+\item Use \n{PetscOptionsGetReal} to accept an optional commandline
+  argument:
+\begin{verbatim}
+  ./ksp -junk .25
+\end{verbatim}
+\item Add this value to the last \n{n} rows of the matrix in locations
+  $(i,i-3)$. The place to do this is indicated in the source.
+
+  Just setting the matrix elements will lead to a runtime error. From
+  the error, can you figure out what is missing in your code? You can
+  also look at the file \n{fivepoint.c}: what commands follow the
+  setting of the matrix elements?
+\item Try increasing values of this parameter, using \n{-pc_type
+  ilu}. At some point the iterative method will break down. Study the
+  codes that PETSc reports. Find an iterative method that will work:
+  the problem here is the choice of \n{KSP} rather than the
+  preconditioner, so find a suitable value of \n{-ksp_type}.
+\end{enumerate}
+
+\section{Shell matrices}
+
+In this section you will explore the PETSc `shell' matrices: matrices
+that are not stored in a data structure, but that are defined by a
+routine that computes their action. Take the file \n{shell.c} or
+\n{shell.F}. After the main program, a routine \n{mymatmult} is
+declared, which is attached by \n{MatShellSetOperation} to the matrix
+\n{A} as the means of computing the product \n{MatMult(A,in,out)}, for
+instance inside an iterative method.
+
+In addition to the shell matrix \n{A}, the code also creates a
+traditional matrix \n{AA}. Your assignment is to make it so that
+\n{mymatmult} computes the product $y\leftarrow A^tAx$.
+
+In C, use \n{MatShellSetContext} to attach \n{AA} to \n{A} and
+\n{MatShellGetContext} to retrieve it again for use; in Fortran use a
+common block (or a module) to store \n{AA}.
+
+The code uses a preconditioner \n{PCNONE}. What happens if you run it
+with option \n{-pc_type jacobi}?
+
+\end{document}

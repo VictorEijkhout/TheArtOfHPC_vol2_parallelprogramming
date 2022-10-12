@@ -1,0 +1,17 @@
+Synopsis
+
+int MPI_Neighbor_allgather
+   (const void *sendbuf, int sendcount,MPI_Datatype sendtype,
+    void *recvbuf, int recvcount, MPI_Datatype recvtype,
+    MPI_Comm comm)
+
+Input Parameters:
+sendbuf : starting address of the send buffer (choice)
+sendcount : number of elements sent to each neighbor (non-negative integer)
+sendtype : data type of send buffer elements (handle)
+recvcount : number of elements received from each neighbor (non-negative integer)
+recvtype : data type of receive buffer elements (handle)
+comm : communicator (handle)
+
+Output Parameters
+recvbuf : starting address of the receive buffer (choice)

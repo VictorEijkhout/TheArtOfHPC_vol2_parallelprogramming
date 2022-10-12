@@ -1,0 +1,42 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% This text file is part of the source of 
+%% `Parallel Computing'
+%% by Victor Eijkhout, copyright 2012-2022
+%%
+%% MPI API file for MPI_Get_accumulate
+%%
+%% THIS FILE IS AUTO-GENERATED
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begingroup
+\ttfamily\bfseries
+\catcode`\_=12
+\begin{tabular}{
+l       % name
+l       % param name
+p{\mpiparmtextsize}  % explanation
+p{.7in} % ctype
+p{.9in} % ftype
+l       % inout
+}
+\toprule
+\mdseries\textrm{Name}&
+\mdseries\textrm{Param name}&
+\mdseries\textrm{Explanation}&
+\mdseries\textrm{C type}&
+\mdseries\textrm{F type}&
+\mdseries\textrm{inout}\\
+\midrule
+\hbox to 18pt{MPI_Get_accumulate (\hss} \\
+ & origin_addr & initial address of buffer & const void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & IN \\ & origin_count & number of entries in origin buffer & int & INTEGER  & IN \\ & origin_datatype & datatype of each entry in origin buffer & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\ & result_addr & initial address of result buffer & void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & OUT \\ & result_count & number of entries in result buffer & int & INTEGER  & IN \\ & result_datatype & datatype of each entry in result buffer & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\ & target_rank & rank of target & int & INTEGER  & IN \\ & target_disp & displacement from start of window to beginning of target buffer & MPI_Aint & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_ADDRESS_KIND)  & IN \\ & target_count & number of entries in target buffer & int & INTEGER  & IN \\ & target_datatype & datatype of each entry in target buffer & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\ & op & reduce operation & MPI_Op & TYPE\discretionary{}{\kern10pt}{}(MPI_Op)  & IN \\ & win & window object & MPI_Win & TYPE\discretionary{}{\kern10pt}{}(MPI_Win)  & IN \\
+&)\\
+
+\bottomrule
+\end{tabular}
+\endgroup
+

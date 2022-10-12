@@ -1,0 +1,8 @@
+MPI_Type_get_extent(stridetype,&l,&e);
+printf("Stride type l=%ld e=%ld\n",l,e);
+e += ( stride-blocklength) * sizeof(int);
+MPI_Type_create_resized(stridetype,l,e,&paddedtype);
+MPI_Type_get_extent(paddedtype,&l,&e);
+printf("Padded type l=%ld e=%ld\n",l,e);
+MPI_Type_commit(&paddedtype);
+MPI_Send( sendbuffer,ntypes,paddedtype, receiver,0, comm );

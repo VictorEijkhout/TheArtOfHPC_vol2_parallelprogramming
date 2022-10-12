@@ -1,0 +1,9 @@
+// intercomm.c
+MPI_Comm intercomm;
+MPI_Intercomm_create
+  (/* local_comm:       */ split_half_comm,
+   /* local_leader:     */ local_leader_in_inter_comm,
+   /* peer_comm:        */ MPI_COMM_WORLD,
+   /* remote_peer_rank: */ global_rank_of_other_leader,
+   /* tag:              */ inter_tag,
+   /* newintercomm:     */ &intercomm );

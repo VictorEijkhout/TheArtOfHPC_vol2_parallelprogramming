@@ -1,0 +1,42 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% This text file is part of the source of 
+%% `Parallel Computing'
+%% by Victor Eijkhout, copyright 2012-2022
+%%
+%% MPI API file for MPI_Group_translate_ranks
+%%
+%% THIS FILE IS AUTO-GENERATED
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begingroup
+\ttfamily\bfseries
+\catcode`\_=12
+\begin{tabular}{
+l       % name
+l       % param name
+p{\mpiparmtextsize}  % explanation
+p{.7in} % ctype
+p{.9in} % ftype
+l       % inout
+}
+\toprule
+\mdseries\textrm{Name}&
+\mdseries\textrm{Param name}&
+\mdseries\textrm{Explanation}&
+\mdseries\textrm{C type}&
+\mdseries\textrm{F type}&
+\mdseries\textrm{inout}\\
+\midrule
+\hbox to 18pt{MPI_Group_translate_ranks (\hss} \\
+ & group1 & group1 & MPI_Group & TYPE\discretionary{}{\kern10pt}{}(MPI_Group)  & IN \\ & n & number of ranks in \mpiarg{ranks1} and \mpiarg{ranks2} arrays & int & INTEGER  & IN \\ & ranks1 & array of zero or more valid ranks in group1 & const int[] & INTEGER\discretionary{}{\kern10pt}{}(n)  & IN \\ & group2 & group2 & MPI_Group & TYPE\discretionary{}{\kern10pt}{}(MPI_Group)  & IN \\ & ranks2 & array of corresponding ranks in group2, \const{MPI_UNDEFINED} when no correspondence exists. & int[] & INTEGER\discretionary{}{\kern10pt}{}(n)  & OUT \\
+&)\\
+
+\bottomrule
+\end{tabular}
+\endgroup
+

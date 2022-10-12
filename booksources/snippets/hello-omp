@@ -1,0 +1,6 @@
+// hello.c
+#pragma omp parallel
+  {
+    int t = omp_get_thread_num();
+    printf("Hello world from %d!\n",t);
+  }

@@ -1,0 +1,9 @@
+!! vecset.F90
+  Vec            :: vector
+  PetscScalar,dimension(:),pointer :: elements
+  call VecGetArrayF90(vector,elements,ierr)
+  write (msg,10) myrank,elements(1)
+10 format("First element on process",i3,":",f7.4,"\n")
+  call PetscSynchronizedPrintf(comm,msg,ierr)
+  call PetscSynchronizedFlush(comm,PETSC_STDOUT,ierr)
+  call VecRestoreArrayF90(vector,elements,ierr)

@@ -1,0 +1,5 @@
+## allreduceinplace.py
+myrandom = np.empty(1,dtype=int)
+myrandom[0] = random_number
+
+comm.Allreduce(MPI.IN_PLACE,myrandom,op=MPI.MAX)

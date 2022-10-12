@@ -1,0 +1,15 @@
+// cvar.c
+MPI_T_cvar_get_num(&ncvar);
+printf("#cvars: %d\n",ncvar);
+for (int ivar=0; ivar<ncvar; ivar++) {
+  char name[100]; int namelen = 100;
+  char desc[256]; int desclen = 256;
+  int verbosity,bind,scope;
+  MPI_Datatype datatype;
+  MPI_T_enum enumtype;
+  MPI_T_cvar_get_info
+	(ivar,
+	 name,&namelen,
+	 &verbosity,&datatype,&enumtype,desc,&desclen,&bind,&scope
+	 );
+  printf("cvar %3d: %s\n  %s\n",ivar,name,desc);

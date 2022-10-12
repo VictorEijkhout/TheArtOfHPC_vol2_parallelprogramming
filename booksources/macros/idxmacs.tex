@@ -1,0 +1,504 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This LaTeX file is part of the source of 
+%%%% `Parallel Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% idxmacs.tex : index-related macros.
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{imakeidx}
+
+\indexsetup{noclearpage}
+\makeindex
+\makeindex[name=mpi,title=,columns=1]
+\makeindex[name=mpl,title=,columns=1]
+\makeindex[name=omp,title=,columns=1]
+\makeindex[name=petsc,title=,columns=1]
+\makeindex[name=kokkos,title=,columns=1]
+\makeindex[name=sycl,title=,columns=1]
+\makeindex[name=python,title=,columns=1]
+
+
+\newcommand{\indextermp}[1]{\emph{#1s}\index{#1}}
+\newcommand{\indextermsub}[2]{\emph{#1 #2}\index{#2!#1}}
+\newcommand{\indextermsubh}[2]{\emph{#1-#2}\index{#2!#1}}
+\newcommand{\indextermsubdef}[2]{\emph{#1 #2}\index{#2!#1|textbf}}
+\newcommand{\indextermsubdefh}[2]{\emph{#1-#2}\index{#2!#1|textbf}}
+\newcommand{\indextermsubp}[2]{\emph{#1 #2s}\index{#2!#1}}
+\newcommand{\indextermbus}[2]{\emph{#1 #2}\index{#1!#2}}
+\newcommand{\indextermbusp}[2]{\emph{#1 #2s}\index{#1!#2}}
+\newcommand{\indextermbusdef}[2]{\emph{#1 #2}\index{#1!#2|textbf}}
+\newcommand{\indextermstart}[1]{\emph{#1}\index{#1|(}}
+\newcommand{\indextermend}[1]{\index{#1|)}}
+\newcommand{\indexstart}[1]{\index{#1|(}}
+\newcommand{\indexend}[1]{\index{#1|)}}
+\makeatletter
+\newcommand\indexac[1]{\emph{\ac{#1}}%
+  %\tracingmacros=2 \tracingcommands=2
+  \edef\tmp{\noexpand\index{%
+    \expandafter\expandafter\expandafter
+        \@secondoftwo\csname fn@#1\endcsname%
+    @\acl{#1} (#1)}}\tmp}
+\newcommand\indexacp[1]{\emph{\ac{#1}}%
+  %\tracingmacros=2 \tracingcommands=2
+  \edef\tmp{\noexpand\index{%
+    \expandafter\expandafter\expandafter
+        \@secondoftwo\csname fn@#1\endcsname%
+    @\acl{#1} (#1)}}\tmp}
+\newcommand\indexacf[1]{\emph{\acf{#1}}%
+  \edef\tmp{\noexpand\index{%
+    \expandafter\expandafter\expandafter
+        \@secondoftwo\csname fn@#1\endcsname
+    @\acl{#1} (#1)}}\tmp}
+\newcommand\indexacstart[1]{%
+  \edef\tmp{\noexpand\index{%
+    \expandafter\expandafter\expandafter
+        \@secondoftwo\csname fn@#1\endcsname
+    @\acl{#1} (#1)|(}}\tmp}
+\newcommand\indexacend[1]{%
+  \edef\tmp{\noexpand\index{%
+    \expandafter\expandafter\expandafter
+        \@secondoftwo\csname fn@#1\endcsname
+    @\acl{#1} (#1)|)}}\tmp}
+\makeatother
+
+\newif\ifShowRoutine
+{ \catcode`\_=13
+  \gdef\indexmpishowf#{\bgroup
+    \InnocentChars \def\\{\char`\\}\relax
+    \ShowRoutinetrue
+    \afterassignment\mpitoindexf\edef\indexedmpi}
+  \gdef\indexmpishowp#{\bgroup
+    \InnocentChars \def\\{\char`\\}\relax
+    \ShowRoutinetrue
+    \afterassignment\mpitoindexp\edef\indexedmpi}
+  \gdef\indexmpishowsub#{\bgroup
+    \InnocentChars
+    \catcode`\_=13 \def_{\char95\discretionary{}{}{}}
+    \def\\{\char`\\}\relax
+    %
+    \tt \afterassignment\defineindexmpisubtwo \xdef\indexedmpisubone}
+  \gdef\defineindexmpisubtwo{\afterassignment\mpitoindexsub \gdef\indexedmpisubtwo}
+}
+
+%%%%
+%%%% Stuff to index
+%%%%
+\def\indexgenshow#1#{\bgroup
+    \InnocentChars \ShowRoutinetrue
+    \afterassignment#1\edef\indexedmpi
+}
+% mpi
+\newcommand\mpitoindex{\gentoindex{mpi}{textrm}}
+\newcommand\mpitoindexbf{\gentoindex{mpi}{textbf}}
+\newcommand\mpitoindexit{\gentoindex{mpi}{textsl}}
+% mpl
+\newcommand\mpltoindex{\gentoindex{mpl}{textrm}}
+\newcommand\mpltoindexbf{\gentoindex{mpl}{textbf}}
+%
+\newcommand\omptoindex{\gentoindex{omp}{textrm}}
+\newcommand\omptoindexbf{\gentoindex{omp}{textbf}}
+\newcommand\omptoindexit{\gentoindex{omp}{textsl}}
+% basic routine
+\newcommand\gentoindex[2]{%% 1: index name, 2: font cs
+  \edef\tmp{%
+    \noexpand\ifShowRoutine
+        \noexpand\lstinline+\indexedmpi+\noexpand\nobreak
+    \noexpand\fi
+    \noexpand\index[#1]{\indexedmpi@{\catcode95=12 \noexpand\texttt{\indexedmpi}}|#2}%
+  }%
+  \tmp
+  \egroup\nobreak
+}
+
+\def\mpitoindexf{
+  \edef\tmp{%
+    \noexpand\ifShowRoutine
+        \noexpand\lstinline+\indexedmpi+\noexpand\nobreak
+    \noexpand\fi
+    \noexpand\index[mpi]{\indexedmpi@{\catcode95=12
+        \noexpand\texttt{\indexedmpi}}!in Fortran}%
+  }%
+  \tmp
+  \egroup\nobreak
+}
+\def\mpitoindexp{
+  \edef\tmp{%
+    \noexpand\ifShowRoutine
+        \noexpand\lstinline+\indexedmpi+\noexpand\nobreak
+    \noexpand\fi
+    \noexpand\index[mpi]{\indexedmpi@{\catcode95=12
+        \noexpand\texttt{\indexedmpi}}!in Python}%
+  }%
+  \tmp
+  \egroup\nobreak
+}
+%% \def\mpitoindexit{%\tracingmacros=2
+%%   \edef\tmp{%
+%%     \noexpand\n{\indexedmpi}%
+%%     \noexpand\index[mpi]{\indexedmpi@{\catcode95=12 \noexpand\texttt{\indexedmpi}}|textsl}}%
+%%   \tmp
+%%   \egroup\nobreak
+%% }
+\def\mpitoindexsub{%\tracingmacros=2
+  \edef\tmp{%
+    \noexpand\lstinline+\indexedmpisubone+ {\indexedmpisubtwo}%
+    \noexpand\index[mpi]{\indexedmpisubone@{\catcode95=12 \noexpand\texttt{\indexedmpisubone}}!\indexedmpisubtwo@{\indexedmpisubtwo}}}%
+  \tmp
+  \egroup\nobreak
+}
+
+
+%%%%
+%%%% OpenMP to index
+%%%%
+
+%%%%
+%%%% MPI Routine Ref
+%%%%
+
+%%%%
+%%%% PETSc Routine Ref
+%%%%
+{ \catcode`\_=13
+  \gdef\indexpetsc#{\bgroup
+    \InnocentChars
+    \ShowRoutinefalse
+    \tt \afterassignment\petsctoindex\edef\indexedpetsc}
+  \gdef\indexpetscoption#{\bgroup
+    \InnocentChars
+    \ShowRoutinetrue
+    \tt \afterassignment\petscoptiontoindex\edef\indexedpetsc}
+  \global\let\indexpetscfile\indexpetscshow
+}
+\def\petsctoindex{%\tracingmacros=2
+  \edef\tmp{%
+    \noexpand\lstinline+\indexedpetsc+%
+    \noexpand\index[petsc]{\indexedpetsc@{\catcode95=12 \noexpand\texttt{\indexedpetsc}}}}%
+  \tmp
+  \egroup
+}
+\def\petscoptiontoindex{%\tracingmacros=2
+  \edef\tmp{%
+    \hbox{\noexpand\lstinline+-\indexedpetsc+}%
+    \noexpand\index[petsc]{-\indexedpetsc@{\catcode95=12 \noexpand\texttt{-\indexedpetsc}}}}%
+  \tmp
+  \egroup
+}
+\def\petsctoindexbf{%\tracingmacros=2
+  \edef\tmp{%
+    \noexpand\lstinline+\indexedpetsc+%
+    \noexpand\index[petsc]{\indexedpetsc@{\catcode95=12 \noexpand\texttt{\indexedpetsc}}|textbf}%
+  }%
+  \tmp
+  \egroup
+}
+
+
+%%%%
+%%%% routine ref
+%%%%
+
+\def\indexpetscxref#1#2{\def\indexedroutine{#1}\def\displayedroutine{#2}%
+  %\petscIndexBF -> \RoutineIndexBF{petsc}
+  \edef\tmp{%
+    \noexpand\lstinline+\indexedroutine+
+    (figure\noexpand~\noexpand\ref{ref:\displayedroutine})%
+    \noexpand\index[petsc]{%
+      \indexedroutine@{\catcode95=12 \noexpand\texttt{\indexedroutine}}|textbf}%
+  }%
+  \tmp
+}  
+
+%% mpi
+\newcommand\indexmpishow{\PackageIndex\mpiIndexRM}
+\newcommand\indexmpidepr{\PackageIndex\mpiIndexRd}
+\newcommand\indexmpidef {\PackageIndex\mpiIndexBF}
+\newcommand\indexmpiex  {\PackageIndex\mpiIndexIT}
+% versions that generate man page
+\newcommand\indexmpiref {\PackageIndex   \mpiIndexAndRef}
+\newcommand\indexmpixref{\PackageIndexTwo\mpiIndexAndXRef}
+\let\indexmpirep\indexmpishow % need to incorporate link to man page
+
+\newcommand\mpiIndexBF{\RoutineIndexFont{mpi}{textbf}\endgroup}
+\newcommand\mpiIndexRM{\RoutineIndexFont{mpi}{textrm}\endgroup}
+\newcommand\mpiIndexRd{\RoutineDeprcFont{mpi}{textrm}\endgroup}
+\newcommand\mpiIndexIT{\RoutineIndexFont{mpi}{textsl}\endgroup}
+\newcommand\mpiIndexAndRef{% this is called through afterassignment; \indexedroutine has been set
+  \global\let\referencedroutine\indexedroutine
+  \RoutineShowAndIndex{mpi}{textbf}% show name, index, reference to figure
+  \endgroup % end of innocent characters
+  \def\routinefam{mpi}\RoutineRefDisplay
+}
+\newcommand\mpiIndexAndXRef{%
+  \RoutineShowAndIndex{mpi}{textbf}%
+  \endgroup}
+
+% mpl
+\newcommand\indexmplshow{\PackageIndex\mplIndexRM}
+\newcommand\indexmpldef {\PackageIndex\mplIndexBF}
+\newcommand\indexmplref {\PackageIndex\mplIndexAndRef}
+\newcommand\indexmplex  {\PackageIndex\mplIndexIT}
+\let\indexmplrep\indexmplshow % need to incorporate link to man page
+
+\newcommand\mplIndexBF{\RoutineIndexFont{mpl}{textbf}\endgroup}
+\newcommand\mplIndexRM{\RoutineIndexFont{mpl}{textrm}\endgroup}
+\newcommand\mplIndexIT{\RoutineIndexFont{mpl}{textsl}\endgroup}
+\newcommand\mplIndexAndRef{%
+  \let\referencedroutine\indexedroutine
+  \RoutineShowAndIndex{mpl}{textbf}%
+  \def\routinefam{mpl}\RoutineRefDisplay\endgroup}
+
+% omp
+\newcommand\indexompterm  {\PackageIndex\ompIndexTe}
+\newcommand\indexompshow  {\PackageIndex\ompIndexRM}
+\newcommand\indexompdepr  {\PackageIndex\ompIndexRd}
+\newcommand\indexompdef   {\PackageIndex\ompIndexBF}
+\newcommand\indexompclause{\PackageIndex\ompIndexRM}
+\newcommand\indexompref   {\PackageIndex\ompIndexAndRef}
+\newcommand\indexompex    {\PackageIndex\ompIndexIT}
+\let\indexomprep\indexompshow % need to incorporate link to man page
+
+%%%% \def\indexpragma#1{\texttt{#1}\index[omp]{#1}}
+\newcommand\indexpragma   {\PackageIndex\ompIndexTT}
+%%%% \def\indexpragmadef#1{\texttt{#1}\index[omp]{#1|textbf}}
+\newcommand\indexpragmadef{\PackageIndex\ompIndexBF}
+\index[omp]{pragma|see{see under pragma name}}
+%\def\indexompclause#1{\texttt{#1}\index[omp]{omp clause!#1}}
+\newcommand\indexclause   {\PackageIndex\ompIndexTT}
+\newcommand\indexclausedef{\PackageIndex\ompIndexTT}
+\def\indexclauseoption#1#2{\texttt{#2}\index[omp]{#1!#2}}
+\def\indexompclauseoption#1#2{\texttt{#2}\index[omp]{#1!#2}}
+
+\newcommand\ompIndexTe{\TermIndexFont{omp}{textrm}\endgroup}
+\newcommand\ompIndexTT{\RoutineIndexFont{omp}{texttt}\endgroup}
+\newcommand\ompIndexRM{\RoutineIndexFont{omp}{textrm}\endgroup}
+\newcommand\ompIndexBF{\RoutineIndexFont{omp}{textbf}\endgroup}
+\newcommand\ompIndexRd{\RoutineDeprcFont{omp}{textrm}\endgroup}
+\newcommand\ompIndexIT{\RoutineIndexFont{omp}{textsl}\endgroup}
+\newcommand\ompIndexAndRef{%
+  \let\referencedroutine\indexedroutine
+  \RoutineIndexFont{omp}{textbf}%
+  \def\routinefam{omp}\RoutineRefDisplay\endgroup}
+
+% petsc
+\newcommand\indexpetscshow{\PackageIndex\petscIndexRM}
+\newcommand\indexpetscdepr{\PackageIndex\petscIndexRd}
+\newcommand\indexpetscdef {\PackageIndex\petscIndexBF}
+\newcommand\indexpetscref {\PackageIndex\petscIndexAndRef}
+\newcommand\indexpetscex  {\PackageIndex\petscIndexIT}
+\newcommand\indexpetsctt  {\PackageIndex\petscIndexTT}
+\newcommand\indexpetscfile{\PackageIndex\petscIndexTT}
+\let\indexpetscrep\indexpetscshow % need to incorporate link to man page
+
+\newcommand\petscIndexBF{\RoutineIndexFont{petsc}{textbf}\endgroup}
+\newcommand\petscIndexRM{\RoutineIndexFont{petsc}{textrm}\endgroup}
+\newcommand\petscIndexRd{\RoutineDeprcFont{petsc}{textrm}\endgroup}
+\newcommand\petscIndexIT{\RoutineIndexFont{petsc}{textsl}\endgroup}
+\newcommand\petscIndexTT{\RoutineIndexFont{petsc}{texttt}\endgroup}
+\newcommand\petscIndexAndRef{%
+  \let\referencedroutine\indexedroutine
+  \RoutineShowAndIndex{petsc}{textbf}%
+  \def\routinefam{petsc}\RoutineRefDisplay\endgroup}
+
+% sycl
+\newcommand\indexsyclshow{\PackageIndex\syclIndexRM}
+\newcommand\indexsycldef {\PackageIndex\syclIndexBF}
+\newcommand\syclIndexBF{\RoutineIndexFont{sycl}{textbf}\endgroup}
+\newcommand\syclIndexRM{\RoutineIndexFont{sycl}{textrm}\endgroup}
+
+% kokkos
+\newcommand\indexkokkosshow{\PackageIndex\kokkosIndexRM}
+\let\indexkokkos\indexkokkosshow
+\newcommand\indexkokkosdef {\PackageIndex\kokkosIndexBF}
+\newcommand\kokkosIndexBF{\RoutineIndexFont{kokkos}{textbf}\endgroup}
+\newcommand\kokkosIndexRM{\RoutineIndexFont{kokkos}{textrm}\endgroup}
+
+%%
+%% Define `indexedroutine' and invoke #1 which will process this
+%%
+\newcommand\PackageIndex[1]{\begingroup
+    \InnocentChars \ShowRoutinetrue
+    \afterassignment#1\xdef\indexedroutine
+}
+
+%%
+%% Define `indexedroutine' and `referencedroutine' and invoke #1 which will process this
+%%
+\newcommand\PackageIndexTwo[1]{\begingroup
+    \InnocentChars \ShowRoutinetrue
+    \let\routineprocess=#1%
+    \afterassignment\defineReferencedAndProcess
+    \edef\indexedroutine
+}
+\newcommand\defineReferencedAndProcess{%
+  \afterassignment\routineprocess
+  \edef\referencedroutine}
+
+%%
+%% Write `indexedroutine' to index #1 with #2 font
+%%
+\def\RoutineIndexFont#1#2{% 
+  \def\ifont{#2}\def\bfont{textbf}%
+  \edef\tmp{%
+    \noexpand\lstinline+\indexedroutine+%
+    \ifx\ifont\bfont\noexpand\label{def:\indexedroutine}\fi%
+    \noexpand\index[#1]{%
+      \indexedroutine@{\catcode95=12 \noexpand\texttt{\indexedroutine}}|#2}%
+  }%
+  \tmp%
+}
+\def\TermIndexFont#1#2{% 
+  \def\ifont{#2}\def\bfont{textbf}%
+  \edef\tmp{%
+    \noexpand\textsl{\indexedroutine}%
+    \ifx\ifont\bfont\noexpand\label{def:\indexedroutine}\fi%
+    \noexpand\index[#1]{\indexedroutine|#2}%
+    \noexpand\index{\indexedroutine (OpenMP)}%
+  }%
+  \tmp
+}
+\def\RoutineDeprcFont#1#2{% 
+  \edef\tmp{%
+    \noexpand\lstinline+\indexedroutine+%
+    \noexpand\index[#1]{%
+      \indexedroutine@{\catcode95=12 \noexpand\texttt{\indexedroutine} (deprecated)}|#2}%
+  }%
+  \tmp
+}
+
+%%
+%% Write `indexedroutine' to index #1 with #2 font
+%% also: generate manpage float
+%%
+\def\RoutineShowAndIndex#1#2{% write `indexedroutine' to index #1 with #2 font
+  \def\ifont{#2}\def\bfont{textbf}%
+  \edef\tmp{%
+    \noexpand\lstinline+\indexedroutine+%
+    \ifx\ifont\bfont\noexpand\label{def:\indexedroutine}\fi%
+    \noexpand\index[#1]{%
+      \indexedroutine@{\catcode95=12 \noexpand\texttt{\indexedroutine}}|#2}\ \relax
+    (figure\noexpand~\noexpand\ref{ref:\referencedroutine})%
+  }%
+  \tmp%
+}
+
+\newcommand\RoutineRefStyle{
+  \catcode`\_=12 % 13 \def_{\char95\discretionary{}{}{}}
+  \catcode`\>=12 \catcode`\<=12
+  \catcode`\&=12 \catcode`\^=12 \catcode`\~=12 \def\\{\char`\\}\relax
+}
+\newcommand\RoutineIndexStyle{
+  \catcode`\_=12 % 13 \def_{\char95\discretionary{}{}{}}
+  \catcode`\>=12 \catcode`\<=12
+  \catcode`\&=12 \catcode`\^=12 \catcode`\~=12 \def\\{\char`\\}\relax
+}
+{ \catcode`\_=12
+\gdef\underscore{_}
+}
+
+\usepackage{newfloat} % ,caption}
+\DeclareFloatingEnvironment[fileext=man,placement={tp},name=Manpage]{manpage}
+%\captionsetup[manpage]{justification=justified,labelformat=empty}
+
+%\newcounter{manpage}
+{ %\catcode`\_=13
+  \makeatother
+  \gdef\RoutineRefDisplay{%
+    \begin{manpage}%
+      % counter and reference to counter
+      \refstepcounter{manpage}%
+      \edef\labeltext{ref:\indexedroutine}
+      \edef\tmp{\noexpand\label{\labeltext}}\tmp
+
+      % routine name
+      \ifx\indexedroutine\referencedroutine
+      \else \par \large \ref{\labeltext}\ \textbf{\texttt{\referencedroutine}}
+      \fi
+      { \RoutineRefStyle %\catcode`\_=13 \def_{\underscore}
+        Figure \ref{\labeltext}\ \textbf{\texttt{\indexedroutine}}
+      }
+
+      % mpi standard macros
+      \def\MPI/{MPI}\def\mpi/{MPI}\def\RMA/{RMA}
+      \def\mpifunc##1{\texttt{##1}}
+      \let\mpiarg\mpifunc \let\mpicode\mpifunc
+      \let\const\mpifunc  \let\constskip\mpifunc
+
+      % routine display
+      {\footnotesize
+       \def\verbatim@startline{\verbatim@line{\leavevmode\relax}}
+        \def\mpifam{mpi}
+        \ifx\mpifam\routinefam
+            \edef\tmp{\lowercase{\def\noexpand\standardroutine{\referencedroutine}}}\tmp
+            \IfFileExists
+                {standard/\standardroutine.tex}
+                {\input{standard/\standardroutine}}
+                {% if no standard file, then maybe handwritten file
+                  \IfFileExists
+                      {mpireference/\referencedroutine.tex}
+                      {\verbatiminput{mpireference/\referencedroutine}}{}}
+            \IfFileExists
+                  {mplreference/\standardroutine.tex}
+                  {MPL:\\ \verbatiminput{mplreference/\standardroutine.tex}}{}
+            \IfFileExists
+                {standardp/\standardroutine.tex}
+                {Python:\\ \input{standardp/\standardroutine.tex}}
+                {% no python reference from cython definition
+                 \IfFileExists
+                     {pyreference/\referencedroutine}
+                     {Python:\\ \verbatiminput{pyreference/\referencedroutine.tex}}{}
+                }
+        \else
+            \edef\tmp{\noexpand\verbatiminput{\referencedroutine}}\tmp
+        \fi
+      }
+      \vskip10pt
+      \hrule
+    \end{manpage}%
+  }
+}
+
+\newcommand\pylist[1]{Class #1:\verbatiminput{standardp/class_#1.tex}}
+
+\def\boldtt#1{\textbf{\texttt{#1}}}
+
+\newcommand{\indexterm}[1]{\emph{#1}\index{#1}}
+\def\indextermdef#1{\emph{#1}\index{#1|textbf}}
+{ \catcode`\_=13
+  \gdef\tttoindex{%\tracingmacros=2
+    \edef\tmp{%
+      \noexpand\n{\indexedtt}%
+      \noexpand\index{\indexedtt@{%
+          \catcode95=12 \noexpand\texttt{\indexedtt}}}%
+    }%
+    \tmp
+    \egroup
+  }
+
+% used for unix, environment variables, stuff
+  \gdef\indextermtt#{\bgroup \InnocentChars
+    \tt \afterassignment\tttoindex\edef\indexedtt}
+
+  \gdef\ttnotetoindex{%\tracingmacros=2
+    \edef\tmp{%
+      \noexpand\n{\indexedttnote}%
+      \noexpand\index{\indexedttnote@{%
+          \catcode95=12 \noexpand\texttt{\indexedttnote}}}%
+    }%
+    \tmp
+    \egroup
+  }
+  \gdef\indextermttnote#{\bgroup \InnocentChars
+    \tt \afterassignment\ttnotetoindex\edef\indexedttnote}
+}
+
+\let\indextermttdef\indextermtt
+\let\indexcommand     \indextermtt
+\let\indextermunix    \indextermtt
+\let\indextermfunction\indextermtt

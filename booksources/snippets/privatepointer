@@ -1,0 +1,8 @@
+// alloc.c
+int *array = (int*) malloc(nthreads*sizeof(int));
+#pragma omp parallel firstprivate(array)
+{
+  int t = omp_get_thread_num();
+  array += t;
+  array[0] = t;
+}

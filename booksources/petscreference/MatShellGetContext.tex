@@ -1,0 +1,10 @@
+#include "petscmat.h"
+PetscErrorCode  MatShellGetContext(Mat mat,void *ctx)
+
+Not Collective
+
+Input Parameter:
+mat -the matrix, should have been created with MatCreateShell()
+
+Output Parameter:
+ctx -the user provided context

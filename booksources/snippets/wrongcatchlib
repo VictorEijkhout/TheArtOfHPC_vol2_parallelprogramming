@@ -1,0 +1,15 @@
+// commdupwrong.cxx
+class library {
+private:
+  MPI_Comm comm;
+  int procno,nprocs,other;
+  MPI_Request request[2];
+public:
+  library(MPI_Comm incomm) {
+    comm = incomm;
+    MPI_Comm_rank(comm,&procno);
+    other = 1-procno;
+  };
+  int communication_start();
+  int communication_end();
+};

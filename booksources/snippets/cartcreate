@@ -1,0 +1,6 @@
+MPI_Comm cart_comm;
+int *periods = (int*) malloc(dim*sizeof(int));
+for ( int id=0; id<dim; id++ ) periods[id] = 0;
+MPI_Cart_create
+  ( comm,dim,dimensions,periods,
+    0,&cart_comm );

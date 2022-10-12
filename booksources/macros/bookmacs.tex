@@ -1,0 +1,322 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newif\ifInBook
+\InBooktrue
+
+%% graphics stuff
+\renewcommand\topfraction{.85}
+\usepackage{graphicx,outliner}
+\usepackage{wrapfig}
+% plotting with tikz
+\usepackage{pgfplots}  
+\usepgfplotslibrary{external}
+\tikzexternalize
+\tikzsetexternalprefix{plots/}
+\pgfplotsset{width=5in,compat=1.7}  
+
+% fancy text stuff
+\usepackage{fontspec}
+\setmainfont[
+  Extension=.otf,
+  UprightFont={*-Regular},
+  BoldFont={*-Bold},
+  ItalicFont={*-Italic},
+  BoldItalicFont={*-BoldItalic}
+]{LibertinusSerif}
+\usepackage{unicode-math}
+\setmathfont{LibertinusMath-Regular.otf}
+
+%%%%
+%%%% Outlining
+%%%%
+\OutlineLevelStart0{\chapter{#1}}
+\OutlineLevelStart1{\section{#1}}
+\OutlineLevelCont1{\section{#1}}
+\OutlineLevelStart2{\subsection{#1}}
+\OutlineLevelStart3{\subsubsection{#1}}
+\setcounter{secnumdepth}{4}
+\OutlineLevelStart4{\paragraph{\textit{#1}}}
+
+%%%%
+%%%% stuff
+%%%%
+\newcommand\furtherreading{\Level 0 {Further Reading}\label{sec:furtherreading-\chapshortname}}
+\newcommand\heading[1]{\paragraph*{\textbf{#1}}}
+
+{\catcode`\^^I=13 \globaldefs=1
+ \newcommand\listing[2]{\begingroup\small\par\vspace{1ex}
+  \catcode`\^^I=13 \def^^I{\leavevmode\hspace{40pt}}
+  \noindent\fbox{#1}
+  \verbatiminput{#2}\endgroup}
+ \newcommand\codelisting[1]{\begingroup\small\par\vspace{1ex}
+  \catcode`\^^I=13 \def^^I{\leavevmode\hspace{40pt}}
+  \noindent\fbox{#1}
+  \verbatiminput{#1}\endgroup}
+}
+
+%%
+%% refer to sections in the HPC book
+%%
+\usepackage{xr-hyper}
+\externaldocument[HPSC-]{scicompbook}
+\newcommand\HPSCref[1]{HPC book, section-\ref{HPSC-#1}}
+\externaldocument[CARP-]{scicomptutorials}
+\newcommand\CARPref[1]{Tutorials book, section-\ref{CARP-#1}}
+%%
+%% hyperref
+%%
+\begin{notlulu}
+  \usepackage[xetex,colorlinks,pagebackref=true]{hyperref}
+  \hypersetup{bookmarksopen=true}
+  \renewcommand*{\backref}[1]{}
+  \renewcommand*{\backrefalt}[4]{[{\tiny%
+      \ifcase #1 Not cited.%
+      \or Cited on page~#2.%
+      \else Cited on pages #2.%
+      \fi%
+  }]}
+  \usepackage[all]{hypcap}
+\end{notlulu}
+\begin{lulu}
+  \usepackage{url}
+\end{lulu}
+
+\usepackage{etoolbox}
+
+\let\exref\ref
+
+\newtheorem{remark}{Remark}
+\expandafter\ifx\csname definition\endcsname\relax
+    \newtheorem{definition}{Definition}
+\fi
+\expandafter\ifx\csname theorem\endcsname\relax
+    \newtheorem{theorem}{Theorem}
+\fi
+\expandafter\ifx\csname lemma\endcsname\relax
+    \newtheorem{lemma}{Lemma}
+\fi
+
+\newcommand\skeleton[1]{\par
+    (There is a skeleton for this exercise under the name \texttt{#1}.)}
+
+%%%%
+%%%% Verbatim source handling
+%%%%
+
+% each chapter has a list of sources
+\newcommand\addchaptersource[1]{
+  \ifinlistcs{#1}{\chapshortname:sourcelist}
+             {}
+             {\message{adding source #1}
+               %\globaldefs=1
+               \listcsadd{\chapshortname:sourcelist}{#1}
+               %\globaldefs=0
+             }
+}
+\newcounter{source}
+\newcommand\listchaptersources[1]{
+  \setcounter{source}{0}
+  \renewcommand*\do[1]{\message{counting <<##1>>}\stepcounter{source}}%
+  \dolistcsloop{#1:sourcelist}
+  \expandafter\ifnum\value{source}>0
+    \immediate\message{Sources: \arabic{source}}
+    \Level 0 {Sources used in this chapter}
+    \renewcommand*\do[1]{\ListOneSource{##1}}
+    \dolistcsloop{#1:sourcelist}
+  \fi
+}
+\newcommand\ListOneSource[1]{
+  \immediate\message{sourcing <<#1>>}
+  \Level 1 {Listing of code #1}
+  \label{lst:#1}
+  \ListStrippedSource{#1}
+  \par
+}
+\newcommand\ListStrippedSource[1]{
+  \begingroup \footnotesize
+  \immediate \write 18 { ./stripsource #1 }
+  \verbatiminput{input.cut}
+  \endgroup
+}
+\def\LSR{\LSR}
+\def\ChapterSourceHeader#1\LSR{
+  \def\test{#1\LSR}
+  \ifx\test\LSR
+  \else
+    \Level 0 {Sources used in this chapter}
+  \fi
+}
+\def\ListSourcesRecursively#1{
+  \def\test{#1}
+  \ifx\test\LSR
+  \else
+  % list the file
+  \ListOneSource{#1}
+  % continue
+  \expandafter\ListSourcesRecursively
+  \fi
+}
+
+  %% \message{Test chapter list <<\the\chaptersourcelist>> }
+  %% \edef\temp{\noexpand\TestInChapterSources#1\the\chaptersourcelist\noexpand\LSR}
+  %% \temp
+  %% \ifIsInSourceList\else
+%% \def\TestInChapterSources#1#2\LSR{
+%%   \def\empty{}\def\test{#2}
+%%   \message{Test source <<#1>> in list <<#2>>}
+%%   \ifx\empty\test \IsInSourceListfalse
+%%   \else \TestInNonemptyChapterSources{#1}#2\LSR \fi
+%% }
+%% \def\TestInNonemptyChapterSources#1#2#3\LSR{
+%%   \def\test{#1}\def\testsource{#2}
+%%   \message{Test source <<#1>> against <<#2>>}
+%%   \if\test\testsource \IsInSourceListtrue
+%%   \else \TestInChapterSources{#1}#3\LSR
+%%   \fi
+%% }
+
+\newenvironment{raggedlist}{\begingroup\rightskip=0pt plus 2in}{\par\endgroup}
+\newenvironment{question}{\begin{quotation}\textbf{Question.\ }}{\end{quotation}}
+\newenvironment
+    {example}
+    {\par\begin{raggedright}
+      \advance\leftskip by \unitindent
+      \noindent \hbox{\kern-\unitindent \textsl{Example.}}\kern1em\ignorespaces
+    }
+    {\par\end{raggedright}}
+\newenvironment{specialnote}[1]
+               {\par\begin{raggedright}
+                 \advance\leftskip by \unitindent
+                 \noindent \hbox{\kern-\unitindent \textsl{#1.}}\kern1em\ignorespaces
+               }
+               {\par\end{raggedright}}
+
+%% list of python notes and such
+\usepackage{tocloft}
+
+\newcommand\deflanguagenote[4]{
+  %% #1 : note name
+  %% #2 : list id
+  %% #3 : listing language
+  %% #4 : header
+  \argcomment
+    {#1}
+    {\par\advance\leftskip by \unitindent
+      \refstepcounter{#1}
+      {\lccode32=45 \lccode47=45
+       \edef\tmp{\lowercase{\gdef\noexpand\commentarg{\CommentArg}}}\tmp}
+      \def\CommentCutFile{snippets/#1-\commentarg.cut}
+      \noindent \hbox
+                {\kern-\unitindent \textsl{#4 note \arabic{#1}:\ \CommentArg.}}\ %
+      \addcontentsline{#2}{#1}{\protect\numberline{\csname the#1\endcsname}\CommentArg}
+      %\index[fortran]{\CommentArg}%
+      \lstset{language=#3}%
+    }
+    {\par\advance\leftskip by -\unitindent
+      \lstset{language=C}
+      \relax}
+}
+
+\begin{comment}
+\argcomment
+    {mplnote}
+    {\par\advance\leftskip by \unitindent
+      \refstepcounter{mplnote}
+
+      {\lccode32=45 \lccode47=45
+        \edef\tmp{\lowercase{\gdef\noexpand\commentarg{\CommentArg}}}\tmp}
+      \def\CommentCutFile{snippets/mplnote-\commentarg.cut}
+
+      %\index[mpl]{\CommentArg}%
+      \noindent \hbox{\kern-\unitindent \textsl{MPL note \arabic{mplnote}.}}\ %
+      \addcontentsline{lompl}{mplnote}{\protect\numberline{\themplnote}\CommentArg}
+      \lstset{language=C++}%
+    }
+    {\par \noindent\textsl{End of MPL note}\par
+      \advance\leftskip by -\unitindent
+      \lstset{language=C}
+      \relax}
+\end{comment}
+
+
+\newcommand\listftnnote{List of Fortran notes}
+\newlistof{fortrannote}{loftn}\listftnnote
+\renewcommand\cftloftntitlefont{\slshape}
+\deflanguagenote{fortrannote}{loftn}{Fortran}{Fortran}
+
+\newcommand\listcppnote{List of C++ notes}
+\newlistof{cppnote}{locpp}\listcppnote
+\renewcommand\cftlocpptitlefont{\slshape}
+\deflanguagenote{cppnote}{locpp}{C++}{C++}
+
+\newcommand\listpynote{List of Python notes}
+\newlistof{pythonnote}{lopy}\listpynote
+\renewcommand\cftlopytitlefont{\slshape}
+\deflanguagenote{pythonnote}{lopy}{Python}{Python}
+
+%\newcounter{mplnote}
+\newcommand\listmplnote{List of Mpl notes}
+\newlistof{mplnote}{lompl}\listmplnote
+\renewcommand\cftlompltitlefont{\slshape}
+\deflanguagenote{mplnote}{lompl}{C++}{MPL}
+
+\newenvironment
+    {mplimpl}
+    {\begin{quotation}\noindent\textsl{MPL implementation note:}\ }
+    {\end{quotation}}
+
+\newenvironment{taccnote}
+  {\begin{specialnote}{TACC note}}
+  {\end{specialnote}}
+
+\newenvironment{intelnote}
+    {\begin{specialnote}{Intel note}}
+    {\end{specialnote}
+}
+
+\newenvironment{dpcppnote}
+    {\begin{specialnote}{Intel DPC++ extension}}
+    {\end{specialnote}
+}
+
+\newcommand\listmpifournote{List of MPI-4 notes}
+\newlistof{mpifournote}{lomfour}\listmpifournote
+\renewcommand\cftlomfourtitlefont{\slshape}
+\argcomment
+    {mpifournote}
+    {\refstepcounter{mpifournote}
+      \begingroup\def\ProcessCutFile{}\par}
+    {\par \smallskip \hrule
+      \hbox{\textsl{The following material is for the recently released MPI-4 standard and may not be supported yet.}}
+      \nobreak
+      \addcontentsline{lomfour}{mpifournote}{\protect\numberline{\thempifournote}\CommentArg}
+      \input{\CommentCutFile}
+      \par
+      \hbox{\textsl{End of MPI-4 material}}
+      \hrule
+      \endgroup
+    }
+
+%% \newenvironment{highermath}
+%%     {\bigskip\begin{quotation}\noindent\emph{MMM}}
+%%     {\end{quotation}\bigskip\noindent\ignorespaces}
+
+
+\def\chaptertitle{\csname\chaptername title\endcsname}
+\def\chaptershorttitle{\csname\chaptername shorttitle\endcsname}
+
+\newcommand\mpiparmtextsize{2in}

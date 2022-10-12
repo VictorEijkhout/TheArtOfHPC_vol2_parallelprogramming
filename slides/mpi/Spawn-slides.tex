@@ -1,0 +1,103 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the lecture slides for
+%%%% `Parallel Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% Spawn-slides.tex : slides about MPI process management
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{numberedframe}{Overview}
+  This section discusses processes management; intra communicators.
+
+  Commands learned:
+  \begin{itemize}
+  \item \indexmpishow{MPI_Comm_spawn}, \indexmpishow{MPI_UNIVERSE_SIZE}
+  \item \indexmpishow{MPI_Comm_get_parent}, \indexmpishow{MPI_Comm_remote_size}
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Process management}
+  \begin{itemize}
+  \item PVM was a precursor of MPI: could dynamically create new
+    processes.
+  \item It took MPI a while to catch up.
+  \item Use \indexmpishow{MPI_Attr_get} to retrieve
+    \indexmpishow{MPI_UNIVERSE_SIZE} attribute indicating space for
+    creating more processes outside \indexmpishow{MPI_COMM_WORLD}.
+  \item New processes have their own \indexmpishow{MPI_COMM_WORLD}.
+  \item Communication between the two communicators: `inter
+    communicator'\\ (the old type is `intra communicator')
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Space for processes}
+  Probably a machine dependent component.
+
+  Suggested standard:
+\begin{verbatim}
+mpiexec -n 4 -usize 8 spawn_manager
+\end{verbatim}
+
+  Intel MPI at TACC:
+\begin{verbatim}
+MY_MPIRUN_OPTIONS="-usize 8" ibrun -np 4 spawn_manager
+\end{verbatim}
+Discover size of the universe:
+\begin{lstlisting}
+MPI_Attr_get(MPI_COMM_WORLD, MPI_UNIVERSE_SIZE,
+  (void*)&universe_sizep, &flag);
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Manager program}
+  \footnotesize
+  \cverbatimsnippet{spawnmanagerq}
+\end{numberedframe}
+
+\begin{numberedframe}{Manager program (cont'd)}
+  \footnotesize
+  \cverbatimsnippet{spawnmanager}
+\end{numberedframe}
+
+\begin{numberedframe}{Worker program}
+  \cverbatimsnippet{spawnworker}
+\end{numberedframe}
+
+\begin{numberedframe}{Were you spawned?}
+  \cverbatimsnippet{commparentdetect}
+\end{numberedframe}
+
+\endinput
+
+\begin{numberedframe}{}
+\begin{lstlisting}
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{}
+\begin{lstlisting}
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{}
+\begin{lstlisting}
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{}
+\begin{lstlisting}
+\end{lstlisting}
+\end{numberedframe}
+
+\endinput
+
+\begin{numberedframe}{}
+\begin{lstlisting}
+\end{lstlisting}
+\end{numberedframe}
+

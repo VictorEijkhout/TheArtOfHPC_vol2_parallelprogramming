@@ -1,0 +1,7 @@
+C:
+int MPI_Type_commit(MPI_Datatype *datatype)
+
+Fortran:
+MPI_Type_commit(datatype, ierror)
+TYPE(MPI_Datatype), INTENT(INOUT) :: datatype
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror

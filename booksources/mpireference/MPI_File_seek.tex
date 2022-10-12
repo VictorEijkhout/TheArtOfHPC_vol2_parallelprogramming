@@ -1,0 +1,28 @@
+MPI_File_seek - Updates individual file pointers (noncollective)
+
+C:
+#include <mpi.h>
+int MPI_File_seek(MPI_File fh, MPI_Offset offset,int whence)
+
+Fortran 2008:
+USE mpi_f08
+MPI_File_seek(fh, offset, whence, ierror)
+    TYPE(MPI_File), INTENT(IN) :: fh
+    INTEGER(KIND=MPI_OFFSET_KIND), INTENT(IN) :: offset
+    INTEGER, INTENT(IN) :: whence
+    INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+
+Fortran 90:
+USE MPI
+! or the older form: INCLUDE ’mpif.h’
+MPI_FILE_SEEK(FH, OFFSET, WHENCE, IERROR)
+    INTEGER    FH, WHENCE, IERROR
+    INTEGER(KIND=MPI_OFFSET_KIND)    OFFSET
+
+Input parameters:
+fh     : File handle (handle). 
+offset : File offset (integer). 
+whence : Update mode (integer). 
+
+Output parameters:
+IERROR : Fortran only: Error status (integer)

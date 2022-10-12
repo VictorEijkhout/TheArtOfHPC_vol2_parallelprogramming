@@ -1,0 +1,162 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% mpi-bigdata.tex : discussion of MPI big datatypes
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Level 0 {Big data types}
+\label{sec:mpi-bigdata}
+\index{datatype!big|(}
+
+The \n{size} parameter in MPI send and receive calls is of type integer,
+meaning that it's maximally
+(platform-dependent, but typically:)
+$2^{31}-1$.
+These day computers are big enough
+that this is a limitation.
+As of the \mpistandard{4} standard, this has been solved by allowing a
+larger count parameter.
+The implementation of this depends somewhat on the language.
+
+\begin{mpifournote}{MPI Count type}
+
+\Level 1 {C}
+\label{sec:c-mpi-count}
+
+For every routine, such as \indexmpishow{MPI_Send} with an integer count,
+there is a corresponding \indexmpishow{MPI_Send_c} with a count
+of type \indexmpishow{MPI_Count}.
+
+\cverbatimsnippet{reducecount}
+
+{
+\def\snippetcodefraction{.45}
+\def\snippetlistfraction{.5}  
+\csnippetwithoutput{bigpingpong}{examples/mpi/c}{pingpongbig}
+}
+
+\Level 1 {Fortran}
+\label{sec:f-largecount}
+
+The count parameter can be declared  to be
+\lstset{language=Fortran}
+\begin{lstlisting}
+use mpi_f08
+Integer(kind=MPI_COUNT_KIND) :: count
+\end{lstlisting}
+\lstset{language=C}
+Since Fortran has polymorphism, the same routine names can be used.
+
+\begin{multicols}{2}
+  The legit way of coding:
+  %
+  \lstset{xleftmargin=0pt}
+  \fverbatimsnippet{ftypecheck}
+  \columnbreak
+  \ldots~but you can see what's under the hood:
+  %
+  \lstset{xleftmargin=0pt}
+  \fverbatimsnippet{ftypecheck8}
+\end{multicols}
+
+Routines using this type are not available
+unless using the \indextermtt{mpi_f08} module.
+\end{mpifournote}
+
+\fverbatimsnippet{bigdataf}
+
+\Level 1 {Count datatype}
+
+The \indexmpidef{MPI_Count} datatype is defined as being large enough
+to accomodate values of
+\begin{itemize}
+\item the ordinary 4-byte integer type;
+\item the \indexmpishow{MPI_Aint} type, sections
+  \ref{sec:mpi-byte-type} and~\ref{sec:mpi-byte-type};
+\item the \indexmpishow{MPI_Offset} type, section~\ref{sec:mpi-filepoint}.
+\end{itemize}
+
+The \lstinline+size_t+ type in~C/C++ is defined as big enough to
+contain the output of \lstinline+sizeof+, that is,
+being big enough to measure any object.
+
+\Level 1 {MPI 3 temporary solution}
+
+Large messages were already possible by using 
+derived types: to send
+a \emph{big data type} of $10^{40}$ elements you would
+\begin{itemize}
+\item create a contiguous type with $10^{20}$ elements, and
+\item send $10^{20}$ elements of that type.
+\end{itemize}
+This often works, but it's not perfect. For instance, the routine
+\indexmpishow{MPI_Get_elements} returns the total number of basic elements sent
+(as opposed to \indexmpishow{MPI_Get_count} which would return the number
+of elements of the derived type). Since its output argument is
+of integer type, it can't store the right value.
+
+The \mpistandard{3} standard has addressed this
+through the introduction of an \indexmpishow{MPI_Count} datatype,
+and new routines that return that type of count.
+(In view of the `embiggened' routins, this solution
+is no longer needed, and will probably be deprecated in later standards.)
+
+Let us consider an example.
+
+Allocating a buffer of more than 4Gbyte is not hard:
+\cverbatimsnippet[examples/mpi/c/vectorx.c]{bigvectoralloc}
+
+We use the trick with sending elements of a derived type:
+\cverbatimsnippet[examples/mpi/c/vectorx.c]{bigvectorptp}
+
+We use the same trick for the receive call, but now we catch the status
+parameter which will later tell us how many elements of the basic type
+were sent:
+%
+\cverbatimsnippet[examples/mpi/c/vectorx.c]{bigvectorrecv}
+
+When we query how many of the basic elements are in the buffer
+(remember that in the receive call the buffer length is
+an upper bound on the number of elements received)
+do we
+need a counter that is larger than an integer.  MPI has introduced a
+type \indexmpishow{MPI_Count} for this, and new routines such as
+\indexmpixref{MPI_Get_elements_x}{MPI_Get_elements} that return a
+count of this type:
+
+\cverbatimsnippet[examples/mpi/c/vectorx.c]{bigvectorq}
+
+\begin{remark}
+  Computing a big number to allocate is not entirely simple.
+  \cverbatimsnippet[examples/mpi/c/getx.c]{compsizet}
+  gives as output:
+\begin{verbatim}
+size of size_t = 8
+0 68719476736 68719476736 0 68719476736
+\end{verbatim}
+Clearly, not only do operations go left-to-right, but casting is done that way too:
+the computed subexpressions are only cast to \lstinline{size_t} if one operand is.
+\end{remark}
+
+Above, we did not actually create a datatype that was bigger than~2G,
+but if you do so, you can query its extent by
+\indexmpixref{MPI_Type_get_extent_x}{MPI_Type_get_true_extent}
+and
+\indexmpixref{MPI_Type_get_true_extent_x}{MPI_Type_get_true_extent}.
+
+\begin{pythonnote}{Big data}
+  Since python has unlimited size integers there is
+  no explicit need for the `x' variants of routines.
+  Internally, \lstinline+MPI.Status.Get_elements+ is implemented
+  in terms of \indexmpishow{MPI_Get_elements_x}.
+\end{pythonnote}
+
+\index{datatype!big|)}
+

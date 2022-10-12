@@ -1,0 +1,7 @@
+mpl::layouts<int> receive_layout;
+for ( int iproc=0,loc=0; iproc<nprocs; iproc++ ) {
+  auto siz = size_buffer.at(iproc);
+  receive_layout.push_back
+	( mpl::indexed_layout<int>( {{ siz,loc }} ) );
+  loc += siz;
+}

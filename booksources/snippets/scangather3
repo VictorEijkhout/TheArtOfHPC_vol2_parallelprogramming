@@ -1,0 +1,25 @@
+MPI_Gather
+  (
+   &my_number_of_elements,1,MPI_INT,size_buffer.data(),1,MPI_INT,0,comm
+   );
+// where are they going to go in the big buffer?
+vector<int> displ_buffer;
+if (procno==0)
+  displ_buffer = vector<int>( nprocs );
+MPI_Gather
+  (
+   &my_first_index,1,MPI_INT,displ_buffer.data(),1,MPI_INT,0,comm
+   );
+// now create the big buffer
+vector<int> gather_buffer;
+if (procno==0)
+  gather_buffer = vector<int>( total_number_of_elements );
+/*
+ * Use Gatherv to collect the small buffers into a big one
+ */
+MPI_Gatherv
+  (
+   my_elements.data(),my_number_of_elements,MPI_INT,
+   gather_buffer.data(),size_buffer.data(),displ_buffer.data(),
+   MPI_INT,0,comm
+   );

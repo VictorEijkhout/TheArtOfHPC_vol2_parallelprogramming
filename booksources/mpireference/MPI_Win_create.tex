@@ -1,0 +1,19 @@
+C:
+int MPI_Win_create
+   (void *base, MPI_Aint size, int disp_unit,
+    MPI_Info info, MPI_Comm comm, MPI_Win *win)
+
+Fortran:
+MPI_Win_create(base, size, disp_unit, info, comm, win, ierror)
+TYPE(*), DIMENSION(..), ASYNCHRONOUS :: base
+INTEGER(KIND=MPI_ADDRESS_KIND), INTENT(IN) :: size
+INTEGER, INTENT(IN) :: disp_unit
+TYPE(MPI_Info), INTENT(IN) :: info
+TYPE(MPI_Comm), INTENT(IN) :: comm
+TYPE(MPI_Win), INTENT(OUT) :: win
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+
+Python:
+MPI.Win.Create
+   (memory, int disp_unit=1,
+    Info info=INFO_NULL, Intracomm comm=COMM_SELF)

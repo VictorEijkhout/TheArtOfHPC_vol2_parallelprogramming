@@ -1,0 +1,75 @@
+# -*- makefile -*-
+################################################################
+####
+#### This makefile is part of `Parallel Programming in MPI and OpenMP'
+#### by Victor Eijkhout, copyright 2013-8
+#### eijkhout@tacc.utexas.edu
+####
+#### Makefile for SimGrid running of MPI examples
+####
+################################################################
+
+.PHONY: info
+info ::
+
+SIMGRID_VERSION=git
+SIMGRID_HOME=${WORK}/simgrid/
+SIMGRID_SRC=${SIMGRID_HOME}/SimGrid-${SIMGRID_VERSION}
+SIMGRID_BUILD=${SIMGRID_HOME}/build-${SIMGRID_VERSION}
+#SIMGRID_BUILD=${SIMGRID_SRC}/build
+SIMGRID_INSTALL=${SIMGRID_HOME}/installation-${SIMGRID_VERSION}
+SIMGRID_LIB=${SIMGRID_INSTALL}/lib
+#SIMGRID_LIB=${SIMGRID_BUILD}/lib
+#-${TACC_FAMILY_COMPILER}
+
+SIMGRID_BIN=${SIMGRID_INSTALL}/bin
+
+.PHONY: simgrid_compile simgrid_run
+info ::
+	@echo; echo "%%%% SimGrid options %%%%"; echo
+	@echo "make simgrid_compile,simgrid_run"
+	@echo "    [ PROGRAM=... (default: ${PROGRAM}) ]"
+	@echo "      available programs: ${EXERCISES}"
+	@echo "    [ NP=nnn ] [ SIMARCH=... (default: ${SIMARCH}) ]"
+	@echo "    [ RUNOPTIONS=... ]"
+
+PROGRAM = hello
+simgrid_compile :
+	@if [ ! -d ${SIMGRID_BIN} ] ; then \
+	  echo "simgrid bin dir <<${SIMGRID_BIN}>> does not exist" ; exit 1 ; fi
+	@export PATH=${SIMGRID_BIN}:${PATH} && \
+	  smpicc -DSIMGRID -o ${PROGRAM} -lm ${PROGRAM}.c
+NP = 2
+SIMARCH = linear
+RUNOPTIONS =
+simgrid_run :
+	@../course-support/simgrid-${SIMARCH}.sh ${NP}
+	export PATH=${SIMGRID_BIN}:${PATH} && \
+	export LD_LIBRARY_PATH=${SIMGRID_LIB}:${TACC_BOOST_LIB}:${LD_LIBRARY_PATH} && \
+	  rm -f simgrid_hostfile && touch simgrid_hostfile && \
+	  for i in `seq 1 ${NP}` ; do echo "host$${i}" >> simgrid_hostfile ; done && \
+	  smpirun -np ${NP} -platform simgrid_${SIMARCH}.xml -hostfile simgrid_hostfile \
+	    ${PROGRAM} ${RUNOPTIONS} 2>simgrid.err
+	@echo "(runtime diagnostics in simgrid.err)"
+NPs = 2 4 8 16 32 
+.PHONY: simgrid_scaling
+info ::
+	@echo "make simgrid_scaling"
+	@echo "    [ NPs=... (default: ${NPs}) ]"
+simgrid_scaling :
+	for np in ${NPs} ; do \
+	  make simgrid_run \
+	    PROGRAM=${PROGRAM} SIMARCH=${SIMARCH} \
+	    RUNOPTIONS=${RUNOPTIONS} \
+	    NP=$${np} ; \
+	done
+clean ::
+	@/bin/rm -f smpitmp* simgrid_hostfile simgrid_*.xml simgrid.err
+
+## no longer needed
+simgrid_name :
+	ls ${SIMGRID_LIB}
+	install_name_tool -change libsimgrid.3.19.90.dylib \
+	  ${SIMGRID_LIB}/libsimgrid.3.19.90.dylib ${PROGRAM}
+	install_name_tool -change libsimgrid.dylib \
+	  ${SIMGRID_LIB}/libsimgrid.dylib ${PROGRAM}

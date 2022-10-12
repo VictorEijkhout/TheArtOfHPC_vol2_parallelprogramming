@@ -1,0 +1,8 @@
+// fft.c
+MPI_Allreduce( &localsize,&globalsize,1,MPI_INT,MPI_SUM, comm );
+globalsize += 1;
+int myfirst=0;
+MPI_Exscan( &localsize,&myfirst,1,MPI_INT,MPI_SUM, comm );
+
+for (int i=0; i<localsize; i++)
+  vector[i] = sin( pi*freq* (i+1+myfirst) / globalsize );

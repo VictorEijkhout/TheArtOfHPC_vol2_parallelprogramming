@@ -1,0 +1,57 @@
+Semantics:
+
+MPI_SENDRECV(
+    sendbuf, sendcount, sendtype, dest, sendtag, 
+    recvbuf, recvcount, recvtype, source, recvtag,
+    comm, status)
+IN sendbuf: initial address of send buffer (choice)
+IN sendcount: number of elements in send buffer (non-negative integer)
+IN sendtype: type of elements in send buffer (handle)
+IN dest: rank of destination (integer)
+IN sendtag: send tag (integer)
+OUT recvbuf: initial address of receive buffer (choice)
+IN recvcount: number of elements in receive buffer (non-negative integer)
+IN recvtype: type of elements in receive buffer (handle)
+IN source: rank of source or MPI_ANY_SOURCE (integer)
+IN recvtag: receive tag or MPI_ANY_TAG (integer)
+IN comm: communicator (handle)
+OUT status: status object (Status)
+
+C:
+int MPI_Sendrecv(
+    const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+    int dest, int sendtag,
+    void *recvbuf, int recvcount, MPI_Datatype recvtype,
+    int source, int recvtag,
+    MPI_Comm comm, MPI_Status *status)
+
+Fortran:
+MPI_Sendrecv(sendbuf, sendcount, sendtype, dest, sendtag, recvbuf,
+recvcount, recvtype, source, recvtag, comm, status, ierror)
+TYPE(*), DIMENSION(..), INTENT(IN) :: sendbuf
+TYPE(*), DIMENSION(..) :: recvbuf
+INTEGER, INTENT(IN) :: sendcount, dest, sendtag, recvcount, source,
+recvtag
+TYPE(MPI_Datatype), INTENT(IN) :: sendtype, recvtype
+TYPE(MPI_Comm), INTENT(IN) :: comm
+TYPE(MPI_Status) :: status
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+
+Python:
+Sendrecv(self,
+    sendbuf, int dest, int sendtag=0,
+    recvbuf=None, int source=ANY_SOURCE, int recvtag=ANY_TAG,
+    Status status=None)
+
+MPL:
+template<typename T >
+status mpl::communicator::sendrecv
+   ( const T & senddata, int dest,   tag sendtag,
+           T & recvdata, int source, tag recvtag 
+   ) const
+   ( const T * senddata, const layout< T > & sendl, int dest,   tag sendtag,
+           T * recvdata, const layout< T > & recvl, int source, tag recvtag 
+   ) const
+   ( iterT1 begin1, iterT1 end1, int dest,   tag sendtag,
+     iterT2 begin2, iterT2 end2, int source, tag recvtag 
+   ) const

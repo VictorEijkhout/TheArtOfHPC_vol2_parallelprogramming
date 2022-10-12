@@ -1,0 +1,7 @@
+// interleavegather.c
+MPI_Datatype interleavetype;
+MPI_Type_create_resized(stridetype,0,sizeof(int),&interleavetype);
+MPI_Type_commit(&interleavetype);
+MPI_Gather( mydata,localsize,MPI_INT,
+	      gathered,1,interleavetype, // shrunk extent
+	      root,comm );

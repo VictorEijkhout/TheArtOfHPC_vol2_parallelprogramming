@@ -1,0 +1,41 @@
+# -*- makefile -*-
+################################################################
+################################################################
+####
+#### This Makefile is part of the textbook
+#### "Parallel computing for science and engineering"
+#### by Victor Eijkhout
+#### copyright 2013-7
+####
+#### Rules for template exercise handling
+####
+################################################################
+################################################################
+
+
+#SOURCES = $(patsubst %,%.c,${EXERCISES})
+
+info ::
+	@echo "make templates"
+.PHONY: templates
+templates :
+	@if [ -z "${COURSE}" ] ; then echo "Set COURSE variable in the makefile" ; exit 1 ; fi
+	@mkdir -p ../templates.${COURSE}
+	@for c in ${CEXERCISES} ; do \
+	  cat $$c.c \
+	  | awk ' \
+	         BEGIN { s = 0 } \
+	         /hint:/ { $$1="" ; print } \
+	         /\/\/solution/ { s = 1 } s==0 { print $$0 } /\/\/solved/ { s = 0 } \
+	        ' \
+	  > ../templates.${COURSE}/$$c.c ; \
+	done
+	@for f in ${EXERCISES} ; do \
+	  cat $$f.F90 \
+	  | awk ' \
+	         BEGIN { s = 0 } \
+	         /hint:/ { $$1="" ; print } \
+	         /!!solution/ { s = 1 } s==0 { print $$0 } /!!solved/ { s = 0 } \
+	        ' \
+	  > ../templates.${COURSE}/$$f.F90 ; \
+	done

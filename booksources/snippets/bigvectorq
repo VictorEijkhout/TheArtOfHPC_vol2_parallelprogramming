@@ -1,0 +1,2 @@
+MPI_Count recv_count;
+MPI_Get_elements_x(&recv_status,MPI_FLOAT,&recv_count);

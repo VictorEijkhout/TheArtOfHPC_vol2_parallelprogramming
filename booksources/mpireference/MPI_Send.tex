@@ -1,0 +1,35 @@
+C:
+int MPI_Send(
+  const void* buf, int count, MPI_Datatype datatype,
+  int dest, int tag, MPI_Comm comm)
+
+Semantics:
+IN buf: initial address of send buffer (choice)
+IN count: number of elements in send buffer (non-negative integer)
+IN datatype: datatype of each send buffer element (handle)
+IN dest: rank of destination (integer)
+IN tag: message tag (integer)
+IN comm: communicator (handle)
+
+Fortran:
+MPI_Send(buf, count, datatype, dest, tag, comm, ierror)
+TYPE(*), DIMENSION(..), INTENT(IN) :: buf
+INTEGER, INTENT(IN) :: count, dest, tag
+TYPE(MPI_Datatype), INTENT(IN) :: datatype
+TYPE(MPI_Comm), INTENT(IN) :: comm
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror 
+
+Python:
+MPI.Comm.send(self, obj, int dest, int tag=0)
+Python numpy:
+MPI.Comm.Send(self, buf, int dest, int tag=0)
+
+MPL:
+template<typename T >
+void mpl::communicator::send
+   ( const T scalar&,int dest,tag = tag(0) ) const
+T : scalar type
+   ( const T *buffer,const layout< T > &,int dest,tag = tag(0) ) const
+   ( iterT begin,iterT end,int dest,tag = tag(0) ) const
+begin : begin iterator
+end : end iterator

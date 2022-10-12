@@ -1,0 +1,9 @@
+template<typename T , typename F >
+void mpl::communicator::allreduce
+   ( F,	const T &, T & ) const;
+   ( F,	const T *, T *,
+     const contiguous_layout< T > & ) const;
+   ( F,	T & ) const;
+   ( F,	T *, const contiguous_layout< T > & ) const;
+F : reduction function
+T : type

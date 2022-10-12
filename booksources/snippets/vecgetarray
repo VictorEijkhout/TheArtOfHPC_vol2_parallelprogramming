@@ -1,0 +1,11 @@
+// vecarray.c
+PetscScalar const *in_array;
+PetscScalar *out_array;
+VecGetArrayRead(x,&in_array);
+VecGetArray(y,&out_array);
+PetscInt localsize;
+VecGetLocalSize(x,&localsize);
+for (int i=0; i<localsize; i++)
+  out_array[i] = 2*in_array[i];
+VecRestoreArrayRead(x,&in_array);
+VecRestoreArray(y,&out_array);

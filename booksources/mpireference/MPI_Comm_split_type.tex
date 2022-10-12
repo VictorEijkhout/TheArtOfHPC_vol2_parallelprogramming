@@ -1,0 +1,16 @@
+C:
+int MPI_Comm_split_type(
+  MPI_Comm comm, int split_type, int key,
+  MPI_Info info, MPI_Comm *newcomm)
+
+Fortran:
+MPI_Comm_split_type(comm, split_type, key, info, newcomm, ierror)
+TYPE(MPI_Comm), INTENT(IN) :: comm
+INTEGER, INTENT(IN) :: split_type, key
+TYPE(MPI_Info), INTENT(IN) :: info
+TYPE(MPI_Comm), INTENT(OUT) :: newcomm
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror 
+
+Python:
+MPI.Comm.Split_type(
+  self, int split_type, int key=0, Info info=INFO_NULL)

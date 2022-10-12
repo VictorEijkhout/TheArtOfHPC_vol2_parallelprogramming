@@ -1,0 +1,9 @@
+C:
+PetscErrorCode KSPCreate(MPI_Comm comm,KSP *v);
+
+Python:
+ksp = PETSc.KSP()
+ksp.create()
+# or:
+ksp = PETSc.KSP().create()
+

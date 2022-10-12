@@ -1,0 +1,182 @@
+We start with some simple exercises.
+
+\Level 0 {Hello world}
+
+For background, see section~\ref{sec:rank-size}.
+
+First of all we need to make sure that you have a working setup for
+parallel jobs. The example program \n{helloworld.c} does the
+following:
+\verbatimsnippet{hello}
+Compile this program and run it in parallel. Make sure that the processors
+do \emph{not} all say that they are \n{processor 0 out of 1}!
+
+\begin{istc}
+  \Level 0 {Trace output}
+
+  We want to make trace files of the parallel runs, for which we'll
+  use the TAU utility of the University of Oregon. 
+  (For documentation, go to \url{http://www.cs.uoregon.edu/Research/tau/docs.php}.)
+  Here are the steps:
+  \begin{itemize}
+  \item Load two modules:
+\begin{verbatim}
+module load tau
+module load jdk64
+\end{verbatim}
+  \item Recompile your program with \n{make yourprog}. You'll notice a
+    lot more output: that is the TAU preprocessor.
+  \item Now run your program, setting environment variables
+    \n{TAU_TRACE} and \n{TAU_PROFILE} to~1, and \n{TRACEDIR} and
+    \n{PROFILEDIR} to where you want the output to be.  Big shortcut:
+    do 
+\begin{verbatim}
+make submit EXECUTABLE=yourprog
+\end{verbatim}
+    for a batch job or 
+\begin{verbatim}
+make idevrun EXECUTABLE=yourprog
+\end{verbatim}
+    for an interactive parallel
+    run. These last two set all variables for you. See if you can find
+    where the output went\ldots
+  \item Now you need to postprocess the TAU output. Do \n{make tau
+    EXECUTABLE=yourprog} and you'll get a file
+    \n{taulog_yourprog.slog2} which you can view with the \n{jumpshot}
+    program.
+  \end{itemize}
+\end{istc}
+
+\Level 0 {Collectives}
+
+It is a good idea to be able to collect statistics, so before we do
+anything interesting, we will look at MPI collectives;
+section~\ref{sec:collective}.
+
+Take a look at \n{time_max.cxx}. This program sleeps for a random
+number of seconds: 
+\verbatimsnippet{makejitter}
+and measures how long the sleep actually was:
+\verbatimsnippet{measurejitter}
+In the code, this quantity is called `jitter', which is a term
+for random deviations in a system.
+
+\begin{exercise}
+  Change this program to compute the average jitter by changing the reduction
+  operator.
+\end{exercise}
+
+\begin{exercise}
+  Now compute the standard deviation
+  \[ \sigma = \sqrt{\frac{ \sum_i (x_i-m)^2 }{n} } \]
+  where $m$ is the average value you computed in the previous exercise.
+  \begin{itemize}
+  \item Solve this exercise twice: once by following the reduce by a
+    broadcast operation and once by using an \n{Allreduce}.
+  \item Run your code both on a single cluster node and on multiple
+    nodes, and inspect the TAU trace. Some MPI implementations are
+    optimized for shared memory, so the trace on a single node may not
+    look as expected.
+  \item Can you see from the trace how the allreduce is implemented?
+  \end{itemize}
+\end{exercise}
+
+\begin{exercise}
+  Finally, use a gather call to collect all the values on processor
+  zero, and print them out. Is there any process that behaves very
+  differently from the others?
+\end{exercise}
+
+\begin{istc}
+For each exercise, submit code, a TAU trace, and an analysis of what
+you see in the traces. Submit your work by leaving a code, graphics,
+and a writeup in your repository.
+\end{istc}
+
+\Level 0 {Linear arrays of processors}
+
+In this section you are going to write a number of variations on
+a very simple operation: 
+all processors pass a data item to the processor with the next higher
+number.
+\begin{itemize}
+\item In the file \n{linear-serial.c} you will find an implementation
+  using blocking send and receive calls.
+\item You will change this code to use non-blocking sends and
+  receives; they require an \n{MPI_Wait} call to finalize them.
+\item Next, you will use \n{MPI_Sendrecv} to arrive at a synchronous,
+  but deadlock-free implementation.
+\item Finally, you will use two different one-sided scenarios.
+\end{itemize}
+In the reference code \n{linear-serial.c}, each process defines two buffers:
+\verbatimsnippet{linearnumbers}
+where \n{other_number} is the location where the data from the left neighbour is going to be stored.
+
+To check the correctness of the program, there is a gather operation on processor zero:
+\verbatimsnippet{serialgathercheck}
+
+\Level 1 {Coding with blocking calls}
+
+Passing data to a neighbouring processor should be a very parallel operation.
+However, if we code this naively, with \n{MPI_Send} and \n{MPI_Recv},
+we get an unexpected serial behaviour, as was explained in section~\ref{sec:blocking}.
+\verbatimsnippet{linear}
+(Note that this uses an \n{Ssend}; see section~\ref{sec:handshake}
+for the explanation why.)
+
+\begin{exercise}
+  Compile and run this code, and generate a TAU trace file. Confirm
+  that the execution is serial. Does replacing the \n{Ssend} by \n{Send}
+  change this?
+\end{exercise}
+Let's clean up the code a little.
+\begin{exercise}
+  First write this code more elegantly by using \n{MPI_PROC_NULL}.
+\end{exercise}
+
+\Level 1 {A better blocking solution}
+
+The easiest way to prevent the serialization problem of the previous
+exercises is to use the \indexmpishow{MPI_Sendrecv} call. This routine
+acknowledges that often a processor will have a receive call whenever there
+is a send. For border cases where a send or receive is unmatched you can
+use \indexmpishow{MPI_PROC_NULL}.
+
+\begin{exercise}
+  Rewrite the code using \n{MPI_Sendrecv}. Confirm with a TAU trace
+  that execution is no longer serial.
+\end{exercise}
+
+Note that the \n{Sendrecv} call itself is still blocking, but
+at least the ordering of its constituent send and recv are
+no longer ordered in time.
+
+\Level 1 {Non-blocking calls}
+
+The other way around the blocking behaviour is to use \n{Isend} and \n{Irecv}
+calls, which do not block. Of course, now you need a guarantee that these 
+send and receive actions are concluded; in this case, use \n{MPI_Waitall}.
+\begin{exercise}
+  Implement a fully parallel version by using \n{MPI_Isend} and
+  \n{MPI_Irecv}.
+\end{exercise}
+
+\Level 1 {One-sided communication}
+
+Another way to have non-blocking behaviour is to use one-sided
+communication.  During a \n{Put} or \n{Get} operation, execution will
+only block while the data is being transferred out of or into the
+origin process, but it is not blocked by the target. Again, you need a
+guarantee that the transfer is concluded; here use
+\indexmpishow{MPI_Win_fence}.
+
+\begin{exercise}
+  Write two versions of the code: one using \n{MPI_Put} and one with \n{MPI_Get}.
+  Make TAU traces.
+\end{exercise}
+Investigate blocking behaviour through TAU visualizations. 
+\begin{exercise}
+  If you transfer a large amount of data, and the target processor is
+  occupied, can you see any effect on the origin? Are the fences
+  synchronized?
+\end{exercise}

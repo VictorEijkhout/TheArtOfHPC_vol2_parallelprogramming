@@ -1,0 +1,18 @@
+char myport[MPI_MAX_PORT_NAME];
+if (work_p==0) {
+  MPI_Recv( myport,MPI_MAX_PORT_NAME,MPI_CHAR, 
+            MPI_ANY_SOURCE,0, comm_world,MPI_STATUS_IGNORE );
+  printf("Worker received port <<%s>>\n",myport);
+}
+MPI_Bcast( myport,MPI_MAX_PORT_NAME,MPI_CHAR,0,comm_work );
+
+/*
+ * The workers collective connect over the inter communicator
+ */
+MPI_Comm intercomm;
+MPI_Comm_connect( myport,MPI_INFO_NULL,0,comm_work,&intercomm );
+if (work_p==0) {
+  int manage_n;
+  MPI_Comm_remote_size(intercomm,&manage_n);
+  printf("%d workers connected to %d managers\n",work_n,manage_n);
+}

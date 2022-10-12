@@ -1,0 +1,11 @@
+int root = 1;
+float
+  xrank = static_cast<float>( comm_world.rank() ),
+  xreduce;
+// separate receive buffer
+comm_world.reduce(mpl::plus<float>(), root, xrank,xreduce);
+// in place
+comm_world.reduce(mpl::plus<float>(), root, xrank);
+if ( comm_world.rank()==root )
+  std::cout << "Allreduce got: separate=" << xreduce
+		<< ", inplace=" << xrank << std::endl;

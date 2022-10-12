@@ -1,0 +1,13 @@
+Semantics:
+MPI_Op_commutative(op, commute)
+IN  op : handle
+OUT commute : true/false
+
+C:
+int MPI_Op_commutative(MPI_Op op, int *commute)
+
+Fortran:
+MPI_OP_COMMUTATIVE( op, commute)
+TYPE(MPI_Op), INTENT(IN) :: op
+LOGICAL, INTENT(OUT) ::  commute
+INTEGER, OPTIONAL, INTENT(OUT) ::  ierror

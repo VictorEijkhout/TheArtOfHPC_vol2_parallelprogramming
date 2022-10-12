@@ -1,0 +1,17 @@
+C:
+int MPI_Type_create_f90_real(int p, int r, MPI_Datatype *newtype)
+
+Fortran:
+MPI_TYPE_CREATE_F90_REAL (P, R, NEWTYPE, IERROR)
+
+Input Parameters
+p : Precision, in decimal digits (integer).
+r : Decimal exponent range (integer).
+
+Output Parameters
+newtype : New data type (handle).
+IERROR : Fortran only: Error status (integer).
+
+Either p or r, but not both, may be omitted from calls to
+SELECTED_REAL_KIND. Similarly, either argument to
+MPI_Type_create_f90_real may be set to MPI_UNDEFINED.

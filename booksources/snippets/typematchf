@@ -1,0 +1,5 @@
+!! matchkind.F90
+     call MPI_Sizeof(x10,s10,ierr)
+     call MPI_Type_match_size(MPI_TYPECLASS_REAL,s10,mpi_x10)
+     call MPI_Type_size(mpi_x10,s10)
+     print *,"10 positions supported, MPI type size is",s10

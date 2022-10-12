@@ -1,0 +1,3 @@
+## util.py
+print(f"Configuration:\n{mpi4py.get_config()}")
+print(f"Include dir:\n{mpi4py.get_include()}")

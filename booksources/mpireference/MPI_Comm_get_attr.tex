@@ -1,0 +1,10 @@
+int MPI_Comm_get_attr(
+    MPI_Comm comm, int keyval, void *attribute_val, int *flag)
+
+Python:
+MPI.Comm.Get_attr(self, int keyval)
+
+return codes:
+MPI_SUCCESS : No error; MPI routine completed successfully. 
+MPI_ERR_COMM : Invalid communicator.
+MPI_ERR_KEYVAL : Invalid keyval

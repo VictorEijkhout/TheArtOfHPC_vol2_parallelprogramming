@@ -1,0 +1,222 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+A communicator is an object describing a group of processes. In many 
+applications all processes work together closely coupled, and the
+only communicator you need is \indexmpishow{MPI_COMM_WORLD}, the
+group describing all processes that your job starts with.
+
+In this chapter you will see ways to make new groups of MPI processes:
+subgroups of the original world communicator.
+Chapter~\ref{ch:mpi-proc} discusses dynamic process management, which, while
+not extending \lstinline{MPI_COMM_WORLD} does extend the set of
+available processes.
+That chapter also discusses the `sessions model',
+which is another way to constructing communicators.
+
+\Level 0 {Basic communicators}
+\label{sec:comm-basic}
+
+There are three predefined communicators:
+\begin{itemize}
+\item \indexmpishow{MPI_COMM_WORLD} comprises all processes that were started 
+  together by \indextermtt{mpiexec} (or some related program).
+\item \indexmpishow{MPI_COMM_SELF} is the communicator that contains only
+   the current process.
+ \item \indexmpishow{MPI_COMM_NULL} is the invalid communicator.
+   This values results
+   \begin{itemize}
+   \item when a communicator is freed; see section~\ref{sec:communicators};
+   \item as error return value from routines that construct communicators;
+   \item for processes outside a created Cartesian communicator
+     (section~\ref{sec:cart-comm-create});
+   \item on non-spawned processes when querying their parent
+     (section~\ref{sec:mpi-inter-query}).
+   \end{itemize}
+
+\end{itemize}
+These values are constants, though not necessarily compile-time constants.
+Thus, they can not be used in switch statements, array declarations,
+or \n{constexpr} evaluations.
+
+If you don't want to write \indexmpishow{MPI_COMM_WORLD} repeatedly, you can
+assign that value to a variable of type \indexmpidef{MPI_Comm}.
+
+Examples:
+\lstset{language=C}
+\begin{lstlisting}
+// C:
+#include <mpi.h>
+MPI_Comm comm = MPI_COMM_WORLD;
+\end{lstlisting}
+
+\lstset{language=Fortran}
+\begin{lstlisting}
+!! Fortran 2008 interface
+use mpi_f08
+Type(MPI_Comm) :: comm = MPI_COMM_WORLD
+\end{lstlisting}
+
+\begin{lstlisting}
+!! Fortran legacy interface
+#include <mpif.h>
+Integer :: comm = MPI_COMM_WORLD
+\end{lstlisting}
+\lstset{language=C}
+
+\begin{pythonnote}{Communicator types}
+\lstset{language=python}
+\begin{lstlisting}
+comm = MPI.COMM_WORLD
+\end{lstlisting}
+\end{pythonnote}
+
+\begin{mplnote}{Predefined communicators}
+  The \indexmplshow{environment} namespace has the equivalents
+  of \indexmpishow{MPI_COMM_WORLD} and \indexmpishow{MPI_COMM_SELF}:
+\begin{lstlisting}
+const communicator& mpl::environment::comm_world();
+const communicator& mpl::environment::comm_self();    
+\end{lstlisting}
+There doesn't seem to be an equivalent of \indexmpishow{MPI_COMM_NULL}.
+\end{mplnote}
+
+\begin{mplnote}{Raw communicators}
+  Should you need the \indexmpishow{MPI_Comm} object
+  contained in an MPL \indexmplshow{communicator},
+  there is an access function \indexmplshow{native_handle}.
+  \csnippetwithoutput{mplcommraw}{examples/mpi/mpl}{rawcompare}
+\end{mplnote}
+
+You can name your communicators with \indexmpidef{MPI_Comm_set_name}, which
+could improve the quality of error messages when they arise.
+
+\Level 0 {Duplicating communicators}
+\label{sec:comm-dup}
+
+\input chapters/mpi-commdup
+
+\Level 0 {Sub-communicators}
+\label{sec:communicators}
+\index{communicator|(}
+
+In many scenarios you divide a large job over all the available processors.
+However, your job may have two or more parts that can be considered as
+jobs by themselves. In that case it makes sense to divide your processors
+into subgroups accordingly.
+
+Suppose for instance that you are running a simulation where inputs are generated,
+a~computation is performed on them, and the results of this computation
+are analyzed or rendered graphically. You could then consider dividing your
+processors in three groups corresponding to generation, computation, rendering.
+%
+As long as you only do sends and receives, this division works fine. However,
+if one group of processes needs to perform a collective operation, you don't
+want the other groups involved in this. Thus, you really want the three groups
+to be distinct from each other.
+
+In order to make such subsets of processes, MPI has the mechanism of
+taking a subset of \indexmpishow{MPI_COMM_WORLD}
+(or other communicator)
+and turning that subset into a new communicator.
+
+Now you understand why the MPI collective calls had an argument for the
+communicator: a~collective involves all processes of that communicator.
+By making a communicator that contains a subset of all available processes,
+you can do a collective on that subset.
+
+The usage is as follows:
+\begin{itemize}
+\item You create a new communicator with routines such as
+  \indexmpishow{MPI_Comm_dup} (section~\ref{sec:comm-dup}),
+  \indexmpishow{MPI_Comm_split} (section~\ref{sec:comm-split}),
+  \indexmpishow{MPI_Comm_create} (section~\ref{sec:mpi-comm-group}),
+  \indexmpishow{MPI_Intercomm_create} (section~\ref{sec:mpi-intercomm}),
+  \indexmpishow{MPI_Comm_spawn} (section~\ref{sec:mpi-dynamic});
+\item you use that communiator for a while;
+\item and you call \indexmpidef{MPI_Comm_free} when you are done with it;
+  this also sets the communicator variable to \indexmpishow{MPI_COMM_NULL}.
+  A~similar routine, \indexmpidef{MPI_Comm_disconnect} waits for all pending
+  communication to finish. Both are collective.
+\end{itemize}
+
+\Level 1 {Scenario: distributed linear algebra}
+
+For \emph{scalability} reasons, matrices should often be distributed
+in a 2D manner, that is, each process receives a subblock that is not
+a block of full columns or rows. This means that the processors themselves
+are, at least logically, organized in a 2D grid. Operations
+then involve reductions or broadcasts inside rows or columns. For
+this, a row or column of processors needs to be in a subcommunicator.
+
+\Level 1 {Scenario: climate model}
+
+A climate simulation code has several components, for instance corresponding
+to land, air, ocean, and ice. You can imagine that each needs a different set
+of equations and algorithms to simulate. You can then divide your processes,
+where each subset simulates one component of the climate, occasionally communicating
+with the other components.
+
+\Level 1 {Scenario: quicksort}
+
+The popular quicksort algorithm works by splitting the data
+into two subsets that each can be sorted individually.
+If you want to sort in parallel, you could implement this by making two subcommunicators,
+and sorting the data on these, creating recursively more subcommunicators.
+
+\Level 1 {Shared memory}
+
+There is an important application of communicator splitting in the
+context of one-sided communication, grouping processes by whether they
+access the same shared memory area; see section~\ref{mpi-comm-split-type}.
+
+\Level 1 {Process spawning}
+
+Finally, newly created communicators do not always need to be subset
+of the initial \indexmpishow{MPI_COMM_WORLD}.
+MPI can dynamically spawn new processes (see chapter~\ref{ch:mpi-proc})
+which start in a \indexmpishow{MPI_COMM_WORLD} of their own.
+However, another communicator will be created that spawns the old and new worlds
+so that you can communicate with the new processes.
+
+\input chapters/mpi-commsplit
+
+\input chapters/mpi-commgroup
+
+\input chapters/mpi-intercomm
+
+\newpage
+\Level 0 {Review questions}
+
+For all true/false questions, if you answer that a statement is false,
+give a one-line explanation.
+
+\begin{enumerate}
+
+\item True or false: in each communicator, processes are numbered consecutively from zero.
+
+\item If a process is in two communicators, it has the same rank in
+both.
+
+\item Any communicator that is not \indexmpishow{MPI_COMM_WORLD} is a strict subset of it.
+
+\item The subcommunicators derived by \indexmpishow{MPI_Comm_split}
+  are disjoint.
+
+\item If two processes have ranks $p<q$ in some communicator,
+  and they are in the same subcommunicator,
+  then their ranks $p',q'$ in the subcommunicator also obey $p'<q'$.
+\end{enumerate}
+
+
+
+\index{communicator|)}
+

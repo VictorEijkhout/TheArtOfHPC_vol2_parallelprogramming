@@ -1,0 +1,23 @@
+Semantics:
+MPI_COMM_SPLIT(comm, color, key, newcomm)
+IN comm: communicator (handle)
+IN color: control of subset assignment (integer)
+IN key: control of rank assigment (integer)
+OUT newcomm: new communicator (handle)
+
+C:
+int MPI_Comm_split(
+    MPI_Comm comm, int color, int key,
+    MPI_Comm *newcomm)
+
+F:
+MPI_Comm_split(comm, color, key, newcomm, ierror)
+TYPE(MPI_Comm), INTENT(IN) :: comm
+INTEGER, INTENT(IN) :: color, key
+TYPE(MPI_Comm), INTENT(OUT) :: newcomm
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+MPI_COMM_SPLIT(COMM, COLOR, KEY, NEWCOMM, IERROR)
+INTEGER COMM, COLOR, KEY, NEWCOMM, IERROR
+
+Py:
+newcomm = comm.Split(int color=0, int key=0)

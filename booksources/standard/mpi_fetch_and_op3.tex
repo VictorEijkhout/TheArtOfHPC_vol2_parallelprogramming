@@ -1,0 +1,42 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% This text file is part of the source of 
+%% `Parallel Computing'
+%% by Victor Eijkhout, copyright 2012-2022
+%%
+%% MPI API file for MPI_Fetch_and_op
+%%
+%% THIS FILE IS AUTO-GENERATED
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begingroup
+\ttfamily\bfseries
+\catcode`\_=12
+\begin{tabular}{
+l       % name
+l       % param name
+p{\mpiparmtextsize}  % explanation
+p{.7in} % ctype
+p{.9in} % ftype
+l       % inout
+}
+\toprule
+\mdseries\textrm{Name}&
+\mdseries\textrm{Param name}&
+\mdseries\textrm{Explanation}&
+\mdseries\textrm{C type}&
+\mdseries\textrm{F type}&
+\mdseries\textrm{inout}\\
+\midrule
+\hbox to 18pt{MPI_Fetch_and_op (\hss} \\
+ & origin_addr & initial address of buffer & const void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  \\ & result_addr & initial address of result buffer & void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  \\ & datatype & datatype of the entry in origin, result, and target buffers & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  \\ & target_rank & rank of target & int & INTEGER  \\ & target_disp & displacement from start of window to beginning of target buffer & MPI_Aint & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_ADDRESS_KIND)  \\ & op & reduce operation & MPI_Op & TYPE\discretionary{}{\kern10pt}{}(MPI_Op)  \\ & win & window object & MPI_Win & TYPE\discretionary{}{\kern10pt}{}(MPI_Win)  \\
+&)\\
+
+\bottomrule
+\end{tabular}
+\endgroup
+

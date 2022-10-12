@@ -1,0 +1,16 @@
+C:
+#include "petscmat.h"
+PetscErrorCode MatSetSizes(Mat A,
+    PetscInt m, PetscInt n, PetscInt M, PetscInt N)
+
+Input Parameters
+A : the matrix
+m : number of local rows (or PETSC_DECIDE)
+n : number of local columns (or PETSC_DECIDE)
+M : number of global rows (or PETSC_DETERMINE)
+N : number of global columns (or PETSC_DETERMINE)
+    
+Python:
+PETSc.Mat.setSizes(self, size, bsize=None)
+where 'size' is a tuple of 2 global sizes
+or a tuple of 2 local/global pairs

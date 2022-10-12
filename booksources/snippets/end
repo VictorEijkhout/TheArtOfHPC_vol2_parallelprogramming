@@ -1,0 +1,4 @@
+print("Test 2: create a pool and process an array on it")
+##codesnippet pymulpoolmap
+print(results)
+

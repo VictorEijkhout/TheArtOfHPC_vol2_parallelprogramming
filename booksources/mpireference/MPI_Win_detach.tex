@@ -1,0 +1,15 @@
+Semantics:
+MPI_Win_detach(win, base)
+
+Input parameters:
+win : window object (handle)
+base : initial address of memory to be detached
+
+C:
+int MPI_Win_detach(MPI_Win win, const void *base)
+
+Fortran:
+MPI_Win_detach(win, base, ierror)
+TYPE(MPI_Win), INTENT(IN) :: win
+TYPE(*), DIMENSION(..), ASYNCHRONOUS :: base
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror

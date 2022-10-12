@@ -1,0 +1,33 @@
+Semantics:
+MPI_TYPE_CREATE_SUBARRAY(
+    ndims, array_of_sizes, array_of_subsizes,
+    array_of_starts, order, oldtype, newtype)
+IN ndims: number of array dimensions (positive integer)
+IN array_of_sizes: number of elements of type oldtype in each dimension
+    of the full array (array of positive integers)
+IN array_of_subsizes: number of elements of type oldtype in each
+    dimension of the subarray (array of positive integers)
+IN array_of_starts: starting coordinates of the subarray in each
+    dimension (array of non-negative integers)
+IN order: array storage order flag (state)
+IN oldtype: array element datatype (handle)
+OUT newtype: new datatype (handle)
+
+C:
+int MPI_Type_create_subarray(
+    int ndims, const int array_of_sizes[],
+    const int array_of_subsizes[], const int array_of_starts[],
+    int order, MPI_Datatype oldtype, MPI_Datatype *newtype)
+
+Fortran:
+MPI_Type_create_subarray(ndims, array_of_sizes, array_of_subsizes,
+    array_of_starts, order, oldtype, newtype, ierror)
+INTEGER, INTENT(IN) :: ndims, array_of_sizes(ndims),
+    array_of_subsizes(ndims), array_of_starts(ndims), order
+TYPE(MPI_Datatype), INTENT(IN) :: oldtype
+TYPE(MPI_Datatype), INTENT(OUT) :: newtype
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+
+Python:
+MPI.Datatype.Create_subarray
+   (self, sizes, subsizes, starts, int order=ORDER_C)

@@ -1,0 +1,15 @@
+## spawnmanager.py
+try :
+    universe_size = comm.Get_attr(MPI.UNIVERSE_SIZE)
+    if universe_size is None:
+        print("Universe query returned None")
+        universe_size = nprocs + 4
+    else:
+        print("World has {} ranks in a universe of {}"\
+              .format(nprocs,universe_size))
+except :
+    print("Exception querying universe size")
+    universe_size = nprocs + 4
+nworkers = universe_size - nprocs
+
+itercomm = comm.Spawn("./spawn_worker.py", maxprocs=nworkers)

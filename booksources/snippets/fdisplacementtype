@@ -1,0 +1,7 @@
+!! putfence.F90
+  integer(kind=MPI_ADDRESS_KIND) :: target_displacement
+     target_displacement = 1
+     call MPI_Put( my_number, 1,MPI_INTEGER, &
+          other,target_displacement, &
+          1,MPI_INTEGER, &
+          the_window)

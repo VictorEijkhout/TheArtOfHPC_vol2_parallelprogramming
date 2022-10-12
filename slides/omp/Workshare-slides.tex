@@ -1,0 +1,108 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the lecture slides for
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-6
+%%%%
+%%%% Workshare-slides.tex : slides about OpenMP workshare constructs
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[containsverbatim]{What is worksharing again?}
+  \begin{itemize}
+  \item The \indextermtt{omp parallel} creates a team of threads.
+  \item Now you need to distributed work among them.
+  \item Already seen: \indextermtt{for}, \indextermtt{do}
+  \item Similar: \indextermtt{sections}
+  \item Not obvious: \indextermtt{single}
+  \item Fortran only: \indextermtt{workshare} (works with array notation, but
+    compiler support seems mediocre)
+  \item Story in itself: \indextermtt{task}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]{Sections}
+\small
+Independent separate calculations:
+\begin{verbatim}
+  double fx = f(x), gx = g(x), hx = h(x);
+  ..... fx ... gx ... hx ....
+\end{verbatim}
+\begin{verbatim}
+#pragma omp sections
+{
+  #pragma omp section
+  fx = f(x)
+  #pragma omp section
+  gx = g(x)
+  #pragma omp section
+  hx = h(x)
+}
+\end{verbatim}
+Adding them together:
+\begin{verbatim}
+  s = f(x)+g(x)+h(x);
+\end{verbatim}
+Use reduction.
+\end{frame}
+
+\begin{frame}[containsverbatim]{Single}
+\begin{verbatim}
+int a;
+#pragma omp parallel
+{
+  #pragma omp single
+    a = f(); // some computation
+  #pragma omp sections
+    // various different computations using `a'
+}
+\end{verbatim}
+  \begin{itemize}
+  \item Is executed by a single thread.
+  \item Has implicit barrier, so the result is available to everyone
+    after.
+  \item \indextermtt{master} is similar, does not have barrier.
+  \end{itemize}
+\end{frame}
+
+\begin{exerciseframe}
+  \input {ex:omp-single-mpi}
+\end{exerciseframe}
+
+\endinput
+
+\begin{frame}[containsverbatim]{}
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]{}
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]{}
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]{}
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\end{frame}
+
+\endinput
+
+\begin{frame}[containsverbatim]{}
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\end{frame}
+

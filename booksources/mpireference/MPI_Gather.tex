@@ -1,0 +1,30 @@
+C:
+int MPI_Gather(
+  const void* sendbuf, int sendcount, MPI_Datatype sendtype,
+  void* recvbuf, int recvcount, MPI_Datatype recvtype,
+  int root, MPI_Comm comm)
+
+Semantics:
+IN sendbuf: starting address of send buffer (choice)
+IN sendcount: number of elements in send buffer (non-negative integer)
+IN sendtype: data type of send buffer elements (handle)
+OUT recvbuf: address of receive buffer (choice, significant only at root)
+IN recvcount: number of elements for any single receive (non-negative integer, significant only at root)
+IN recvtype: data type of recv buffer elements (significant only at root) (handle)
+IN root: rank of receiving process (integer)
+IN comm: communicator (handle)
+
+Fortran:
+MPI_Gather
+   (sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, 
+    root, comm, ierror)
+TYPE(*), DIMENSION(..), INTENT(IN) :: sendbuf
+TYPE(*), DIMENSION(..) :: recvbuf
+INTEGER, INTENT(IN) :: sendcount, recvcount, root
+TYPE(MPI_Datatype), INTENT(IN) :: sendtype, recvtype
+TYPE(MPI_Comm), INTENT(IN) :: comm
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+
+Python:
+MPI.Comm.Gather
+   (self, sendbuf, recvbuf, int root=0)

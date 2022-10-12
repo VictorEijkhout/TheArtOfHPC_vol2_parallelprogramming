@@ -1,0 +1,16 @@
+## bcastcolumn.py
+datatype = np.intc
+elementsize = datatype().itemsize
+typechar = datatype().dtype.char
+buffer = np.zeros( [nprocs,nprocs], dtype=datatype)
+buffer[:,:] = -1
+for proc in range(nprocs):
+    if procid==proc:
+        buffer[proc,:] = proc
+    comm.Bcast\
+        ( [ np.frombuffer\
+            ( buffer.data,
+              dtype=datatype,
+              offset=(proc*nprocs+proc)*elementsize ),
+            nprocs-proc, typechar ],
+          root=proc )

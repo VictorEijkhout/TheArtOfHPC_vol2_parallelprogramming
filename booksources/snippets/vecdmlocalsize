@@ -1,0 +1,5 @@
+Vec xy;
+ierr = VecCreate(comm,&xy); 
+ierr = VecSetType(xy,VECMPI); 
+PetscInt nlocal = info.xm*info.ym, nglobal = info.mx*info.my;
+ierr = VecSetSizes(xy,nlocal,nglobal); 

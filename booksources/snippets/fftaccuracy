@@ -1,0 +1,8 @@
+Vec confirm;
+ierr = VecDuplicate(signal,&confirm); 
+ierr = MatMultTranspose(transform,frequencies,confirm); 
+ierr = VecAXPY(confirm,-1,signal); 
+PetscReal nrm;
+ierr = VecNorm(confirm,NORM_2,&nrm); 
+PetscPrintf(MPI_COMM_WORLD,"FFT accuracy %e\n",nrm);
+ierr = VecDestroy(&confirm); 

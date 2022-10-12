@@ -1,0 +1,11 @@
+!! rightcopy.F90
+  integer,dimension(2),codimension[*] :: numbers
+  integer :: procid,nprocs
+
+  procid = this_image()
+  nprocs = num_images()
+  numbers(:)[procid] = procid
+  if (procid<nprocs) then
+     numbers(1)[procid+1] = procid
+  end if
+  !!codesnippet cafsyncpp

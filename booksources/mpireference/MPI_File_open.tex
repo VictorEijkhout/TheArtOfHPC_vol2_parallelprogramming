@@ -1,0 +1,21 @@
+Semantics:
+MPI_FILE_OPEN(comm, filename, amode, info, fh)
+IN comm: communicator (handle)
+IN filename: name of file to open (string)
+IN amode: file access mode (integer)
+IN info: info object (handle)
+OUT fh: new file handle (handle)
+
+C:
+int MPI_File_open
+    (MPI_Comm comm, char *filename, int amode,
+     MPI_Info info, MPI_File *fh)
+
+Fortran:
+MPI_FILE_OPEN(COMM, FILENAME, AMODE, INFO, FH, IERROR)
+CHARACTER*(*) FILENAME
+INTEGER COMM, AMODE, INFO, FH, IERROR
+
+Python:
+Open(type cls, Intracomm comm, filename,
+     int amode=MODE_RDONLY, Info info=INFO_NULL)

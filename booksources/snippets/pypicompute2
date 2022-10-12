@@ -1,0 +1,9 @@
+def calc_pi2(pi,n):
+    count = 0
+    for i in range(n):
+        x = random.random()
+        y = random.random()
+        if x*x+y*y<1:
+            count += 1
+    with pi.get_lock():
+        pi.value += count

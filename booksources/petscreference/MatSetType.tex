@@ -1,0 +1,11 @@
+#include "petscmat.h"
+PetscErrorCode  MatSetType(Mat mat, MatType matype)
+
+Collective on Mat
+
+Input Parameters:
+mat- the matrix object
+matype- matrix type
+
+Options Database Key
+-mat_type <method> -Sets the type; use -help for a list of available methods (for instance, seqaij)

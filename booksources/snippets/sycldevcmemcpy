@@ -1,0 +1,14 @@
+   [&](sycl::handler &cgh) {
+     cgh.memcpy(devc_float,host_float,sizeof(floattype));
+   }
+   [&](sycl::handler &cgh) {
+     sycl::stream sout(1024, 256, cgh);
+     cgh.single_task
+       (
+        [=] () {
+          sout << "Number " << devc_float[0] << sycl::endl;
+        }
+        );
+   } // end of submitted lambda
+free(host_float);
+sycl::free(devc_float,myqueue);

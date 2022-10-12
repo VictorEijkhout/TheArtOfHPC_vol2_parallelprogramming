@@ -1,0 +1,17 @@
+cmake_minimum_required( VERSION 3.20 )
+project( cxx_omp VERSION 1.0 )
+
+find_package(OpenMP)
+if(OpenMP_CXX_FOUND)
+else()
+	message( FATAL_ERROR "Could not find OpenMP" )
+endif()
+
+option( programs "list of programs" )
+foreach( program IN LISTS programs )
+    message( NOTICE "program: ${program}" )
+    add_executable( ${program} ${program}.cxx )
+    target_compile_features( ${program} PRIVATE cxx_std_17 )
+    target_link_libraries( ${program} PUBLIC OpenMP::OpenMP_CXX)
+    install( TARGETS ${program} DESTINATION . )
+endforeach()

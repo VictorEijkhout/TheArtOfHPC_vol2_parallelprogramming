@@ -1,0 +1,24 @@
+Synopsis
+
+MPI_Comm_create( MPI_Comm comm, MPI_Group group, MPI_Comm *newcomm )
+
+Input parameters:
+comm : Communicator (handle).
+group : Group, which is a subset of the group of comm (handle).
+
+Output parameters:
+newcomm : New communicator (handle).
+
+C:
+int MPI_Comm_create(MPI_Comm comm, MPI_Group group, MPI_Comm *newcomm)
+
+Fortran90:
+MPI_COMM_CREATE(COMM, GROUP, NEWCOMM, IERROR)
+INTEGER    COMM, GROUP, NEWCOMM, IERROR
+
+Fortran2008:
+MPI_Comm_create(comm, group, newcomm, ierror)
+TYPE(MPI_Comm), INTENT(IN) :: comm
+TYPE(MPI_Group), INTENT(IN) :: group
+TYPE(MPI_Comm), INTENT(OUT) :: newcomm
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror

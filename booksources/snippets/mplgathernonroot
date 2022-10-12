@@ -1,0 +1,12 @@
+if (procno==0) {
+  vector<int> size_buffer(nprocs);
+  comm_world.gather
+    (
+     0,my_number_of_elements,size_buffer.data()
+     );
+} else {
+  /*
+   * If you are not the root, do versions with only send buffers
+   */
+  comm_world.gather
+    ( 0,my_number_of_elements );

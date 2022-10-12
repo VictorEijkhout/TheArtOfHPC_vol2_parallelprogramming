@@ -1,0 +1,12 @@
+#include "petscvec.h"   
+PetscErrorCode  VecGetOwnershipRange(Vec x,PetscInt *low,PetscInt *high)
+
+Input parameter:
+x - the vector
+
+Output parameters:
+low  - the first local element, pass in NULL if not interested 
+high - one more than the last local element, pass in NULL if not interested
+
+Fortran note:
+use PETSC_NULL_INTEGER for NULL.

@@ -1,0 +1,4 @@
+// scangather.cxx
+MPI_Exscan
+  (&my_number_of_elements,&my_first_index,
+   1,MPI_INT,MPI_SUM,comm);

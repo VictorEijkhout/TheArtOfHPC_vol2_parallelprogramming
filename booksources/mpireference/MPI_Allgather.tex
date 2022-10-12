@@ -1,0 +1,32 @@
+C:
+int MPI_Allgather(const void *sendbuf, int  sendcount,
+     MPI_Datatype sendtype, void *recvbuf, int recvcount,
+     MPI_Datatype recvtype, MPI_Comm comm)
+int MPI_Iallgather(const void *sendbuf, int  sendcount,
+     MPI_Datatype sendtype, void *recvbuf, int recvcount,
+     MPI_Datatype recvtype, MPI_Comm comm, MPI_Request *request)
+
+Fortran:
+MPI_ALLGATHER(SENDBUF, SENDCOUNT, SENDTYPE, RECVBUF, RECVCOUNT,
+        RECVTYPE, COMM, IERROR)
+    <type>    SENDBUF (*), RECVBUF (*)
+    INTEGER    SENDCOUNT, SENDTYPE, RECVCOUNT, RECVTYPE, COMM,
+    INTEGER    IERROR
+MPI_IALLGATHER(SENDBUF, SENDCOUNT, SENDTYPE, RECVBUF, RECVCOUNT,
+        RECVTYPE, COMM, REQUEST, IERROR)
+    <type>    SENDBUF(*), RECVBUF (*)
+    INTEGER    SENDCOUNT, SENDTYPE, RECVCOUNT, RECVTYPE, COMM
+    INTEGER    REQUEST, IERROR
+C++ Syntax
+
+Parameters:
+sendbuf : Starting address of send buffer (choice).
+sendcount: Number of elements in send buffer (integer).
+sendtype: Datatype of send buffer elements (handle).
+recvbuf: Starting address of recv buffer (choice).
+recvcount: Number of elements received from any process (integer).
+recvtype: Datatype of receive buffer elements (handle).
+comm; Communicator (handle).
+
+recvbuf: Address of receive buffer (choice).
+request: Request (handle, non-blocking only).

@@ -1,0 +1,3 @@
+## spawnworker.py
+parentcomm = comm.Get_parent()
+nparents = parentcomm.Get_remote_size()

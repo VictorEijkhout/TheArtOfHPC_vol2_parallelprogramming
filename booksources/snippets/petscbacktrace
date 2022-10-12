@@ -1,0 +1,6 @@
+// backtrace.c
+PetscErrorCode this_function_bombs() {
+  PetscFunctionBegin;
+  SETERRQ(PETSC_COMM_SELF,1,"We cannot go on like this");
+  PetscFunctionReturn(0);
+}

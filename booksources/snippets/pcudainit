@@ -1,0 +1,3 @@
+// cudainit.c
+ierr = PetscCUDAInitialize(comm,PETSC_DECIDE); 
+ierr = PetscCUDAInitializeCheck(); 

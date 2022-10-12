@@ -1,0 +1,5 @@
+int *left_ptr,*right_ptr;
+int left_proc = new_procno>0 ? new_procno-1 : MPI_PROC_NULL,
+  right_proc = new_procno<new_nprocs-1 ? new_procno+1 : MPI_PROC_NULL;
+MPI_Win_shared_query(shared_window,left_proc,NULL,NULL,&left_ptr);
+MPI_Win_shared_query(shared_window,right_proc,NULL,NULL,&right_ptr);

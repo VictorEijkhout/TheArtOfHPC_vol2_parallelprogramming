@@ -1,0 +1,421 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% omp-data.tex : about thread data
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\label{sec:ompdata}
+
+In a parallel region there are two types of data: private and shared.
+In this sections we will see the various way you can control what category
+your data falls under; for private data items we also discuss how their values
+relate to shared data.
+
+\Level 0 {Shared data}
+
+In a parallel region, any data declared outside it will be shared:
+any thread using a variable~\n{x} will access the same memory location
+associated with that variable.
+
+Example:
+\begin{lstlisting}
+  int x = 5;
+#pragma omp parallel
+  {
+    x = x+1;
+    printf("shared: x is %d\n",x);
+  }
+\end{lstlisting}
+All threads increment the same variable, so after the loop it will
+have a value of five plus the number of threads;
+or maybe less because of the data races involved.
+This issue is discussed in \HPSCref{sec:shared-lock};
+see \ref{sec:critical} for a solution in OpenMP.
+
+Sometimes this global update is what you want; in other cases the
+variable is intended only for intermediate results in a computation.
+In that case 
+there are various ways of creating
+data that is local to a thread, and therefore invisible to other threads.
+
+\Level 0 {Private data}
+\label{sec:omp-private}
+
+In the C/C++ language it is possible to declare variables inside
+a \indexterm{lexical scope}; roughly: inside curly braces.
+This concept extends to OpenMP parallel regions and directives:
+any variable declared in a block following an OpenMP directive
+will be local to the executing thread.
+
+In the following example, each thread creates a private variable~\n{x}
+and sets it to a unique value:
+%
+\csnippetwithoutput{privatex}{examples/omp/c}{private}
+%
+After the parallel region the outer variable~\n{x} will still have the
+value~\n{5}: there is no \indexterm{storage association} between the
+private variable and global one.
+
+\begin{fortrannote}{Private variables in parallel region}
+  The Fortran language does not have this concept of scope, so you have to use a
+  \indexclause{private} clause:
+  \fsnippetwithoutput{privatexf}{examples/omp/f}{private}
+\end{fortrannote}
+
+The \indexpragma{private} directive declares data to have a separate copy 
+in the memory of each thread. 
+Such private variables are initialized as they would be in a main program.
+Any computed value goes away at the end 
+of the parallel region. (However, see below.)
+Thus, you should not rely on any initial value, or on the value of the outer variable
+after the region.
+
+\begin{lstlisting}
+  int x = 5;
+#pragma omp parallel private(x)
+  {
+    x = x+1; // dangerous
+    printf("private: x is %d\n",x);
+  }
+  printf("after: x is %d\n",x); // also dangerous
+\end{lstlisting}
+
+Data that is declared private with the \indexpragma{private} directive is
+put on a separate \indextermbus{stack}{per thread}. The OpenMP standard
+does not dictate the size of these stacks, but beware of \indextermbus{stack}{overflow}.
+A~typical default
+is a few megabyte; you can control it with the environment variable
+\indexompshow{OMP_STACKSIZE}. Its values can be literal or with suffixes:
+\begin{verbatim}
+123 456k 567K 678m 789M 246g 357G
+\end{verbatim}
+
+A normal \indextermbus{Unix}{process} also has a stack, but this is
+independent of the OpenMP stacks for private data. You can query or
+set the Unix stack with \indextermtt{ulimit}:
+\begin{verbatim}
+[] ulimit -s
+64000
+[] ulimit -s 8192
+[] ulimit -s
+8192
+\end{verbatim}
+The Unix stack can grow dynamically as space is needed. This does not
+hold for the OpenMP stacks: they are immediately allocated at their
+requested size. Thus it is important not too make them too large.
+
+\Level 0 {Data in dynamic scope}
+
+Functions that are called from a parallel region fall in the
+\emph{dynamic scope}\index{parallel region!dynamic scope} of that
+parallel region. The rules for variables in that function are as follows:
+\begin{itemize}
+\item Any variables locally defined to the function are private.
+\item \n{static} variables in C and \n{save} variables in Fortran
+  are shared.
+\item The function arguments inherit their status from the calling environment.
+\end{itemize}
+
+\begin{fortrannote}{Saved variables}
+  Variables in subprograms are private, as in~C,
+  except if the have the \lstinline{Save} attribute.
+  This attribute is implicitly given to any variable
+  that has value-initialized.
+\end{fortrannote}
+
+\Level 0 {Temporary variables in a loop}
+
+It is common to have a variable that is set and used in each loop
+iteration:
+\begin{lstlisting}
+#pragma omp parallel for
+for ( ... i ... ) {
+  x = i*h;
+  s = sin(x); c = cos(x);
+  a[i] = s+c;
+  b[i] = s-c;
+}
+\end{lstlisting}
+By the above rules, the variables \n{x,s,c} are all shared
+variables. However, the values they receive in one iteration are not
+used in a next iteration, so they behave in fact like private
+variables to each iteration.
+\begin{itemize}
+\item In both C and Fortran you can declare these variables private in
+  the parallel for directive.
+\item In C, you can also redefine the variables inside the loop.
+\end{itemize}
+
+Sometimes, even if you forget to declare these temporaries as private,
+the code may still give the correct output. That is because the
+compiler can sometimes eliminate them from the loop body, since it detects that their
+values are not otherwise used.
+
+\Level 0 {Default}
+
+\begin{itemize}
+\item Loop variables in an \indexpragma{omp for} are private;
+\item Local variables in the parallel region are private.
+\end{itemize}
+You can alter this default behavior with the \indexclause{default} clause:
+\begin{lstlisting}
+#pragma omp parallel default(shared) private(x)
+{ ... }
+#pragma omp parallel default(private) shared(matrix)
+{ ... }
+\end{lstlisting}
+and if you want to play it safe:
+\begin{lstlisting}
+#pragma omp parallel default(none) private(x) shared(matrix)
+{ ... }
+\end{lstlisting}
+
+\begin{itemize}
+\item The \indexclauseoption{default}{shared} clause means that all
+  variables from the outer scope are shared in the parallel region; any private variables
+  need to be declared explicitly. This is the default behavior.
+\item The \indexclauseoption{default}{private} clause means that all
+  outer variables become private in the parallel region. They are not
+  initialized; see the next option. Any shared variables in the
+  parallel region
+  need to be declared explicitly. This value is not available in~C.
+\item The \indexclauseoption{default}{firstprivate} clause means all
+  outer variables are private in the parallel region, and initialized
+  with their outer value.  Any shared variables
+  need to be declared explicitly. This value is not available in~C.
+\item The \indexclauseoption{default}{none} option is good for debugging, 
+  because it forces you to specify for each variable in the parallel region
+  whether it's private or shared. Also,
+  if your code
+behaves differently in parallel from sequential there is probably a data race.
+Specifying the status of every variable is a good way to
+debug this.
+\end{itemize}
+
+\Level 0 {Array data}
+\label{sec:omp-array}
+
+The rules for arrays are slightly different from those for scalar data:
+\begin{enumerate}
+\item Statically allocated data, that is with a syntax like
+\begin{lstlisting}
+int array[100];
+integer,dimension(:) :: array(100}
+\end{lstlisting}
+can be shared or private, depending on the clause you use.
+\item Dynamically allocated data, that is, created with
+  \n{malloc}\index{malloc!and private/shared data} or
+  \n{allocate}\index{allocate!and private/shared data}, can only be shared.
+\end{enumerate}
+Example of the first type: in
+%
+\cverbatimsnippet[examples/omp/c/alloc.c]{privatearray}
+%
+each thread gets a private copy of the array, properly initialized.
+
+On the other hand, in
+%
+\cverbatimsnippet[examples/omp/c/alloc.c]{privatepointer}
+%
+each thread gets a private pointer, but all pointers point to the same
+object.
+
+It is possible to perform a reduction on an array;
+see section~\ref{sec:omp-array-reduct}.
+
+\Level 0 {First and last private}
+
+Above, you saw that private variables are completely separate from any
+variables by the same name in the surrounding scope. However, there
+are two cases where you may want some \indexterm{storage association}
+between a private variable and a global counterpart.
+
+First of all, private variables are created with an undefined value.
+You can force their initialization with \indexclause{firstprivate}.
+\begin{lstlisting}
+  int t=2;
+#pragma omp parallel firstprivate(t)
+  {
+    t += f( omp_get_thread_num() );
+    g(t);
+  }
+\end{lstlisting}
+The variable \n{t} behaves like a private variable, except that it is
+initialized to the outside value.
+
+Secondly, you may want a private value to be preserved to the
+environment outside the parallel region. This really only makes sense
+in one case, where you
+preserve a private variable
+from the last iteration of a parallel loop, or the last section in an
+\indexpragma{sections} construct. This is done with \indexclause{lastprivate}:
+\begin{lstlisting}
+#pragma omp parallel for \
+        lastprivate(tmp)
+for (i=0; i<N; i+) {
+  tmp = ......
+  x[i] = .... tmp ....
+}
+..... tmp ....
+\end{lstlisting}
+
+\Level 0 {Persistent data through \texttt{threadprivate}}
+\label{sec:threadprivate}
+
+Most data in OpenMP parallel regions is either inherited
+from the master thread and therefore shared, or temporary within the scope of the
+region and fully private.
+There is also a mechanism for \emph{thread-private
+  data}\index{thread!private data},
+which is not limited in lifetime to one parallel region.
+The \indexpragma{threadprivate} pragma is used to declare that each thread
+is to have a private copy of a variable:
+\begin{lstlisting}
+#pragma omp threadprivate(var)
+\end{lstlisting}
+The variable needs be:
+\begin{itemize}
+\item a file or static variable in~C,
+\item a static class member in~C++, or
+\item a program variable or common block in Fortran.
+\end{itemize}
+
+\Level 1 {Thread private initialization}
+
+If each thread needs a different value in its threadprivate variable,
+the initialization needs to happen in a parallel region.
+
+In the following example a team of 7 threads is created, all of which
+set their thread-private variable. Later, this variable is read by a
+larger team: the variables that have not been set are undefined,
+though often simply zero:
+%
+\cverbatimsnippet[examples/omp/c/threadprivate.c]{threadprivate}
+
+\begin{fortrannote}{Private common blocks}
+  Named common blocks can be made thread-private with the syntax
+\begin{lstlisting}
+$!OMP threadprivate( /blockname/ )
+\end{lstlisting}
+Example:
+%
+\fsnippetwithoutput{threadprivf}{examples/omp/f}{priv}
+% [/count.F90]
+%
+\end{fortrannote}
+
+On the other hand, if the thread private data starts out identical in
+all threads, the \indexclause{copyin} clause can be used:
+\begin{lstlisting}
+#pragma omp threadprivate(private_var)
+
+private_var = 1;
+#pragma omp parallel copyin(private_var)
+  private_var += omp_get_thread_num()
+\end{lstlisting}
+
+If one thread needs to set all thread private data to its value, the
+\indexclause{copyprivate} clause can be used:
+\begin{lstlisting}
+#pragma omp parallel
+{
+  ...
+#pragma omp single copyprivate(private_var)
+  private_var = read_data();
+  ...
+}
+\end{lstlisting}
+
+Threadprivate variables require \indexompshow{OMP_DYNAMIC} to be
+switched off.
+
+\Level 1 {Thread private example}
+
+The typical application for thread-private variables is in
+\indexterm{random number generator}s.
+A random number generator needs saved state, since it computes each next value
+from the current one. To have a parallel generator, each thread will create
+and initialize a private `current value' variable. This will persist
+even when the execution is not in a parallel region; it gets updated only
+in a parallel region.
+
+\begin{exercise}
+  \label{ex:random-mandel}
+  Calculate the area of the \indexterm{Mandelbrot set} by random
+  sampling. Initialize the random number generator separately for each
+  thread; then use a parallel loop to evaluate the points.
+  Explore performance implications of the different loop scheduling strategies.
+\end{exercise}
+
+\begin{cppnote}{Threadprivate random number generators}
+  The new C++ \lstinline{random} header has threadsafe generator,
+  by virtue of the statement in the standard that no STL object
+  can rely on global state.
+  The usual idiom 
+\begin{lstlisting}
+static random_device rd;
+static mt19937 rng(rd);    
+\end{lstlisting}
+can not be made threadsafe because of the initialization.
+However, the following works:
+%
+\cxxverbatimsnippet{privaterandom}
+%
+You can then use the generator safely and independently:
+%
+\cxxverbatimsnippet{privateranduse}
+\end{cppnote}
+
+\Level 0 {Allocators}
+
+The OpenMP was initially designed for shared memory.
+With accelerators (see chapter~\ref{ch:omp-gpu}), non-coherent memory was added to this.
+In the \ompstandard{5} standard, the story is further complicated, to account
+for new memory types such as \indextermsub{high-bandwidth}{memory}
+and \indextermsub{non-volatile}{memory}.
+
+There are several ways of using the OpenMP memory allocators.
+\begin{itemize}
+\item
+  First, in a directory on a static array:
+\begin{lstlisting}
+float A[N], B[N];
+#pragma omp allocate(A) \
+    allocator(omp_large_cap_mem_alloc)
+\end{lstlisting}
+\item As a clause on private variables:
+\begin{lstlisting}
+#pragma omp task private(B) allocate(omp_const_mem_alloc: B)
+\end{lstlisting}
+\item
+  With \indexompshow{omp_alloc}, using a (possibly user-defined) allocator.
+\end{itemize}
+
+Next, there are memory spaces. The binding between OpenMP identifiers and hardware
+is implementation defined.
+
+\Level 1 {Pre-defined types}
+
+Allocators:
+\indexompshow{omp_default_mem_alloc},
+\indexompshow{omp_large_cap_mem_alloc},
+\indexompshow{omp_const_mem_alloc},
+\indexompshow{omp_high_bw_mem_alloc},
+\indexompshow{omp_low_lat_mem_alloc},
+\indexompshow{omp_cgroup_mem_alloc},
+\indexompshow{omp_pteam_mem_alloc},
+\indexompshow{omp_thread_mem_alloc}.
+
+Memory spaces:
+\indexompshow{omp_default_mem_space},
+\indexompshow{omp_large_cap_mem_space},
+\indexompshow{omp_const_mem_space},
+\indexompshow{omp_high_bw_mem_space},
+\indexompshow{omp_low_lat_mem_space}.

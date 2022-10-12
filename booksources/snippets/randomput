@@ -1,0 +1,22 @@
+// randomput.c
+MPI_Win_create(&window_data,sizeof(int),sizeof(int),
+               MPI_INFO_NULL,comm,&the_window);
+
+for (int c=0; c<10; c++) {
+  if (mytid==0) { // decide where to put data
+	float randomfraction = (rand() / (double)RAND_MAX);
+	if (randomfraction>.5)
+      other = 2;
+	else
+      other = 1;
+	my_number = 1;
+  } else {
+	window_data = 0;
+	my_number = 0;
+  }
+  my_sum += window_data;
+}
+
+if (mytid>0 && mytid<3)
+  printf("Sum on %d: %d\n",mytid,my_sum);
+if (mytid==0) printf("(sum should be 10)\n");

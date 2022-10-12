@@ -1,0 +1,4 @@
+!! hello.F90
+!$omp parallel
+  print *,"Hello world!"
+!$omp end parallel

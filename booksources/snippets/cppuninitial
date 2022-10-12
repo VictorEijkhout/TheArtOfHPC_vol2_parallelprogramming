@@ -1,0 +1,8 @@
+// heatalloc.cxx
+template<typename T>
+struct uninitialized {
+  uninitialized() {};
+  T val;
+  constexpr operator T() const {return val;};
+  double operator=( const T&& v ) { val = v; return val; };
+};

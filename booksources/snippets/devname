@@ -1,0 +1,3 @@
+// devname.cxx
+std::cout << myqueue.get_device().get_info<sycl::info::device::name>()
+          << std::endl;

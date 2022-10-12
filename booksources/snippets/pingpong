@@ -1,0 +1,8 @@
+// pingpong.c
+if (procno==processA) {
+  t = MPI_Wtime();
+  for (int n=0; n<NEXPERIMENTS; n++) {
+    MPI_Send(send,1,MPI_DOUBLE,
+    MPI_Recv(recv,1,MPI_DOUBLE,
+  }
+  t = MPI_Wtime()-t; t /= NEXPERIMENTS;

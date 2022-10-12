@@ -1,0 +1,36 @@
+# -*- makefile -*-
+################################################################
+####
+#### This makefile is part of `Parallel Programming in MPI and OpenMP'
+#### Victor Eijkhout
+#### eijkhout@tacc.utexas.edu
+####
+#### copyright Victor Eijkhout 2012-2021
+####
+#### Make include file with regression run rules
+####
+################################################################
+
+info ::
+	@echo && echo "================ Regression"
+	@echo "make all_runs output_runs"
+
+ifeq "${MODE}" "mpi"
+  RUNNER = "mpiexec -n ${NP} "
+else
+  RUNNER = "./"
+endif
+
+.PHONY: all_runs output_runs
+all_runs :
+	@rm -f make.log
+	@for p in ${APPS} ; do \
+	    echo "---- $$p" \
+	     && make --no-print-directory $$p 2>&1 | tee -a make.log \
+	     && ${RUNNER}$$p \
+	    ; done \
+	 && echo && echo "See output in make.log" && echo
+clean ::
+	@rm -f make.log
+
+output_runs :

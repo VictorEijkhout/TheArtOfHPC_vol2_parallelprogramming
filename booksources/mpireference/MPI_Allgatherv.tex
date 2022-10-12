@@ -1,0 +1,41 @@
+Semantics:
+MPI_ALLGATHERV(
+    sendbuf, sendcount, sendtype, 
+    recvbuf, recvcounts, displs, recvtype,
+    comm)
+IN sendbuf: starting address of send buffer (choice)
+IN sendcount: number of elements in send buffer (non-negative integer)
+IN sendtype: data type of send buffer elements (handle)
+OUT recvbuf: address of receive buffer (choice)
+IN recvcounts: non-negative integer array (of length group size)
+    containing the number of elements that are received from each process
+IN displs: integer array (of length group size). Entry i specifies the
+    displacement (relative to recvbuf) at which to place the incoming data
+    from process i
+IN recvtype: data type of receive buffer elements (handle)
+IN comm: communicator (handle)
+
+C:
+int MPI_Allgatherv(
+    const void* sendbuf, int sendcount, MPI_Datatype sendtype,
+    void* recvbuf, const int recvcounts[], const int displs[], MPI_Datatype recvtype,
+    MPI_Comm comm) 
+
+Fortran:
+MPI_Allgatherv(
+    sendbuf, sendcount, sendtype, 
+    recvbuf, recvcounts, displs, recvtype,
+    comm, ierror)
+TYPE(*), DIMENSION(..), INTENT(IN) :: sendbuf
+TYPE(*), DIMENSION(..) :: recvbuf
+INTEGER, INTENT(IN) :: sendcount, recvcounts(*), displs(*)
+TYPE(MPI_Datatype), INTENT(IN) :: sendtype, recvtype
+TYPE(MPI_Comm), INTENT(IN) :: comm
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+
+Python native:
+not implemented
+Python numpy:
+MPI.Comm.Allgatherv(self, sendbuf, recvbuf)
+    where recvbuf = "[ array, counts, displs, type]"
+

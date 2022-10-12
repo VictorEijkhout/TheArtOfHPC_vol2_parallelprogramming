@@ -1,0 +1,8 @@
+// molecular.cxx
+class force {
+private:
+  double _x{0.},_y{0.}; double _f{0.};
+public:
+  force() {};
+  force(double x,double y,double f) 
+    : _x(x),_y(y),_f(f) {};

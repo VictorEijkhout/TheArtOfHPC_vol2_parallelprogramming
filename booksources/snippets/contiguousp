@@ -1,0 +1,10 @@
+## contiguous.py
+source = np.empty(count,dtype=np.float64)
+target = np.empty(count,dtype=np.float64)
+if procid==sender:
+    newcontiguoustype = MPI.DOUBLE.Create_contiguous(count)
+    newcontiguoustype.Commit()
+    comm.Send([source,1,newcontiguoustype],dest=the_other)
+    newcontiguoustype.Free()
+elif procid==receiver:
+    comm.Recv([target,count,MPI.DOUBLE],source=the_other)

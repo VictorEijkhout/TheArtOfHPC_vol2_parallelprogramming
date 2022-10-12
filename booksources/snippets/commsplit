@@ -1,0 +1,14 @@
+// commsplit.c
+int mydata = procno;
+// create sub communicator modulo 2
+color = procno%2;
+MPI_Comm_split(MPI_COMM_WORLD,color,procno,&mod2comm);
+MPI_Comm_rank(mod2comm,&new_procno);
+
+// create sub communicator modulo 4 recursively
+color = new_procno%2;
+MPI_Comm_split(mod2comm,color,new_procno,&mod4comm);
+MPI_Comm_rank(mod4comm,&new_procno);
+
+if (mydata/4!=new_procno)
+  printf("Error %d %d %d\n",procno,new_procno,mydata/4);

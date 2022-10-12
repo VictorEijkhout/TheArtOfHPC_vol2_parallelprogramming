@@ -1,0 +1,40 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% This text file is part of the source of 
+%% `Parallel Computing'
+%% by Victor Eijkhout, copyright 2012-2021
+%%
+%% MPI API file for MPI_Datarep_conversion_function
+%%
+%% THIS FILE IS AUTO-GENERATED
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begingroup
+\ttfamily\bfseries
+\catcode`\_=12
+\begin{tabular}{lllll}
+\toprule
+\mdseries\textrm{Name}&
+\mdseries\textrm{Param name}&
+\mdseries\textrm{C type}&
+\mdseries\textrm{F type}&
+\mdseries\textrm{inout}\\
+\midrule
+\hbox to 20pt{MPI_Datarep_conversion_function (\hss} \\
+\hbox to 20pt{MPI_Datarep_conversion_function_c (\hss} \\
+&userbuf&&TYPE(C_PTR), VALUE&inout\\
+&datatype&handle&TYPE(MPI_Datatype)&in\\
+&count&integer&&in\\
+&filebuf&&TYPE(C_PTR), VALUE&inout\\
+&position&integer&INTEGER(KIND=MPI_OFFSET_KIND)&in\\
+&extra_state&&INTEGER(KIND=MPI_ADDRESS_KIND)&inout\\
+&ierror&&INTEGER&in\\
+)\\
+\bottomrule
+\end{tabular}
+\endgroup
+

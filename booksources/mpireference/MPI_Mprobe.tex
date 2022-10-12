@@ -1,0 +1,12 @@
+int MPI_Mprobe(int source, int tag, MPI_Comm comm,
+    MPI_Message *message, MPI_Status *status)
+
+Input Parameters:
+source - rank of source or MPI_ANY_SOURCE (integer)
+tag    - message tag or MPI_ANY_TAG (integer)
+comm   - communicator (handle)
+
+Output Parameters:
+
+message - returned message (handle)
+status  - status object (status)

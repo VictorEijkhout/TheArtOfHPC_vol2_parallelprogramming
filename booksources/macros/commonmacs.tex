@@ -1,0 +1,58 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This LaTeX file is part of the source of 
+%%%% `Parallel Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% commonmacs.tex : common macros for book and slides and all
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{verbatim,wrapfig}
+\def\verbatimsnippet#1{\begingroup\small \verbatiminput{snippets/#1}\endgroup}
+\usepackage{comment}
+
+\usepackage{amsmath}
+\usepackage{array,booktabs,multirow,multicol}
+\newcolumntype{R}{>{\hbox to 1.2em\bgroup\hss}{r}<{\egroup}}
+\newcolumntype{T}{>{\hbox to 8em\bgroup}{c}<{\hss\egroup}}
+
+%%
+%% verbatim
+%%
+\newcommand\InnocentChars{%
+  \catcode`\$=12 \catcode`\#=12
+  \catcode`\_=12 \catcode`\>=12 \catcode`\<=12\relax
+  \catcode`\&=12 \catcode`\^=12 \catcode`\~=12\relax
+  \def\\{\char`\\}\relax
+}
+
+\def\n#{\bgroup \InnocentChars \tt \let\next=}
+
+%%
+%% math stuff
+%%
+\newcommand\inv{^{-1}}\newcommand\invt{^{-t}}
+\newcommand\setspan[1]{[\![#1]\!]}
+\newcommand\fp[2]{#1\cdot10^{#2}}
+\newcommand\fxp[2]{\langle #1,#2\rangle}
+
+\newcommand\diag{\mathop{\mathrm {diag}}}
+\newcommand\argmin{\mathop{\mathrm {argmin}}}
+\newcommand\defined{
+  \mathrel{\lower 5pt \hbox{${\equiv\atop\mathrm{\scriptstyle D}}$}}}
+
+\newcommand\bbP{\mathbb{P}}
+\newcommand\bbR{\mathbb{R}}
+
+%%%%
+%%%% standards
+%%%%
+\newcommand\cstandard[1]{C#1\index{C!C#1}}
+\newcommand\fstandard[1]{Fortran#1\index{Fortran!Fortran#1}}
+\newcommand\mpistandard[1]{MPI-#1\index{MPI!MPI-#1}}
+\newcommand\mpistandardsub[2]{MPI-#1\index{MPI!MPI-#1!#2}}
+\newcommand\ompstandard[1]{OpenMP-#1\index{OpenMP!OpenMP-#1}}

@@ -1,0 +1,15 @@
+C:
+#include "petscmat.h"
+PetscErrorCode MatGetLocalSize(Mat mat,PetscInt *m,PetscInt *n)
+
+Input Parameters
+mat -the matrix
+
+Output Parameters
+m- the number of local rows
+n- the number of local columns
+Note: both output parameters can be NULL on input.
+
+Python:
+PETSc.Mat.getLocalSize(self)
+returns tuple?

@@ -1,0 +1,10 @@
+int main(int argc,char **argv) {
+
+  Library lib1,lib2;
+  MPI_Init(0,0);
+  MPI_Comm world = MPI_COMM_WORLD;
+  int procno,nprocs;
+  MPI_Comm_rank(world,&procno);
+  MPI_Comm_size(world,&nprocs);
+  auto sum1 = lib1.compute(procno);
+  auto sum2 = lib2.compute(procno+1);

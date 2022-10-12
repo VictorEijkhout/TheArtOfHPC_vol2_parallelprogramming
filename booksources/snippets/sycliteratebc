@@ -1,0 +1,10 @@
+sycl::id<1> offset(1);
+h.parallel_for
+    ( unknowns, offset,
+      [=] (sycl::id<1> idx) {
+          int i = idx[0];
+          float self = old_array[i];
+          float left = old_array[i - 1];
+          float righ = old_array[i + 1];
+          new_array[i] = (self + left + righ) / 3.0f;
+    } );

@@ -1,0 +1,6 @@
+// putfencealloc.c
+MPI_Win the_window;
+int *window_data;
+MPI_Win_allocate(2*sizeof(int),sizeof(int),
+		   MPI_INFO_NULL,comm,
+		   &window_data,&the_window);

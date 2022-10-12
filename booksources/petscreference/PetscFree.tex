@@ -1,0 +1,9 @@
+Synopsis
+Frees memory, not collective
+
+C:
+#include <petscsys.h>
+PetscErrorCode PetscFree(void *memory)
+
+Input Parameter:
+memory - memory to free (the pointer is ALWAYS set to NULL upon sucess)

@@ -1,0 +1,2 @@
+mpl::strided_vector_layout<int>
+  targetcolumn( blocksize_i,1,jsize );

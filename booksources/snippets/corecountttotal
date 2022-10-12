@@ -1,0 +1,12 @@
+// procthread.c
+int ncores;
+#pragma omp parallel
+#pragma omp master
+ncores = omp_get_num_procs();
+
+int totalcores;
+MPI_Reduce(&ncores,&totalcores,1,MPI_INT,MPI_SUM,0,comm);
+if (procid==0) {
+  printf("Omp procs on this process: %d\n",ncores);
+  printf("Omp procs total: %d\n",totalcores);
+}

@@ -1,0 +1,15 @@
+## getfence.py
+if procid==0 or procid==nprocs-1:
+    win_mem = np.empty( 1,dtype=np.float64 )
+    win = MPI.Win.Create( win_mem,comm=comm )
+else:
+    win = MPI.Win.Create( None,comm=comm )
+
+# put data on another process
+win.Fence()
+if procid==0 or procid==nprocs-1:
+    putdata = np.empty( 1,dtype=np.float64 )
+    putdata[0] = mydata
+    print("[%d] putting %e" % (procid,mydata))
+    win.Put( putdata,other )
+win.Fence()

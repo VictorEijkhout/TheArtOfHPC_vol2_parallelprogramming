@@ -1,0 +1,47 @@
+# -*- makefile -*-
+################################################################
+####
+#### This makefile is part of `Parallel Programming in MPI and OpenMP'
+#### by Victor Eijkhout, copyright 2013-2021
+#### eijkhout@tacc.utexas.edu
+####
+#### Make include file for petsc course
+####
+################################################################
+
+info ::
+	@echo && echo "================ Petsc running"
+	@echo "make run [PROGRAM=prog (default=${PROGRAM})]"
+	@echo "         [NP=nn (default=${NP})]"
+	@echo "         [OPTIONS=programoptions]"
+	@if [ "${LANGUAGE}" = "python" ] ; then \
+	   echo "         [PYTHON=... (default=${PYTHON})]" ; \
+	 fi
+.PHONY: run
+ifeq "${TACC_SYSTEM}" "macbookair"
+  RUNNER = mpirun -np
+else
+  RUNNER = ibrun -np
+endif
+NP = 4
+OPTIONS =
+# PROGRAMEXT is .py or nothing
+run : ${PROGRAM}${PROGRAMEXT}
+	@if [ "${LANGUAGE}" = "python" ] ; then \
+	    if [ ! -z "${PYTHON}" ] ; then \
+	       export mypython=${PYTHON} ; \
+	    else \
+	       export mypython=python3 ; \
+	    fi \
+	    && ${RUNNER} ${NP} $$mypython ${PROGRAM}.py ${OPTIONS} \
+	    ; \
+	 else \
+	    ${RUNNER} ${NP} ${PROGRAM} ${OPTIONS} \
+	    ; \
+	 fi
+
+info ::
+	@echo "make clean"
+.PHONY: clean
+clean ::
+	@/bin/rm -f *.o *~ ${SOURCES} matdata*

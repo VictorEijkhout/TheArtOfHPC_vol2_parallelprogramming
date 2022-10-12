@@ -1,0 +1,25 @@
+C:
+int MPI_Send_init(
+  const void* buf, int count, MPI_Datatype datatype,
+  int dest, int tag, MPI_Comm comm, MPI_Request *request)
+
+Fortran:
+MPI_Send_init(buf, count, datatype, dest, tag, comm, request, ierror)
+TYPE(*), DIMENSION(..), INTENT(IN), ASYNCHRONOUS :: buf
+INTEGER, INTENT(IN) :: count, dest, tag
+TYPE(MPI_Datatype), INTENT(IN) :: datatype
+TYPE(MPI_Comm), INTENT(IN) :: comm
+TYPE(MPI_Request), INTENT(OUT) :: request
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+
+Python:
+MPI.Comm.Send_init(self, buf, int dest, int tag=0)
+
+Semantics:
+IN buf: initial address of send buffer (choice)
+IN count: number of elements sent (non-negative integer)
+IN datatype: type of each element (handle)
+IN dest: rank of destination (integer)
+IN tag: message tag (integer)
+IN comm: communicator (handle)
+OUT request: communication request (handle)

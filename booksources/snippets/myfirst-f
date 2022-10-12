@@ -1,0 +1,6 @@
+!! exscan.F90
+  integer :: my_first=0,localsize
+! localsize = .... result of local computation ...
+  ! find myfirst local based on the local sizes
+  call MPI_Exscan(localsize,my_first, &
+       1,MPI_INTEGER,MPI_SUM,comm,err)

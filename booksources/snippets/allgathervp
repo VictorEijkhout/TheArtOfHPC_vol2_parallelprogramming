@@ -1,0 +1,9 @@
+my_count = np.empty(1,dtype=int)
+my_count[0] = mycount
+comm.Allgather( my_count,recv_counts )
+
+accumulate = 0
+for p in range(nprocs):
+    recv_displs[p] = accumulate; accumulate += recv_counts[p]
+global_array = np.empty(accumulate,dtype=np.float64)
+comm.Allgatherv( my_array, [global_array,recv_counts,recv_displs,MPI.DOUBLE] )

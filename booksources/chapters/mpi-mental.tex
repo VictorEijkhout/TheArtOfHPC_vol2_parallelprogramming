@@ -1,0 +1,988 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% mpi-started.tex : introductory chapter about MPI
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Distributed memory programming, typically through the MPI library,
+is the \textit{de facto} standard for programming large
+scale parallelism, with up to millions of individual processes.  Its
+dominant paradigm of \acf{SPMD} programming is different from
+threaded and multicore parallelism, to an extent that students have
+a hard time switching models.
+%
+In contrast to threaded programming, which allows
+for a view of the execution with central control and 
+a central repository of data, SPMD programming
+has a symmetric model where all processes are active all the time,
+with none privileged, and where data is distributed.
+
+This model is counterintuitive to the novice parallel programmer, so
+care needs to be taken how to instill the proper `mental model'.
+Adoption of an incorrect mental model leads to broken or inefficient code.
+
+We identify problems with the currently common way of teaching MPI,
+and propose a structuring of MPI courses that is geared to explicit
+reinforcing the symmetric model. Additionally, we advocate starting
+from realistic scenarios, rather than writing artificial code just
+to exercise newly-learned routines.
+
+\Level 0 {Introduction}
+
+The \ac{MPI} library~\cite{mpi-reference,mpi-documents} is the
+\textit{de facto} tool for large scale parallelism as it is used in
+engineering sciences. In this paper we want to discuss the manner it
+is usually taught, and propose a rethinking.
+
+We argue that the topics
+are typically taught in a sequence that is essentially dictated by
+level of complexity in the implementation, rather than by conceptual considerations.
+%
+Our argument will be for a sequencing of topics, and use of examples,
+that is motivated by typical applications of the \ac{MPI} library, and
+that explicitly targets the required mental model of the parallelism
+model underlying MPI.
+
+We have written an open-source textbook~\cite{Eijkhout:MPI} with
+exercise sets that follows the proposed sequencing of topics and the
+motivating applications.
+
+\Level 1 {Short background on MPI}
+
+The \ac{MPI} library dates back to the early days of cluster
+computing, the first half of the 1990s. It was an academic/industrial
+collaboration to unify earlier, often vendor-specific, message passing
+libraries. MPI is typically used to code large-scale \ac{FEM} and
+other physical simulation applications, which share characteristics of a
+relatively static distribution of large amounts of data --~hence the
+use of clusters to increase size of the target problem~-- and the need
+for very efficient exchange of small amounts of data.
+
+The main motivation for MPI is the fact that it can be scaled to more
+or less arbitrary scales, currently up to millions of
+cores~\cite{Balaji:PPL-mpi-on-1M}. Contrast this with threaded
+programming, which is limited more or less by the core count on a
+single node, currently about~70.
+
+Considering this background, the target audience for \ac{MPI} teaching
+consists of upper level undergraduate students, graduate students, and
+even post-doctoral researchers who are engaging for the first time in
+large scale simulations. The typical participant in an MPI course is
+likely to understand more than the basics of linear algebra and some
+amount of numerics of \acf{PDE}.
+
+\Level 1 {Distributed memory parallelism}
+
+Corresponding to its origins in cluster computing,
+MPI targets distributed memory parallelism\footnote{Recent additions
+  to the MPI standard target shared memory too.}. Here, network-connected
+cluster nodes run codes that share no data, but synchronize through
+explicit messages over the network.
+Its main model for parallelism is described as
+\acf{SPMD}: multiple instances of a single program run on the
+processing elements, each operating on their own data. The MPI library
+then implements the communication calls that allow processes to
+combine and exchange data.
+
+While MPI programs can solve many or all of the same problems that can
+be solved with a multicore approach, the programming approach is
+different, and requires an adjustment in the programmer's `mental
+model'~\cite{Dehnadi:meta-analysis,WasonJL:thinking} of the parallel
+execution. This paper addresses the question of how to teach MPI to
+best effect this shift in mindset.
+
+\textbf{Outline of this paper.}
+We use section~\ref{sec:par-models} to address explicitly the mental
+models that govern parallel thinking and parallel programming,
+pointing out why \ac{MPI} is different, and difficult initially.
+In section~\ref{sec:mpi-usual}
+we consider the way MPI is usually taught, while in section~\ref{sec:mpi-better}
+we offer an alternative
+that is less likely to lead to an incorrect mental model.
+
+Some details of our proposed manner of teaching are explored in
+sections \ref{sec:games}, \ref{sec:course}, \ref{sec:online}. We
+conclude with discussion in sections \ref{sec:eval} and~\ref{sec:summary}.
+
+\Level 0 {Implied mental models}
+\label{sec:par-models}
+
+Denning~\cite{Denning:compthinking2017} argued how computational
+thinking consists in finding an abstract machine (a~`computational
+model') that solves the problem in a simple algorithmic way. In our
+case of teaching parallel programming, the complication to this story
+is that the problem to be solved is already a computational system.
+That doesn't lessen the need to formulate an abstract model, since the
+full explanation of MPI's workings are unmanageable for a beginning
+programmer, and often not needed for practical purposes.
+
+In this section we consider in more detail the mental models that
+students may implicitly be working under, and the problems with them;
+targeting the right mental model will then be the subject of later sections. 
+The two (interrelated) aspects of a correct mental model for distributed memory
+programming are control and synchronization. We here discuss how these
+can be misunderstood by students.
+
+\Level 1 {The traditional view of parallelism}
+\label{sec:finger}
+
+The problem with mastering the \ac{MPI} library is that beginning
+programmers take a while to overcome a certain mental model for
+parallelism.  In this model, which we can call `sequential semantics'
+(or more whimsically the `big index finger' model), there is only a
+single strand of execution\footnote{We carefully avoid the word
+  `thread' which carries many connotations in the context of parallel
+  programming.}, which we may think of as a big index finger going
+down the source code.
+
+This mental model corresponds closely to the way algorithms are
+described in the mathematical literature of parallelism,
+and it is actually correct to an extent in the context of threaded libraries such as
+OpenMP,
+where there is indeed initially a single thread of execution,
+which in some places spawns a team of threads to execute certain
+sections of code in parallel.
+However, in \ac{MPI} this model is factually incorrect,
+since there are always multiple processes active,
+with none essentially priviliged over others, and no shared or central
+data store.
+
+\Level 1 {The misconceptions of centralized control}
+\label{sec:misconception}
+
+The sequential semantics mental model that, as described above,
+underlies much of the theoretical discussion of parallelism, invites the student to
+adopt certain programming techniques, such as the
+master-worker approach to parallel programming. While this is
+often the right approach with thread-based coding, where we
+indeed have a master
+thread and spawned threads, it is usually incorrect for \ac{MPI}.
+The strands of execution in an \ac{MPI} run are all long-living processes
+(as opposed to dynamically spawned threads),
+and are \emph{symmetric} in their capabilities and execution.
+
+Lack of recognition of this process symmetry also induces students to
+solve problems by having a form of `central data store' on one
+process, rather than adopting a symmetric, distributed, storage model.
+For instance, we have seen a student solve a data transposition
+problem by collecting all data on process~0, and subsequently
+distributing it again in transposed form.
+%
+While this may be
+reasonable\footnote {To first order; second order effects such as
+  affinity complicate this story.} in shared memory with OpenMP, with
+\ac{MPI} it is unrealistic in that no process is likely to have enough
+storage for the full problem. Also, this introduces a sequential
+bottleneck in the execution.
+
+In conclusion, we posit that beginning MPI programmers may
+suffer from a mental model that makes them
+insufficiently realize the symmetry of MPI processes,
+and thereby arrive at inefficient and nonscalable solutions.
+
+\Level 1 {The reality of distributed control}
+
+An MPI program run consists of multiple independent threads of control. One
+problem in recognizing this is that there is only a single source code, so
+there is an inclination to envision the program execution as a single
+thread of control: the above-mentioned `index finger' going down the
+statements of the source. A second factor contributing to this view is that a
+parallel code incorporates statements with values
+(\verb+int x = 1.5;+)
+that are replicated over all processes. It is easy to view these as
+centrally executed.
+
+Interestingly,
+work by Ben-David Kolikant~\cite{Kolikant:tickets} shows that students
+with no prior knowledge of concurrency, when invited to consider
+parallel activities, will still think in terms of centralized
+solutions. This shows that distributed control, such as it appears in
+\ac{MPI}, is counterintuitive and needs explicit enforcement in its
+mental model.
+In particular, we explicitly target process symmetry and
+process differentiation.
+
+\begin{comment}
+  The combination of single thread of control, but distributed data, we
+  identified above as `sequential
+  semantics'~\cite{Nikhil:ph-book}. While this is a feasible model for
+  parallel execution, it leads to idioms such as 
+\begin{verbatim}
+for (p=0; p<nprocs; p++)
+  if (p==myrank)
+    // do some function of p
+\end{verbatim}
+when the code needs to distinguish between processes.
+\end{comment}
+
+The centralized model can still be maintained in MPI to an extent, since
+the scalar operations that would be executed by a single thread
+become replicated operations in the MPI processes.
+The distinction between sequential execution and
+replicated execution escapes many students at first, and in fact,
+since nothing it gained by explaining this, we do not do so.
+
+\Level 1 {The misconception of synchronization}
+
+Even with multiple threads of control and distributed data, there is
+still a temptation to see execution as `bulk
+synchronous processing' (BSP~\cite{Valiant:1990:BSP}).
+Here, the execution proceeds by supersteps, implying that processes
+are largely synchronized. (The BSP model has several components more,
+which are usually ignored, notably one-sided communication and processor
+oversubscription.)
+
+Supersteps as a computational model allow for small
+differences in control flow, for instance conditional inside a big
+parallelizable loop, but otherwise imply a form of centralized control
+(as above) on the level of major algorithm steps.
+However, codes  using the pipeline model of parallelism, such idioms as
+\begin{verbatim}
+MPI_Recv( /* from: */ my_process-1)
+// do some major work
+MPI_Send( /* to  : */ my_process+1)
+\end{verbatim}
+fall completely outside either the sequential semantics or BSP model
+and require an understanding of one process' control being dependent
+on another's.
+%
+Gaining an mental model for this sort of unsynchronized execution is
+nontrivial to achieve. We target this explicitly in
+section~\ref{sec:seq-game}.
+
+\Level 0 {Teaching MPI, the usual way}
+\label{sec:mpi-usual}
+
+The \ac{MPI} library is typically taught as follows.  After an
+introduction about parallelism, covering concepts such as speedup
+and shared versus distributed memory parallelism, students learn about
+the initialization and finalization routines, and the
+\n{MPI_Comm_size} and \n{MPI_Comm_rank} calls for querying the number
+of processes and the rank of the current process.
+
+After that, the typical sequence is
+\begin{enumerate}
+\item two-sided communication, with first blocking and later nonblocking variants;
+\item collectives; and 
+\item any number of advanced topics such as derived data types,
+  one-sided communication, subcommunicators,
+  MPI I/O et cetera, in no particular order.
+\end{enumerate}
+This sequence is defensible from a point of the underlying implementation:
+the two-sided communication calls are a close map to hardware behavior,
+and collectives are both conceptually equivalent to, and
+can be implemented as, a sequence of point-to-point communication calls.
+However, this is not a sufficient justification for
+teaching this sequence of topics.
+
+\Level 1 {Criticism}
+
+We offer three points of criticism against this traditional approach to teaching MPI.
+
+First of all, there is
+no real reason for teaching collectives after two-sided routines. They
+are not harder, nor require the latter as prerequisite. In fact, their
+interface is simpler for a beginner, requiring one line for a collective, as
+opposed to at least two for a send/receive pair, probably surrounded
+by conditionals testing the process rank. More importantly, they
+reinforce the symmetric process view, certainly in the case of the
+\n{MPI_All...} routines.
+
+Our second point of criticism is regarding the blocking and
+nonblocking two-sided communication routines.
+%
+The blocking routines are typically taught
+first, with a discussion of how blocking behavior can lead to load
+unbalance and therefore inefficiency. The nonblocking routines are
+then motivated from a point of latency hiding and solving the problems
+inherent in blocking. In our view such performance considerations
+should be secondary.
+Nonblocking routines should instead be taught as the natural solution to a
+conceptual problem, as explained below.
+
+Thirdly, starting with point-to-point routines stems from a
+\ac{CSP}\cite{Hoare:CSP} view of a program:
+each process stands on its own, and any global behavior is an emergent
+property of the run. This may make sense for the teacher who know
+how concepts are realized `under the hood', but it does not lead
+to additional insight with the students.
+We believe that a more fruitful approach to MPI
+programming starts from the global behavior, and then derives the MPI
+process in a top-down manner.
+
+\Level 1 {Teaching MPI and OpenMP}
+
+In scientific computing, another commonly used parallel programming
+system is OpenMP~\cite{OpenMP:spec}. OpenMP and MPI are often taught
+together, with OpenMP taught earlier
+because it is supposedly easier, or because its parallelism would be
+easier to grasp. Regardless our opinion on the first estimate, we
+argue that OpenMP should be taught \emph{after} MPI because of its
+`central control' parallelism model. If students come to associate
+parallelism with a model that has a `master thread' and `parallel
+regions' they will find it much harder to make idiomatic use of the
+symmetric model of MPI.
+
+\Level 0 {Teaching MPI, our proposal}
+\label{sec:mpi-better}
+
+As alternative to the above sequence of introducing
+MPI concepts, we propose a sequence that focuses
+on practical scenarios, and that actively reinforces
+the mental model of \ac{SPMD} execution.
+
+Such reinforcement is often an immediate consequence of our strategy
+of illustrating MPI constructs in the context of an application: most
+MPI applications (as we shall briefly discuss next) operate on large
+`distributed objects'. This immediately leads to a mental model of the
+workings of each process being the `projection' onto that process of
+the global calculation. The opposing view, where the overall
+computation is emergent from the individual processes, is the \ac{CSP} model
+mentioned above.
+
+\Level 1 {Motivation from applications}
+\label{sec:par-app}
+
+The typical application for MPI comes from Computational Science and
+Engineering, such as N-body problems, aerodynamics, shallow water
+equations, Lattice Boltzman methods, weather modeling with Fast
+Fourier Transform. Of these, the \ac{PDE} based applications can
+readily be explained to need a number of MPI mechanisms.
+
+Nonnumeric applications exist:
+\begin{itemize}
+\item Graph algorithms such as shortest-path or PageRank are 
+  straightforward to explain sequentially.
+  However, the distributed memory algorithms need to
+  be approached fundamentally different from the more naive shared
+  memory variants. Thus they require a good amount of background
+  knowledge. Additionally, they do not feature the regular
+  communications that one-dimensional PDE applications
+  have. Scalability arguments make this story even more
+  complicated. Thus, these algorithms are in fact a logical next topic
+  \emph{after} discussion of parallel PDE algorithm.
+\item N-body problems, in their naive implementation, are easy to
+  explain to any student who knows inverse-square laws such as
+  gravity. It is a good illustration of some collectives, but nothing
+  beyond that.
+\item Sorting. Sorting algorithms based on a sorting network (this
+  includes bubblesort, but not quicksort) can be used as
+  illustration. In fact, we use odd-even transposition sort as a
+  `midterm' exam assignment, which can be solved with
+  \n{MPI_Sendrecv}. Algorithms such as bitonic sort can be used to
+  illustrate some advanced concepts, but quicksort, which is
+  relatively easy to explain as a serial algorithm, or even in shared
+  memory, is quite hard in \ac{MPI}.
+\item Point-to-point operations can also be illustrated by graphics
+  operations such as a `blur', since these correspond to a `stencil'
+  applied to a cluster of pixels. Unfortunately, this example suffers
+  from the fact that neither collectives, nor irregular communications
+  have a use in this application. Also, using graphics to illustrate
+  simple \ac{MPI} point-to-point communication is unrealistic in two
+  ways: first, to start out simple we have to posit a one-dimensional
+  pixel array; secondly, graphics is hardly ever of the scale that
+  necessitates distributed memory, so this example is far from `real
+  world'. (Ray tracing is naturally done distributed, but that has a
+  completely different computational structure.)
+\end{itemize}
+
+Based on this discussion of possible applications, and in view of the
+likely background of course attendants, we consider Finite Difference
+solution of \acp{PDE} as a prototypical application that exercises
+both the simplest and more sophisticated mechanisms. During a typical
+MPI training, even a one-day short course, we insert a lecture on
+sparse matrices and their computational structure to motivate the need
+for various MPI constructs.
+
+\Level 1 {Process symmetry}
+
+Paradoxically, the first way to get students to
+appreciate
+the notion of process symmetry in MPI is to run
+a non-MPI program. Thus, students are asked
+to write a `hello world' program, and execute this
+with \indextermtt{mpiexec}, as if it were an MPI program.
+Every process executes the print statement identically,
+bearing out the total symmetry between the processes.
+
+Next, students are asked to insert the initialize
+and finalize statements, with three different `hello world'
+statements before, between, and after them.
+This will prevent any notion of the code between initialization
+and finalization being considered as an OpenMP style `parallel region'.
+
+A simple test to show that while processes are symmetric they are
+not identical is offered by the exercise of using the \n{MPI_Get_processor_name}
+function, which will have different output for some or all of the processes,
+depending on how the hostfile was arranged.
+
+\Level 1 {Functional parallelism}
+
+The \n{MPI_Comm_rank} function is introduced as a way of distinguishing
+between the MPI processes. Students are asked to write a program
+where only one process prints the output of \n{MPI_Comm_size}.
+
+\begin{wrapfigure}{r}{1.2in}
+  \includegraphics[scale=.15]{picirc}
+  \caption{Calculation of $\pi/4$ by Riemann sums}
+\end{wrapfigure}
+%
+Having different execution without necessarily different data is a case
+of `functional parallelism'. At this point there are few examples
+that we can assign. For instance, in order to code
+the evaluation of an integral by Riemann sums ($\pi/4=\int_0^1\sqrt{1-x^2}dx$
+is a popular one) would need a final sum collective, which has
+not been taught at this point.
+
+A possible example would be primality testing, where each process
+tries to find a factor of some large integer~$N$ by traversing a subrange of~$[2,\sqrt N]$,
+and printing a message if a factor is found. Boolean satisfiability problems
+form another example, where again a search space is partitioned
+without involving any data space; a~process finding a satisfying input
+can simply print this fact. However, this example requires background
+that students typically don't have.
+
+\Level 1 {Introducing collectives}
+
+At this point we can introduce collectives, for instance to find the maximum
+of a random value that is computed locally on each process. This requires teaching
+the code for random number generation and, importantly, setting a process-dependent
+random number seed.
+Generating random 2D or 3D coordinates and finding the center of mass
+is an examples that requires a send and receive buffer of length greater than~1,
+and illustrates that reductions are then done pointwise.
+
+These examples evince both process symmetry and a first form
+of local data. However, a thorough treatment of distributed parallel data
+will come in the discussion of point-to-point routines.
+
+It is an interesting question whether we should dispense with `rooted'
+collectives such as \n{MPI_Reduce} at first, and start with
+\n{MPI_Allreduce}\footnote{The {\tt MPI\_Reduce} call performs a
+  reduction on data found on all processes, leaving the result on a
+  `root' process. With {\tt MPI\_Allreduce} the result is left on
+  \emph{all} processes.}
+The latter is more symmetric in nature, and has a
+buffer treatment that is easier to explain; it certainly reinforces
+the symmetric mindset.
+There is also essentially no difference in efficiency.
+\begin{comment}
+  To this author, there are few reasons to prefer
+  {\small
+\begin{verbatim}
+MPI_Reduce( indata,outdata, /* root= */ 0 );
+if (myprocno==0)
+  printf("The result is .... ",outdata);
+\end{verbatim}
+  }
+  over
+  {\small
+\begin{verbatim}
+MPI_Allreduce( indata,outdata );
+if (myprocno==0)
+  printf("The result is .... ",outdata);
+\end{verbatim}
+  }
+\end{comment}
+
+Certainly, in most applications the `allreduce' is the more common
+mechanism, for instance where the algorithm requires computations such
+as 
+\[ \bar y \leftarrow \bar x/\| \bar x\| \]
+where $x,y$ are distributed vectors. The quantity $\|\bar x\|$ is then
+needed on all processes, making the \n{Allreduce} the natural choice.
+The rooted reduction is typically only used for
+final results. Therefore we advocate introducing both rooted and
+nonrooted collectives, but letting the students initially do
+exercises with the nonrooted variants.
+
+This has the added advantage of not bothering the students initially
+with the asymmetric treatment of the receive buffer between the root
+and all other processes.
+
+\Level 1 {Distributed data}
+
+As motivation for the following discussion of point-to-point routines,
+we now introduce the notion of distributed data. In its simplest form,
+a parallel program operates on a linear array the dimensions of which
+exceed the memory of any single process.
+
+\begin{figure*}[ht]
+  \includegraphics[scale=.09]{mpi-array}
+  \caption{A distributed array versus multiple local arrays}
+  \label{fig:mental-array}
+\end{figure*}
+
+The lecturer stresses that the global structure of the distributed
+array is only `in the programmer's mind': each MPI process sees an array
+with indexing starting at zero. The following snippet of code is given
+for the students to use in subsequent exercises:
+{\small
+\begin{verbatim}
+int myfirst = .....;
+for (int ilocal=0; ilocal<nlocal; ilocal++) {
+   int iglobal = myfirst+ilocal;
+   array[ilocal] = f(iglobal);
+}  
+\end{verbatim}
+}
+
+At this point, the students can code a second variant of the primality testing
+exercise above, but with an array allocated to store the integer range.
+Since collectives are now known, it becomes possible to have a single summary
+statement from one process, rather than a partial result statement from each.
+
+The inner product of two distributed vectors is a second illustration
+of working with distributed data. In this case, the reduction for
+collecting the global result is slightly more useful than the collective
+in the previous examples. For this example no translation from local to global
+numbering is needed.
+
+\Level 1 {Point-to-point motivated from operations on distributed data}
+
+We now state the importance of local combining operations such as
+\[ y_i=\bigl( x_{i-1}+x_i+x_{i+1} \bigr)/3\colon i=1,\ldots,N-1 \]
+applied to an array. Students who know about \acp{PDE} will recognize
+that with different coefficients this is
+the heat equation; for others a graphics `blur' operation can be used
+as illustration, if they accept that a one-dimensional pixel array is
+a stand-in for a true graphic.
+
+Under the 'owner computes' regime, where the process that stores location $y_i$ performs
+the full calculation of that quantity, we see the need for communication
+in order to compute the first and last element of the local part of~$y$:
+
+\includegraphics[scale=.07]{threepoint}
+
+We then state that this data transfer is realized in MPI by two-sided
+send/receive pairs.
+
+\Level 1 {Detour: deadlock and serialization}
+\label{sec:p-serial}
+
+The concept of `blocking' is now introduced, and we discuss how this
+can lead to deadlock. A~more subtle behavior is `unexpected
+serialization': processes interacting to give serial behavior on a
+code that conceptually should be parallel.
+(The classroom protocol is discussed in detail in section~\ref{sec:seq-game}.)
+For completeness, the `eager limit' can be discussed.
+
+This introduces students to an interesting phenomenon in the concept
+of parallel correctness: a program may give the right result,
+but not with the proper parallel efficiency.
+Asking a class to come up with a solution that does not have a running
+time proportional the number of processes, will usually lead to
+at least one student suggesting splitting processes in odd and even
+subsets. The limits to this approach, code complexity and the reliance
+on regular process connectivity, are explained to the students as a
+preliminary to the motivation for nonblocking sends; section~\ref{sec:mental-nonblock}.
+
+\Level 1 {Detour: ping-pong}
+
+At this point we briefly abandon the process symmetry, and consider
+the ping-pong operation between two processes A~and~B\footnote {In this
+operations, process~A sends to~B, and B~subsequenty sends to~A. Thus
+the time for a message is half the time of a ping-pong. It is not
+possible to measure a single message directly, since processes can not
+be synchronized that finely.}.
+We ask students
+to consider what the ping-pong code looks like for~A and, for~B.
+Since we are working with SPMD code, we arrive at a program where the
+A~code and B~code are two branches of a conditional.
+
+We ask the students to implement this, and do timing with
+\n{MPI_Wtime}. The implementation of the ping-pong is itself a good
+exercises in SPMD thinking; finding the right sender/receiver values
+usually takes the students a nontrivial amount of time. Many of them
+will initially write a code that deadlocks.
+
+The concepts of latency and bandwidth can be introduced, as the students
+test the ping-pong code on messages of increasing size.
+The concept of halfbandwidth can be introduced by letting half of all processes
+execute a ping-pong with a partner process in the other half.
+
+\Level 1 {Back to data exchange}
+
+The foregoing detours into the behavior of two-sided send and receive calls
+were necessary, but they introduced asymmetric behavior in the processes.
+We return to the averaging operation given above, and with it to a code
+that treats all processes symmetrically.
+In particular, we argue that, except for the first and last,
+each process exchanges information with its left and right neighbor.
+
+This could be implemented with blocking sends and receive calls, but
+students recognize how this could be somewhere between tedious and
+error-prone.  Instead, to prevent deadlock and serialization as
+described above, we now offer the \n{MPI_Sendrecv}
+routine\footnote{The {\tt MPI\_Sendrecv} call combines a send a receive
+  operation, specifying for each process both a sending and receiving
+  communication. The execution guarantees that no deadlock or
+  serialization will occur.}. Students are asked to implement the
+classroom exercise above with the sendrecv routine.  Ideally, they use
+timing or tracing to gather evidence that no serialization is
+happening.
+
+As a nontrivial example (in fact, this takes enough programming that
+one might assign it as an exam question, rather than an exercise
+during a workshop) students can now implement an odd-even
+transposition sort
+algorithm using \n{MPI_Sendrecv} as the main tool.
+For simplicity they can use a single array element per process.
+(If each process has a subarray one has to make sure their solution
+has the right parallel complexity. It is easy to make errors here
+and implement a correct algorithm that, however, performs too slowly.)
+
+Note that students have at this point not done any serious exercises
+with the blocking communication calls, other than the ping-pong.
+No such exercises will in fact be done.
+
+\Level 1 {Nonblocking sends}
+\label{sec:mental-nonblock}
+
+Nonblocking sends are now introduced as the solution to a specific problem:
+the above schemes required paired-up processes, or careful orchestration
+of send and receive sequences. In the case of irregular communications
+%
+%\includegraphics[scale=.1]{graphsend}
+%
+this is no longer possible or feasible. Life would be easy if we could
+declare `this data needs to be sent' or `these messages are expected',
+and then wait for these messages collectively.
+Given this motivation, it is immediately clear that multiple send or receive
+buffers are needed, and that requests need to be collected.
+
+Implementing the three-point averaging with nonblocking calls
+is at this point an excellent exercise.
+
+Note that we have here motivated the nonblocking
+routines to solve a symmetric problem. Doing this should 
+teach the students the essential point that each nonblocking
+call needs its own buffer and generates its own request.
+Viewing nonblocking routines as a performance alternative to blocking
+routines is likely to lead to students re-using buffers or failing to
+save the request objects.
+Doing so is a correctness bug that is very hard to find, and
+at large scale it induces a memory leak since many requests objects
+are lost.
+
+\Level 1 {Taking it from here}
+
+At this point various advanced topics can be discussed. For instance,
+Cartesian topologies can be introduced, extending the linear averaging operation
+to a higher dimensional one.
+Subcommunicators can be introduced to apply collectives to rows and
+columns of a matrix. The recursive matrix transposition algorithm is also
+an excellent application of subcommunicators.
+
+However, didactically these topics do not require the careful
+attention that the introduction of the basic concepts needs, so we
+will not go into further detail here.
+
+\Level 0 {`Parallel computer games'}
+\label{sec:games}
+
+Part of the problem in developing an accurate mental model of parallel
+computation is that there is no easy way to visualize the execution.
+While sequential execution can be imagined with the `big index finger'
+model (see section~\ref{sec:finger}), the possibily unsynchronized
+execution of an MPI program makes this a gross simplification.
+Running a program in a parallel graphical environment (such as the DDT
+debugger or the Eclipse PTP IDE) would solve this, but they introduce
+much learning overhead. Ironically, the low tech solution of
+\begin{verbatim}
+mpiexec -n 4 xterm -e gdb program
+\end{verbatim}
+is fairly insightful, but having to learn gdb is again a big hurdle.
+
+We have arrived at the somewhat unusual solution of having students
+act out the program in front of the class. With each student acting
+out the program, any interaction is clearly visible to an extent that
+is hard to achieve any other way.
+
+\Level 1 {Sequentialization}
+\label{sec:seq-game}
+
+Our prime example is to illustrate the blocking behavior of
+\n{MPI_Send} and \n{MPI_Recv}\footnote{Blocking is defined as the
+  process executing a send or receive call halting until the
+  corresponding operation is executing.}. Deadlock is easy enough to
+understand as a consequence of blocking --~in the simplest case of
+deadlock to processes are both blocked expecting a receive from the
+other~-- but there are more subtle effects that will come as a
+surprise to students. (This was alluded to in section~\ref{sec:p-serial}.)
+
+Consider the following basic program:
+\begin{itemize}
+\item Pass a data item to the next higher numbered process.
+\end{itemize}
+Note that this is conceptually a fully parallel program, so it should
+execute in time $O(1)$ in terms of the number of processes.
+
+In terms of send and receive calls, the program becomes 
+\begin{itemize}
+\item Send data to the next higher process;
+\item Receive data from the next lower process.
+\end{itemize}
+The final detail concerns the boundary conditions: the first process
+has nothing to receive and the last one has nothing to send. This
+makes the final version of the program:
+\begin{itemize}
+\item If you are not the last process, send data to the next higher
+  process; then
+\item If you are not the first process, receive data from the next
+  lower process.
+\end{itemize}
+To have students act this out, we tell them to hold a pen in their
+right hand, and put the left hand in a pocket or behind their
+back. Thus, they have only one `communication channel'. The `send
+data' instruction becomes `turn to your right and give your pen', and
+`receive data' becomes `turn to your left and receive a pen'.
+
+Executing this program, the students first all turn to the right, and
+they see that giving data to a neighbor is not possible because no
+one is executing the receive instruction. The last process is not
+sending, so moves on to the receive instruction, after which the
+penultimate process can receive, et cetera.
+
+This exercise makes the students see, better than any explanation or
+diagram, how a parallel program can compute the right result, but with
+unexpectedly low performance because of the interaction of the processes.
+(In fact, we have had explicit feedback that this game was
+the biggest lightbulb moment of the class.)
+
+\Level 1 {Ping-pong}
+
+While in general we emphasize the symmetry of MPI processes, during
+the discussion of send and receive calls we act out the ping-pong
+operation (one process sending data to another, followed by the other
+sending data back), precisely to demonstrate how asymmetric actions
+are handled. For this, two students throw a pen back and forth between
+them, calling out `send' and `receive' when they do so.
+
+The teacher then asks each student what program they executed, which
+is `send-receive' for the one, and `receive-send' for the other
+student. Incorporating this in the SPMD model then leads to a code
+with conditionals to determine the right action for the right process.
+
+\Level 1 {Collectives and other games}
+
+Other operations can be acted out by the class. For instance, the
+teacher can ask one student to add the grades of all students, as a
+proxy for a reduction operation. The class quickly sees that this will
+take a long time, and strategies such as taking by-row sums in the
+classroom quickly suggest themselves.
+
+We have at one point tried to have a pair of student act out a `race
+condition' in shared memory programming, but modeling this quickly
+became too complicated to be convincing.
+
+\Level 1 {Remaining questions}
+\label{sec:ploop}
+
+Even with our current approach, however, we still see students writing
+idioms that are contrary to the symmetric model. For instance, they
+will write
+\begin{verbatim}
+for (p=0; p<nprocs; p++)
+  if (p==myrank)
+    // do some function of p
+\end{verbatim}
+This code computes the correct result, and with the correct
+performance behavior, but it still shows a conceptual
+misunderstanding. As one of the `parallel computer games'
+(section~\ref{sec:games}) we have put a student stand in front of the
+class with a sign `I~am process~5', and go through the above loop
+out loud (`Am I process zero? No. Am I process one? No.') which
+quickly drives home the point about the futility of this construct.
+
+\Level 0 {Further course summary}
+\label{sec:course}
+
+We have taught MPI based on the above ideas in two ways.
+First, we teach an academic class,
+that covers MPI, OpenMP, and general theory of parallelism in one semester.
+The typical enrollment is around 30 students, who do lab exercises and
+a programming project of their own choosing.
+We also teach a two-day intensive workshop (attendance 10--40 students depending
+on circumstances) of 6--8 hours per day. Students of the academic class are typically
+graduate or upper level undergraduate students; the workshops get
+attendance from post-docs, academics, and industry too. The typical
+background is applied math, engineering, physical sciences.
+
+We cover the following topics, with division over two days in the
+workshop format:
+\begin{itemize}
+\item Day 1: familiarity with SPMD, collectives, blocking and
+  nonblocking two-sided communication.
+\item Day 2: exposure to: sub-communicators, derived datatypes.
+  Two of the following: MPI-I/O, one-sided communication, process
+  management, the profiling and tools interfaces, neighborhood collectives.
+\end{itemize}
+
+\Level 1 {Exercises}
+
+On day~1 the students do approximately 10 programming exercises,
+mostly finishing a skeleton code given by the instructor.
+For the day~2 material students do two exercises per topic, again
+starting with a given skeleton. (Skeleton codes are available as part
+of the repository~\cite{Eijkhout:MPI}.)
+
+The design of these skeleton codes is an interesting problem in view
+of our concern with mental models. The
+skeletons are intended to take the grunt work away from the students,
+to both indicate a basic code structure and relieve them from making
+elementary coding errors that have no bearing on learning MPI. On the
+other hand, the skeletons should leave enough unspecified that
+multiple solutions are possible, including wrong ones: we want
+students to be confronted with conceptual errors in their thinking,
+and a too-far-finished skeleton would prevent them from doing that.
+
+Example: the prime finding exercise mentioned above (which teaches the
+notion of functional parallelim) has the following skeleton:
+{\small
+\begin{verbatim}
+int myfactor;
+// Specify the loop header:
+// for ( ... myfactor ... )
+for (
+    /**** your code here ****/
+    ) {
+  if (bignum%myfactor==0)
+    printf("Process %d found factor %d\n",
+           procno,myfactor);
+  }
+\end{verbatim}
+}
+%
+This leaves open the possibility of both a blockwise and a cyclic
+distribution of the search space, as well as incorrect solutions where
+each process runs through the whole search space.
+
+\Level 1 {Projects}
+
+Students in our academic course do a programming project in place of a
+final exam. Students can choose between one of a set of standard
+projects, or doing a project of their own choosing. In the latter
+case, some students will do a project in context of their graduate
+research, which means that they have an existing codebase; others will
+write code from scratch. It is this last category, that will most
+clearly demonstrate their correct understanding of the mental model
+underlying \ac{SPMD} programs. However, we note that this is only a
+fraction of the students in our course, a~fraction made even smaller
+by the fact that we also give a choice of doing a project in OpenMP
+rather than MPI. Since OpenMP is, at least to the beginning
+programmer, simpler to use, there is an in fact a clear preference for it
+among the students who pick their own project.
+
+\begin{comment}
+  \Level 1 {Evaluation and supervision}
+
+  In our academic class the programming exercises are done partly in
+  class and partly as homework. They are very lightly
+  graded: the majority of the grade comes from a programming project
+  that is the student's own initiative and coded from scratch.
+
+  In the workshop format there is no grading, but the instructor plus
+  possible assistants are continuously monitoring students to help them
+  over stumbling blocks and clarify concepts, both in MPI and elementary
+  programming. We have found that one instructor or assistant per 8--10
+  students is a good ratio; more students per instructor will have
+  students fall by the wayside. The typical exercise takes 15--30 minutes.
+\end{comment}
+
+\Level 0 {Prospect for an online course}
+\label{sec:online}
+
+Currently the present author teaches MPI in the form of an academic
+course or short workshop, as outlined in section~\ref{sec:course}.
+In both cases, lecture time is far less than lab time, making the
+setup very intensive in teacher time. It also means that this setup is
+not scalable to a larger number of students. Indeed, while the
+workshops are usually webcast, we have not sufficiently solved the
+problem of supporting remote students. (The Pittsburgh Supercomputing
+Center offers courses that have remotely located teaching assistants,
+which seems a promising approach.)
+Such problems of support would be even more severe with an online
+course, where in-person support is completely absent.
+
+One obvious solution to online teaching is automated grading:
+a~student submits an exercise, which is then run through a checker
+program that tests the correct output. Especially if the programming
+assignment takes input, a checker script can uncover programming
+errors, notably in boundary cases.
+
+However, the whole target of this paper is to uncover conceptual
+misunderstandings, for instance such as can lead to correct results
+with sub-optimal performance. In a classroom situation such
+misunderstandings are quickly caught and cleared up, but to achieve
+this in a context of automated grading we need to go further.
+
+We have started experiments with actually parsing code submitted by
+the students. This effort started in a beginning programming class
+taught by the present author, but is now being extended to the MPI courses.
+
+It is possible to uncover misconceptions in students' understanding by
+detecting the typical manifestations of such misconceptions. For
+instance, the code in section~\ref{sec:ploop} can be uncovered by
+detecting a loop where the upper bound involves a variable that was
+set by \n{MPI_Comm_size}. Many MPI codes have no need for such a loop
+over all processes, so detecting one leads to an alert for the
+student.
+
+Note that no tools exist for such automated evaluation. The source
+code analysis needed falls far short of full parsing. On the other
+hand, the sort of constructs is it supposed to detect, are normally
+not of interest to the writers of compilers and source
+translators. This means that by writing fairly modest parsers (say,
+less than 200 lines of python) we can perform a sophisticated analysis
+of the students' codes. We hope to report on this in more detail in a
+follow-up paper.
+
+\Level 0 {Evaluation and discussion}
+\label{sec:eval}
+
+At the moment,
+no rigorous evaluation of the efficacy of the above ideas has been
+done.
+We intend to perform a
+comparison between outcomes of the proposed way of teaching and the
+traditional way by comparing courses at two (or more) different
+institutions and from different syllabi. The evaluation will
+then be based on evaluating the independent programming project.
+
+However, anecdotal evidence suggests that students are less likely to
+develop `centralized' solutions as described in
+section~\ref{sec:misconception}. This was especially the case in our
+semester-long course, where the students have to design and implement a parallel
+programming project of their own choosing. After teaching the
+`symmetric' approach, no students wrote code based on a manager-worker
+model, or using centralized storage. In earlier semesters, we had seen
+students do this, even though this model was never taught as such.
+
+\Level 0 {Summary}
+\label{sec:summary}
+
+In this paper we have introduced a nonstandard sequence for presenting
+the basic mechanisms in MPI. Rather than starting with sends and receives and building
+up from there, we start with mechanisms that emphasize the inherent symmetry between
+processes in the \ac{SPMD} programming model. This symmetry requires a substantial
+shift in mindset of the programmer, and therefore we target it explicitly.
+
+In general, it is the opinion of this author that it pays off to teach
+from the basis of instilling a mental model, rather than of presenting
+topics in some order of (perceived) complexity or sophistication.
+
+Comparing our presentation as outlined above to the standard presentation, we
+recognize the downplaying of the blocking send and receive calls. While students
+learn these, and in fact learn them before other send and receive mechanisms,
+they will recognize the dangers and difficulties in using them, and
+will have the combined sendrecv call as well as nonblocking routines
+as standard tools in their arsenal.
+

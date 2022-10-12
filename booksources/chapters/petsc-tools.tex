@@ -1,0 +1,516 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% petsc-tools.tex : guess.
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Level 0 {Error checking and debugging}
+
+\Level 1 {Debug mode}
+\label{sec:petsc-debug-mode}
+
+During installation (see section~\ref{sec:petsc-install}),
+there is an option of turning on debug mode.
+An installation with debug turned on:
+\begin{itemize}
+\item Does more runtime checks on numerics, or array indices;
+\item Does a memory analysis when you insert the \indexpetscshow{CHKMEMQ} macro
+  (section~\ref{sec:petsc-mem});
+\item Has the macro \indexpetscdef{PETSC_USE_DEBUG} set to~1.
+\end{itemize}
+
+\Level 1 {Error codes}
+\label{sec:petsc-error}
+
+PETSc performs a good amount of runtime error checking. Some of this
+is for internal consistency, but it can also detect certain
+mathematical errors. To facilitate error reporting, the following
+scheme is used.
+\begin{enumerate}
+\item Every PETSc routine is a function returning a parameter of type
+  \indexpetscdef{PetscErrorCode}.
+\item For a good traceback, surround the executable part of any subprogram
+  with \indexpetscdef{PetscFunctionBeginUser} and \indexpetscdef{PetscFunctionReturn},
+  where the latter has the return value as parameter.
+  (The routine \indexpetscdef{PetscFunctionBegin} does the same, but
+  should only be used for PETSc library routines.)
+\item Calling the macro \indexpetscdef{CHKERRQ} on the error code will
+  cause an error to be printed and the current routine to be
+  terminated. Recursively this gives a traceback of where the error
+  occurred.
+\begin{lstlisting}
+PetscErrorCode ierr;
+ierr = AnyPetscRoutine( arguments ); CHKERRQ(ierr);
+\end{lstlisting}
+\item Other error checking macros are \indexpetscdef{CHKERRABORT}
+  which aborts immediately, and \indexpetscdef{CHKERRMPI}.
+\item You can effect your own error return by using
+  \indexpetscref{SETERRQ}
+  \indexpetscxref{SETERRQ1}{SETERRQ},
+  \indexpetscxref{SETERRQ2}{SETERRQ}.
+\end{enumerate}
+
+\begin{fortrannote}{Error code handling}
+  In the main program, use \indexpetscdef{CHKERRA} and
+  \indexpetscdef{SETERRA}. Also beware that these error `commands' are
+  macros, and after expansion may interfere with
+  \indextermbus{Fortran}{line length}, so they should only be
+  used in \n{.F90} files.
+\end{fortrannote}
+
+Example. We write a routine that sets an error:
+\cverbatimsnippet[examples/petsc/c/backtrace.c]{petscbacktrace}
+
+Running this gives, in process~zero, the output
+\begin{verbatim}
+[0]PETSC ERROR: We cannot go on like this
+[0]PETSC ERROR: See https://www.mcs.anl.gov/petsc/documentation/faq.html for trouble shooting.
+[0]PETSC ERROR: Petsc Release Version 3.12.2, Nov, 22, 2019
+[0]PETSC ERROR: backtrace on a [computer name]
+[0]PETSC ERROR: Configure options [all options]
+[0]PETSC ERROR: #1 this_function_bombs() line 20 in backtrace.c
+[0]PETSC ERROR: #2 main() line 30 in backtrace.c  
+\end{verbatim}
+
+\begin{fortrannote}{Backtrace on error}
+  In Fortran the backtrace is not quite as elegant.
+  \fverbatimsnippet[examples/petsc/f/backtrace.F90]{petscbacktracef}
+\begin{verbatim}
+[0]PETSC ERROR: ----- Error Message ------------------------------
+[0]PETSC ERROR: We cannot go on like this
+[....]
+[0]PETSC ERROR: #1 User provided function() line 0 in User file
+\end{verbatim}
+\end{fortrannote}
+
+\begin{remark}
+  In this example, the use of \indexpetscshow{PETSC_COMM_SELF} indicates
+  that this error is individually generated on a process;
+  use \indexpetscshow{PETSC_COMM_WORLD} only if the same error would
+  be detected everywhere.
+\end{remark}
+
+\begin{exercise}
+  Look up the definition of \indexpetscshow{SETERRQ1}.
+  Write a routine to compute square roots that is used as follows:
+\begin{lstlisting}
+  x = 1.5; ierr = square_root(x,&rootx); CHKERRQ(ierr);
+  PetscPrintf(PETSC_COMM_WORLD,"Root of %f is %f\n",x,rootx);
+  x = -2.6; ierr = square_root(x,&rootx); CHKERRQ(ierr);
+  PetscPrintf(PETSC_COMM_WORLD,"Root of %f is %f\n",x,rootx);
+\end{lstlisting}
+This should give as output:
+\begin{verbatim}
+Root of 1.500000 is 1.224745
+[0]PETSC ERROR: ----- Error Message ----------------------------------------------
+[0]PETSC ERROR: Cannot compute the root of -2.600000
+[...]
+[0]PETSC ERROR: #1 square_root() line 23 in root.c
+[0]PETSC ERROR: #2 main() line 39 in root.c
+\end{verbatim}
+
+\end{exercise}
+
+\Level 1 {Memory corruption}
+\label{sec:petsc-mem}
+
+PETSc has its own memory management (section~\ref{sec:petscmalloc})
+and this facilitates finding memory corruption errors.
+The macro \indexpetscdef{CHKMEMQ} (\indexpetscdef{CHKMEMA} in void functions)
+checks all memory that was allocated by PETSc,
+either internally or throug the allocation routines,
+for corruption. Sprinkling this macro through your code
+can detect memory problems before they lead to a \indexterm{segfault}.
+
+This testing is only done if the commandline argument
+\indextermtt{-malloc_debug} (\indextermtt{-malloc_test} in debug mode)
+is supplied, so it carries no overhead for production runs.
+
+\Level 2 {Valgrind}
+
+Valgrind is rather verbose in its output.
+To limit the number of processs that run under valgrind:
+\begin{verbatim}
+mpiexec -n 3 valgrind --track-origins=yes ./app -args : -n 5 ./app -args
+\end{verbatim}
+
+\Level 0 {Program output}
+
+PETSc has as variety of mechanisms to export or visualize program data.
+We will consider a few possibilities here.
+
+\Level 1 {Screen I/O}
+
+Printing screen output in parallel is tricky. If two processes execute
+a print statement at more or less the same time there is no guarantee
+as to in what order they may appear on screen. (Even attempts to have
+them print one after the other may not result in the right ordering.)
+Furthermore, lines from multi-line print actions on two processes may
+wind up on the screen interleaved.
+
+\Level 2 {printf replacements}
+
+PETSc has two routines that fix this problem. First of all, often the
+information printed is the same on all processes, so it is enough if
+only one process, for instance process~0, prints it. This is done with
+\indexpetscref{PetscPrintf}.
+
+If all processes need to print, you can use
+\indexpetscref{PetscSynchronizedPrintf} that forces the
+output to appear in process order.
+
+To make sure that output is properly flushed from all system buffers
+use \indexpetscref{PetscSynchronizedFlush}
+where for ordinary screen output you would use \n{stdout} for the file.
+
+\begin{fortrannote}{Print string construction}
+  Fortran does not have the variable-number-of-arguments mechanism
+  from~C, so you can only use \indexpetscshow{PetscPrintf}
+  on a buffer that you construct with a \lstinline{Write} statement:
+  \fverbatimsnippet{pfprintf}
+\end{fortrannote}
+
+\begin{fortrannote}{Printing and newlines}
+  The Fortran calls are only wrappers around C~routines, so you can 
+  use \verb+\n+ newline characters in the Fortran string argument
+  to \indexpetscshow{PetscPrintf}.
+
+  The file to flush is typically \indexpetscshow{PETSC_STDOUT}.
+\end{fortrannote}
+
+\begin{pythonnote}{Petsc print and python print}
+  Since the print routines use the python \n{print} call, they
+  automatically include the trailing newline. You don't have to
+  specify it as in the C~calls.
+\end{pythonnote}
+
+\Level 2 {scanf replacement}
+
+Using \indextermtt{scanf} in Petsc is tricky, since integers and real numbers can be
+of different sizes, depending on the installation.
+Instead, use \indexpetscref{PetscViewerRead}, which operates in terms of
+\indexpetscshow{PetscDataType}.
+
+\Level 1 {Viewers}
+\label{sec:petsc-view}
+
+In order to export PETSc matrix or vector data structures
+there is a \indexpetscdef{PetscViewer} object type.
+This is a quite general concept of viewing: it encompasses ascii output to screen,
+binary dump to file, or communication to a running Matlab process.
+Calls such as  \indexpetscshow{MatView} or \indexpetscshow{KSPView}
+accept a \lstinline{PetscViewer} argument.
+
+In cases where this makes sense, there is also an inverse `load' operation.
+See section \ref{sec:vecviewload} for vectors.
+
+Some viewers are predefined, such as
+\indexpetscdef{PETSC_VIEWER_STDOUT_WORLD} for ascii rendering to
+standard out. (In~C, specifying zero or \n{NULL} also uses this
+default viewer; for Fortran use \indexpetsctt{PETSC_NULL_VIEWER}.)
+
+\Level 2 {Viewer types}
+
+For activities such as dumping to file
+you first need create the viewer
+with \indexpetscdef{PetscViewerCreate}
+and set its type with \indexpetscdef{PetscViewerSetType}.
+\begin{lstlisting}
+PetscViewerCreate(comm,&viewer);
+PetscViewerSetType(viewer,PETSCVIEWERBINARY);  
+\end{lstlisting}
+Popular types include
+\indexpetscdef{PETSCVIEWERASCII},
+\indexpetscdef{PETSCVIEWERBINARY},
+\indexpetscdef{PETSCVIEWERSTRING},
+\indexpetscdef{PETSCVIEWERDRAW},
+\indexpetscdef{PETSCVIEWERSOCKET},
+\indexpetscdef{PETSCVIEWERHDF5},
+\indexpetscdef{PETSCVIEWERVTK};
+the full list can be found in \n{include/petscviewer.h}.
+
+\Level 2 {Viewer formats}
+
+Viewers can take further format specifications by using
+\indexpetscdef{PetscViewerPushFormat}:
+\begin{lstlisting}
+PetscViewerPushFormat
+   (PETSC_VIEWER_STDOUT_WORLD,
+    PETSC_VIEWER_ASCII_INFO_DETAIL);
+\end{lstlisting}
+and afterwards a corresponding \indexpetscdef{PetscViewerPopFormat}
+
+\begin{pythonnote}{HDF5 file generation}
+  \pverbatimsnippet{pviewhdf5}
+\end{pythonnote}
+
+\Level 2 {Commandline option for viewers}
+
+Petsc objects viewers can be activated by calls such as \indexpetscshow{MatView},
+but often it is more convenient to do this through commandline options,
+such as \indexpetscoption{mat_view}, \indexpetscoption{vec_view},
+or \indexpetscoption{ksp_view}.
+By default, these output to \n{stdout} in \n{ascii} form,
+but this can be controlled by further option values:
+\begin{verbatim}
+program -mat_view binary:matrix.dat
+\end{verbatim}
+where \n{binary} forces a binary dump (\n{ascii} is the default)
+and a file name is explicitly given.
+
+Binary dump may not be supported for all datatypes,
+in particular \indexpetscshow{DM}.
+For that case, do
+\begin{verbatim}
+program -dm_view draw \
+    -draw_pause 20
+\end{verbatim}
+which pops up an \indexterm{X11} window,
+for the duration of the indicated \n{pause}.
+
+If a viewer needs to be triggered at a specific location,
+calls such as \indexpetscdef{VecViewFromOptions} can be used.
+%% NO probably in combination with \indexpetscshow{VecSetOptionsPrefix}.
+These routines all have a similar calling sequence:
+\begin{lstlisting}
+#include "petscsys.h"    
+PetscErrorCode  PetscObjectViewFromOptions(PetscObject obj,PetscObject bobj,const char optionname[])
+PetscErrorCode  VecViewFromOptions(Vec A,PetscObject obj,const char name[])
+\end{lstlisting}
+
+\begin{raggedlist}
+  \indexpetscshow{AOViewFromOptions},
+  \indexpetscshow{DMViewFromOptions},
+  \indexpetscshow{ISViewFromOptions},
+  \indexpetscshow{ISLocalToGlobalMappingViewFromOptions},
+  \indexpetscshow{KSPConvergedReasonViewFromOptions},
+  \indexpetscshow{KSPViewFromOptions},
+  \indexpetscshow{MatPartitioningViewFromOptions},
+  \indexpetscshow{MatCoarsenViewFromOptions},
+  \indexpetscshow{MatViewFromOptions},
+  \indexpetscshow{PetscObjectViewFromOptions},
+  \indexpetscshow{PetscPartitionerViewFromOptions},
+  \indexpetscshow{PetscDrawViewFromOptions},
+  \indexpetscshow{PetscRandomViewFromOptions},
+  \indexpetscshow{PetscDualSpaceViewFromOptions},
+  \indexpetscshow{PetscSFViewFromOptions},
+  \indexpetscshow{PetscFEViewFromOptions},
+  \indexpetscshow{PetscFVViewFromOptions},
+  \indexpetscshow{PetscSectionViewFromOptions},
+  \indexpetscshow{PCViewFromOptions},
+  \indexpetscshow{PetscSpaceViewFromOptions},
+  \indexpetscshow{PFViewFromOptions},
+  \indexpetscshow{PetscLimiterViewFromOptions},
+  \indexpetscshow{PetscLogViewFromOptions},
+  \indexpetscshow{PetscDSViewFromOptions},
+  \indexpetscshow{PetscViewerViewFromOptions},
+  \indexpetscshow{SNESConvergedReasonViewFromOptions},
+  \indexpetscshow{SNESViewFromOptions},
+  \indexpetscshow{TSTrajectoryViewFromOptions},
+  \indexpetscshow{TSViewFromOptions},
+  \indexpetscshow{TaoLineSearchViewFromOptions},
+  \indexpetscshow{TaoViewFromOptions},
+  \indexpetscshow{VecViewFromOptions},
+  \indexpetscshow{VecScatterViewFromOptions},
+\end{raggedlist}
+
+\Level 2 {Naming objects}
+
+A helpful facility for viewing is to name an object:
+that name will then be displayed when the object is viewed.
+\begin{lstlisting}
+Vec i_local;
+ierr = VecCreate(comm,&i_local); CHKERRQ(ierr);
+ierr = PetscObjectSetName((PetscObject)i_local,"space local"); CHKERRQ(ierr);
+\end{lstlisting}
+giving:
+\begin{verbatim}
+Vec Object: space local 4 MPI processes
+  type: mpi
+Process [0]
+[ ... et cetera ... ]
+\end{verbatim}
+
+\Level 0 {Commandline options}
+\label{sec:petsc-options}
+
+PETSc has as large number of commandline options, most of which we
+will discuss later. For now we only mention \indexpetscshow{-log_summary} which
+will print out profile of the time taken in various routines.
+For these options to be parsed, it is necessary to pass \n{argc,argv}
+to the \indexpetscshow{PetscInitialize} call.
+
+\Level 1 {Adding your own options}
+
+You can add custom 
+commandline options to your program.
+Various routines such as \indexpetscdef{PetscOptionsGetInt}
+scan the commandline for options and set parameters accordingly.
+For instance,
+%
+\cverbatimsnippet[examples/petsc/c/kspcg.c]{optionint}
+%
+declares the existence of an option \n{-n} to be followed by an integer.
+
+Now executing
+\begin{verbatim}
+mpiexec yourprogram -n 5
+\end{verbatim}
+will
+\begin{enumerate}
+\item set the \lstinline{flag} to true, and
+\item set the parameter \lstinline{domain_size} to the value on the commandline.
+\end{enumerate}
+Omitting the \n{-n} option will leave the default value of \lstinline{domain_size}
+unaltered.
+
+For flags, use \indexpetscdef{PetscOptionsHasName}.
+
+\begin{pythonnote}{Petsc options}
+  In Python, do not specify the initial hyphen of an option name.
+  Also, the functions such as \lstinline{getInt} do not return the boolean flag;
+  if you need to test for the existence of the commandline option, use:
+\begin{verbatim}
+hasn = PETSc.Options().hasName("n")
+\end{verbatim}
+\end{pythonnote}
+
+There is a related mechanism using
+\indexpetscdef{PetscOptionsBegin}~/ \indexpetscdef{PetscOptionsEnd}:
+\cverbatimsnippet[examples/petsc/c/optionsbegin.c]{petscoptionsblock}
+
+The selling point for this approach is that running your code with
+\begin{verbatim}
+mpiexec yourprogram -help
+\end{verbatim}
+will display these options as a block.
+Together with a ton of other options, unfortunately.
+
+\Level 1 {Options prefix}
+
+In many cases, your code will have only one \lstinline{KSP} solver object,
+so specifying \indexpetscoption{ksp_view} or \indexpetscoption{ksp_monitor}
+will display~/ trace that one.
+However, you may have multiple solvers, or nested solvers. You may then
+not want to display all of them.
+
+As an example of the nest solver case, consider the case of a
+\indextermsub{block jacobi}{preconditioner}, where the block is itself solved
+with an iterative method. You can trace that one with
+\indexpetscoption{-sub_ksp_monitor}.
+
+The \n{sub_} is an \indextermbus{option}{prefix}, and you can defined
+your own with 
+\indexpetscdef{KSPSetOptionsPrefix}.
+(There are similar routines for other PETSc object types.)
+
+Example:
+\begin{lstlisting}
+KSPCreate(comm,&time_solver);
+KSPCreate(comm,&space_solver);
+KSPSetOptionsPrefix(time_solver,"time_");
+KSPSetOptionsPrefix(space_solver,"space_");
+\end{lstlisting}
+You can then use options \n{-time_ksp_monitor} and such.
+Note that the prefix does not have a leading dash,
+but it does have the trailing underscore.
+
+\begin{raggedlist}
+Similar routines:
+  \indexpetscdef{MatSetOptionsPrefix}, 
+  \indexpetscdef{PCSetOptionsPrefix}, 
+  \indexpetscdef{PetscObjectSetOptionsPrefix}, 
+  \indexpetscdef{PetscViewerSetOptionsPrefix}, 
+  \indexpetscdef{SNESSetOptionsPrefix}, 
+  \indexpetscdef{TSSetOptionsPrefix}, 
+  \indexpetscdef{VecSetOptionsPrefix}, 
+and some more obscure ones.
+\end{raggedlist}
+
+
+\Level 1 {Where to specify options}
+\label{sec:petscrc}
+
+Commandline options can obviously go on the commandline. However, there are more
+places where they can be specified.
+
+Options can be specified programmatically with
+\indexpetscdef{PetscOptionsSetValue}:
+\begin{lstlisting}
+PetscOptionsSetValue( NULL, // for global options
+  "-some_option","value_as_string");
+\end{lstlisting}
+
+Options can be specified in a file \indextermtt{.petscrc} in the user's home directory
+or the current directory.
+
+Finally, an environment variable \indextermtt{PETSC_OPTIONS} can be set.
+
+The \n{rc} file is processed first, then the environment variable,
+then any commandline arguments. This parsing is done in \indexpetscshow{PetscInitialize},
+so any values from \indexpetscshow{PetscOptionsSetValue} override this.
+
+\Level 0 {Timing and profiling}
+\label{sec:petsc-timing}
+
+PETSc has a number of timing routines that make it unnecessary to
+use system routines such as \indextermtt{getrusage}
+or MPI routines such as \indexmpishow{MPI_Wtime}.
+The main (wall clock) timer is \indexpetscref{PetscTime}.
+Note the return type of \indexpetscdef{PetscLogDouble} which
+can have a different precision from \indexpetscshow{PetscReal}.
+
+The routine \indexpetscdef{PetscGetCPUTime} is less useful, since it measures only
+time spent in computation, and ignores things such as communication.
+
+\Level 1 {Logging}
+
+Petsc does a lot of logging on its own operations.
+Additionally, you can introduce your own routines into this log.
+
+The simplest way to display statistics is to run
+with an option \indexpetscoption{log_view}.
+This takes an optional file name argument:
+\begin{verbatim}
+mpiexec -n 10 yourprogram -log_view :statistics.txt
+\end{verbatim}
+The corresponding routine is \indexpetscdef{PetscLogView}.
+
+\Level 0 {Memory management}
+\label{sec:petscmalloc}
+
+Allocate the memory for a given pointer: \indexpetscdef{PetscNew},
+allocate arbitrary memory with \indexpetscdef{PetscMalloc},
+allocate a number of objects with \indexpetscref{PetscMalloc1}
+(this does not zero the memory allocated,
+ use \indexpetscdef{PetscCalloc1} to obtain memory that has been zeroed);
+use \indexpetscref{PetscFree} to free.
+\begin{lstlisting}
+PetscInt *idxs;
+PetscMalloc1(10,&idxs);
+// better than:
+// PetscMalloc(10*sizeof(PetscInt),&idxs);
+for (PetscInt i=0; i<10; i++)
+  idxs[i] = f(i);
+PetscFree(idxs);
+\end{lstlisting}
+Allocated memory is aligned to \indexpetscdef{PETSC_MEMALIGN}.
+
+The state of memory allocation can be written to file or standard out
+with \indexpetscdef{PetscMallocDump}. The commandline option
+\indexpetscshow{-malloc_dump} outputs all not-freed memory during
+\indexpetscshow{PetscFinalize}.
+
+\Level 1 {GPU allocation}
+
+The memories of a CPU and GPU are not coherent.
+This means that routines such as \indexpetscshow{PetscMalloc1}
+can not immediately be used for GPU allocation.
+See section~\ref{sec:petsc-malloc-gpu} for details.

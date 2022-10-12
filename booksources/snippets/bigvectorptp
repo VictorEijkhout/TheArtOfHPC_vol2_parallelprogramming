@@ -1,0 +1,5 @@
+MPI_Datatype blocktype;
+MPI_Type_contiguous(mediumsize,MPI_FLOAT,&blocktype);
+MPI_Type_commit(&blocktype);
+if (procno==sender) {
+  MPI_Send(source,nblocks,blocktype,receiver,0,comm);

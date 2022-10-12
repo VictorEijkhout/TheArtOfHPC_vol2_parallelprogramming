@@ -1,0 +1,5 @@
+// collectscalar.cxx
+std::vector<float> v;
+float x;
+comm_world.scatter(0, v.data(), x);
+comm_world.gather(0, x, v.data());

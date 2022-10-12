@@ -1,0 +1,4 @@
+q.parallel_for
+  (sycl::range<1>(N),
+   assign_i
+   ).wait();

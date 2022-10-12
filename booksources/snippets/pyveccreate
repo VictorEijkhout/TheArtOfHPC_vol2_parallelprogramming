@@ -1,0 +1,4 @@
+## setvalues.py
+comm = PETSc.COMM_WORLD
+x = PETSc.Vec().create(comm=comm)
+x.setType(PETSc.Vec.Type.MPI)

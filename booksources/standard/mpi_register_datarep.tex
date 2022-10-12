@@ -1,0 +1,43 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% This text file is part of the source of 
+%% `Parallel Computing'
+%% by Victor Eijkhout, copyright 2012-2022
+%%
+%% MPI API file for MPI_Register_datarep
+%%
+%% THIS FILE IS AUTO-GENERATED
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begingroup
+\ttfamily\bfseries
+\catcode`\_=12
+\begin{tabular}{
+l       % name
+l       % param name
+p{\mpiparmtextsize}  % explanation
+p{.7in} % ctype
+p{.9in} % ftype
+l       % inout
+}
+\toprule
+\mdseries\textrm{Name}&
+\mdseries\textrm{Param name}&
+\mdseries\textrm{Explanation}&
+\mdseries\textrm{C type}&
+\mdseries\textrm{F type}&
+\mdseries\textrm{inout}\\
+\midrule
+\hbox to 18pt{MPI_Register_datarep (\hss} \\
+\hbox to 18pt{MPI_Register_datarep_c (\hss} \\
+ & datarep & data representation identifier & const char* & CHARACTER  & IN \\ & read_conversion_fn & function invoked to convert from file representation to native representation & $\left[ \begin{array}{ll}\mathtt{ MPI_Datarep_conversion_function* }  \\ \mathtt{ MPI_Datarep_conversion_function_c} \end{array} \right.$  & PROCEDURE\discretionary{}{\kern10pt}{}(MPI_Datarep_conversion_function)  & IN \\ [+3pt] & write_conversion_fn & function invoked to convert from native representation to file representation & $\left[ \begin{array}{ll}\mathtt{ MPI_Datarep_conversion_function* }  \\ \mathtt{ MPI_Datarep_conversion_function_c} \end{array} \right.$  & PROCEDURE\discretionary{}{\kern10pt}{}(MPI_Datarep_conversion_function)  & IN \\ [+3pt] & dtype_file_extent_fn & function invoked to get the extent of a datatype as represented in the file & MPI_Datarep_extent_function* & PROCEDURE\discretionary{}{\kern10pt}{}(MPI_Datarep_extent_function)  & IN \\ & extra_state & extra state & void* & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_ADDRESS_KIND)  & IN \\
+&)\\
+
+\bottomrule
+\end{tabular}
+\endgroup
+

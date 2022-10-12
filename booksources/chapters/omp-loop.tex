@@ -1,0 +1,934 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% omp-loop.tex : the OpenMP loop construct
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Level 0 {Loop parallelism}
+\label{sec:omp-for}
+
+Loop parallelism is a very common type of parallelism in scientific
+codes, so OpenMP has an easy mechanism for it.
+OpenMP parallel loops are a first example of OpenMP `worksharing'
+constructs (see section~\ref{sec:work-sharing} for the full list):
+constructs that take an amount of work and distribute it over the
+available threads in a parallel region,
+created with the \indexpragma{parallel} pragma.
+
+The parallel execution of a loop can be handled a number of different ways.
+For instance, you can create a parallel region around the loop, and
+adjust the loop bounds:
+\begin{lstlisting}
+#pragma omp parallel
+{
+  int threadnum = omp_get_thread_num(),
+    numthreads = omp_get_num_threads();
+  int low = N*threadnum/numthreads,
+    high = N*(threadnum+1)/numthreads;
+  for (i=low; i<high; i++)
+    // do something with i
+}
+\end{lstlisting}
+In effect, this is how you would parallelize a loop in MPI.
+\begin{exercise}
+  What is an important difference between the resulting OpenMP and MPI code?
+\end{exercise}
+
+A more natural option is to use the
+\indexpragma{for} pragma:
+\begin{lstlisting}
+#pragma omp parallel
+#pragma omp for
+for (i=0; i<N; i++) {
+  // do something with i
+}
+\end{lstlisting}
+This has several advantages. For one, you don't have to calculate the loop bounds
+for the threads yourself, but you can also tell OpenMP to assign the loop
+iterations according to different schedules (section~\ref{sec:schedule}).
+
+\begin{fortrannote}{OMP do pragma}
+  The \indexpragma{for} pragma only exists in~C;
+  there is a correspondingly named \indexpragma{do} pragma in Fortran.
+\begin{lstlisting}
+$!omp parallel
+$!omp do
+  do i=1,N
+    ! something with i
+  end do
+$!omp end do
+$!omp end parallel
+\end{lstlisting}
+\end{fortrannote}
+
+Figure~\ref{fig:omp-par-do} shows the execution on four threads of
+\begin{lstlisting}
+#pragma omp parallel
+{
+  code1();
+#pragma omp for
+  for (i=1; i<=4*N; i++) {
+    code2();
+  }
+  code3();
+}
+\end{lstlisting}
+The code before and after the loop is executed identically
+in each thread; the loop iterations are spread over the four threads.
+\begin{figure}[ht]
+  \includegraphics[scale=.1]{parallel-do}
+  \caption{Execution of parallel code inside and outside a loop}
+  \label{fig:omp-par-do}
+\end{figure}
+
+Note that the \n{do} and \n{for}
+pragmas do not create a team of threads: they
+take the team of threads that is active,
+and divide the loop iterations over them.
+This means that the \n{omp for} or \n{omp do} directive needs to be
+inside a parallel region.
+
+As an illustration:
+\csnippetwithoutput{ompparforthread}{examples/omp/c}{parfor}
+
+\begin{exercise}
+  What would happen in the above example if you increase the number of threads
+  to be larger than the number of cores?
+\end{exercise}
+
+It is also possible to have a combined
+\n{omp parallel for} or \n{omp parallel do} directive.
+\begin{lstlisting}
+#pragma omp parallel for
+  for (i=0; .....
+\end{lstlisting}
+
+\Level 1 {Loops are static}
+
+There are some restrictions on the loop: basically, OpenMP needs to be
+able to determine in advance how many iterations there will be.
+\begin{itemize}
+\item The loop can not contains \n{break}, \n{return}, \n{exit} statements, or
+  \n{goto} to a label outside the loop.
+\item The \indextermttnote{continue|in OpenMP loops} (for~C/C++)
+  or \indextermttnote{cycle|in OpenMP loops} (for Fortran)
+  statement is allowed.
+\item The index update has to be an increment (or decrement) by a fixed amount.
+\item The loop index variable is automatically private, and not changes to it
+  inside the loop are allowed.
+  The following loop is not parallelizable in OpenMP:
+    \begin{lstlisting}
+      for (int i=0; i<N; ) {
+        // something
+        if (something)
+        i++;
+        else
+        i += 2;
+      }
+    \end{lstlisting}
+\end{itemize}
+
+\begin{remark}
+  The loop index needs to be an integer value
+  for the loop to be parallelizable.
+  Unsigned values are allowed as of \ompstandard{3}.
+\end{remark}
+
+\Level 1 {Exercises}
+
+\begin{exercise}
+  \label{ex:omp-pi}
+  Compute $\pi$ by \indexterm{numerical integration}. We use the fact that $\pi$
+  is the area of the unit circle, and we approximate this by computing
+  the area of a quarter circle using \indexterm{Riemann sums}.
+  \begin{itemize}
+  \item Let $f(x)=\sqrt{1-x^2}$ be the function that describes the
+    quarter circle for $x=0\ldots 1$;
+  \item Then we compute \[ \pi/4\approx\sum_{i=0}^{N-1} \Delta x
+    f(x_i) \qquad \hbox{where $x_i=i\Delta x$ and $\Delta x=1/N$} \]
+  \end{itemize}
+  Write a program for this, and parallelize it using OpenMP parallel
+  for directives.
+  \begin{enumerate}
+  \item Put a \indexompshow{parallel} directive around your loop. Does it still
+    compute the right result? Does the time go down with the number of
+    threads? (The answers should be no and no.)
+  \item Change the \lstinline{parallel} to \lstinline{parallel for}
+    (or \lstinline{parallel do}). Now is the result correct? Does execution speed up? (The
+    answers should now be no and yes.)
+  \item Put a \indexompshow{critical} directive in front of the update. (Yes and
+    very much no.)
+  \item Remove the \indexompshow{critical} and add a clause
+    \indexompshow{reduction}\n{(+:quarterpi)} to the \indexompshow{for} directive.
+    Now it should be correct and efficient.
+  \end{enumerate}
+  Use different numbers of cores and compute the
+  speedup you attain over the sequential computation. Is there a
+  performance difference between the OpenMP code with 1~thread and the
+  sequential code?
+\end{exercise}
+
+\begin{remark}
+  In this exercise you may have seen the runtime go up a couple of times
+  where you weren't expecting it. The issue here is \indexterm{false
+    sharing}; see~\HPSCref{sec:roundoff-parallel} for more explanation.
+\end{remark}
+
+\Level 0 {An example}
+
+To illustrate the speedup of perfectly parallel calculations,
+we consider a simple code that applies the same calculation
+to each element of an array.
+
+All tests are done on the \indextermbus{TACC}{Frontera} cluster,
+which has dual-socket \indextermbus{Intel}{Cascade Lake} nodes,
+with a total of 56 cores.
+We control affinity by setting
+\n{OMP_PROC_BIND=true}.
+
+Here is the essential code fragment:
+\cverbatimsnippet{ompsineloop}
+
+\begin{exercise}
+  Verify that the outer loop is parallel, but the inner one is not.
+\end{exercise}
+
+\begin{exercise}
+  Compare the time for the sequential code and the single-threaded OpenMP code.
+  Try different optimization levels, and different compilers if you have them.
+  \begin{itemize}
+  \item
+    Do you sometimes get a significant difference? What would be an explanation?
+  \item Does your compiler have a facility for generating optimization reports?
+    For instance \n{-qoptreport=5} for the
+    \emph{Intel compiler}\index{Intel!compiler!optimization report}.
+  \end{itemize}
+\end{exercise}
+
+Now we investigate the influence of two parameters:
+\begin{enumerate}
+\item the OpenMP thread count: while we have 56 cores, values larger than that are allowed; and
+\item the size of the problem: the smaller the problem, the larger the relative overhead
+  of creating and synchronizing the team of threads.
+\end{enumerate}
+We execute the above computation several times to even out effects of cache loading.
+
+\begin{figure}[t]
+  \begin{tikzpicture}  
+    \begin{axis}
+      [  
+        %ybar=3pt, bar width=7pt,
+        enlargelimits=0.15,
+        %legend style={at={(0.4,-0.1)},anchor=north,legend columns=-1},     
+        xlabel={\#Threads},
+        ylabel={Speedup},
+        symbolic x coords={1,14,28,42,56,70,84,98,112},
+        xtick=data,  ytick={1,5,10,20,60},
+        nodes near coords,  
+        nodes near coords align={vertical},  
+      ]  
+      \addplot coordinates {(1, 1.01) (14, 12.27) (28, 19.56) (42, 24.21) (56, 24.33) (70, 3.30) (84, 2.90) (98, 2.55) (112, 2.30) };
+      \addplot coordinates {(1, 1.00) (14, 13.88) (28, 27.35) (42, 40.4) (56, 33.2) (70, 22.2) (84, 28.2) (98, 27.1) (112, 29.2) };
+      \addplot coordinates {(1, 1.00) (14, 13.95) (28, 27.85) (42, 41.75) (56, 55.42) (70, 34.81) (84, 41.61) (98, 48.50) (112, 41.55) };
+      %% \addplot [black,sharp plot,update limits=false]
+      %% coordinates {(1, 1) (18, 18) (37, 37) (56, 56)}
+      %% node[above] at (axis cs:18,18) {Ideal};
+      \legend{$N=200$, $N=2000$, $N=20000$}
+    \end{axis}
+  \end{tikzpicture}  
+  \caption{Speedup as function of problem size}
+  \label{fig:omp-speedup}
+\end{figure}
+
+The results are in figure~\ref{fig:omp-speedup}:
+\begin{itemize}
+\item While the problem size is always larger than the number of threads,
+  only for the largest problem,
+  which has at least 400 points per thread,
+  is the speedup essentially linear.
+\item OpenMP allows for the number of threads to be larger than the core count,
+  but there is no performance improvement in doing so.
+\end{itemize}
+
+\begin{figure}
+  \begin{tikzpicture}  
+    \begin{axis}
+      [  
+        %ybar=3pt, bar width=7pt,
+        enlargelimits=0.15,
+        %legend style={at={(0.4,-0.1)},anchor=north,legend columns=-1},     
+        xlabel={\#Threads},
+        ylabel={Speedup},
+        symbolic x coords={1,34,68,102,136,170,204,238,272},
+        xtick=data,  ytick={1,5,10,20,60},
+        nodes near coords,  
+        nodes near coords align={vertical},  
+      ]  
+      \addplot coordinates {(1, 0.32) (34, 10.4) (68, 20.6) (102, 29.7)
+        (136, 36.8) (170, 33.7) (204, 39.7) (238, 38.1) (272, 43.2) };
+      %% \addplot [black,sharp plot,update limits=false]
+      %% coordinates {(1, 1) (18, 18) (37, 37) (56, 56)}
+      %% node[above] at (axis cs:18,18) {Ideal};
+      \legend{$N=200$, $N=2000$, $N=20000$}
+    \end{axis}
+  \end{tikzpicture}  
+  \caption{Speedup on a hyper-threaded architecture}
+  \label{fig:omp-speed-hyper}
+\end{figure}
+
+The above tests did not use \indexterm{hyperthread}s,
+since that is disabled on Frontera.
+However, the \indextermbus{Intel}{Knights Landing} nodes
+of the \indextermbus{TACC}{Stampede2} cluster
+have four \indexterm{hyperthread}s per core.
+Table~\ref{fig:omp-speed-hyper} shows that this will indeed give a modest speedup.
+
+For reference, the commandlines executed were:
+\begin{verbatim}
+# frontera
+  make localclean run_speedup EXTRA_OPTIONS=-DN=200 NDIV=8 NP=112
+  make localclean run_speedup EXTRA_OPTIONS=-DN=2000 NDIV=8 NP=112
+  make localclean run_speedup EXTRA_OPTIONS=-DN=20000 NDIV=8 NP=112
+# stampede2
+  make localclean run_speedup NDIV=8 EXTRA_OPTIONS="-DN=200000 -DM=1000" NP=272
+\end{verbatim}
+
+\begin{cppnote}{Range syntax}
+  Parallel loops in can use range-based syntax as of \ompstandard{5.0}:
+  %
+  \cxxverbatimsnippet{ompcxxloop}
+  %
+  Tests not reported here show exactly the same speedup as the C~code.
+\end{cppnote}
+
+\Level 0 {Loop schedules}
+\label{sec:schedule}
+
+Usually you will have many more iterations in a loop than there are threads.
+Thus, there are several ways you can assign your loop iterations to the threads.
+OpenMP lets you specify this with the \indexompshow{schedule} clause.
+\begin{lstlisting}
+#pragma omp for schedule(....)
+\end{lstlisting}
+
+The first distinction we now have to make is between static and dynamic schedules.
+With static schedules, the iterations are assigned purely based on the number
+of iterations and the number of threads (and the \indexompshow{chunk} parameter; see later).
+In dynamic schedules, on the other hand, iterations are assigned to threads that
+are unoccupied. Dynamic schedules are a good idea if iterations take an unpredictable
+amount of time, so that \indextermbus{load}{balancing} is needed.
+
+\begin{figure}[ht]
+  \includegraphics[scale=.07]{scheduling}
+  \caption{Illustration static round-robin scheduling versus dynamic}
+  \label{fig:omp-robin}
+\end{figure}
+%
+Figure~\ref{fig:omp-robin} illustrates this: assume that each core
+gets assigned two (blocks of) iterations and these blocks take
+gradually less and less time. You see from the left picture that
+thread~1 gets two fairly long blocks, where as thread~4 gets two short
+blocks, thus finishing much earlier. (This phenomenon of threads
+having unequal amounts of work is known as
+\indextermbus{load}{imbalance}.)
+On the other hand, in the right figure thread~4 gets
+block~5, since it finishes the first set of blocks early. The effect
+is a perfect load balancing.
+
+\begin{figure}[ht]
+  \includegraphics[scale=.12]{schedules}
+  \caption{Illustration of the scheduling strategies of loop iterations}
+  \label{fig:omp-schedule}
+\end{figure}
+
+The default static schedule is to assign one consecutive block of
+iterations to each thread. If you want different sized blocks you can
+define a \indexclauseoption{schedule}{chunk} size:
+\begin{lstlisting}
+#pragma omp for schedule(static[,chunk])
+\end{lstlisting}
+(where the square brackets indicate an optional argument).
+With static scheduling,
+the compiler will determine the assignment of loop iterations to the threads
+at compile time,
+so,
+provided the iterations take roughly the same amount of time,
+this is the most efficient at runtime.
+
+The choice of a chunk size is often a balance between the low overhead of having 
+only a few chunks, versus the load balancing effect of having smaller chunks.
+\begin{exercise}
+  Why is a chunk size of~1 typically a bad idea? (Hint: think about
+  cache lines, and read \HPSCref{sec:falseshare}.)
+\end{exercise}
+
+In dynamic scheduling OpenMP will put blocks of iterations
+(the default chunk size is~1) in a task queue, and the threads take one of these
+tasks whenever they are finished with the previous.
+\begin{lstlisting}
+#pragma omp for schedule(static[,chunk])
+\end{lstlisting}
+While this schedule may give good load balancing if the iterations
+take very differing amounts of time to execute, it does carry runtime
+overhead for managing the queue of iteration tasks.
+
+Finally, there is the \indexclauseoption{schedule}{guided} schedule, which gradually decreases the chunk size.
+The thinking here is that large chunks carry the least overhead, but smaller chunks are better
+for load balancing.
+%
+The various schedules are illustrated in figure~\ref{fig:omp-schedule}.
+
+If you don't want to decide on a schedule in your code, you can
+specify the \indexclauseoption{schedule}{runtime} schedule. The actual
+schedule will then at runtime be read from the
+\indexompshow{OMP_SCHEDULE} environment variable. You can even just
+leave it to the runtime library by specifying
+\indexclauseoption{schedule}{auto}
+
+\begin{exercise}
+  \label{ex:omp-pi-adapt}
+  %
+  We continue with exercise~\ref{ex:omp-pi}.
+  We add `adaptive integration'%
+  \index{adaptive integration|see{quadrature, adaptive}}\index{quadrature!adaptive}:
+  where needed, the program refines the step
+  size\footnote{It doesn't actually do this in a mathematically
+    sophisticated way, so this code is more for the sake of the
+    example.}.  This means that the iterations no longer take a
+  predictable amount of time.
+
+\begin{multicols}{2}
+\begin{lstlisting}
+for (i=0; i<nsteps; i++) {
+    double
+    x = i*h,x2 = (i+1)*h,
+    y = sqrt(1-x*x),y2 = sqrt(1-x2*x2),
+    slope = (y-y2)/h;
+    if (slope>15) slope = 15;
+    int
+    samples = 1+(int)slope, is;
+    for (is=0; is<samples; is++) {
+        double
+        hs = h/samples,
+        xs = x+ is*hs,
+        ys = sqrt(1-xs*xs);
+        quarterpi += hs*ys;
+        nsamples++;
+    }
+}
+  pi = 4*quarterpi;
+\end{lstlisting}
+\end{multicols}
+
+\begin{enumerate}
+\item Use the \lstinline{omp parallel for} construct to parallelize the loop.
+  As in the previous lab, you may at first see an incorrect result.
+  Use the \indexompshow{reduction} clause to fix this.
+\item Your code should now see a decent speedup, but possible not for all cores.
+  It is possible to get completely linear speedup by adjusting the schedule.
+
+  Start by using \indexompshow{schedule}\lstinline{(static,n)}.
+  Experiment with values for~$n$.
+  When can you get a better speedup? Explain this.
+\item Since this code is somewhat dynamic, try \indexompshow{schedule}\lstinline{(dynamic)}.
+  This will actually give a fairly bad result. Why?  Use
+  \indexompshow{schedule}\n{(dynamic,$n$)} instead, and experiment with values
+  for~$n$.
+\item Finally, use \indexompshow{schedule}\lstinline{(guided)}, where OpenMP uses a
+  heuristic.  What results does that give?
+\end{enumerate}
+     
+\end{exercise}
+
+\begin{exercise}
+  Program the \indexterm{LU factorization} algorithm without pivoting.
+\begin{lstlisting}
+for k=1,n:
+  A[k,k] = 1./A[k,k]
+  for i=k+1,n:
+    A[i,k] = A[i,k]/A[k,k]
+    for j=k+1,n:
+      A[i,j] = A[i,j] - A[i,k]*A[k,j]
+\end{lstlisting}
+\begin{enumerate}
+\item Argue that it is not possible to parallelize the outer loop.
+\item Argue that it is possible to parallelize both the $i$ and $j$ loops.
+\item Parallelize the algorithm by focusing on the $i$ loop. Why is the algorithm as given here best
+  for a matrix on row-storage? What would you do if the matrix was on column storage?
+\item Argue that with the default schedule, if a row is updated by one thread in one iteration,
+  it may very well be updated by another thread in another. Can you find a way to schedule
+  loop iterations so that this does not happen? What practical reason is there for doing so?
+\end{enumerate}
+\end{exercise}
+
+The schedule can be declared explicitly, set at runtime
+through the \indexompshow{OMP_SCHEDULE} environment variable, or left up to the runtime system
+by specifying \lstinline{auto}. Especially in the last two cases  you may want to enquire
+what schedule is currently being used with
+\indexompshow{omp_get_schedule}.
+\begin{lstlisting}
+int omp_get_schedule(omp_sched_t * kind, int * modifier );
+\end{lstlisting}
+
+Its mirror call is \indexompshow{omp_set_schedule}, which sets the
+value that is used when schedule value \lstinline{runtime} is used. It is in
+effect equivalent to setting the environment variable
+\indexompshow{OMP_SCHEDULE}.
+\begin{lstlisting}
+void omp_set_schedule (omp_sched_t kind, int modifier);
+\end{lstlisting}
+
+\begin{tabular}{llllrr}
+  \toprule
+  Type&environment variable&clause&\indexompshow{omp_sched_t}&\indexompshow{omp_sched_t}&modifier default\\
+        &{\tt OMP\_SCHEDULE\char`\=}&{\tt schedule( ... )}&name&value \\
+  \midrule
+  static&\texttt{static[,n]}&{static[,n]}&\indexompshow{omp_sched_static}&1&$N/\mathit{nthreads}$\\
+  dynamic&\texttt{dynamic[,n]}&{dynamic[,n]}&\indexompshow{omp_sched_dynamic}&2&$1$\\
+  guided&\texttt{guided[,n]}&{guided[,n]}&\indexompshow{omp_sched_guided}&3\\
+  auto&\texttt{auto}&auto&\indexompshow{omp_sched_auto}&4\\
+  \bottomrule
+\end{tabular}
+
+Here are the various schedules you can set with the
+\indexompshow{schedule} clause:
+\begin{description}
+  \item[affinity] Set by using value  \indexompshow{omp_sched_affinity}
+  \item[auto] The schedule is left up to the implementation. Set by
+    using value \indexompshow{omp_sched_auto}
+  \item[static] value:~1. The modifier parameter is the \indexterm{chunk} size.
+    Can also be set by using value  \indexompshow{omp_sched_static}
+  \item[dynamic] value:~2. The modifier parameter is the
+    \indexterm{chunk} size; default~1.
+    Can also be set by using value
+    \indexompshow{omp_sched_dynamic}
+  \item[guided] Value:~3. The modifier parameter is the
+    \indextermtt{chunk} size. Set by using value
+    \indexompshow{omp_sched_guided}
+  \item[runtime] Use the value of the \indexompshow{OMP_SCHEDULE}
+    environment variable. Set by using value
+    \indexompshow{omp_sched_runtime}
+\end{description}
+
+\Level 0 {Reductions}
+
+So far we have focused on loops with independent iterations.
+Reductions are a common type of loop with dependencies.
+There is an extended discussion of reductions in section~\ref{sec:reduction}.
+
+\Level 0 {Collapsing nested loops}
+
+In general, the more work there is to divide over a number of threads,
+the more efficient the parallelization will be. In the context of
+parallel loops, it is possible to increase the amount of work by
+parallelizing all levels of loops instead of just the outer one.
+
+Example: in
+\begin{lstlisting}
+for ( i=0; i<N; i++ )
+  for ( j=0; j<N; j++ )
+    A[i][j] = B[i][j] + C[i][j] 
+\end{lstlisting}
+all $N^2$ iterations are independent, but a regular \lstinline{omp for}
+directive will only parallelize one level. The \indexclause{collapse}
+clause will parallelize more than one level:
+\begin{lstlisting}
+#pragma omp for collapse(2)
+for ( i=0; i<N; i++ )
+  for ( j=0; j<N; j++ )
+    A[i][j] = B[i][j] + C[i][j] 
+\end{lstlisting}
+It is only possible to collapse perfectly nested loops, that is, the
+loop body of the outer loop can consist only of the inner loop; there
+can be no statements before or after the inner loop in the loop body
+of the outer loop. That is, the two loops in
+\begin{lstlisting}
+for (i=0; i<N; i++) {
+  y[i] = 0.;
+  for (j=0; j<N; j++)
+    y[i] += A[i][j] * x[j]
+}
+\end{lstlisting}
+can not be collapsed.
+
+\begin{exercise}
+  You could rewrite the above code as
+\begin{lstlisting}
+for (i=0; i<N; i++)
+  y[i] = 0.;
+for (i=0; i<N; i++) {
+  for (j=0; j<N; j++)
+    y[i] += A[i][j] * x[j]
+}
+\end{lstlisting}
+Is it now correct to have the \indexompshow{collapse} directive
+on the nested loop?
+\end{exercise}
+
+\begin{exercise}
+  Consider this code for matrix transposition:
+\begin{lstlisting}
+void transposer(int n, int m, double *dst, const double *src) {
+   int blocksize;
+   for (int i = 0; i < n; i += blocksize) {
+      for (int j = 0; j < m; j += blocksize) {
+          // transpose the block beginning at [i,j]
+          for (int k = i; k < i + blocksize; ++k) {
+              for (int l = j; l < j + blocksize; ++l) {
+                  dst[k + l*n] = src[l + k*m];
+               }
+          }
+      }
+   }
+}  
+\end{lstlisting}
+Assuming that the \lstinline{src} and \lstinline{dst}
+array are disjoint, which loops are parallel, and how many
+levels can you collapse?
+\end{exercise}
+
+\Level 0 {Ordered iterations}
+\label{sec:omp-ordered}
+
+Iterations in a parallel loop that are executed in parallel do not
+execute in lockstep. That means that in
+\begin{lstlisting}
+#pragma omp parallel for
+for ( ... i ... ) {
+  ... f(i) ...
+  printf("something with %d\n",i);
+}
+\end{lstlisting}
+it is not true that all function evaluations happen more or less at
+the same time, followed by all print statements. The print statements
+can really happen in any order. The \indexclause{ordered} clause
+coupled with the \indexpragma{ordered} directive can
+force execution in the right order:
+\begin{lstlisting}
+#pragma omp parallel for ordered
+for ( ... i ... ) {
+  ... f(i) ...
+#pragma omp ordered
+  printf("something with %d\n",i);
+}
+\end{lstlisting}
+Example code structure:
+\begin{lstlisting}
+#pragma omp parallel for shared(y) ordered
+for ( ... i ... ) {
+  int x = f(i)
+#pragma omp ordered
+  y[i] += f(x)
+  z[i] = g(y[i])
+}
+\end{lstlisting}
+There is a limitation:
+each iteration can encounter only one \indexompshow{ordered} directive.
+
+\Level 0 {\texttt{nowait}}
+\label{sec:omp-nowait}
+
+The implicit barrier at the end of a work sharing construct
+can be cancelled with a
+\indexclause{nowait}\index[omp]{barrier!cancelled by nowait} clause.
+This has the effect that threads that are finished can continue
+with the next code in the parallel region:
+\begin{lstlisting}
+#pragma omp parallel
+{
+#pragma omp for nowait
+  for (i=0; i<N; i++) { ... }
+  // more parallel code
+}
+\end{lstlisting}
+
+In the following example, threads that are finished with the first loop
+can start on the second. Note that this requires both loops to have
+the same schedule. We specify the static schedule here to have an
+identical scheduling of iterations over threads:
+\begin{lstlisting}
+#pragma omp parallel
+{
+  x = local_computation()
+#pragma omp for schedule(static) nowait
+  for (i=0; i<N; i++) { 
+    x[i] = ... 
+  }
+#pragma omp for schedule(static)
+  for (i=0; i<N; i++) { 
+    y[i] = ... x[i] ...
+  }
+}
+\end{lstlisting}
+
+\Level 0 {While loops}
+
+OpenMP can only handle `for' loops: \indexterm{while loops} can not
+be parallelized. So you have to find a way around that. While loops
+are for instance used to search through data:
+\begin{lstlisting}
+while ( a[i]!=0 && i<imax ) {
+ i++; }
+// now i is the first index for which \n{a[i]} is zero.
+\end{lstlisting}
+We replace the while loop by a for loop that examines all locations:
+\begin{lstlisting}
+result = -1;
+#pragma omp parallel for
+for (i=0; i<imax; i++) {
+  if (a[i]!=0 && result<0) result = i;
+}
+\end{lstlisting}
+\begin{exercise}
+  Show that this code has a race condition.
+\end{exercise}
+You can fix the race condition by making the condition into a critical section;
+section~\ref{sec:critical}. In this particular example, with a very small amount
+of work per iteration, that is likely to be inefficient 
+in this case (why?).
+A~more efficient solution uses the \indexpragma{lastprivate} pragma:
+\begin{lstlisting}
+result = -1;
+#pragma omp parallel for lastprivate(result)
+for (i=0; i<imax; i++) {
+  if (a[i]!=0) result = i;
+}
+\end{lstlisting}
+You have now solved a slightly different problem: the result variable
+contains the \emph{last} location where \n{a[i]} is zero.
+
+\Level 0 {Tests}
+
+\Level 1 {Scaling tests}
+
+We take a simple loop and consider the influence of binding parameters.
+
+\cverbatimsnippet{ompsineloop}
+
+\Level 1 {Lonestar 6}
+
+Lonestar 6, dual socket \indextermbus{AMD}{Milan}, total 112 cores:
+figure~\ref{fig:ls6-bind}.
+
+\begin{figure}[t]
+  \begin{tikzpicture}  
+    \begin{axis}
+      [  
+        enlargelimits=0.15,
+        xlabel={\#Threads},
+        ylabel={Speedup},
+        symbolic x coords={1,8,16,24,32,40,48,56,64,72,80,88,96,104,112,120,128},
+        xtick=data,  ytick={1,25,50,100,110},
+        nodes near coords,  
+        nodes near coords align={vertical},  
+      ]  
+      \addplot coordinates {(1, 1.00) (8, 8.20) (16, 16.03) (24, 27.43) (32, 33.21) (40, 38.47) (48, 41.41) (56, 38.27) (64, 35.68) (72, 34.89) (80, 41.03) (88, 38.41) (96, 29.10) (104, 37.03) (112, 31.80) (120, 27.92) (128, 28.93) };
+      \addplot coordinates {(1, 1.00) (8, 8.39) (16, 16.29) (24, 27.91) (32, 36.43) (40, 44.17) (48, 51.47) (56, 58.54) (64, 65.29) (72, 63.50) (80, 69.55) (88, 78.54) (96, 80.53) (104, 85.82) (112, 90.17) (120, 93.41) (128, 88.75) };        
+      \addplot coordinates {(1, 1.00) (8, 8.15) (16, 16.56) (24, 25.65) (32, 33.06) (40, 39.71) (48, 44.69) (56, 50.21) (64, 57.34) (72, 62.30) (80, 64.67) (88, 73.69) (96, 75.67) (104, 84.61) (112, 88.58) (120, 91.90) (128, 96.04  ) }; 
+      \legend{false, close, spread}
+    \end{axis}
+  \end{tikzpicture}  
+  \caption{Speedup as function of thread count, Lonestar 6 cluster, different binding parameters}
+  \label{fig:ls6-bind}
+\end{figure}
+
+\Level 1 {Frontera}
+
+\indextermbus{Intel}{Cascade Lake}, dual socket, 56 cores total;
+figure~\ref{fig:frontera-bind}.
+
+For all core counts to half the total,
+performance for all binding strategies seems equal.
+After that , \n{close} and \n{spread} perform equally,
+but the speedup for the \n{false} value gives erratic numbers.
+
+\begin{figure}[t]
+  \begin{tikzpicture}  
+    \begin{axis}
+      [  
+        enlargelimits=0.15,
+        xlabel={\#Threads},
+        ylabel={Speedup},
+        symbolic x coords={1,7,14,21,28,35,42,49,56},
+        xtick=data,  ytick={1,20,40,60},
+        nodes near coords,  
+        nodes near coords align={vertical},  
+      ]  
+      \addplot coordinates {(1, 1.00) (7, 7.22) (14, 15.13) (21, 27.46) (28, 37.32) (35, 45.82) (42, 28.96) (49, 60.41) (56, 54.99) };
+      \addplot coordinates {(1, 1.00) (7, 7.29) (14, 15.30) (21, 26.69) (28, 38.21) (35, 46.40) (42, 54.88) (49, 63.04) (56, 70.93) };
+      \addplot coordinates {(1, 1.00) (7, 7.24) (14, 15.21) (21, 26.68) (28, 37.74) (35, 46.35) (42, 54.66) (49, 62.61) (56, 70.75) };
+      \legend{false, close, spread}
+    \end{axis}
+  \end{tikzpicture}  
+  \caption{Speedup as function of thread count, Frontera cluster, different binding parameters}
+  \label{fig:frontera-bind}
+\end{figure}
+
+\Level 1 {Stampede2 skylake}
+
+Dual 24-core \indextermbus{Intel}{Skylake};
+figure~\ref{fig:skx-bind}.
+
+We see that \n{close} binding gives worse performance than \n{spread}.
+Setting binding to \n{false} only gives bad performance for large core counts.
+
+\begin{figure}[t]
+  \begin{tikzpicture}  
+    \begin{axis}
+      [  
+        enlargelimits=0.15,
+        xlabel={\#Threads},
+        ylabel={Speedup},
+        symbolic x coords={1,6,12,18,24,30,36,42,48},
+        xtick=data,  ytick={1,10,20,30,40,50},
+        nodes near coords,  
+        nodes near coords align={vertical},  
+      ]  
+      \addplot coordinates { (1, 1.02) (6, 5.92) (12, 12.08) (18, 17.60) (24, 22.96) (30, 27.86) (36, 32.56) (42, 27.27) (48, 34.78) };
+      \addplot coordinates { (1, 0.97) (6, 4.66) (12, 9.35) (18, 13.52) (24, 18.28) (30, 22.82) (36, 27.05) (42, 32.99) (48, 35.13) };
+      \addplot coordinates { (1, 1.01) (6, 6.05) (12, 11.37) (18, 17.48) (24, 20.63) (30, 26.20) (36, 30.99) (42, 33.11) (48, 37.67) };
+      \legend{false, close, spread}
+    \end{axis}
+  \end{tikzpicture}  
+  \caption{Speedup as function of thread count, Stampede2 skylake cluster, different binding parameters}
+  \label{fig:skx-bind}
+\end{figure}
+
+\Level 1 {Stampede2 Knights Landing}
+
+Single socket 68-core \indextermbus{Intel}{Knights Landing};
+\ref{fig:knl-bind}.
+
+Since this is a single socket design,
+we don't distinguish between the \n{close} and \n{spread} binding.
+However, the binding value of \n{true} shows good speedup
+--~in fact beyond the core count~--
+while \n{false} gives worse performance than in other architectures.
+
+Single 68 core
+
+\begin{figure}[t]
+  \begin{tikzpicture}  
+    \begin{axis}
+      [  
+        enlargelimits=0.15,
+        xlabel={\#Threads},
+        ylabel={Speedup},
+        symbolic x coords={1,9,19,29,38,48,58,68},
+        xtick=data,  ytick={1,10,20,30,40,50},
+        nodes near coords,  
+        nodes near coords align={vertical},  
+      ]  
+      \addplot coordinates { (1, 1.00) (9, 7.68) (19, 16.77) (29, 26.31) (38, 29.82) (48, 36.69) (58, 39.96) (68, 36.42) };
+      \addplot coordinates { (1, 1.00) (9, 9.32) (19, 22.20) (29, 39.20) (38, 48.90) (48, 61.79) (58, 73.92) (68, 86.52) };
+      \legend{false, true}
+    \end{axis}
+  \end{tikzpicture}  
+  \caption{Speedup as function of thread count, Stampede2 Knights Landing cluster, different binding parameters}
+  \label{fig:knl-bind}
+\end{figure}
+
+\Level 1 {Longhorn}
+
+Dual 20-core \indextermbus{IBM}{Power9}, 4~hyperthreads;
+\ref{fig:longhorn-bind}
+
+Unlike the Intel processors, here we use the hyperthreads.
+Figure~\ref{fig:longhorn-bind} shows dip in the speedup
+at 40 threads.
+For higher thread counts the speedup increases to well beyond the
+physical core count of~$40$.
+
+\begin{figure}[t]
+  \begin{tikzpicture}  
+    \begin{axis}
+      [  
+        enlargelimits=0.15,
+        xlabel={\#Threads},
+        ylabel={Speedup},
+        symbolic x coords={1,10,20,30,40,50,60,70,80},
+        xtick=data,  ytick={1,20,40,60},
+        nodes near coords,  
+        nodes near coords align={vertical},  
+      ]  
+      \addplot coordinates { (1, 1.00) (10, 10.08) (20, 17.40) (30, 19.70) (40, 26.36) (50, 23.60) (60, 27.57) (70, 32.91) (80, 42.08) };
+      \addplot coordinates { (1, 0.98) (10, 10.19) (20, 17.45) (30, 28.83) (40, 35.17) (50, 30.54) (60, 38.73) (70, 44.24) (80, 56.09) };
+      \addplot coordinates { (1, 1.00) (10, 10.10) (20, 20.29) (30, 25.01) (40, 35.06) (50, 31.83) (60, 38.12) (70, 43.31) (80, 56.00) };
+      \legend{false, close, spread}
+    \end{axis}
+  \end{tikzpicture}  
+  \caption{Speedup as function of thread count, Longhorn cluster, different binding parameters}
+  \label{fig:longhorn-bind}
+\end{figure}
+
+\Level 1 {Array traversal}
+\label{sec:omp-row-col-major}
+
+Consider arrays 
+\begin{lstlisting}
+  float Amat[N][N];
+  float xvec[N],yvec[N];  
+\end{lstlisting}
+and the operation $s\leftarrow y^tAx$.
+
+\begin{enumerate}
+\item Code this as an OpenMP parallel double loop.
+\item Argue that the matrix $A$ can be traversed two ways:
+  by rows and columns, or by columns and rows, both
+  giving the same result (in exact arithmetic).
+\item Argue that the loops can be collapsed with \indexompshow{collapse}
+  directory.
+\item So now you have 4 variants in addition to the sequential code.
+  Time these.
+\end{enumerate}
+
+You should find that the row/column (or \indexterm{row-major}) variant
+is faster. Can you find reasons for this?
+
+\Level 0 {Review questions}
+
+\begin{exercise}
+  The following loop can be parallelized with a \lstinline+parallel for+.
+  Is it correct to add the directive \lstinline+collapse(2)+?
+
+\begin{lstlisting}
+for (i=0; i<N; i++) {
+  y[i] = 0.;
+  for (j=0; j<N; j++)
+  y[i] += A[i][j] * x[j]
+}
+\end{lstlisting}
+\end{exercise}
+
+\begin{exercise}
+  Same question for the nested loop here:
+
+\begin{lstlisting}
+for (i=0; i<N; i++)
+y[i] = 0.;
+for (i=0; i<N; i++) {
+  for (j=0; j<N; j++)
+  y[i] += A[i][j] * x[j]
+}
+\end{lstlisting}
+\end{exercise}
+
+\begin{exercise}
+  In this triple loop:
+\begin{lstlisting}
+for (int i=0; i<n; i++)
+  for (int j=0; j<n; j++)
+    for (int k=0; k<kmax; k++)
+      x[i][j] += f(i,j,k)
+\end{lstlisting}
+what OpenMP directives do you use?
+Can you collapse all levels?
+Does it matter what the loop bounds are?
+\end{exercise}

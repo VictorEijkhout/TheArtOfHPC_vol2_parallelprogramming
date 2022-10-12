@@ -1,0 +1,23 @@
+Semantics:
+int MPI_Waitany(
+    int count, MPI_Request array_of_requests[], int *index,
+    MPI_Status *status)
+
+IN count: list length (non-negative integer)
+INOUT array_of_requests: array of requests (array of handles)
+OUT index: index of handle for operation that completed (integer)
+OUT status: status object (Status)
+
+C:
+MPI_Waitany(count, array_of_requests, index, status, ierror)
+
+Fortran:
+INTEGER, INTENT(IN) :: count
+TYPE(MPI_Request), INTENT(INOUT) :: array_of_requests(count)
+INTEGER, INTENT(OUT) :: index
+TYPE(MPI_Status) :: status
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+
+Python:
+MPI.Request.Waitany( requests,status=None )
+class method, returns index

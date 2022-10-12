@@ -1,0 +1,91 @@
+% -*- latex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newenvironment{exercises}{\begin{enumerate}}{\end{enumerate}}
+\newcommand{\project}{\item[Project]}
+\excludecomment{quiz}
+
+\newcounter{excounter}[chapter]
+\makeatletter
+\renewcommand\theexcounter{\@arabic\c@chapter.\@arabic\c@excounter}
+\makeatother
+
+\newcommand\exercisenumber{\arabic{chapter}.\arabic{excounter}}
+\generalcomment{exercise}
+  {\refstepcounter{excounter}%
+   \begingroup\def\ProcessCutFile{}\par
+   \edef\tmp{\def\noexpand\CommentCutFile
+                 {exercises/\chapshortname\arabic{excounter}.tex}}\tmp
+   }
+  {\begin{quote}
+   \leavevmode
+   \hbox{\kern-\unitindent 
+         \textbf{Exercise \exercisenumber.\hspace{1em}}}%
+   \raggedright \ignorespaces
+   %\begin{programming}[h] \input{\CommentCutFile} \end{programming}
+   \input{\CommentCutFile}
+   \end{quote}
+   \endgroup}
+\generalcomment{review}
+  {\refstepcounter{excounter}%
+   \begingroup\def\ProcessCutFile{}\par
+   \edef\tmp{\def\noexpand\CommentCutFile
+                 {exercises/\chapshortname\arabic{excounter}.tex}}\tmp
+   }
+  {\begin{quote}
+   \leavevmode
+   \hbox{\kern-\unitindent
+         \textbf{Review \exercisenumber.\hspace{1em}}}%
+     \raggedright \ignorespaces
+   \input{\CommentCutFile}
+   \end{quote}
+   \endgroup}
+
+\generalcomment{answer}
+  {\begingroup
+   \edef\tmp{\def\noexpand\CommentCutFile
+                 {answers/\chapshortname\noexpand\arabic{excounter}.tex}}\tmp
+   \def\ProcessCutFile{}}
+  {\ifIncludeAnswers \begin{quote}
+   \leavevmode
+   \hbox{\kern-\unitindent 
+         \textbf Solution to exercise \arabic{chapter}.\arabic{excounter}.\hspace{1em}}%
+     \ignorespaces\it
+   \input{\CommentCutFile}
+   \end{quote}\fi
+   \endgroup}
+
+\newenvironment{exerciseB}[1]
+  {\par
+   {\bfseries Problem \arabic{chapter}.\arabic{excounter}}
+   \parbox[t]{2in}{\slshape #1}%
+   \par
+  }
+  {\par}
+
+%pyskipbegin
+{ \catcode`\_=13
+  \gdef\mpiexample{\bgroup
+    \catcode`\_=13 \def_{\char95\discretionary{}{}{}}
+    \afterassignment\mpiexampleprint
+    \edef\mpiexamplenext }
+  \gdef\mpiexampleprint{
+    \Level 2 {\tt \mpiexamplenext}
+    \indexmpiex{\mpiexamplenext}
+    \egroup }
+}
+%pyskipend
+

@@ -1,0 +1,32 @@
+// mandel_serial.cxx
+class serialqueue : public queue {
+private :
+  int free_processor;
+public :
+  serialqueue(MPI_Comm queue_comm,circle *workcircle)
+    : queue(queue_comm,workcircle) {
+    free_processor=0;
+  };
+  /** 
+      The `addtask' routine adds a task to the queue. In this
+      simple case it immediately sends the task to a worker
+      and waits for the result, which is added to the image.
+
+      This routine is only called with valid coordinates;
+      the calling environment will stop the process once
+      an invalid coordinate is encountered.
+  */
+  int addtask(struct coordinate xy) {
+    MPI_Status status; int contribution, err;
+
+    err = MPI_Send(&xy,1,coordinate_type,
+	     free_processor,0,comm); CHK(err);
+    err = MPI_Recv(&contribution,1,MPI_INT,
+	     free_processor,0,comm, &status); CHK(err);
+
+    coordinate_to_image(xy,contribution);
+    total_tasks++;
+    free_processor = (free_processor+1)%(ntids-1);
+
+    return 0;
+  };

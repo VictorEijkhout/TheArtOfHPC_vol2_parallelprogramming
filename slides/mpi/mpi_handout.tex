@@ -1,0 +1,112 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Computing'
+%%%% by Victor Eijkhout, copyright 2012-2020
+%%%%
+%%%% tacc_handout.tex : practical details 
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt]{artikel3}
+
+\usepackage[pdftex]{hyperref}
+\usepackage{pslatex}
+
+\begin{document}
+%\title{Guide to the MPI labs\\ 2020 Summer Institute}
+\title{Introduction to Advanced features of MPI\\ PEARC 2021}
+\author{}\date{}
+\maketitle
+
+\section{Access to a cluster}
+
+You need to connect to a designated machine for doing exercises.
+
+\begin{itemize}
+\item Log in to the designated machine: (Stampede2/Frontera)
+\begin{verbatim}
+ssh -X -l yourname stampede2.tacc.utexas.edu
+# or
+ssh -X -l yourname frontera.tacc.utexas.edu
+\end{verbatim}
+(If your name is the same at TACC as on your local machine,
+you can leave out the \texttt{-l yourname} option.)
+\item When prompted, use reservation
+  %%%% SPECIFICS
+  {\catcode`\_=12
+    \texttt{PEARC_2021_Advanced_MPI}
+  }
+\item If you already have an account on this machine,
+  you may be prompted for which project to use.
+  Your own or the class project
+  %%%% SPECIFICS
+  %%\texttt{TRAINING-HPC}
+  \texttt{Frontera-Training}
+  will both work.
+\end{itemize}
+
+\section{Course materials}
+
+Course materials consist of pdf files and
+and exercise files.
+You probably want to open the pdf files
+on your local machine, so get them from:\\
+%%%% SPECIFICS
+\url{http://tinyurl.com/pearc21-tacc-advmpi}
+
+For doing the exercises it's easiest to clone a repository:
+\begin{itemize}
+\item Do
+%%%% SPECIFICS
+\begin{verbatim}
+git clone https://VictorEijkhout@bitbucket.org/VictorEijkhout/parallel-programming-public.git
+\end{verbatim}
+\item Go into the exercises directory and pick your favorite language:
+%%%% SPECIFICS
+\begin{verbatim}
+cd exercises
+ls
+cd exercises-mpi-c
+## or cxx / f / f08 / p
+\end{verbatim}
+\item Fortran: it is advisable to use the \texttt{f08} directory.
+\item For C++ there is also the MPL package. To use this:
+\begin{verbatim}
+export TACC_MPL_INC=/work/00434/eijkhout/mpl/mpl
+\end{verbatim}
+\end{itemize}
+
+\section{Doing exercises}
+
+Please observe good citizenship at TACC:\\
+do not run parallel programs on the login nodes. Instead,
+follow these instructions:
+
+\begin{itemize}
+\item Start an interactive session, ideally on 2 nodes, for the
+  duration of this course:
+\begin{verbatim}
+idev -N 2 -n 20 -t 1:0:0
+\end{verbatim}
+That is: two nodes with 20 processes total, for 1~hour.
+
+(Given 2 nodes, you can request up to 96 processes on Stampede2
+and 116 on Frontera, but that will make a mess of your screen output.
+Keep it small while you're learning.)
+\item The exercises will be named in the course. For instance, there
+  will be a `hello' exercise. The setup for this exercise will be in
+  the file \texttt{hello.c/cxx/F90/py}. To compile the exercise, do
+\begin{verbatim}
+make hello
+\end{verbatim}
+This will give you a program that you can run in parallel with \texttt{ibrun}:
+\begin{verbatim}
+ibrun hello
+\end{verbatim}
+\end{itemize}
+
+\end{document}

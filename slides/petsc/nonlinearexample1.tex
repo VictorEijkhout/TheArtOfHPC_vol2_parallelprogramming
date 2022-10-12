@@ -1,0 +1,103 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This TeX file is part of the tutorial
+%%%% `Introduction to the PETSc library'
+%%%% Victor Eijkhout, eijkhout@tacc.utexas.edu
+%%%% copyright Victor Eijkhout 2012-2022
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\sectionframe{Nonlinear example}
+
+\frame{\frametitle{Nonlinear problems}
+
+Basic equation
+\[ f(u) = 0 \]
+where $u$ can be big, for instance nonlinear PDE.
+
+Typical solution method:
+\[ u_{n+1} = u_n- J(u_n)\inv f(u_n) \]
+Newton iteration.
+
+Needed: function and Jacobian.
+\end{numberedframe}
+
+\begin{numberedframe}{Basic SNES usage}
+
+User supplies function and Jacobian:
+\begin{verbatim}
+SNES           snes;
+
+SNESCreate(PETSC_COMM_WORLD,&snes)
+
+VecCreate(PETSC_COMM_WORLD,&r)
+SNESSetFunction(snes,r,FormFunction,PETSC_NULL)
+
+MatCreate(PETSC_COMM_WORLD,&J)
+SNESSetJacobian(snes,J,J,FormJacobian,PETSC_NULL)
+
+SNESSolve(snes,PETSC_NULL,x)
+SNESGetIterationNumber(snes,&its)
+\end{verbatim}
+\end{numberedframe}
+
+\begin{numberedframe}{Target function}
+\begin{verbatim}
+PetscErrorCode FormFunction
+    (SNES snes,Vec x,Vec f,void *dummy)
+{
+VecGetArray(x,&xx); VecGetArray(f,&ff);
+
+ff[0] = PetscSinScalar(3.0*xx[0]) + xx[0];
+ff[1] = xx[1];
+
+VecRestoreArray(x,&xx); VecRestoreArray(f,&ff);
+return 0;
+}
+\end{verbatim}
+\end{numberedframe}
+
+\begin{numberedframe}{Jacobian}
+\begin{verbatim}
+PetscErrorCode FormJacobian
+ (SNES snes,Vec x,Mat *jac,Mat *prec,MatStructure *flag,void *dummy)
+{
+PetscScalar    A[];
+VecGetArray(x,&xx)
+A[0] = ... ; /* et cetera */
+MatSetValues(*jac,...,INSERT_VALUES)
+MatSetValues(*prec,..,INSERT_VALUES)
+*flag = SAME_NONZERO_PATTERN;
+VecRestoreArray(x,&xx)
+MatAssemblyBegin(*prec,MAT_FINAL_ASSEMBLY)
+MatAssemblyEnd(*prec,MAT_FINAL_ASSEMBLY)
+MatAssemblyBegin(*jac,MAT_FINAL_ASSEMBLY)
+MatAssemblyEnd(*jac,MAT_FINAL_ASSEMBLY)
+return 0;
+}
+\end{verbatim}
+\end{numberedframe}
+
+\begin{numberedframe}{Solve customization}
+\begin{verbatim}
+SNESSetType(snes,SNESTR); /* newton with trust region */
+SNESGetKSP(snes,&ksp)
+KSPGetPC(ksp,&pc)
+PCSetType(pc,PCNONE)
+KSPSetTolerances(ksp,1.e-4,PETSC_DEFAULT,PETSC_DEFAULT,20)
+\end{verbatim}
+\end{numberedframe}
+
+\endinput
+
+PetscMPIInt    size,rank;
+PetscScalar    pfive = .5,*xx;
+PetscTruth     flg;
+AppCtx         user;         /* user-defined work context */
+IS             isglobal,islocal;
+
+/* ------------------------------------------------------------------- */
+#undef __FUNCT__
+#define __FUNCT__ "FormJacobian2"
+

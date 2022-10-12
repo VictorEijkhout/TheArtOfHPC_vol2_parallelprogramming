@@ -1,0 +1,5 @@
+myrandom = np.empty(1,dtype=int)
+myrandom[0] = random_number
+allrandom = np.empty(nprocs,dtype=int)
+# numpy mode send
+comm.Allreduce(myrandom,allrandom[:1],op=MPI.MAX)

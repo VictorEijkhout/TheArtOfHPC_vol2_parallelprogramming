@@ -1,0 +1,3 @@
+producer1 = mp.Process(target=add_to_pipe,args=([1,q_entrance]))
+producer2 = mp.Process(target=add_to_pipe,args=([2,q_entrance]))
+printer = mp.Process(target=print_from_pipe,args=(q_exit,))

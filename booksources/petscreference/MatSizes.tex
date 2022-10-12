@@ -1,0 +1,9 @@
+C:
+#include "petscmat.h"
+PetscErrorCode MatGetSize(Mat mat,PetscInt *m,PetscInt *n)
+PetscErrorCode MatGetLocalSize(Mat mat,PetscInt *m,PetscInt *n)
+
+Python:
+PETSc.Mat.getSize(self) # tuple of global sizes
+PETSc.Mat.getLocalSize(self) # tuple of local sizes
+PETSc.Mat.getSizes(self) # tuple of local/global size tuples

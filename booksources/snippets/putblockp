@@ -1,0 +1,11 @@
+my_number = np.empty(1,dtype=int)
+src = 0; tgt = nprocs-1
+if procid==src:
+    my_number[0] = 37
+else:
+    my_number[0] = 1
+win.Fence()
+if procid==src:
+    # put data in the second element of the window
+    win.Put(my_number,tgt,target=1)
+win.Fence()

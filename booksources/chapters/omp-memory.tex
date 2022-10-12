@@ -1,0 +1,146 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-6
+%%%%
+%%%% omp-memory.tex : OpenMP memory model
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Level 0 {Thread synchronization}
+
+Let's do a \indexterm{producer-consumer} model\footnote{This example
+  is from Intel's excellent OMP course by Tim Mattson}.  This can be
+implemented with sections, where one section, the producer, sets a
+flag when data is available, and the other, the consumer, waits until
+the flag is set.
+\begin{lstlisting}
+#pragma omp parallel sections
+{
+  // the producer
+  #pragma omp section
+  {
+    ... do some producing work ...
+    flag = 1;
+  }
+  // the consumer
+  #pragma omp section
+  {
+    while (flag==0) { }
+    ... do some consuming work ...
+  }
+}
+\end{lstlisting}
+One reason this doesn't work, is that the compiler will see that the flag is never used
+in the producing section, and that is never changed in the consuming section, so
+it may optimize these statements, to the point of optimizing them away.
+
+The producer then needs to do:
+\begin{lstlisting}
+... do some producing work ...
+#pragma omp flush
+#pragma atomic write
+  flag = 1;
+#pragma omp flush(flag)
+\end{lstlisting}
+and the consumer does:
+\begin{lstlisting}
+#pragma omp flush(flag)
+while (flag==0) {
+  #pragma omp flush(flag)
+}
+#pragma omp flush
+\end{lstlisting}
+This code strictly speaking has a \indexterm{race condition} on the \n{flag} variable.
+
+The solution is to make this an \indexterm{atomic operation} and
+use an \indexpragma{atomic} pragma here: the producer has
+\begin{lstlisting}
+#pragma atomic write
+  flag = 1;
+\end{lstlisting}
+and the consumer:
+\begin{lstlisting}
+while (1) {
+  #pragma omp flush(flag)
+  #pragma omp atomic read
+    flag_read = flag
+  if (flag_read==1) break;
+}
+\end{lstlisting}
+
+\Level 0 {Data races}
+\index{data race|see{race condition}}
+\index{race condition!in OpenMP|(}
+
+OpenMP, being based on shared memory, has a potential for \emph{race
+  conditions}. These happen when two threads access the same data
+item. The problem with race conditions is that programmer convenience
+runs counter to efficient execution. For this reason, OpenMP simply
+does not allow some things that would be desirable.
+
+For a simple example:
+%\csnippetwithoutput{racecounter}{racecounter}
+\cverbatimsnippet[examples/omp/c/race.c]{racecounter}
+
+The basic rule about multiple-thread access of a single data item is:
+\begin{quote}
+  Any memory location that is \emph{written} by one thread, can not be
+  \emph{read} by another thread in the same parallel region, if no
+  synchronization is done.
+\end{quote}
+
+To start with that last clause: any workshare construct ends with an
+\indextermsub{implicit}{barrier}, so data written before that barrier
+can safely be read after it.
+
+\Level 1 {Dekker's algorithm}
+
+A standard illustration of the weak memory model is
+\indexterm{Dekker's algorithm}.
+We model that in OpenMP as follows;
+\cverbatimsnippet{dekkerweak}
+
+Under any reasonable interpretation of parallel execution,
+the possible values for \n{r1,r2} are $1,1$ $0,1$ or~$1,0$.
+This is known as \indexterm{sequential consistency}:
+the parallel outcome is consistent with a sequential execution that
+interleaves the parallel computations, respecting their local statement orderings.
+(See also~\HPSCref{sec:seq-consist}.)
+
+However, running this, we get a small number of cases where $r_1=r_2=0$.
+There are two possible explanations:
+\begin{enumerate}
+\item The compiler is allowed to interchange the first and second statements,
+  since there is no dependence between them; or
+\item The thread is allowed to have a local copy of the variable
+  that is not coherent with the value in memory.
+\end{enumerate}
+
+We fix this by flushing both \n{a,b}:
+\cverbatimsnippet{dekkerflush}.
+
+% \url{https://software.intel.com/es-es/forums/intel-moderncode-for-parallel-architectures/topic/610017}
+
+\index{race condition!in OpenMP|)}
+  
+\Level 0 {Relaxed memory model}
+\label{sec:omp:flush}
+
+\indexpragma{flush}
+
+\begin{itemize}
+\item There is an implicit flush of all variables at the start and end 
+  of a \emph{parallel region}\index{parallel region!flush at}.
+\item There is a flush at each barrier, whether explicit or implicit,
+  such as at the end of a
+  \emph{work sharing}\index{workshare!flush after}.
+\item At entry and exit of a
+  \emph{critical section}\index{critical section!flush at}
+\item When a \emph{lock}\index{lock!flush at} is set or unset.
+\end{itemize}
+

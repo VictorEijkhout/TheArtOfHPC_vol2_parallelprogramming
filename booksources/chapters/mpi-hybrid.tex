@@ -1,0 +1,142 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%% hybrid.tex : about hybrid computing
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+While the MPI standard itself makes no mention of threads
+--~process being the primary unit of computation~--
+the use of threads is allowed.
+Below we will discuss what provisions exist for doing so.
+
+Using threads and other shared memory models in combination with MPI
+leads of course to the question how
+\indexterm{race condition}s are handled.
+Example of a code with a
+\emph{data race}\index{race condition!in MPI/OpenMP}
+that pertains to MPI:
+\begin{lstlisting}
+#pragma omp sections
+#pragma omp section
+  MPI_Send( x, /* to process 2 */ )
+#pragma omp section
+  MPI_Recv( x, /* from process 3 */ )
+\end{lstlisting}
+The MPI standard here puts the burden on the user:
+this code is not legal, and behavior is not defined.
+
+\Level 0 {MPI support for threading}
+\label{sec:init-thread}
+\label{sec:ref:mpi-thread}
+
+
+In hybrid execution, the main question is whether all threads
+are allowed to make MPI calls. To determine this,
+replace the \indexmpishow{MPI_Init} call by
+%
+\indexmpiref{MPI_Init_thread}
+%
+Here the \n{required} and \n{provided} parameters can take the following
+(monotonically increasing) values:
+\begin{itemize}
+\item \indexmpidef{MPI_THREAD_SINGLE}: Only a single thread will
+  execute.
+\item\indexmpidef{MPI_THREAD_FUNNELED}: The program may use multiple
+  threads, but only the main thread will make MPI calls.
+
+    The main thread is usually the one selected by the
+    \indexpragma{master} directive, but technically it is the only that
+    executes \indexmpishow{MPI_Init_thread}. If you call this routine in
+    a parallel region, the main thread may be different from the master.
+\item\indexmpidef{MPI_THREAD_SERIALIZED}: The program may use multiple
+  threads, all of which may make MPI calls, but there will never be
+  simultaneous MPI calls in more than one thread.
+\item\indexmpidef{MPI_THREAD_MULTIPLE}: Multiple threads may issue MPI
+  calls, without restrictions.
+\end{itemize}
+
+After the initialization call, you can query the support level
+with \indexmpiref{MPI_Query_thread}.
+
+In case more than one thread performs communication, 
+\indexmpiref{MPI_Is_thread_main}
+can determine whether a thread is the main thread.
+
+\begin{pythonnote}{Thread level}
+  The thread level can be set through the \lstinline{mpi4py.rc} object
+  (section~\ref{sec:mpi-init}):
+\begin{lstlisting}
+mpi4py.rc.threads # default True
+mpi4py.rc.thread_level # default "multiple"
+\end{lstlisting}
+Available levels are
+\n{multiple}, \n{serialized}, \n{funneled}, \n{single}.
+\end{pythonnote}
+
+\begin{mplnote}{Threading support}
+  \ac{MPL} always calls \indexmpishow{MPI_Init_thread}
+  requesting the highest level \indexmpishow{MPI_THREAD_MULTIPLE}.
+\begin{lstlisting}
+enum mpl::threading_modes {
+  mpl::threading_modes::single = MPI_THREAD_SINGLE, 
+  mpl::threading_modes::funneled = MPI_THREAD_FUNNELED,
+  mpl::threading_modes::serialized = MPI_THREAD_SERIALIZED,
+  mpl::threading_modes::multiple = MPI_THREAD_MULTIPLE
+};
+threading_modes mpl::environment::threading_mode ();
+bool mpl::environment::is_thread_main ();
+\end{lstlisting}
+\end{mplnote}
+
+\begin{tacc}
+  The \indexterm{mvapich} implementation of MPI
+  does have the required threading support, but you need to set this environment variable:  
+\begin{verbatim}
+export MV2_ENABLE_AFFINITY=0
+\end{verbatim}
+  Another solution is to run your code like this:
+\begin{verbatim}
+  ibrun tacc_affinity <my_multithreaded_mpi_executable
+\end{verbatim}
+  Intel MPI uses an environment variable to turn on thread support:
+\begin{verbatim}
+I_MPI_LIBRARY_KIND=<value>
+where
+release : multi-threaded with global lock
+release_mt : multi-threaded with per-object lock for thread-split  
+\end{verbatim}
+\end{tacc}
+
+The \emph{mpiexec}\index{mpiexec!and environment variables}
+program usually propagates \indexterm{environment variables},
+so the value of \indextermtt{OMP_NUM_THREADS} when you call \indextermtt{mpiexec}
+will be seen by each MPI process.
+
+\begin{itemize}
+\item It is possible to use blocking sends in threads, and let the
+  threads block. This does away with the need for polling.
+\item You can not send to a thread number: use the MPI
+  \indextermbus{message}{tag} to send to a specific thread.
+\end{itemize}
+
+\begin{exercise}
+Consider the 2D heat equation and explore the mix of MPI/OpenMP
+parallelism:
+\begin{itemize}
+\item Give each node one MPI process that is fully multi-threaded.
+\item Give each core an MPI process and don't use multi-threading.
+\end{itemize}
+Discuss theoretically why the former can give higher performance.
+Implement both schemes as special cases of the general hybrid case,
+and run tests to find the optimal mix.
+\end{exercise}
+
+\cverbatimsnippet[examples/mpi/c/thread.c]{thread}
+

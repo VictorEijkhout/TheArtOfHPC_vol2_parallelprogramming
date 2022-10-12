@@ -1,0 +1,13 @@
+C:
+int MPI_Win_lock(int lock_type, int rank, int assert, MPI_Win win)
+
+Input Parameters:
+lock_type - Indicates whether other processes may access the target window at the
+    same time (if MPI_LOCK_SHARED) or not (MPI_LOCK_EXCLUSIVE)
+rank - rank of locked window (nonnegative integer)
+assert - Used to optimize this call; zero may be used as a default. (integer)
+win - window object (handle)
+
+Python:
+MPI.Win.Lock(self,
+    int rank, int lock_type=LOCK_EXCLUSIVE, int assertion=0)

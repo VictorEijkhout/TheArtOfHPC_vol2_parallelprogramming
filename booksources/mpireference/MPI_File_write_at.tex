@@ -1,0 +1,27 @@
+MPI_File_write_at(fh,offset,buf,count,datatype)
+
+Semantics:
+Input Parameters
+fh : File handle (handle).
+offset : File offset (integer).
+buf : Initial address of buffer (choice).
+count : Number of elements in buffer (integer).
+datatype : Data type of each buffer element (handle).
+
+Output Parameters:
+status : Status object (status).
+
+C:
+int MPI_File_write_at
+   (MPI_File fh, MPI_Offset offset, const void *buf,
+    int count, MPI_Datatype datatype, MPI_Status *status)
+
+Fortran:
+MPI_FILE_WRITE_AT
+   (FH,  OFFSET,  BUF, COUNT, DATATYPE, STATUS,  IERROR)
+<type>    BUF(*)
+INTEGER :: FH, COUNT, DATATYPE, STATUS(MPI_STATUS_SIZE), IERROR
+INTEGER(KIND=MPI_OFFSET_KIND) :: OFFSET
+
+Python:
+MPI.File.Write_at(self, Offset offset, buf, Status status=None)

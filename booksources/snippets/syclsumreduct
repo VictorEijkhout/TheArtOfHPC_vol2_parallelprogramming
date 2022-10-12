@@ -1,0 +1,10 @@
+// reductscalar.cxx
+auto reduce_to_sum =
+  sycl::reduction( sum_array, static_cast<float>(0.), std::plus<float>() );
+myqueue.parallel_for// parallel_for<reduction_kernel<T,BinaryOp,__LINE__>>
+  ( array_range,    // sycl::range<1>(input_size), 
+    reduce_to_sum,  // sycl::reduction(output, identity, op), 
+    [=] (sycl::id<1> idx, auto& reducer) { // type of reducer is impl-dependent, so use auto
+    reducer.combine(shared_array[idx[0]]); //(input[idx[0]]);
+//reducer += shared_array[idx[0]]; // see line 216: add_reducer += input0[idx[0]];
+  } ).wait();

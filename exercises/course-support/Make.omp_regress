@@ -1,0 +1,101 @@
+# -*- makefile -*-
+################################################################
+####
+#### This makefile is part of `Parallel Programming in MPI and OpenMP'
+#### by Victor Eijkhout, copyright 2013-2020
+#### eijkhout@tacc.utexas.edu
+####
+#### Make include file for course programs
+####
+################################################################
+
+##
+## source listing
+##
+
+.PHONY: sources
+info ::
+	@echo "make sources: list all exercises"
+sources :
+	@echo ${EXERCISES}
+
+clean ::
+	@/bin/rm -f ${EXERCISES}
+	@rm -f regression.out
+
+##
+## regression
+##
+
+.PHONY: regression regression_compile regression_runs
+info ::
+	@echo "make regression_compile : compile all exercises"
+	@echo "make regression         : compile and run"
+	@if [ ! -z ${PYTHON} ] ; then \
+	  echo "    [PYTHON=yourlocalpython]" ; \
+	fi
+regression : regression_compile regression_runs
+regression_compile : clean
+	@for e in ${EXERCISES} ; do \
+	  echo ".. $$e" ; \
+	  make --no-print-directory $$e >./$$e.log 2>&1 ; \
+	  if [ $$? -ne 0 ] ; then \
+	    echo "Failed:" ; cat $$e.log ; \
+	  fi ; \
+	done
+info ::
+	@echo "make regression_runs    : run selected exercises"
+	@echo "    ( ${RUNS} )"
+RUNS = run_parallel run_prime
+regression_runs :
+	@for e in ${EXERCISES} ; do \
+	    make --no-print-directory run_$$e ; \
+	  done
+.PHONY: regress_out
+info ::
+	@echo "make regress_out"
+	@if [ -z ${MODE} ] ; then \
+	  echo "set MODE for regression test!" ; exit 1; fi
+	@if [ ${MODE} = "mpi" ] ; then \
+	  echo "  ( optional settings: NP PROGRAM )" ; fi
+regress_out : 
+	@if [ -z ${MODE} ] ; then \
+	  echo "set MODE for regression test!" ; exit 1 ; fi
+	@if [ ${MODE} = "mpi" ] ; then \
+	  mpirun -np ${NP} ${CATCHER} ${PROGRAM} ; \
+	elif [ ${MODE} = "omp" ] ; then \
+	  OMP_NUM_THREADS=${NP} ./${PROGRAM} > regression.out ; \
+	else \
+	  echo "unsupported regression mode: ${MODE}" ; exit 1 ; \
+	fi
+
+.PHONY: run_parallel run_pi run_piadapt
+NP = 4
+.PHONY: run_parallel
+run_parallel : parallel
+	@echo "Regression run for parallel"
+	@make regress_out NP=${NP} PROGRAM=parallel ; \
+	cat regression.out | awk '/threads/ { t = $$3 } END { print t }' > chk.out && \
+	if [ `cat chk.out` -ne ${NP} ] ; then \
+	  echo "Program parallel failed. Output:" && cat regression.out ; \
+	else \
+	  echo "Program parallel ran successfully" ; \
+	fi
+run_pi : pi
+	@echo "Regression run for pi"
+	@make regress_out NP=${NP} PROGRAM=pi ; \
+	if [ `grep 3.141 regression.out | wc -l` -ne 1 ] ; then \
+	  echo "Program pi failed. Output:" && cat regression.out ; \
+	else \
+	  echo "Program pi ran successfully" ; \
+	fi
+run_piadapt : piadapt
+	@echo "Regression run for piadapt"
+	@make regress_out NP=${NP} PROGRAM=piadapt ; \
+	if [ `grep 3.141 regression.out | wc -l` -ne 1 ] ; then \
+	  echo "Program piadapt failed. Output:" && cat regression.out ; \
+	else \
+	  echo "Program piadapt ran successfully" ; \
+	fi
+clean ::
+	@rm -f regression.out chk.out

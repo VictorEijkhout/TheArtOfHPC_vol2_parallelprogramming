@@ -1,0 +1,6 @@
+if (mytid<ntids-1)
+  MPI_Ssend( /* data: */ &my_number,1,MPI_INT,
+             /* to: */ mytid+1, /* tag: */ 0, comm);
+if (mytid>0)
+  MPI_Recv( /* data: */ &other_number,1,MPI_INT,
+            /* from: */ mytid-1, 0, comm, &status);

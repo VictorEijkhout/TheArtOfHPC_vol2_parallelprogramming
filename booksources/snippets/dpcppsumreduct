@@ -1,0 +1,12 @@
+// sum1d.cxx
+auto array_accessor =
+  array_buffer.get_access<sycl::access::mode::read>(h);
+auto scalar_accessor =
+  scalar_buffer.get_access<sycl::access::mode::read_write>(h);
+h.parallel_for<class uniqueID>
+  ( array_range,
+    [=](sycl::id<1> index) 
+    {
+      scalar_accessor[0] += array_accessor[index];
+    }
+    ); // end of parallel for

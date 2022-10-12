@@ -1,0 +1,19 @@
+void queue::wait_for_work(MPI_Comm comm,circle *workcircle) {
+  MPI_Status status; int ntids;
+  MPI_Comm_size(comm,&ntids);
+  int stop = 0;
+
+  while (!stop) {
+    struct coordinate xy;
+    int res;
+
+    MPI_Recv(&xy,1,coordinate_type,ntids-1,0, comm,&status);
+    stop = !workcircle->is_valid_coordinate(xy);
+    if (stop) break; //res = 0;
+    else {
+      res = belongs(xy,workcircle->infty);
+    }
+    MPI_Send(&res,1,MPI_INT,ntids-1,0, comm);
+  }
+  return;
+}

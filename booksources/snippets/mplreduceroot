@@ -1,0 +1,9 @@
+// scangather.cxx
+if (procno==0) {
+  comm_world.reduce
+    ( mpl::plus<int>(),0,
+      my_number_of_elements,total_number_of_elements );
+} else {
+  comm_world.reduce
+    ( mpl::plus<int>(),0,my_number_of_elements );
+}

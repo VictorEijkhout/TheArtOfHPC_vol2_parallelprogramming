@@ -1,0 +1,13 @@
+// sendtemplate.cxx
+#include <complex>
+  vector<complex<float>> c(8);
+  send_and_recv( comm_world,c );
+
+  if (comm_world.rank()==0)
+    cout << "testing with complex<double> " << sizeof(complex<double>) << endl;
+  vector<complex<double>> d(8);
+  send_and_recv( comm_world,d );
+template <typename T>
+void send_and_recv( const mpl::communicator &comm, vector<T> &v ) {
+  mpl::contiguous_layout<T> v_layout(v.size());
+    comm.send(v.data(), v_layout, 1); // send to rank 1

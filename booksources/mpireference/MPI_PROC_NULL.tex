@@ -1,0 +1,14 @@
+C:
+#include "mpi.h"
+MPI_PROC_NULL
+
+Fortran 2008:
+use mpi_f08
+Type(MPI_Comm) :: MPI_PROC_NULL
+
+Fortran90:
+#include "mpif.h"
+MPI_PROC_NULL
+
+Python:
+MPI.PROC_NULL = -1

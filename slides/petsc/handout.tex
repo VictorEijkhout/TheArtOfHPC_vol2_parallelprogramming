@@ -1,0 +1,109 @@
+\documentclass[11pt]{artikel3}
+
+\usepackage{pslatex,hyperref}
+
+\def\n{\bgroup\catcode`\_=12 \catcode`\~=12 \tt \let\next=}
+
+\addtolength\textwidth{1in}
+\addtolength\textheight{-3in}
+\addtolength\oddsidemargin{-.5in}
+
+\begin{document}
+\title{RWTH Regional School\\ Instructions for the lab exercises}
+\author{}\date{}\maketitle
+
+\section*{Download materials}
+
+\begin{itemize}
+\item Download the course materials by
+  \n{wget http://tinyurl.com/ISTC-petsc-tutorial} You do not have to do
+  this in an empty directory.
+\item Expand the file you have just downloaded: \n{tar fxz
+  petsc_tutorial_files.tgz} This creates a directory
+  \n{petsc_tutorial_files} Go there.
+\item You will find: 
+  \begin{itemize}
+  \item four source directories: exercises and solutions for C and
+    Fortran,
+  \item files with the lecture slides and the instructions for the
+    exercises, and this handout.
+  \end{itemize}
+\item There is also a job file to submit parallel runs. However, we
+  will use a different way of running the exercises.
+\end{itemize}
+
+\section*{Labs}
+
+{\it Problems with compiling:} make sure the environment variables
+\n{PETSC_DIR} and \n{PETSC_ARCH} are properly set.
+
+{\it Problems with running:} did you use some variant of mpirun? On
+your own machine, you
+can use the one in \n{\${PETSC_DIR}/\${PETSC_ARCH}/bin}
+
+\subsection*{Lab1: \n{basic.c} / \n{basic.F90}}
+
+Make the example program with the command \n{make basic} and run it in
+parallel. You should get something like this:
+\begin{verbatim}
+Hello, I'm processor 0 and I have just initialised Petsc!
+Hello, I'm processor 1 and I have just initialised Petsc!
+Hello, I'm processor 2 and I have just initialised Petsc!
+Hello, I'm processor 3 and I have just initialised Petsc!
+\end{verbatim}
+Look up the manpage for \n{PetscSynchronizedPrintf}, and alter the
+program so that only processor zero produces output; it should report
+how many processes there are in total:
+\begin{verbatim}
+Processor 0 out of 4 reporting for duty!
+\end{verbatim}
+You may need to include \n{PetscSynchronizedFlush} in your code.
+
+\subsection*{Lab2: \n{mat.c} / \n{mat.F90}}
+
+The example program contains the skeleton of a matrix construction. By
+invoking the program as \n{mat -n 23} you specify the size of the
+matrix.  This program needs to be run on a single processor.
+
+\begin{itemize}
+\item Insert a test that stops the program if it is run on more than
+  one processor: use the \n{SETERRQ} command.
+\item Finish the code for inserting elements into the matrix; use any
+  simple function of $i$ and~$j$.
+\item The intended behaviour of this program is as follows: if it is
+  run with the \n{-n} parameter, a matrix is constructed and written
+  to file. If the program is subsequently run without the \n{-n}
+  parameter, it reads the dump file. Write the \n{else} part of the
+  program so that the dump file is read back.
+\end{itemize}
+
+\subsection*{Lab3: \n{ksp.c} / \n{ksp.F90}}
+
+This program constructs a simple five-point Laplacian matrix and
+solves a linear system with it using an iterative method. Study the
+matrix construction, build the executable, and run it in parallel:
+\n{mat -n 23} will construct a matrix on a $23\times 23$ domain.
+
+\begin{itemize}
+\item Increase the problem size and see that the number of iterations
+  increases.
+\item Add the option \n{-ksp_view} and see what the maximum number of
+  iterations is. Look up the manpage for \n{KSPSetTolerances}, and
+  decrease the maximum number of iterations so that it is no longer
+  sufficient for convergence at some size. Check the output.
+\item The source contains a placeholder for code that inserts a junk
+  value somewhere in the matrix. Finish this code, run the program,
+  and confirm that the iterative method is likely to diverge.
+\item Experiment with commandline options: set a different iterative
+  method with \n{-ksp_type}, and once you have convergence, try to
+  decrease the number of iterations by choosing a different
+  preconditioner with \n{-pc_type}.
+\item What happens if you use \n{-pc_type lu} or \n{pc_type ilu} in
+  parallel? Search the lecture notes for instructions on how to use a
+  parallel direct solver (such as mumps), or a parallel preconditioner
+  (such as hypre). 
+\item Also try the \n{bjacobi} and \n{aschwarz}
+  preconditioners. Experiment with the subsolvers.
+\end{itemize}
+
+\end{document}

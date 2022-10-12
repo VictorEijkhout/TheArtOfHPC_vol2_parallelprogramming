@@ -1,0 +1,125 @@
+\documentclass[11pt,headernav]{beamer}
+
+\beamertemplatenavigationsymbolsempty
+\usetheme{Madrid}%{Montpellier}
+\usecolortheme{seahorse}
+\setcounter{tocdepth}{1}
+\AtBeginSection[]
+{
+  \begin{frame}
+    \frametitle{Table of Contents}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+\usepackage{pslatex}
+\usepackage{amsmath,arydshln,multirow,multicol,verbatim,wrapfig}
+\def\verbatimsnippet#1{\begingroup\small \verbatiminput{snippets/#1}\endgroup}
+
+\setbeamertemplate{footline}{\hskip1em Eijkhout: MPI intro\hfill
+  \arabic{page}\hskip1em \includegraphics[scale=.2]{tacc_logo}\hskip1em}
+
+\newdimen\unitindent \unitindent=20pt
+\usepackage[algo2e,noline,noend]{algorithm2e}
+\newenvironment{displayalgorithm}
+ {\par
+  \begin{algorithm2e}[H]\leftskip=\unitindent \parskip=0pt\relax
+  \DontPrintSemicolon
+  \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+ }
+ {\end{algorithm2e}\par}
+\newenvironment{displayprocedure}[2]
+ {\everymath{\strut}
+  \begin{procedure}[H]\leftskip=\unitindent\caption{#1(#2)}}
+ {\end{procedure}}
+\def\sublocal{_{\mathrm\scriptstyle local}}
+
+\usepackage{comment}
+\specialcomment{exercise}{
+  \def\CommentCutFile{exercise.cut}
+  \def\PrepareCutFile{%
+        \immediate\write\CommentStream{\noexpand\begin{frame}{Exercise}}}
+  \def\FinalizeCutFile{%
+        \immediate\write\CommentStream{\noexpand\end{frame}}}
+  }{}
+
+\usepackage{outliner}
+\OutlineLevelStart 0{\frame{\part{#1}\Huge\bf #1}}
+\OutlineLevelStart 1{\section{#1}}%{\frame{\section{#1}\Large\bf#1}}
+\def\sectionframe#{\Level 1 }
+\usepackage{framed}
+\colorlet{shadecolor}{blue!15}
+\OutlineLevelStart 2{\subsection{#1}
+  \frame{\begin{shaded}\large #1\end{shaded}}}
+%% \OutlineLevelCont 2{\end{frame}\begin{frame}{#1}}
+%% \OutlineLevelEnd 2{\end{frame}}
+%\OutlineTracetrue
+
+\input scimacs
+\input idxmacs
+
+\newcounter{excounter}
+\newenvironment{exerciseframe}
+               {\begin{frame}\frametitle{Exercise \arabic{excounter}}
+                   \refstepcounter{excounter}}
+               {\end{frame}}
+
+%\advance\textwidth by 1in
+%\advance\oddsidemargin by -.5in
+
+\usepackage{makeidx}
+\makeindex
+
+\begin{document}
+\parskip=10pt plus 5pt minus 3pt
+
+\title{Topics in parallel program design}
+\author{Victor Eijkhout}
+\date{2015}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\Level 0 {High performance linear algebra}
+
+\begin{frame}{Justification}
+  Bringing architecture-awareness to linear algebra,
+  we discuss how high performance results from
+  using the right formulation and implementation of algorithms.
+\end{frame}
+
+\input Collectives
+\input DenseMVP
+\input SparseMVP
+\input ImplicitParallel
+\input MulticoreBlock
+
+\Level 0 {Applications}
+
+\begin{frame}{Justification}
+  We briefly discuss two applications that,
+  while at first glance not linear-algebra like, surprisingly 
+  can be covered by the foregoing concepts.
+\end{frame}
+
+\Level 1 {N-body problems: naive and equivalent formulations}
+%\input BH-slides
+\input Nbody-slides
+
+\Level 1 {Graph analytics, interpretation as sparse matrix problems}
+
+\input GraphAlgorithms-slides
+
+\newenvironment{theindex}{\begin{itemize}}{\end{itemize}}
+\let\indexspace\par
+\def\subitem{\par\indent}
+
+\begin{frame}{Index}
+\small
+\begin{multicols}{2}
+\printindex  
+\end{multicols}
+\end{frame}
+
+\end{document}

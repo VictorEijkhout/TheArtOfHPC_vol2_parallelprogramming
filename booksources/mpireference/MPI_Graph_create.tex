@@ -1,0 +1,14 @@
+int MPI_Graph_create
+   (MPI_Comm comm_old, int nnodes, const int indx[],
+    const int edges[], int reorder,
+    MPI_Comm *comm_graph)
+
+Input Parameters:
+comm_old : input communicator without topology (handle)
+nnodes : number of nodes in graph (integer)
+indx : array of integers describing node degrees
+edges : array of integers describing graph edges
+reorder : ranking may be reordered (true) or not (false) (logical)
+
+Output Parameters
+comm_graph : communicator with graph topology added (handle)

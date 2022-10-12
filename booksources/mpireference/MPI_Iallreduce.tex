@@ -1,0 +1,19 @@
+Semantics
+
+int MPI_Iallreduce(
+    const void *sendbuf, void *recvbuf,
+    int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm,
+    MPI_Request *request)
+
+Input Parameters
+
+sendbuf : starting address of send buffer (choice)
+count : number of elements in send buffer (integer)
+datatype : data type of elements of send buffer (handle)
+op : operation (handle)
+comm : communicator (handle)
+
+Output Parameters
+
+recvbuf : starting address of receive buffer (choice)
+request : communication request (handle)

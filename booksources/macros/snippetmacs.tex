@@ -1,0 +1,137 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\verbatimsnippet#1{\verbatiminput{#1}} % snippets/
+\newcommand{\cverbatimsnippet}[2][XX]{
+  \languageVerbatimSnippet{#1}{#2}{C}
+}
+\newcommand{\cxxverbatimsnippet}[2][XX]{
+  \languageVerbatimSnippet{#1}{#2}{C++}
+}
+\newcommand{\fverbatimsnippet}[2][XX]{
+  \languageVerbatimSnippet{#1}{#2}{Fortran}
+}
+\newcommand{\pverbatimsnippet}[2][XX]{
+  \languageVerbatimSnippet{#1}{#2}{Python}
+}
+% #1 file name (or XX if not given)
+% #2 snippet name
+% #3 language
+\newif\ifincludesources\includesourcesfalse
+\begin{fullsources}
+\includesourcestrue
+\end{fullsources}
+\newcommand{\languageVerbatimSnippet}[3]{
+  % record this file as bracketed name
+  \def\xx{XX}\def\yy{#1}
+  % typeset as nice Python code
+  \lstset{style=reviewcode,language=#3}
+  \IfFileExists
+      {#2}
+      {\lstinputlisting{#2}}
+      {\hbox{\textbf{missing snippet #2}\message{missing snippet #2}}}
+  \lstset{style=reviewcode,language=C}
+  \ifInBook
+  \nobreak
+  \ifincludesources
+    \ifx\xx\yy\else
+    {\globaldefs=1 \addchaptersource{#1} }
+      \moveright .5\unitindent \hbox{%
+        \textsl{For the full source of this example, see section~\ref{lst:#1}}
+      }\par
+  \fi % xx yy
+  \fi % includesources
+  \fi % InBook
+}
+
+\newenvironment{clisting}
+    {\lstset{style=reviewcode,language=C}\begin{lstlisting}}
+    {\end{lstlisting}}
+\newenvironment{cxxlisting}
+    {\lstset{style=reviewcode,language=C++}\begin{lstlisting}}
+    {\end{lstlisting}}
+\newenvironment{flisting}
+    {\lstset{style=reviewcode,language=Fortran}\begin{lstlisting}}
+    {\end{lstlisting}}
+\newenvironment{plisting}
+    {\lstset{style=reviewcode,language=Python}\begin{lstlisting}}
+    {\end{lstlisting}}
+
+\makeatletter
+\def\snippetcodefraction{.6}
+\def\snippettextfraction{.35}
+\newcommand{\csnippetwithoutput}[3]{
+  \snippetwithoutput{#1}{#2}{#3}{C}
+}
+
+\newcommand{\fsnippetwithoutput}[3]{
+  \snippetwithoutput{#1}{#2}{#3}{Fortran}
+}
+
+\newcommand{\psnippetwithoutput}[3]{
+  \snippetwithoutput{#1}{#2}{#3}{Python}
+}
+
+\def\snippetcodefraction{.6}
+\def\snippetlistfraction{.35}
+\newcommand\snippetoutputsize{\footnotesize}
+\newcommand{\snippetwithoutput}[4]{
+  \message{Code snippet <#1> in dir <#2> with output file <#3> language <#4>}
+  % go into vertical mode
+  \par
+  % make nice two-column layout
+  \hbox to \hsize{%
+    \begin{minipage}[t]{\snippetcodefraction\hsize}
+      \footnotesize\textbf{Code:}
+      \lstset{language=#4,xleftmargin=0pt}
+      \lstinputlisting{#1}
+      \lstset{language=C,xleftmargin=\unitindent}
+    \end{minipage}%
+    \hfil
+    \begin{minipage}[t]{\snippetlistfraction\hsize}
+      { \snippetoutputsize \raggedright \textbf{Output:}\par }
+      \IfFileExists
+          {#2/#3.runout}
+          { \snippetoutputsize
+            \def\verbatim@startline{\verbatim@line{\leavevmode\relax}}
+            \verbatiminput{#2/#3.runout}
+          }
+          { \textbf{Missing output for #3} }
+    \end{minipage}
+  }
+}
+\newcommand{\csnippetwithblock}[2]{
+  \snippetwithblock{#1}{#2}{C}
+}
+\newcommand{\snippetwithblock}[3]{
+  % go into vertical mode
+  \par
+  % make nice two-column layout
+  \hbox to \hsize{%
+    \begin{minipage}[t]{\snippetcodefraction\hsize}
+      \footnotesize\textbf{Code:}
+      \lstset{language=#3,xleftmargin=0pt}
+      \lstinputlisting{#1}
+      \lstset{language=C,xleftmargin=\unitindent}
+    \end{minipage}%
+    \hfil
+    \begin{minipage}[t]{\snippetlistfraction\hsize}
+      { #2 }
+    \end{minipage}
+  }
+}
+\endinput
+

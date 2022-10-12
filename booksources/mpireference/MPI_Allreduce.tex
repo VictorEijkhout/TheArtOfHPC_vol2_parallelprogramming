@@ -1,0 +1,38 @@
+C:
+int MPI_Allreduce(const void* sendbuf,
+  void* recvbuf, int count, MPI_Datatype datatype,
+  MPI_Op op, MPI_Comm comm)
+
+Semantics:
+IN sendbuf: starting address of send buffer (choice)
+OUT recvbuf: starting address of receive buffer (choice)
+IN count: number of elements in send buffer (non-negative integer)
+IN datatype: data type of elements of send buffer (handle)
+IN op: operation (handle)
+IN comm: communicator (handle)
+
+Fortran:
+MPI_Allreduce(sendbuf, recvbuf, count, datatype, op, comm, ierror)
+TYPE(*), DIMENSION(..), INTENT(IN) :: sendbuf
+TYPE(*), DIMENSION(..) :: recvbuf
+INTEGER, INTENT(IN) :: count
+TYPE(MPI_Datatype), INTENT(IN) :: datatype
+TYPE(MPI_Op), INTENT(IN) :: op
+TYPE(MPI_Comm), INTENT(IN) :: comm
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+
+Python native:
+recvobj = MPI.Comm.allreduce(self, sendobj, op=SUM)
+Python numpy:
+MPI.Comm.Allreduce(self, sendbuf, recvbuf, Op op=SUM)
+
+MPL:
+template<typename T , typename F >
+void mpl::communicator::allreduce
+   ( F,	const T &, T & ) const;
+   ( F,	const T *, T *,
+     const contiguous_layout< T > & ) const;
+   ( F,	T & ) const;
+   ( F,	T *, const contiguous_layout< T > & ) const;
+F : reduction function
+T : type

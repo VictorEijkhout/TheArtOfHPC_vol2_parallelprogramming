@@ -1,0 +1,9 @@
+int blens[2]; MPI_Aint displs[2];
+MPI_Datatype types[2], paddedblock;
+blens[0] = 1; blens[1] = 1;
+displs[0] = 0; displs[1] = 2 * sizeof(double);
+types[0] = MPI_DOUBLE; types[1] = MPI_UB;
+MPI_Type_struct(2, blens, displs, types, &paddedblock);
+MPI_Type_commit(&paddedblock);
+MPI_Status recv_status;
+MPI_Recv(target,count,paddedblock,the_other,0,comm,&recv_status);

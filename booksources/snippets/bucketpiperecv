@@ -1,0 +1,8 @@
+// bucketpipenonblock.c
+MPI_Request rrequests[PARTS];
+for (int ipart=0; ipart<PARTS; ipart++) {
+  MPI_Irecv
+    (
+     leftdata+partition_starts[ipart],partition_sizes[ipart],
+     MPI_DOUBLE,recvfrom,ipart,comm,rrequests+ipart);
+}

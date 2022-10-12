@@ -1,0 +1,23 @@
+typedef struct {
+  PetscInt         dim,dof,sw;
+  PetscInt         mx,my,mz;    /* global number of grid points in each direction */
+  PetscInt         xs,ys,zs;    /* starting point of this processor, excluding ghosts */
+  PetscInt         xm,ym,zm;    /* number of grid points on this processor, excluding ghosts */
+  PetscInt         gxs,gys,gzs;    /* starting point of this processor including ghosts */
+  PetscInt         gxm,gym,gzm;    /* number of grid points on this processor including ghosts */
+  DMBoundaryType   bx,by,bz; /* type of ghost nodes at boundary */
+  DMDAStencilType  st;
+  DM               da;
+} DMDALocalInfo;
+
+Fortran Notes - This should be declared as
+
+   DMDALocalInfo :: info(DMDA_LOCAL_INFO_SIZE)
+
+and the entries accessed via
+
+   info(DMDA_LOCAL_INFO_DIM)
+   info(DMDA_LOCAL_INFO_DOF) etc.
+
+   The entries bx,by,bz, st, and da are not accessible from Fortran.
+   

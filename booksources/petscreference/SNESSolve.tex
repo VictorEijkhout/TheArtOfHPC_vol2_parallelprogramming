@@ -1,0 +1,10 @@
+#include "petscsnes.h"  
+PetscErrorCode  SNESSolve(SNES snes,Vec b,Vec x)
+
+Collective on SNES
+
+Input Parameters
+snes - the SNES context
+b    - the constant part of the equation F(x) = b, or NULL to use zero.
+x    - the solution vector.
+        

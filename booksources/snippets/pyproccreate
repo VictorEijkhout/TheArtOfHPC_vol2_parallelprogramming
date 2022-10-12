@@ -1,0 +1,21 @@
+## quicksort.py
+import multiprocessing as mp
+import random
+import os
+
+def quicksort( numbers ) :
+    if len(numbers)==1:
+        return numbers
+    else:
+        median = numbers[0]
+        left  = [ i for i in numbers if i<median ]
+        right = [ i for i in numbers if i>=median ]
+        with mp.Pool(2) as pool:
+            [sortleft,sortright] = pool.map( quicksort,[left,right] )
+        return sortleft.append( sortright )
+
+if __name__ == '__main__':
+    numbers = [ random.randint(1,50) for i in range(32) ]
+    process = mp.Process(target=quicksort,args=[numbers])
+    process.start()
+    process.join()

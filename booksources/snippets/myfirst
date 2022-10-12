@@ -1,0 +1,6 @@
+// exscan.c
+int my_first=0,localsize;
+// localsize = ..... result of local computation ....
+// find myfirst location based on the local sizes
+err = MPI_Exscan(&localsize,&my_first,
+            1,MPI_INT,MPI_SUM,comm); CHK(err);

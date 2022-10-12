@@ -1,0 +1,13 @@
+## irecvloop.py
+requests = [] # [ None ] * (2*nprocs)
+sendbuffer = np.empty( nprocs, dtype=int )
+recvbuffer = np.empty( nprocs, dtype=int )
+
+for p in range(nprocs):
+    left_p = (p-1) % nprocs
+    right_p = (p+1) % nprocs
+    requests.append( comm.Isend\
+        ( sendbuffer[p:p+1],dest=left_p) )
+    requests.append( comm.Irecv\
+        ( sendbuffer[p:p+1],source=right_p) )
+MPI.Request.Waitall(requests)

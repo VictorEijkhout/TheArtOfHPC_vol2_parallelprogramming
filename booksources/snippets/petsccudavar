@@ -1,0 +1,4 @@
+// cudainstalled.c
+#ifndef PETSC_HAVE_CUDA
+#error "CUDA is not installed in this version of PETSC"
+#endif

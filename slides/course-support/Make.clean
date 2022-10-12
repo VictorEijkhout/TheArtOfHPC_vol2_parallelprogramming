@@ -1,0 +1,45 @@
+# -*- makefile -*-
+################################################################
+################################################################
+####
+#### This makefile is part of the source of 
+#### "Parallel Computing for Science and Engineering"
+#### by Victor Eijkhout, copyright 2013-2020
+####
+#### Make include file for clean rules
+####
+################################################################
+################################################################
+
+.PHONY: clean local_clean total_clean recursive_clean
+info ::
+	@echo "make clean, total_clean"
+clean :: local_clean
+local_clean ::
+	@/bin/rm -rf *.o *~ *.gch *.inst.c a.out *.dSYM MULTI__* events.* *.mod \
+	    *.{a,aux,blg,cut,idx,ilg,ind,log,mod,o,out,svn,toc} \
+	    idev[0-9]*.o[0-9]* ddt.o[0-9]* jobtest.o* tautrace_* \
+	    dcvserver.out \
+	    ${APPS}
+INDENT =
+MAKEFILESDIR = ../makefiles
+recursive_clean  : local_clean
+	@for d in * ; do \
+	  if [ -d $${d} ] ; then \
+	    echo "${INDENT}cleaning in $${d}" \
+	    && ( \
+	       cd $${d} \
+	       && if [ -f Makefile ] ; then \
+	             make --no-print-directory INDENT=".. ${INDENT}" \
+	                 MAKEFILESDIR="../${MAKEFILESDIR}" \
+	                 recursive_clean ; \
+	          else \
+	             make --no-print-directory INDENT=".. ${INDENT}" \
+	                 -f ../${MAKEFILESDIR}/Make.clean \
+	                 local_clean \
+                     ; \
+	          fi \
+	       ) ; \
+	  fi ; \
+	done
+total_clean :: clean 

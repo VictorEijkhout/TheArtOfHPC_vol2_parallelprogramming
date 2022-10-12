@@ -1,0 +1,5 @@
+!! vectorx.F90
+  mediumsize = 100000000 !! 100 million
+  nblocks = 8
+  if (mytid==sender) then
+     allocate(source(nblocks*mediumsize))

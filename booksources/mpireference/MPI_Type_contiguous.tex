@@ -1,0 +1,21 @@
+Semantics:
+MPI_TYPE_CONTIGUOUS
+   (count, oldtype, newtype)
+IN count: replication count (non-negative integer)
+IN oldtype: old datatype (handle)
+OUT newtype: new datatype (handle)
+
+C:
+int MPI_Type_contiguous
+   (int count, MPI_Datatype oldtype, MPI_Datatype *newtype)
+
+Fortran:
+MPI_Type_contiguous
+   (count, oldtype, newtype, ierror)
+INTEGER, INTENT(IN) :: count
+TYPE(MPI_Datatype), INTENT(IN) :: oldtype
+TYPE(MPI_Datatype), INTENT(OUT) :: newtype
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+
+Python:
+Create_contiguous(self, int count)

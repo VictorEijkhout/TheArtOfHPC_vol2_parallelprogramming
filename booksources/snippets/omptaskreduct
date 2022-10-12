@@ -1,0 +1,10 @@
+// taskreduct.c
+#pragma omp parallel
+#pragma omp single
+  {
+  #pragma omp taskgroup task_reduction(+:sum)
+  for (int itask=1; itask<=bound; itask++) {
+    #pragma omp task in_reduction(+:sum)
+    sum += itask;
+    }
+  }

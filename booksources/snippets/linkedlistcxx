@@ -1,0 +1,13 @@
+// link.cxx
+#pragma omp parallel shared(p)
+  {
+    int n;
+    while (p<1000) {
+      stringstream proctext;
+#pragma omp critical
+      p++;
+      n = omp_get_thread_num();
+      proctext << n << " " << p << endl;
+      cout << proctext.str();
+    }
+  }

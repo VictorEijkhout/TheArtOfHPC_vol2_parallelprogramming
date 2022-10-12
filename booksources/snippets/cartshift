@@ -1,0 +1,14 @@
+char mychar = 65+procno;
+MPI_Cart_shift(comm2d,0,+1,&rank_2d,&rank_right);
+MPI_Cart_shift(comm2d,0,-1,&rank_2d,&rank_left);
+MPI_Cart_shift(comm2d,1,+1,&rank_2d,&rank_up);
+MPI_Cart_shift(comm2d,1,-1,&rank_2d,&rank_down);
+int irequest = 0; MPI_Request *requests = malloc(8*sizeof(MPI_Request));
+MPI_Isend(&mychar,1,MPI_CHAR,rank_right, 0,comm, requests+irequest++);
+MPI_Isend(&mychar,1,MPI_CHAR,rank_left,  0,comm, requests+irequest++);
+MPI_Isend(&mychar,1,MPI_CHAR,rank_up,    0,comm, requests+irequest++);
+MPI_Isend(&mychar,1,MPI_CHAR,rank_down,  0,comm, requests+irequest++);
+MPI_Irecv( indata+idata++, 1,MPI_CHAR, rank_right, 0,comm, requests+irequest++);
+MPI_Irecv( indata+idata++, 1,MPI_CHAR, rank_left,  0,comm, requests+irequest++);
+MPI_Irecv( indata+idata++, 1,MPI_CHAR, rank_up,    0,comm, requests+irequest++);
+MPI_Irecv( indata+idata++, 1,MPI_CHAR, rank_down,  0,comm, requests+irequest++);

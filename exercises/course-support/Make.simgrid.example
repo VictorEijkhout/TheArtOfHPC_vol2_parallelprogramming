@@ -1,0 +1,37 @@
+################################################################
+####
+#### Makefile for SimGrid tests
+####
+################################################################
+
+.PHONY: info
+info ::
+
+SIMGRID_VERSION=3.17
+SIMGRID_HOME=${WORK}/simgrid/
+SIMGRID_SRC=${SIMGRID_HOME}/SimGrid-${SIMGRID_VERSION}
+SIMGRID_BUILD=${SIMGRID_HOME}/build-${SIMGRID_VERSION}
+SIMGRID_INSTALL=${SIMGRID_HOME}/installation-${SIMGRID_VERSION}
+
+SIMGRID_BIN=${SIMGRID_INSTALL}/bin
+
+.PHONY: democompile demorun
+info ::
+	@echo "make democompile,demorun [ PROGRAM=... (default: ${PROGRAM}) ]"
+PROGRAMS = hello
+PROGRAM = hello
+democompile :
+	export PATH=${SIMGRID_BIN}:${PATH} && \
+	  smpicc -o ${PROGRAM} ${PROGRAM}.c
+NP = 2
+demorun :
+	scontrol show hostname ${SLURM_JOB_NODELIST} > hostfile.slurm && \
+	export PATH=${SIMGRID_BIN}:${PATH} && \
+	export LD_LIBRARY_PATH=${TACC_BOOST_LIB}:${LD_LIBRARY_PATH} && \
+	  rm -f hostfile && touch hostfile && \
+	  for i in `seq 1 ${NP}` ; do echo "host$${i}" >> hostfile ; done && \
+	  smpirun -np ${NP} -platform twonodes.xml -hostfile hostfile ${PROGRAM}
+
+.PHONY: clean
+clean :
+	@/bin/rm -f *~ *.o ${PROGRAMS} smpitmp*

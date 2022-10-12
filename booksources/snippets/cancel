@@ -1,0 +1,25 @@
+// cancel.c
+fprintf(stderr,"get set, go!\n");
+if (procno==nprocs-1) {
+  MPI_Status status;
+  MPI_Recv(dummy,0,MPI_INT, MPI_ANY_SOURCE,0,comm,
+                  &status); 
+  first_tid = status.MPI_SOURCE;
+  MPI_Bcast(&first_tid,1,MPI_INT, nprocs-1,comm); 
+  fprintf(stderr,"[%d] first msg came from %d\n",procno,first_tid);
+} else {
+  float randomfraction = (rand() / (double)RAND_MAX);
+  int randomwait = (int) ( nprocs * randomfraction );
+  MPI_Request request;
+  fprintf(stderr,"[%d] waits for %e/%d=%d\n",
+	   procno,randomfraction,nprocs,randomwait);
+  sleep(randomwait);
+  MPI_Isend(dummy,0,MPI_INT, nprocs-1,0,comm,
+                   &request); 
+  MPI_Bcast(&first_tid,1,MPI_INT, nprocs-1,comm
+                  ); 
+  if (procno!=first_tid) {
+    MPI_Cancel(&request); 
+    fprintf(stderr,"[%d] canceled\n",procno);
+  }
+}

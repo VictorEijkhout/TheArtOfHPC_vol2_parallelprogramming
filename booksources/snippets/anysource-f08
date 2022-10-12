@@ -1,0 +1,7 @@
+!! anysource.F90
+  Type(MPI_Status)  :: status
+         allocate(recv_buffer(ntids-1))
+         do p=0,ntids-2
+            call MPI_Recv(recv_buffer(p+1),1,MPI_INTEGER,&
+                 MPI_ANY_SOURCE,0,comm,status)
+            sender = status%MPI_SOURCE

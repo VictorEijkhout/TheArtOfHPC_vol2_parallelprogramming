@@ -1,0 +1,299 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% mpi-tools.tex : tools interface
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{MPI!tools interface|(}
+
+Recent versions of MPI have a standardized way of reading out
+performance variables: the \emph{tools interface}
+which improves on the old interface described in section~\ref{sec:profile}.
+
+\Level 0 {Initializing the tools interface}
+\label{sec:mpitools-init}
+
+The tools interface requires a different initialization routine
+\indexmpidef{MPI_T_init_thread}
+\begin{lstlisting}
+int MPI_T_init_thread( int required,int *provided );
+\end{lstlisting}
+Likewise, there is \indexmpidef{MPI_T_finalize}
+\begin{lstlisting}
+int MPI_T_finalize();
+\end{lstlisting}
+These matching calls can be made multiple times,
+after MPI has already been initialized with
+\indexmpishow{MPI_Init} or \indexmpishow{MPI_Init_thread}.
+
+Verbosity level is an integer parameter.
+\begin{verbatim}
+MPI_T_VERBOSITY_{USER,TUNER,MPIDEV}_{BASIC,DETAIL,ALL}
+\end{verbatim}
+
+\Level 0 {Control variables}
+\label{sec:mpit-cvar}
+\index[mpi]{control variable|(}
+\index[mpi]{cvar|see{control variable}}
+
+\emph{Control variables} are implementation-dependent variables
+that can be used to inspect and/or control the internal workings of MPI.
+Accessing control variables requires initializing the tools interface;
+section~\ref{sec:mpitools-init}.
+
+We query how many \emph{control variables} are available
+with \indexmpiref{MPI_T_cvar_get_num}.
+%% \begin{lstlisting}
+%% int MPI_T_cvar_get_num( int *number_of_cvars );
+%% \end{lstlisting}
+%
+A description of the control variable can be obtained
+from \indexmpiref{MPI_T_cvar_get_info}.
+%% \begin{lstlisting}
+%% int MPI_T_cvar_get_info( int cvar_num,
+%%   char *name, int *name_length,
+%%   int *verbosity, MPI_Datatype *type,MPI_T_enum *enumtype,
+%%   char *description,int *description_length,
+%%   int *bind,int *scope);
+%% \end{lstlisting}
+\begin{itemize}
+\item
+  An invalid index leads to a function result of \indexmpidef{MPI_T_ERR_INVALID_INDEX}.
+\item
+  Any output parameter can be specified as \indextermtt{NULL}
+  and MPI will not set this.
+\item
+  The \lstinline{bind} variable is an object type or \indexmpidef{MPI_T_BIND_NO_OBJECT}.
+\item
+  The \lstinline{enumtype} variable is \indexmpishow{MPI_T_ENUM_NULL} if the variable
+  is not an enum type.
+\end{itemize}
+\cverbatimsnippet{mpicvarlist}
+\begin{remark}
+  There is no constant indicating a maximum buffer length for these variables.
+  However, you can do the following:
+  \begin{enumerate}
+  \item Call the info routine with \n{NULL} values for the buffers,
+    reading out the buffer lengths;
+  \item allocate the buffers with sufficient length, that is,
+    including an extra position for the null terminator; and
+  \item calling the info routine a second time, filling in the string buffers.
+  \end{enumerate}
+\end{remark}
+
+Conversely, given a variable name, its index can be retrieved with
+\indexmpidef{MPI_T_cvar_get_index}:
+\begin{lstlisting}
+int MPI_T_cvar_get_index(const char *name, int *cvar_index)
+\end{lstlisting}
+If the name can not be matched, the index is \indexmpidef{MPI_T_ERR_INVALID_NAME}.
+
+Accessing a control variable is done through a
+\indextermbus{control variable}{handle}.
+\begin{lstlisting}
+int MPI_T_cvar_handle_alloc
+   (int cvar_index, void *obj_handle,
+    MPI_T_cvar_handle *handle, int *count)
+\end{lstlisting}
+The handle is freed with \indexmpidef{MPI_T_cvar_handle_free}:
+\begin{lstlisting}
+int MPI_T_cvar_handle_free(MPI_T_cvar_handle *handle)
+\end{lstlisting}
+
+\emph{Control variable access}\index{control variable!access}
+is done through \indexmpidef{MPI_T_cvar_read} and \indexmpidef{MPI_T_cvar_write}:
+\begin{lstlisting}
+int MPI_T_cvar_read(MPI_T_cvar_handle handle, void* buf);
+int MPI_T_cvar_write(MPI_T_cvar_handle handle, const void* buf);
+\end{lstlisting}
+
+\index[mpi]{control variable|)}
+
+\Level 0 {Performance variables}
+\index[mpi]{performance variable|(}
+\index[mpi]{pvar|see{performance variable}}
+
+The realization of the tools interface is installation-dependent,
+you first need to query how much of the tools interface is provided.
+
+\cverbatimsnippet[code/mpi/c/mpitpvar.c]{mpit_init_q}
+
+\cverbatimsnippet[code/mpi/c/mpitpvar.c]{mpit_list}
+
+\begin{raggedlist}
+  Performance variables come in classes:
+  \indexmpidef{MPI_T_PVAR_CLASS_STATE}
+  \indexmpidef{MPI_T_PVAR_CLASS_LEVEL}
+  \indexmpidef{MPI_T_PVAR_CLASS_SIZE}
+  \indexmpidef{MPI_T_PVAR_CLASS_PERCENTAGE}
+  \indexmpidef{MPI_T_PVAR_CLASS_HIGHWATERMARK}
+  \indexmpidef{MPI_T_PVAR_CLASS_LOWWATERMARK}
+  \indexmpidef{MPI_T_PVAR_CLASS_COUNTER}
+  \indexmpidef{MPI_T_PVAR_CLASS_AGGREGATE}
+  \indexmpidef{MPI_T_PVAR_CLASS_TIMER}
+  \indexmpidef{MPI_T_PVAR_CLASS_GENERIC}
+\end{raggedlist}
+
+Query the number of performance variables with \indexmpidef{MPI_T_pvar_get_num}:
+\begin{lstlisting}
+int MPI_T_pvar_get_num(int *num_pvar);
+\end{lstlisting}
+Get information about each variable, by index, with \indexmpidef{MPI_T_pvar_get_info}:
+\begin{lstlisting}
+int MPI_T_pvar_get_info
+   (int pvar_index, char *name, int *name_len,
+    int *verbosity, int *var_class, MPI_Datatype *datatype,
+    MPI_T_enum *enumtype, char *desc, int *desc_len, int *bind,
+    int *readonly, int *continuous, int *atomic)
+\end{lstlisting}
+See general remarks about these in section~\ref{sec:mpit-cvar}.
+\begin{itemize}
+\item The \lstinline{readonly} variable indicates that the variable can not be written.
+\item The \lstinline{continuous} variable requires use of
+  \indexmpishow{MPI_T_pvar_start} and \indexmpishow{MPI_T_pvar_stop}.
+\end{itemize}
+
+Given a name, the index can be retried with \indexmpidef{MPI_T_pvar_get_index}:
+\begin{lstlisting}
+int MPI_T_pvar_get_index(const char *name, int var_class, int *pvar_index)
+\end{lstlisting}
+Again, see section~\ref{sec:mpit-cvar}.
+
+\Level 1 {Performance experiment sessions}
+
+To prevent measurements from getting mixed up, they need to be done in
+\indextermsub{performance experiment}{session}s,
+to be called `sessions' in this chapter.
+However see section~\ref{sec:session}.
+
+Create a session with \indexmpidef{MPI_T_pvar_session_create}
+\begin{lstlisting}
+int MPI_T_pvar_session_create(MPI_T_pvar_session *session)
+\end{lstlisting}
+and release it with \indexmpidef{MPI_T_pvar_session_free}:
+\begin{lstlisting}
+int MPI_T_pvar_session_free(MPI_T_pvar_session *session)
+\end{lstlisting}
+which sets the session variable to \indexmpidef{MPI_T_PVAR_SESSION_NULL}.
+
+We access a variable through a handle, associated with a certain session.
+The handle is created with \indexmpidef{MPI_T_pvar_handle_alloc}:
+\begin{lstlisting}
+int MPI_T_pvar_handle_alloc
+   (MPI_T_pvar_session session, int pvar_index,
+    void *obj_handle, MPI_T_pvar_handle *handle, int *count)
+\end{lstlisting}
+(If a routine takes both a session and handle argument, and
+the two are not associated, an error of \indexmpidef{MPI_T_ERR_INVALID_HANDLE}
+is returned.)
+
+Free the handle with \indexmpidef{MPI_T_pvar_handle_free}:
+\begin{lstlisting}
+int MPI_T_pvar_handle_free
+   (MPI_T_pvar_session session,
+    MPI_T_pvar_handle *handle)
+\end{lstlisting}
+which sets the variable to \indexmpidef{MPI_T_PVAR_HANDLE_NULL}.
+
+Continuous variables (see \indexmpishow{MPI_T_pvar_get_info} above, which outputs this)
+can be started and stopped with
+\indexmpidef{MPI_T_pvar_start} and \indexmpidef{MPI_T_pvar_stop}:
+\begin{lstlisting}
+int MPI_T_pvar_start(MPI_T_pvar_session session, MPI_T_pvar_handle handle);
+int MPI_T_pvar_stop(MPI_T_pvar_session session, MPI_T_pvar_handle handle)
+\end{lstlisting}
+Passing \indexmpidef{MPI_T_PVAR_ALL_HANDLES} to the stop call
+attempts to stop all variables within the session.
+Failure to stop a variable returns \indexmpidef{MPI_T_ERR_PVAR_NO_STARTSTOP}.
+
+Variables can be read and written with
+\indexmpidef{MPI_T_pvar_read} and \indexmpishow{MPI_T_pvar_write}:
+\begin{lstlisting}
+int MPI_T_pvar_read
+   (MPI_T_pvar_session session, MPI_T_pvar_handle handle,
+    void* buf)
+int MPI_T_pvar_write
+   (MPI_T_pvar_session session, MPI_T_pvar_handle handle,
+    const void* buf)
+\end{lstlisting}
+If the variable can not be written
+(see the \lstinline{readonly} parameter of \indexmpishow{MPI_T_pvar_get_info}),
+ \indexmpidef{MPI_T_ERR_PVAR_NO_WRITE} is returned.
+
+A special case of writing the variable is to reset it with
+\begin{lstlisting}
+int MPI_T_pvar_reset(MPI_T_pvar_session session, MPI_T_pvar_handle handle)  
+\end{lstlisting}
+The handle value of \indexmpishow{MPI_T_PVAR_ALL_HANDLES} is allowed.
+
+A call to \indexmpishow{MPI_T_pvar_readreset}
+is an atomic combination of the read and reset calls:
+\begin{lstlisting}
+int MPI_T_pvar_readreset
+   (MPI_T_pvar_session session,MPI_T_pvar_handle handle, 
+    void* buf)
+\end{lstlisting}
+
+\index[mpi]{performance variable|)}
+
+\Level 0 {Categories of variables}
+
+Variables, both the control and performance kind,
+can be grouped into categories by the MPI implementation.
+
+The number of categories is queried with
+\indexmpidef{MPI_T_category_get_num}:
+\begin{lstlisting}
+int MPI_T_category_get_num(int *num_cat)
+\end{lstlisting}
+and for each category the information is retrieved with
+\indexmpidef{MPI_T_category_get_info}:
+\begin{lstlisting}
+int MPI_T_category_get_info
+   (int cat_index,
+    char *name, int *name_len, char *desc, int *desc_len, 
+    int *num_cvars, int *num_pvars, int *num_categories)
+\end{lstlisting}
+For a given category name the index can be found with
+\indexmpidef{MPI_T_category_get_index}:
+\begin{lstlisting}
+int MPI_T_category_get_index(const char *name, int *cat_index)
+\end{lstlisting}
+
+The contents of a category are retrieved with
+\indexmpidef{MPI_T_category_get_cvars},
+\indexmpidef{MPI_T_category_get_pvars},
+\indexmpidef{MPI_T_category_get_categories}:
+\begin{lstlisting}
+int MPI_T_category_get_cvars(int cat_index, int len, int indices[])
+int MPI_T_category_get_pvars(int cat_index, int len, int indices[])
+int MPI_T_category_get_categories(int cat_index, int len, int indices[])
+\end{lstlisting}
+
+\begin{raggedlist}
+  These indices can subsequently be used in the calls
+  \indexmpishow{MPI_T_cvar_get_info},
+  \indexmpishow{MPI_T_pvar_get_info},
+  \indexmpishow{MPI_T_category_get_info}.
+\end{raggedlist}
+
+If categories change dynamically, this can be detected with
+\indexmpidef{MPI_T_category_changed}
+\begin{lstlisting}
+int MPI_T_category_changed(int *stamp)
+\end{lstlisting}
+
+\Level 0 {Events}
+
+\cverbatimsnippet{mpiteventcount}
+\cverbatimsnippet{mpiteventinfo}
+
+\index{MPI!tools interface|)}
+

@@ -1,0 +1,96 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This TeX file is part of the tutorial
+%%%% `Introduction to the PETSc library'
+%%%% Victor Eijkhout, eijkhout@tacc.utexas.edu
+%%%% copyright Victor Eijkhout 2012-2022
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\sectionframe{Profiling, debugging}
+
+\begin{numberedframe}{Basic profiling}
+%  Most profiling and debugging requires PETSc installation with debug.
+
+  \begin{itemize}
+  \item \n{-log_summary} flop counts and timings of all PETSc events
+  \item \n{-info} all sorts of information, in particular
+\begin{verbatim}
+%% mpiexec yourprogram -info | grep malloc
+[0] MatAssemblyEnd_SeqAIJ(): 
+    Number of mallocs during MatSetValues() is 0
+\end{verbatim}
+  \item \n{-log_trace} start and end of all events: good for hanging code
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Log summary: overall}
+\small
+\begin{verbatim}
+                     Max       Max/Min        Avg      Total 
+Time (sec):       5.493e-01      1.00006   5.493e-01
+Objects:          2.900e+01      1.00000   2.900e+01
+Flops:            1.373e+07      1.00000   1.373e+07  2.746e+07
+Flops/sec:        2.499e+07      1.00006   2.499e+07  4.998e+07
+Memory:           1.936e+06      1.00000              3.871e+06
+MPI Messages:     1.040e+02      1.00000   1.040e+02  2.080e+02
+MPI Msg Lengths:  4.772e+05      1.00000   4.588e+03  9.544e+05
+MPI Reductions:   1.450e+02      1.00000
+\end{verbatim}
+\end{numberedframe}
+
+\begin{numberedframe}{Log summary: details}
+\tiny
+\begin{verbatim}
+                   Max Ratio  Max     Ratio   Max  Ratio Avg len %T %F %M %L %R  %T %F %M %L %R Mflop/s
+MatMult              100 1.0 3.4934e-02 1.0 1.28e+08 1.0 8.0e+02  6 32 96 17  0   6 32 96 17  0   255
+MatSolve             101 1.0 2.9381e-02 1.0 1.53e+08 1.0 0.0e+00  5 33  0  0  0   5 33  0  0  0   305
+MatLUFactorNum         1 1.0 2.0621e-03 1.0 2.18e+07 1.0 0.0e+00  0  0  0  0  0   0  0  0  0  0    43
+MatAssemblyBegin       1 1.0 2.8350e-03 1.1 0.00e+00 0.0 1.3e+05  0  0  3 83  1   0  0  3 83  1     0
+MatAssemblyEnd         1 1.0 8.8258e-03 1.0 0.00e+00 0.0 4.0e+02  2  0  1  0  3   2  0  1  0  3     0
+VecDot               101 1.0 8.3244e-03 1.2 1.43e+08 1.2 0.0e+00  1  7  0  0 35   1  7  0  0 35   243
+KSPSetup               2 1.0 1.9123e-02 1.0 0.00e+00 0.0 0.0e+00  3  0  0  0  2   3  0  0  0  2     0
+KSPSolve               1 1.0 1.4158e-01 1.0 9.70e+07 1.0 8.0e+02 26100 96 17 92  26100 96 17 92   194
+\end{verbatim}
+\end{numberedframe}
+
+\begin{numberedframe}{User events}
+\begin{lstlisting}
+#include "petsclog.h"
+int USER EVENT;
+PetscLogEventRegister(&USER EVENT,"User event name",0);
+PetscLogEventBegin(USER EVENT,0,0,0,0);
+/* application code segment to monitor */
+PetscLogFlops(number of flops for this code segment);
+PetscLogEventEnd(USER EVENT,0,0,0,0);
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Program stages}
+\begin{lstlisting}
+PetscLogStagePush(int stage); /* 0 <= stage <= 9 */
+PetscLogStagePop();
+PetscLogStageRegister(int stage,char *name)
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Debugging}
+  \begin{itemize}
+  \item Use of \lstinline{CHKERRQ} and \lstinline{SETERRQ} for catching and generating
+    error
+  \item Use of \lstinline{PetscMalloc} and \lstinline{PetscFree} to catch memory problems;\\
+    \lstinline{CHKMEMQ} for instantaneous memory test (debug mode only)
+  \item Better than \lstinline{PetscMalloc}:
+    \lstinline{PetscMalloc1} aligned to \lstinline{PETSC_MEMALIGN}
+  \end{itemize}
+\end{numberedframe}
+
+%\begin{numberedframe}{debugging on lonestar}}
+
+% \begin{numberedframe}{valgrind}
+% mpirun -np 2 valgrind --tool=memcheck ./ex2
+
+% And make sure that you use mpich2 - for this to work.
+% }
+

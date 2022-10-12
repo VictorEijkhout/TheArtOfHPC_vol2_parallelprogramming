@@ -1,0 +1,2 @@
+pool = mp.Pool( nprocs )
+results = pool.map( print_value,range(1,2*nprocs) )

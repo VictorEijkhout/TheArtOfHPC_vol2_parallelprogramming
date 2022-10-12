@@ -1,0 +1,18 @@
+#include "petscmat.h"
+PetscErrorCode  MatCreateShell
+   (MPI_Comm comm,
+    PetscInt m,PetscInt n,PetscInt M,PetscInt N,
+    void *ctx,Mat *A)
+
+Collective
+
+Input Parameters:
+comm- MPI communicator
+m- number of local rows (must be given)
+n- number of local columns (must be given)
+M- number of global rows (may be PETSC_DETERMINE)
+N- number of global columns (may be PETSC_DETERMINE)
+ctx- pointer to data needed by the shell matrix routines
+
+Output Parameter:
+A -the matrix

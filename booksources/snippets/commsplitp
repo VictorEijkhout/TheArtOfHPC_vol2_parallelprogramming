@@ -1,0 +1,12 @@
+## commsplit.py
+mydata = procid
+
+# communicator modulo 2
+color = procid%2
+mod2comm = comm.Split(color)
+procid2 = mod2comm.Get_rank()
+
+# communicator modulo 4 recursively
+color = procid2 % 2
+mod4comm = mod2comm.Split(color)
+procid4 = mod4comm.Get_rank()

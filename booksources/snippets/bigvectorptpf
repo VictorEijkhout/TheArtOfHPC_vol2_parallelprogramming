@@ -1,0 +1,4 @@
+call MPI_Type_contiguous(mediumsize,MPI_REAL4,blocktype)
+call MPI_Type_commit(blocktype)
+if (mytid==sender) then
+  call MPI_Send(source,nblocks,blocktype,receiver,0,comm);

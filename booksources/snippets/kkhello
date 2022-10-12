@@ -1,0 +1,4 @@
+Kokkos::parallel_for
+  ( 10,
+    [](int i){ cout << "hello " << i << "\n"; }
+    );

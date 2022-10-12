@@ -1,0 +1,38 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Computing'
+%%%% by Victor Eijkhout, copyright 2012-6
+%%%%
+%%%% .tex : 
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+N-body problems describe the motion of particles under the influence
+of forces such as gravity. There are many approaches to this problem,
+some exact, some approximate. Here we will explore a number of them.
+
+For background reading see \HPSCref{app:discrete}.
+
+\Level 0 {Solution methods}
+
+It is not in the scope of this course to give a systematic treatment
+of all methods for solving the N-body problem, whether exactly or
+approximately, so we will just consider a representative selection.
+
+\begin{enumerate}
+\item Full $N^2$ methods. These compute all interactions, which is the
+  most accurate strategy, but also the most computationally demanding.
+\item Cutoff-based methods. These use the basic idea of the
+  $N^2$ interactions, but reduce the complexity by imposing a cutoff
+  on the interaction distance.
+\item Tree-based methods. These apply a coarsening scheme to distant
+  interactions to lower the computational complexity.
+\end{enumerate}
+
+\Level 0 {Shared memory approaches}
+
+\Level 0 {Distributed memory approaches}

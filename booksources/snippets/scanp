@@ -1,0 +1,8 @@
+## scan.py
+mycontrib = 10+random.randint(1,nprocs)
+myfirst = 0
+mypartial = comm.scan(mycontrib)
+sbuf = np.empty(1,dtype=int)
+rbuf = np.empty(1,dtype=int)
+sbuf[0] = mycontrib
+comm.Scan(sbuf,rbuf)

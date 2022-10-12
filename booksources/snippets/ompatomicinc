@@ -1,0 +1,9 @@
+object my_object;
+#pragma omp parallel
+#pragma omp single
+#pragma omp taskgroup
+for (int ithread=0; ithread<NTHREADS; ithread++) {
+#pragma omp task shared(my_object)
+  for (int iop=0; iop<NOPS; iop++)
+    my_object.inc(iop);
+}

@@ -1,0 +1,94 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This TeX file is part of the tutorial
+%%%% `Introduction to the PETSc library'
+%%%% by Victor Eijkhout, eijkhout@tacc.utexas.edu
+%%%%
+%%%% copyright Victor Eijkhout 2012-2020
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt]{artikel3}
+
+\usepackage{pslatex,hyperref}
+
+\def\n{\bgroup\catcode`\_=12 \catcode`\~=12 \tt \let\next=}
+
+%% \addtolength\textwidth{1in}
+%% \addtolength\textheight{-3in}
+%% \addtolength\oddsidemargin{-.5in}
+
+\begin{document}
+\title{PETSc course\\ Instructions for the lab exercises}
+\author{}\date{}\maketitle
+
+\section*{Session setup}
+
+\begin{itemize}
+\item Log in to your account on stampede2.
+\item If you program in C/C++/Fortran:
+\begin{verbatim}
+module load petsc/3.12-debug
+\end{verbatim}
+\item If you program in Python,
+  first load
+\begin{verbatim}
+module load python2
+\end{verbatim}
+then set the following environment variables:
+\begin{verbatim}
+export PETSC_DIR=/work/00434/eijkhout/petsc/petsc-3.12.3
+export PETSC_ARCH=skx-intel-debug4py
+export PYTHONPATH=${PETSC_DIR}/${PETSC_ARCH}/lib:${PYTHONPATH}
+\end{verbatim}
+\end{itemize}
+
+\section*{Download materials}
+
+\begin{itemize}
+\item Download the course materials by
+\begin{verbatim}
+wget http://tinyurl.com/tacc-petsc-2020
+mv tacc-petsc-2020 tacc-petsc-2020.tgz
+tar fxz tacc-petsc-2020.tgz
+\end{verbatim}
+or (on stampede2):
+\begin{verbatim}
+cp ~train00/petsc_course_2020.tgz .
+tar fxz petsc_course.tgz
+\end{verbatim}
+Note the dot at the end of the copy command!
+\item You should now have a  directory \n{petsc_course} Go there.
+\item You will find: 
+  \begin{itemize}
+  \item four source directories: exercises and solutions for C,
+    Fortran, Python
+  \item files with the lecture slides and the instructions for the
+    exercises.
+  \end{itemize}
+\end{itemize}
+
+\section*{Interactive development}
+
+\begin{itemize}
+\item Set up an interactive session:
+\begin{verbatim}
+idev -t 8:0:0 -N 1 -n 20
+\end{verbatim}
+This will give you one node, with 20~cores, for 8~hours which is enough for this
+course. If it prompts you that you can use a reservation, accept.
+\item Type \n{make} to see what make targets are available. In particular, this
+  gives you a list of the exercises you can make.
+\item Type \n{make exercisename} to compile it (the exercise name
+  will be in the course slides)
+\item Run with:
+\begin{verbatim}
+ibrun exercisename
+# or
+ibrun python2 exercisename.py
+\end{verbatim}
+\end{itemize}
+
+\end{document}
+

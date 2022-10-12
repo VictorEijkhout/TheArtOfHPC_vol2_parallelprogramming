@@ -1,0 +1,5 @@
+// tags.c
+int tag_upperbound;
+void *v; int flag=1;
+ierr = MPI_Comm_get_attr(comm,MPI_TAG_UB,&v,&flag);
+tag_upperbound = *(int*)v;

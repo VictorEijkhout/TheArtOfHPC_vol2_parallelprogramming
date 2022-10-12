@@ -1,0 +1,5 @@
+// irecvsource.cxx
+mpl::irequest_pool recv_requests;
+for (int p=0; p<nprocs-1; p++) {
+  recv_requests.push( comm_world.irecv( recv_buffer[p], p ) );
+}

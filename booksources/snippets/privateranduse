@@ -1,0 +1,7 @@
+#pragma omp parallel
+  {
+    stringstream res;
+    uniform_int_distribution<int> uni(1, 100);
+    res << "Thread " << omp_get_thread_num() << ": " << uni(rng) << "\n";
+    cout << res.str();
+  }

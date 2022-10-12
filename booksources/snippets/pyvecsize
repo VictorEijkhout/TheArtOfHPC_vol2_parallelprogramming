@@ -1,0 +1,1 @@
+x.setSizes([2,PETSc.DECIDE])

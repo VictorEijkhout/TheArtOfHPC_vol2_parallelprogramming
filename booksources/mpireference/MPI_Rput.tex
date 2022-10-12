@@ -1,0 +1,16 @@
+C:
+int MPI_Rput(
+  const void *origin_addr, int origin_count, MPI_Datatype origin_datatype,
+  int target_rank, MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype,
+  MPI_Win win, MPI_Request *request)
+
+Semantics:
+IN origin_addr: initial address of origin buffer (choice)
+IN origin_count: number of entries in origin buffer (non-negative integer)
+IN origin_datatype: datatype of each entry in origin buffer (handle)
+IN target_rank: rank of target (non-negative integer)
+IN target_disp: displacement from start of window to target buffer (non-negative integer)
+IN target_count: number of entries in target buffer (non-negative integer)
+IN target_datatype: datatype of each entry in target buffer (handle)
+IN win: window object used for communication (handle)
+OUT request: RMA request (handle)

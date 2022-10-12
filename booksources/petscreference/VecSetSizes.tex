@@ -1,0 +1,13 @@
+C:
+#include "petscvec.h"
+PetscErrorCode  VecSetSizes(Vec v, PetscInt n, PetscInt N)
+Collective on Vec
+
+Input Parameters
+v :the vector
+n : the local size (or PETSC_DECIDE to have it set)
+N : the global size (or PETSC_DECIDE)
+
+Python:
+PETSc.Vec.setSizes(self, size, bsize=None)
+size is a tuple of local/global

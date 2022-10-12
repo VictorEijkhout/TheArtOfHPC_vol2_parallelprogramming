@@ -1,0 +1,365 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This TeX file is part of the tutorial
+%%%% `Introduction to the PETSc library'
+%%%% by Victor Eijkhout, eijkhout@tacc.utexas.edu
+%%%%
+%%%% copyright Victor Eijkhout 2012-2022
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\sectionframe{Getting started}
+
+\begin{c}
+\begin{numberedframe}{Include files, C}
+\lstset{language=C}
+\begin{lstlisting}
+#include "petsc.h"
+int main(int argc,char **argv)
+\end{lstlisting}
+\end{numberedframe}
+\end{c}
+
+\begin{fortran}
+\lstset{language=Fortran}
+\begin{numberedframe}{Include files, Fortran}
+  Include file for preprocessor definitions,\\
+  module for library definitions
+\begin{lstlisting}
+program basic
+#include <petsc/finclude/petsc.h>
+use petsc
+implicit none
+\end{lstlisting}
+\end{numberedframe}
+\end{fortran}
+
+\begin{python}
+\begin{numberedframe}{Include files, Python}
+\lstset{language=Python}
+\begin{lstlisting}
+from petsc4py import PETSc
+\end{lstlisting}
+\end{numberedframe}
+\end{python}
+
+\lstset{language=C}
+\begin{c}
+\begin{numberedframe}{Variable declarations, C}
+\begin{lstlisting}
+  KSP            solver;
+  Mat            A;
+  Vec            x,y;
+  PetscInt       n = 20;
+  PetscScalar    v;
+  PetscReal      nrm;
+\end{lstlisting}
+Note Scalar vs Real
+\end{numberedframe}
+\end{c}
+
+\lstset{language=Fortran}
+\begin{fortran}
+\begin{numberedframe}{Variable declarations, F}
+\begin{lstlisting}
+  KSP            :: solver
+  Mat            :: A
+  Vec            :: x,y
+  PetscInt       :: j(3)
+  PetscScalar    :: mv
+  PetscReal      :: nrm
+\end{lstlisting}
+Much like in C
+\end{numberedframe}
+\end{fortran}
+
+\lstset{language=C}
+
+\begin{c}
+\begin{numberedframe}{Library setup, C}
+\cverbatimsnippet{petscinit}
+Can replace \lstinline{MPI_Init}
+
+General: Every routine has an error return. Catch that value!
+\end{numberedframe}
+\end{c}
+
+\lstset{language=Fortran}
+\begin{fortran}
+\begin{numberedframe}{Library setup, F}
+\begin{lstlisting}
+  call PetscInitialize(PETSC_NULL_CHARACTER,ierr)
+      CHKERRQ(ierr)
+// all the petsc work
+  call PetscFinalize(ierr); CHKERRQ(ierr)
+\end{lstlisting}
+Error code is now final parameter. This holds for every PETSc routine.
+\end{numberedframe}
+\end{fortran}
+
+\lstset{language=C}
+
+\begin{numberedframe}{A word about datatypes}
+PETSc programs can not mix single and double precision, nor real/complex:\\
+\lstinline{PetscScalar} is single/double/complex depending on the installation.\\
+\lstinline{PetscReal} is always real, even in complex installations.
+
+Similarly, \lstinline{PetscInt} is 32/64 bit depending.
+
+Other scalar data types: \lstinline{PetscBool}, \lstinline{PetscErrorCode}
+
+\begin{taccnote}
+\begin{verbatim}
+module spider petsc
+module avail petsc
+
+module load petsc/3.16-i64 # et cetera
+\end{verbatim}
+\end{taccnote}
+
+\end{numberedframe}
+
+\begin{numberedframe}{Debug and production}
+While you are developing your code:
+\begin{verbatim}
+module load petsc/3.16-debug
+# or 3.16-complexdebug, i64debug, rtxdebug &c
+\end{verbatim}
+This does bounds tests and other time-wasting error checking.
+
+Production:
+\begin{verbatim}
+module load petsc/3.16
+\end{verbatim}
+This will just bomb if your program is not correct.
+
+Every petsc configuration is available as debug and non-debug.
+\end{numberedframe}
+
+\begin{exerciseframe}[hello]
+Look up the function \lstinline{PetscPrintf} and print a message\\
+`This program runs on 27 processors'\\
+from process zero.
+
+\begin{itemize}
+\item Start with the template code \n{hello.c}/\n{hello.F}
+\item (or see slide~\ref{sl:ranksize})
+\item Compile with \n{make hello}
+\item Part two: use \lstinline{PetscSynchronizedPrintf}
+\end{itemize}
+\end{exerciseframe}
+
+\petscroutineslide{PetscPrintf}
+
+\begin{fortran}
+\begin{numberedframe}{PetscPrintf in Fortran}
+Can only print character buffer:
+\begin{lstlisting}
+  character*80      msg
+  write(msg,10) n
+ 10 format("Input parameter:",i5)
+  call PetscPrintf(PETSC_COMM_WORLD,msg,ierr)
+\end{lstlisting}
+Less elegant than \lstinline{PetscPrintf} in C
+\end{numberedframe}
+\end{fortran}
+
+\begin{c}
+\begin{numberedframe}{About routine prototypes: C/C++}
+  \label{sec:protos}
+Prototype:
+\begin{lstlisting}
+PetscErrorCode VecCreate(MPI_Comm comm,Vec *v);
+\end{lstlisting}
+Use:
+\begin{lstlisting}
+PetscErrorCode ierr;
+MPI_Comm comm = MPI_COMM_WORLD;
+Vec v;
+ierr = VecCreate( comm,&vec ); CHKERRQ(ierr).
+\end{lstlisting}
+(always good idea to catch that error code)
+\end{numberedframe}
+\end{c}
+
+\lstset{language=Fortran}
+\begin{fortran}
+\begin{numberedframe}{About routine prototypes: Fortran}
+\begin{multicols}{2}
+\footnotesize
+Prototype
+\begin{lstlisting}
+Subroutine VecCreate
+   ( comm,v,ierr )
+Type(MPI_Comm) :: comm
+Vec            :: v
+PetscErrorCode :: ierr
+\end{lstlisting}
+Use:
+\begin{lstlisting}
+Type(MPI_Comm) :: &
+    comm = MPI_COMM_WORLD
+Vec            :: v
+PetscErrorCode :: ierr
+
+call VecCreate(comm,v,ierr)
+\end{lstlisting}
+\columnbreak
+\begin{itemize}
+\item Final parameter always error parameter. Do not forget!
+\item MPI types are of often \lstinline{Type(MPI_Comm)} and such,
+\item PETSc datatypes are handled through the preprocessor.
+\end{itemize}
+\hbox{}\vfill\hbox{}
+\end{multicols}
+\end{numberedframe}
+\end{fortran}
+
+\lstset{language=Python}
+\begin{python}
+\begin{numberedframe}{About routine prototypes: Python}
+Object methods:
+\begin{lstlisting}
+# definition
+PETSc.Mat.setSizes(self, size, bsize=None)
+
+# use
+A = PETSc.Mat().create(comm=comm)
+A.setSizes( ( (None,matrix_size), (None,matrix_size) ) )
+\end{lstlisting}
+
+Class methods:
+\begin{lstlisting}
+# definition
+PETSc.Sys.Print(type cls, *args, **kwargs)
+
+# use
+PETSc.Sys.Print("detecting n option")
+\end{lstlisting}
+\end{numberedframe}
+\end{python}
+
+\lstset{language=C}
+
+\begin{numberedframe}{Note to self}
+\begin{lstlisting}
+  PetscInitialize
+    (&argc,&args,0,"Usage: prog -o1 v1 -o2 v2\n");
+\end{lstlisting}
+run as
+\begin{verbatim}
+  ./program -help
+\end{verbatim}
+This displays the usage note, plus all available petsc options.
+
+Not available in Fortran
+\end{numberedframe}
+
+\begin{c}
+\begin{numberedframe}{Routine start/end, C}
+Debugging support:
+\begin{lstlisting}
+PetscFunctionBeginUser;
+// all statements
+PetscFunctionReturn(0);
+\end{lstlisting}
+leads to informative tracebacks.
+
+(Only in C, not in Fortran)
+\end{numberedframe}
+\end{c}
+
+\begin{numberedframe}{Example: function with error}
+\cverbatimsnippet{petscbacktrace}
+\end{numberedframe}
+
+\begin{numberedframe}{Example: error traceback}
+\footnotesize
+\begin{verbatim}
+[0]PETSC ERROR: We cannot go on like this
+[0]PETSC ERROR: See https://www.mcs.anl.gov/petsc/documentation/faq.html for trouble shooting.
+[0]PETSC ERROR: Petsc Release Version 3.12.2, Nov, 22, 2019
+[0]PETSC ERROR: backtrace on a [computer name]
+[0]PETSC ERROR: Configure options [all options]
+[0]PETSC ERROR: #1 this_function_bombs() line 20 in backtrace.c
+[0]PETSC ERROR: #2 main() line 30 in backtrace.c
+\end{verbatim}
+\end{numberedframe}
+
+\begin{exerciseframe}[root]
+Start with \n{root.c}. Write a function that computes a square root,
+or displays an error on negative input:
+Look up the definition of \indexpetscshow{SETERRQ1}.
+\begin{lstlisting}
+  x = 1.5; ierr = square_root(x,&rootx); CHKERRQ(ierr);
+  PetscPrintf(PETSC_COMM_WORLD,"Root of %f is %f\n",x,rootx);
+  x = -2.6; ierr = square_root(x,&rootx); CHKERRQ(ierr);
+  PetscPrintf(PETSC_COMM_WORLD,"Root of %f is %f\n",x,rootx);
+\end{lstlisting}
+This should give as output:
+
+\begingroup \tiny
+\begin{verbatim}
+Root of 1.500000 is 1.224745
+[0]PETSC ERROR: ----- Error Message ----------------------------------------------
+[0]PETSC ERROR: Cannot compute the root of -2.600000
+[...]
+[0]PETSC ERROR: #1 square_root() line 23 in root.c
+[0]PETSC ERROR: #2 main() line 39 in root.c
+\end{verbatim}
+\endgroup
+\end{exerciseframe}
+
+\begin{c}
+\begin{numberedframe}{Commandline arguments, C}
+(I'm leaving out the \lstinline{CHKERRQ(ierr)} in the examples,\\
+but do use this in actual code)
+\begin{lstlisting}
+ierr = PetscOptionsGetInt
+    (PETSC_NULL,PETSC_NULL,"-n",&n,&flag); CHKERRQ(ierr);
+ierr = PetscPrintf
+    (comm,"Input parameter: %d\n",n); CHKERRQ(ierr);
+\end{lstlisting}
+Read commandline argument, print out from processor zero;\\
+flag can be \lstinline{PETSC_NULL} if not wanted
+\end{numberedframe}
+\end{c}
+
+\lstset{language=Fortran}
+\begin{fortran}
+\begin{numberedframe}{Commandline argument, F}
+\begin{lstlisting}
+  call PetscOptionsGetInt(
+    PETSC_NULL_OPTIONS, PETSC_NULL_CHARACTER, &
+      "-n",n,PETSC_NULL_BOOL,ierr)
+\end{lstlisting}
+
+Note the \lstinline{PETSC_NULL_XXX}: Fortran has strict type checking.
+\end{numberedframe}
+\end{fortran}
+
+\lstset{language=C}
+
+\lstset{language=Python}
+\begin{python}
+\begin{numberedframe}{Program parameters, Python}
+\begin{lstlisting}
+nlocal = PETSc.Options().getInt("n",10)
+\end{lstlisting}
+\end{numberedframe}
+\end{python}
+\lstset{language=C}
+
+\endinput
+
+\begin{numberedframe}{, C}
+\begin{verbatim}
+\end{verbatim}
+\end{numberedframe}
+
+\begin{numberedframe}{, F}
+\begin{verbatim}
+\end{verbatim}
+\end{numberedframe}
+

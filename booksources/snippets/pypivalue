@@ -1,0 +1,2 @@
+pi = mp.Value('d')
+pi.value = 0

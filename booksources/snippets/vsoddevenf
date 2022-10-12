@@ -1,0 +1,6 @@
+call VecScatterCreate(in,oddeven,out,PETSC_NULL_IS,separate,ierr)
+CHKERRA(ierr);
+call VecScatterBegin(separate,in,out,INSERT_VALUES,SCATTER_FORWARD,ierr)
+CHKERRA(ierr);
+call VecScatterEnd(separate,in,out,INSERT_VALUES,SCATTER_FORWARD,ierr)
+CHKERRA(ierr);

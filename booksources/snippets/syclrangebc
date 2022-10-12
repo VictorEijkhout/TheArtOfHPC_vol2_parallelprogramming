@@ -1,0 +1,7 @@
+// jacobi1d.cxx
+sycl::range<1> unknowns(N);
+sycl::range<1> with_boundary(N + 2);
+std::vector<float>
+  old_values(with_boundary.size(),0.),
+  new_values(with_boundary.size(),0.);
+old_values.back() = 1.; new_values.back() = 1.;

@@ -1,0 +1,23 @@
+C:
+int MPI_Get_accumulate
+   (const void *origin_addr, int origin_count,MPI_Datatype origin_datatype,
+    void *result_addr, int result_count, MPI_Datatype result_datatype,
+    int target_rank, 
+    MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype,
+    MPI_Op op, MPI_Win win)
+
+Input Parameters
+origin_addr : initial address of buffer (choice)
+origin_count : number of entries in buffer (nonnegative integer)
+origin_datatype : datatype of each buffer entry (handle)
+
+result_addr : initial address of result buffer (choice)
+result_count : number of entries in result buffer (non-negative integer)
+result_datatype : datatype of each entry in result buffer (handle)
+target_rank : rank of target (nonnegative integer)
+target_disp : displacement from start of window to beginning
+    of target buffer (nonnegative integer)
+target_count : number of entries in target buffer (nonnegative integer)
+target_datatype : datatype of each entry in target buffer (handle)
+op : predefined reduce operation (handle)
+win : window object (handle)

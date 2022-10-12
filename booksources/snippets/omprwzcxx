@@ -1,0 +1,28 @@
+// reductpositive.cxx
+template<typename T>
+T reduce_without_zero(T r,T n) {
+// r is the already reduced value, n is the new value
+  T m;
+  if (r<0){ // initializer
+    if (n!=0)
+      m = n;
+    else
+      m = r;
+  } else if (n<0) { // initializer
+    if (r!=0)
+      m = r;
+    else
+      m = n;
+  } else if (n==0) { // new value is zero: keep r
+    m = r;
+  } else if (n<r) { // new value is less but not zero: use n
+    m = n;
+  } else { // new value is more: use r
+    m = r;
+  };
+  return m;
+}
+    int imin = -1;
+#pragma omp parallel for reduction(rwzi:imin)
+    for (int id=0; id<idata.size(); id++)
+      imin = reduce_without_zero<int>(imin,idata[id]);

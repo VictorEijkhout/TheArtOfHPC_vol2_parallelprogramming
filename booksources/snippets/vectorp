@@ -1,0 +1,10 @@
+## vector.py
+source = np.empty(stride*count,dtype=np.float64)
+target = np.empty(count,dtype=np.float64)
+if procid==sender:
+    newvectortype = MPI.DOUBLE.Create_vector(count,1,stride)
+    newvectortype.Commit()
+    comm.Send([source,1,newvectortype],dest=the_other)
+    newvectortype.Free()
+elif procid==receiver:
+    comm.Recv([target,count,MPI.DOUBLE],source=the_other)

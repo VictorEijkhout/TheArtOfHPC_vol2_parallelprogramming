@@ -1,0 +1,13 @@
+PetscSplitOwnership
+
+Synopsis
+#include "petscsys.h"
+PetscErrorCode  PetscSplitOwnership
+   (MPI_Comm comm,PetscInt *n,PetscInt *N)
+
+Collective (if n or N is PETSC_DECIDE)
+
+Input Parameters
+comm - MPI communicator that shares the object being divided
+n - local length (or PETSC_DECIDE to have it set)
+N - global length (or PETSC_DECIDE)

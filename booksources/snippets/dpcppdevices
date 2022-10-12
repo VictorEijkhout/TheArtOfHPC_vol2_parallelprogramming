@@ -1,0 +1,8 @@
+std::vector<sycl::device> devices = plat.get_devices();
+for (const auto &dev : devices) {
+  std::cout << "-- Device: "
+            << dev.get_info<sycl::info::device::name>()
+            << (dev.is_host() ? ": is the host" : "")
+            << (dev.is_cpu() ? ": is a cpu" : "")
+            << (dev.is_gpu() ? ": is a gpu" : "")
+            << std::endl;

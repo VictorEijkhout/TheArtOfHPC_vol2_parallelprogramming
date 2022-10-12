@@ -1,0 +1,10 @@
+// portapp.c
+MPI_Comm comm_work;
+{
+  MPI_Group group_world,group_work;
+  MPI_Comm_group( comm_world,&group_world );
+  int manager[] = {0};
+  MPI_Group_excl( group_world,1,manager,&group_work );
+  MPI_Comm_create( comm_world,group_work,&comm_work );
+  MPI_Group_free( &group_world ); MPI_Group_free( &group_work );
+}

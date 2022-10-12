@@ -1,0 +1,19 @@
+Semantics:
+MPI_COMM_SIZE(comm, size)
+IN comm: communicator (handle)
+OUT size: number of processes in the group of comm (integer)
+
+C:
+int MPI_Comm_size(MPI_Comm comm, int *size)
+
+Fortran:
+MPI_Comm_size(comm, size, ierror)
+TYPE(MPI_Comm), INTENT(IN) :: comm
+INTEGER, INTENT(OUT) :: size
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+
+Python:
+MPI.Comm.Get_size(self)
+
+MPL:
+int mpl::communicator::size ( ) const

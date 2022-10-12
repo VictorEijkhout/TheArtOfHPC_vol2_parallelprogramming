@@ -1,0 +1,244 @@
+% -*- latex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This TeX file is part of the tutorial
+%%%% `Introduction to the PETSc library'
+%%%% Victor Eijkhout, eijkhout@tacc.utexas.edu
+%%%% copyright Victor Eijkhout 2012-2022
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\sectionframe{Making and running PETSc programs}
+
+\subsection{Installation}
+
+\begin{numberedframe}{Installation}
+\begin{verbatim}
+cd petsc-3.7
+./configure
+make
+\end{verbatim}
+\verb+configure.py --help+ gives
+
+\tiny
+\begin{verbatim}
+PETSc:
+  --prefix=<path>                          : Specifiy location to install PETSc (eg. /usr/local)                                                   current: 
+  --with-sudo=sudo                         : Use sudo when installing packages                                                                     current: 
+  --with-default-arch=<bool>               : Allow using the last configured arch without setting PETSC_ARCH                                       current: 1
+  --PETSC_ARCH                             : The configuration name
+  --with-petsc-arch                        : The configuration name
+  --PETSC_DIR                              : The root directory of the PETSc installation
+  --with-installation-method=<method>      : Method of installation, e.g. tarball, clone,
+  et cetera: many more
+\end{verbatim}
+\end{numberedframe}
+
+\subsection{Compiling, linking, running to your program}
+
+\begin{numberedframe}{Compiling}
+
+Petsc compile and link lines are very long!\\
+Use PETSc include file with variables and rules:
+\begin{verbatim}
+include ${PETSC_DIR}/lib/petsc/conf/variables
+include ${PETSC_DIR}/lib/petsc/conf/rules
+prog : ${OBJS} 
+        ${CLINKER} -o prog ${OBJS} ${PETSC_LIB}
+\end{verbatim}
+My preference:
+\begin{verbatim}
+include ${PETSC_DIR}/lib/petsc/conf/variables
+CFLAGS = ${PETSC_CC_INCLUDES}
+FFLAGS = ${PETSC_FC_INCLUDES}
+\end{verbatim}
+and write your own compile rules
+\end{numberedframe}
+
+\begin{numberedframe}
+Find out what \n{PETSC_INCLUDE} and \n{PETSC_LIB} are:
+\begin{verbatim}
+cd $PETSC_DIR ; make getincludedirs getlinklibs
+\end{verbatim}
+\end{numberedframe}
+
+\begin{numberedframe}{Environment variables}
+\small
+  \begin{itemize}
+  \item \n{PETSC_DIR} : different for different version numbers
+  \item \n{PETSC_ARCH} : for one version, this controls real/complex
+    or opt/debug variants
+  \end{itemize}
+Versions available at TACC: 
+\begin{verbatim}
+   petsc/3.6-cxx                petsc/3.7-debug
+   petsc/3.6-cxxcomplex         petsc/3.7-i64debug
+   petsc/3.6-cxxcomplexdebug    petsc/3.7-i64
+   petsc/3.6-cxxdebug           petsc/3.7-single
+   petsc/3.6-cxxi64debug        petsc/3.7-uni
+   petsc/3.6-cxxi64             petsc/3.7-unidebug
+   petsc/3.6-debug              petsc/3.7
+   petsc/3.6-i64debug
+%% module load petsc/3.7-cxxi64debug
+%% echo $PETSC_DIR
+/home1/apps/intel15/mvapich2_2_1/petsc/3.7/
+%% echo $PETSC_ARCH
+sandybridge-cxxi64debug
+\end{verbatim}
+\end{numberedframe}
+
+\begin{numberedframe}{Running}
+Parallel invocation. On your own machine:
+\verb+mpirun -np 3 petscprog <bunch of runtime options>+\\
+At TACC: \n{ibrun}
+
+Petsc has lots of runtime options.
+\begin{itemize}
+\item \n{-log_summary} : give runtime statistics
+\item \n{-malloc_dump} \n{-memory_info} : memory statistics
+\item \n{-start_in_debugger} : parallel debugging (not on our
+  clusters, but very convenient on your laptop)
+\item \n{-options_left} : check for mistyped options
+\item \n{-ksp_type gmres} (et cetera) : program control
+\end{itemize}
+more later
+\end{numberedframe}
+
+\begin{numberedframe}{Running}
+Options can be set:
+\begin{itemize}
+\item on the commandline
+\item in the program by \n{PetscOptionsSetValue}
+\item in a file \n{./.petscrc} or \n{\$\{HOME\}/.petscrc}
+\end{itemize}
+\end{numberedframe}
+
+\begin{fortran}
+\begin{numberedframe}{Fortran}
+
+  \begin{itemize}
+  \item Include files (already mentioned):
+\begin{verbatim}
+#include <petsc/finclude/petscdef.h>
+  use petsc
+\end{verbatim}
+  \item Separate F90 version of various `Get' routines
+\begin{verbatim}
+VecGetArrayF90(Vec x,{Scalar, pointer :: xx_v(:)},integer ierr)
+\end{verbatim}
+\item Null pointers: C~is tolerant for 0 or \lstinline{PETSC_NULL}, Fortran
+    use \lstinline{PETSC_NULL_CHARACTER}, \lstinline{PETSC_NULL_INTEGER} et cetera.\\
+    Example:
+\begin{verbatim}
+call PetscOptionsGetInt(PETSC_NULL_CHARACTER,"-name",
+    N,flg,ierr)
+\end{verbatim}
+  \end{itemize}
+\end{numberedframe}
+\end{fortran}
+
+\begin{fortran}
+\begin{numberedframe}{More Fortran}
+  \begin{itemize}
+  \item Indexing in \lstinline{MatSetValues} and such is always zero-based
+  \item Function pointers: routine is assumed to be in the same language
+  \end{itemize}
+\end{numberedframe}
+\end{fortran}
+
+\begin{python}
+\begin{numberedframe}{Python bindings}
+  \url{https://pythonhosted.org/petsc4py/}
+\end{numberedframe}
+\end{python}
+
+\begin{comment}
+\subsection{Source code organization}
+
+\begin{numberedframe}{Program/subprogram heading}
+CPP definition of (sub)program name:\\
+will be used in traceback
+\begin{verbatim}
+#undef __FUNCT__
+#define __FUNCT__ "main"
+int main(int argc,char **args)
+{
+  PetscFunctionBegin;
+  ...
+  PetscFunctionReturn(0);
+}
+\end{verbatim}
+Use this for every subprogram.
+
+Not available in Fortran
+\end{numberedframe}
+
+\begin{numberedframe}{Petsc function return values}
+Every PETSc function returns an error code, zero is success.
+
+C:
+\begin{verbatim}
+ierr = SomePetscFunction(....); CHKERRQ(ierr);
+\end{verbatim}
+Fortran:
+\begin{verbatim}
+call SomePetscFunction(...., ierr )
+CHKERRQ(ierr)
+\end{verbatim}
+\end{numberedframe}
+
+\begin{numberedframe}{Petsc initialize / finalize}
+
+One-time initialization, includes MPI if not already initialized:
+\begin{verbatim}
+  ierr = PetscInitialize(&argc,&args,0,0); CHKERRQ(ierr);
+  ....
+  ierr = PetscFinalize(); CHKERRQ(ierr);
+\end{verbatim}
+
+Fortran:
+\begin{verbatim}
+  call PetscInitialize(PETSC_NULL_CHARACTER,ierr)
+  CHKERRQ(ierr)
+  ....
+  call PetscFinalize(ierr)
+  CHKERRQ(ierr)
+\end{verbatim}
+\end{numberedframe}
+
+\begin{numberedframe}{Note to self}
+\begin{verbatim}
+  PetscInitialize(&argc,&args,0,"Usage: prog -o1 v1 -o2 v2\n");
+\end{verbatim}
+run as
+\begin{verbatim}
+  ./program -help
+\end{verbatim}
+displays note, plus all available petsc options.
+
+Not available in Fortran
+\end{numberedframe}
+
+\begin{numberedframe}{Variable declarations}
+
+Everything is an object
+\begin{verbatim}
+  MPI_Comm comm;
+  PetscErrorCode ierr; PetscTruth flag; 
+  KSP Solver; Mat A; Vec Rhs,Sol;
+  PetscScalar one; PetscInt its; PetscReal norm;
+\end{verbatim}
+
+\begin{verbatim}
+  PetscErrorCode ierr
+  PetscTruth flag
+  KSP Solver
+  PC Prec
+  Mat A
+  PetscInt its 
+  ....
+\end{verbatim}
+(note scalar vs real)
+\end{numberedframe}
+
+\end{comment}

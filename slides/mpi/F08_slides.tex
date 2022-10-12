@@ -1,0 +1,127 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the lecture slides for
+%%%% `Parallel Computing'
+%%%% by Victor Eijkhout, copyright 2018-2021
+%%%%
+%%%% F08-slides.tex : about Fortran 2008 bindings
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\lstset{language=Fortran}
+\begin{numberedframe}{Overview}
+  The Fortran interface to MPI had some defects.
+  With Fortran2008 these have been largely repaired.
+  \begin{itemize}
+  \item The trailing error parameter is now optional;
+  \item MPI data types are now actual \lstinline{Type} objects,
+    rather than \lstinline{Integer}
+  \item Strict type checking on arguments.
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{MPI headers}
+\label{sl:mpi-header}
+New module:
+\begin{verbatim}
+use mpi_f08   ! for Fortran2008
+use mpi       ! for Fortran90
+\end{verbatim}
+True Fortran bindings as of the 2008 standard.
+\begin{tacc}
+  Provided in
+  \begin{itemize}
+  \item
+    Intel compiler version 18 or newer,
+  \item 
+    gcc~9 and later (not with Intel MPI, use mvapich).
+  \end{itemize}
+\end{tacc}
+\end{numberedframe}
+
+\begin{numberedframe}{Optional error parameter}
+\lstset{language=Fortran}
+\begin{multicols}{2}
+  Old Fortran90 style:
+\begin{lstlisting}
+call MPI_Init(ierr)
+! your code
+call MPI_Finalize(ierr)
+\end{lstlisting}
+\columnbreak
+New Fortran2008 style:
+\begin{lstlisting}
+call MPI_Init()
+! your code
+call MPI_Finalize()
+\end{lstlisting}
+\end{multicols}
+\end{numberedframe}
+
+\begin{numberedframe}{Communicators}
+\begin{lstlisting}
+!! Fortran 2008 interface
+use mpi_f08
+Type(MPI_Comm) :: comm = MPI_COMM_WORLD
+\end{lstlisting}
+\begin{lstlisting}
+!! Fortran legacy interface
+#include <mpif.h>
+! or: use mpi
+Integer :: comm = MPI_COMM_WORLD
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Requests}
+  Requests are also derived types\\
+  note that \n{...NULL} entities are now objects, not integers
+
+  \fverbatimsnippet{waitany0f}
+
+  (Q for the alert student: do you see anything halfway
+  remarkable about that index?)
+\end{numberedframe}
+
+\begin{numberedframe}{More}
+\begin{lstlisting}
+Type(MPI_Datatype) :: newtype ! F2008
+Integer            :: newtype ! F90
+\end{lstlisting}
+
+Also:
+  \lstinline{MPI_Comm}, \lstinline{MPI_Datatype},
+  \lstinline{MPI_Errhandler}, \lstinline{MPI_Group},
+  \lstinline{MPI_Info}, \lstinline{MPI_File}, \lstinline{MPI_Op},
+  \lstinline{MPI_Request}, \lstinline{MPI_Status}, \lstinline{MPI_Win}
+\end{numberedframe}
+
+\begin{numberedframe}{Status}
+  Fortran2008: status is a \lstinline{Type} with fields:
+  \fverbatimsnippet{anysource-f08}
+
+  Fortran90: status is an array with named indexing
+  \fverbatimsnippet{anysource-f}
+\end{numberedframe}
+
+\begin{numberedframe}{Type checking}
+  Type checking catches potential problems:
+  \fverbatimsnippet{ftypecheckarg}
+\begin{verbatim}
+typecheck.F90(20): error #6285: 
+  There is no matching specific subroutine
+  for this generic subroutine call.   [MPI_SEND]
+  call MPI_Send(source,MPI_INTEGER,n,
+-------^
+\end{verbatim}
+\end{numberedframe}
+
+\begin{numberedframe}{Type checking'}
+  Type checking does not catch all problems:
+  \fverbatimsnippet{ftypecheckbuf}
+  Buffer/type mismatch is not caught.
+\end{numberedframe}
+
+\lstset{language=C}

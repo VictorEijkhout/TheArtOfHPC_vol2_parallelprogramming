@@ -1,0 +1,7 @@
+// lockfetch.c
+MPI_Win_lock(MPI_LOCK_EXCLUSIVE, repo, /* no assert */ 0, the_window);
+int update=0;
+MPI_Fetch_and_op
+  (&update, &readout ,
+   MPI_INT, repo,zero_disp, MPI_NO_OP, the_window);
+MPI_Win_unlock(repo,the_window);

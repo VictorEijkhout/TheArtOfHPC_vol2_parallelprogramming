@@ -1,0 +1,17 @@
+C:
+PetscErrorCode  PetscInitialize
+   (int *argc,char ***args,const char file[],const char help[])
+
+Input Parameters:
+argc - count of number of command line arguments
+args - the command line arguments
+file - [optional] PETSc database file.
+help - [optional] Help message to print, use NULL for no message
+
+Fortran:
+call PetscInitialize(file,ierr)
+
+Input parameters:
+ierr - error return code
+file - [optional] PETSc database file,
+    use PETSC_NULL_CHARACTER to not check for code specific file.

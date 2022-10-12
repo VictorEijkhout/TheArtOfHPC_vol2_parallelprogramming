@@ -1,0 +1,10 @@
+!! sectionisend.F90
+  integer :: siz
+  real,dimension(:,:),allocatable :: matrix 
+  real,dimension(2,2) :: submatrix
+     siz = 20
+     allocate( matrix(siz,siz) )
+     matrix = reshape( [ ((j+(i-1)*siz,i=1,siz),j=1,siz) ], (/siz,siz/) )
+     call MPI_Isend(matrix(1:2,1:2),4,MPI_REAL,1,0,comm,request)
+     call MPI_Wait(request,MPI_STATUS_IGNORE)
+     deallocate(matrix)

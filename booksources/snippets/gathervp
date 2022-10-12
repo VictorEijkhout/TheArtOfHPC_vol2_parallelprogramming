@@ -1,0 +1,8 @@
+## gatherv.py
+# implicitly using root=0
+globalsize = comm.reduce(localsize)
+if procid==0:
+    print("Global size=%d" % globalsize)
+collecteddata = np.empty(globalsize,dtype=int)
+counts = comm.gather(localsize)
+comm.Gatherv(localdata, [collecteddata, counts])

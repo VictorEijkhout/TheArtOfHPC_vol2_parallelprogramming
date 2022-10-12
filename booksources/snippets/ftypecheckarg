@@ -1,0 +1,6 @@
+!! typecheckarg.F90
+  integer,parameter :: n=2
+  Integer,dimension(n) :: source
+  call MPI_Init()
+  call MPI_Send(source,MPI_INTEGER,n, &
+       1,0,MPI_COMM_WORLD)

@@ -1,0 +1,40 @@
+// mandel_tools.cxx
+void circle::next_coordinate_internal(struct coordinate& xy) {
+  if (x<xmax-step) {
+    xy.x = x; xy.y = y; x += step;
+  } else if (y<ymax-step) {
+    y += step; 
+    xmax = sqrt(4-y*y); xmin = -xmax; x = xmin;
+    xy.x = x; xy.y = y; x += step;
+  } else {
+    invalid_coordinate(xy); //.x = -5.; xy.y = -5;
+  }
+  return;
+}
+/** 
+    Generate blocks of coordinates. The main reason for 
+    introducing this level is so that in a block
+    all coordinates are valid or all are invalid.
+*/
+void circle::next_coordinate(struct coordinate& xy) {
+  while (writepointer<blocksize) {
+    struct coordinate xy;
+    next_coordinate_internal(xy);
+    if (!is_valid_coordinate(xy)) {
+      /* Once one invalid coorddinate has been generated, we
+	 fill the whole block with invalids */
+      for (int prev=0; prev<blocksize; prev++)
+	invalid_coordinate( block[prev] );
+      writepointer = blocksize;
+    } else
+      /* default case: add the coordinate to the block */
+      block[writepointer++] = xy;
+    /* if the block is full, set the read pointer at the beginning */
+    if (writepointer==blocksize)
+      readpointer = 0;
+  }
+  if (readpointer<blocksize)
+    xy = block[readpointer++];
+  if (readpointer==blocksize)
+    writepointer = 0;
+}

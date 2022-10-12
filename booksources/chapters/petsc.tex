@@ -1,0 +1,50 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2020
+%%%%
+%%%% petsc.tex : petsc stuff
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Level 0 {Communicators}
+
+PETSc has a `world' communicator, which by default equals
+\lstinline{MPI_COMM_WORLD}. If you want to run PETSc on a subset of processes,
+you can assign a subcommunicator to the variable \lstinline{PETSC_COMM_WORLD}
+in between the calls to \indexmpishow{MPI_Init} and
+\indexpetscshow{PetscInitialize}.
+Petsc communicators are of type \indexpetscdef{PetscComm}.
+
+\endinput
+
+\Level 0 {Scalars}
+\label{sec:petsc-scalar}
+
+The definition of
+\indexpetscdef{PetscInt}, \indexpetscdef{PetscReal}, \indexpetscdef{PetscComplex}
+depends on how PETSc was installed.
+This makes interoperability with other libraries such as
+\emph{MPI}%
+a little tricky.
+
+The equivalent \indexpetscshow{MPI_Datatype} values are
+\indexpetscdef{PetscMPIInt}
+\indexpetscdef{MPIU_INT}
+\indexpetscdef{MPIU_REAL}
+\indexpetscdef{MPIU_SCALAR}
+\indexpetscdef{MPIU_COMPLEX}
+
+Similarly, for the
+\emph{BLAS}%
+library there  are:
+%
+\indexpetscdef{PetscBLASInt}
+
+No real types are needed since these are passed by reference.
+
+

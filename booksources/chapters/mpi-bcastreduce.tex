@@ -1,0 +1,605 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%% mpi-bcastreduce.tex : about broadcast & reduce collectives
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Level 0 {Reduction}
+\label{sec:allreduce}
+
+\Level 1 {Reduce to all}
+
+Above we saw a couple of scenarios where a quantity is reduced, with
+all proceses getting the result. The MPI call for this is
+%
+\indexmpiref{MPI_Allreduce}.
+
+Example: we give each process a random number, and sum these numbers together.
+The result should be approximately $1/2$ times the number of processes.
+
+\cverbatimsnippet[examples/mpi/c/allreduce.c]{allreducec}
+
+Or:
+
+\cverbatimsnippet{reducecount}
+
+\Level 2 {Buffer description}
+
+This is the first example in this course that involves MPI data buffers:
+the \indexmpishow{MPI_Allreduce} call contains two buffer arguments.
+In most MPI calls (with the one-sided ones as big exception)
+a buffer is described by three parameters:
+\begin{enumerate}
+\item a pointer to the data,
+\item the number of items in the buffer, and
+\item the datatype of the items in the buffer.
+\end{enumerate}
+Each of these needs some elucidation.
+\begin{enumerate}
+\item The buffer specification depends on the programming languages.
+  Defailts are in section~\ref{sec:mpi-buffers}.
+\item The count was a 4-byte integer in MPI standard
+  up to and including~\mpistandard{3}.
+  In the \mpistandard{4} standard the \indexmpishow{MPI_Count} data type
+  become allowed. See section~\ref{sec:mpi-bigdata} for details.
+\item Datatypes can be elementary, as in the above example, or user-defined.
+  See chapter~\ref{ch:mpi-data} for details.
+\end{enumerate}
+
+\begin{remark}
+  Routines with both a send and receive buffer should not alias these.
+  Instead, see the discussion of \indexmpishow{MPI_IN_PLACE};
+  section~\ref{sec:allreduce-inplace}.
+\end{remark}
+
+\Level 2 {Examples and exercises}
+
+\begin{exercise}
+  \label{ex:randommaxscale}
+  Let each process compute a random number,
+  and compute the sum of these numbers using the \indexmpishow{MPI_Allreduce}
+  routine.
+  \[ \xi = \sum_i x_i \]
+
+  Each process then scales its value
+  by this sum.
+  \[ x_i' \leftarrow x_i/ \xi \]
+  Compute the sum of the scaled numbers
+  \[ \xi' = \sum_i x_i' \]
+  and check that it is~1.
+  \skeleton{randommax}
+\end{exercise}
+
+\begin{exercise}
+  \label{ex:fft-vector}
+  Implement a (very simple-minded) Fourier transform: if $f$ is a
+  function on the interval $[0,1]$, then the $n$-th Fourier
+  coefficient is
+  \[ f_n\hat = \int_0^1 f(t)e^{-2\pi x}\,dx \]
+  which we approximate by
+  \[ f_n\hat = \sum_{i=0}^{N-1} f(ih)e^{-in\pi/N} \]
+  \begin{itemize}
+  \item Make one distributed array for the $e^{-inh}$ coefficients,
+  \item make one distributed array for the $f(ih)$ values
+  \item calculate a couple of coefficients
+  \end{itemize}
+\end{exercise}
+
+\begin{exercise}
+  In the previous exercise you worked with a distributed array,
+  computing a local quantity and combining that into a global
+  quantity.
+  Why is it not a good idea to gather the whole distributed array on a
+  single processor, and do all the computation locally?
+\end{exercise}
+
+\begin{mplnote}{Reduction operator}
+  The usual reduction operators are given as templated operators:
+  %
+  \cxxverbatimsnippet[examples/mpi/mpl/collectscalar.cxx]{mplallreduce}
+  %
+  Note the parentheses after the operator.
+  Also note that the operator comes first, not last.
+  \begin{mplimpl}
+    The reduction operator has to be compatible with
+    \lstinline+T(T,T)>+
+  \end{mplimpl}
+\end{mplnote}
+
+For more about operators, see section~\ref{sec:mpi-ops}.
+
+\Level 1 {Inner product as allreduce}
+\label{sec:dist-reduc}
+
+One of the more common applications of the reduction operation
+is the \indexterm{inner product} computation. Typically, you have two vectors $x,y$
+that have the same distribution, that is,
+where all processes store equal parts of $x$ and~$y$.
+The computation is then
+\begin{lstlisting}
+local_inprod = 0;
+for (i=0; i<localsize; i++)
+  local_inprod += x[i]*y[i];
+MPI_Allreduce( &local_inprod, &global_inprod, 1,MPI_DOUBLE ... ) 
+\end{lstlisting}
+
+\begin{exercise}
+  \label{ex:gramschmidt}
+  The \indexterm{Gram-Schmidt} method is a simple way to orthogonalize
+  two vectors:
+  \[ u \leftarrow u- (u^tv)/(u^tu) \]
+  Implement this, and check that the result is indeed orthogonal.
+
+  Suggestion: fill $v$ with the values $\sin 2nh\pi$ where $n=2\pi/N$,
+  and $u$ with $\sin 2nh\pi + \sin 4nh\pi$. What does $u$ become after orthogonalization?
+\end{exercise}
+
+\Level 1 {Reduction operations}
+\label{sec:mpi:op-reduct}
+
+Several \indexmpishow{MPI_Op} values are pre-defined. For the list,
+see section~\ref{sec:operator-list}.
+
+For use in reductions and scans it is possible to define your own operator.
+
+\begin{lstlisting}
+MPI_Op_create( MPI_User_function *func, int commute, MPI_Op *op);
+\end{lstlisting}
+
+For more details, see section~\ref{sec:mpi-op-create}.
+
+\Level 1 {Data buffers}
+\label{sec:mpi-buffers}
+
+Collectives are the first example you see of MPI routines that
+involve transfer of user data. Here, and in every other case,
+you see that the data description involves:
+\begin{itemize}
+\item A buffer. This can be a scalar or an array.
+\item A datatype. This describes whether the buffer contains integers,
+  single/double floating point numbers, or more complicated types, to
+  be discussed later.
+\item A count. This states how many of the elements of the given
+  datatype are in the send buffer, or will be received into the receive buffer.
+\end{itemize}
+These three together describe what MPI needs to send through the network.
+
+In the various languages such a buffer/count/datatype triplet is specified in
+different ways.
+
+First of all, in~\emph{C} the
+\emph{buffer}\index{buffer!MPI, in C}
+is always an \indexterm{opaque handle}, that is,
+a \lstinline+void*+ parameter to which you supply an address.
+This means that an MPI call can take two forms.
+
+For scalars we need to use the ampersand operator to take the address:
+\begin{lstlisting}
+float x,y;
+MPI_Allreduce( &x,&y,1,MPI_FLOAT, ... );
+\end{lstlisting}
+But for arrays we use the fact that arrays and addresses are more-or-less
+equivalent in:
+\begin{lstlisting}
+float xx[2],yy[2];
+MPI_Allreduce( xx,yy,2,MPI_FLOAT, ... );
+\end{lstlisting}
+You could \indexterm{cast} the buffers and write:
+\begin{lstlisting}
+MPI_Allreduce( (void*)&x,(void*)&y,1,MPI_FLOAT, ... );
+MPI_Allreduce( (void*)xx,(void*)yy,2,MPI_FLOAT, ... );
+\end{lstlisting}
+but that is not necessary. The compiler will not complain
+if you leave out the cast.
+
+\begin{cppnote}{Buffer treatment}
+  Treatment of scalars in C++ is the same as in~C.
+  However, for arrays you have the choice between C-style arrays,
+  and \lstinline+std::vector+ or \lstinline+std::array+.
+  For the latter there are two ways of dealing with buffers:
+\begin{lstlisting}
+vector<float> xx(25);
+MPI_Send( xx.data(),25,MPI_FLOAT, .... );
+MPI_Send( &xx[0],25,MPI_FLOAT, .... );
+\end{lstlisting}
+\end{cppnote}
+
+\begin{fortrannote}{MPI send/recv buffers}
+  In~\emph{Fortran} parameters are always passed by reference,
+  so the \emph{buffer}\index{buffer!MPI, in Fortran}
+  is treated the same way:
+\begin{lstlisting}
+Real*4 :: x
+Real*4,dimension(2) :: xx
+call MPI_Allreduce( x,1,MPI_REAL4, ... )
+call MPI_Allreduce( xx,2,MPI_REAL4, ... )
+\end{lstlisting}
+\end{fortrannote}
+
+In discussing \ac{OO} languages, we first note that
+the official C++ \ac{API} has been removed from the standard.
+
+Specification of the buffer/count/datatype triplet is not
+needed explicitly in \ac{OO} languages.
+
+\begin{pythonnote}{Buffers from numpy}
+  Most MPI routines in Python have both a variant that can send arbitrary Python data,
+  and one that is based on \indexterm{numpy} arrays.
+  The former looks the most `pythonic', and is very flexible,
+  but is usually demonstrably inefficient.
+  %
+  \pverbatimsnippet[examples/mpi/p/allreduce.py]{allreducep}
+
+  In the numpy variant, all \emph{buffers}\index{buffer!MPI, in Python}
+  are \indexterm{numpy} objects, which carry information about their type and size.
+  For scalar reductions this means we have to create an array for the receive buffer,
+  even though only one element is used.
+  %
+  \pverbatimsnippet[examples/mpi/p/allreduce.py]{allreducenump}
+\end{pythonnote}
+
+\begin{pythonnote}{Buffers from subarrays}
+  In many examples you will pass a whole Numpy array as send/receive buffer.
+  Should want to use a buffer that corresponds to a subset of an array,
+  you can use the following notation:
+\begin{lstlisting}
+MPI_Whatever( buffer[...,5] # more stuff    
+\end{lstlisting}
+for passing the buffer that starts at location~5 of the array.
+
+For even more complicated effects, use \n{numpy.frombuffer}:
+\psnippetwithoutput{pyfrombuf}{examples/mpi/p}{buffer}
+
+\end{pythonnote}
+
+\begin{mplnote}{Scalar buffers}
+  \emph{Buffer}\index{buffer!MPI, in MPL} type handling
+  is done through polymorphism and templating: no explicit indiation of types.
+
+  Scalars are handled as such:
+\begin{lstlisting}
+float x,y;
+comm.bcast( 0,x ); // note: root first
+comm.allreduce( mpl::plus<float>(), x,y ); // op first
+\end{lstlisting}
+where the reduction function needs to be compatible with the type of the buffer.
+\end{mplnote}
+
+\begin{mplnote}{Vector buffers}
+  \label{mpl:vec-buf}
+If your buffer is a \lstinline+std::vector+ you need
+to take the \lstinline+.data()+ component of it:
+\begin{lstlisting}
+vector<float> xx(2),yy(2);
+comm.allreduce( mpl::plus<float>(),
+    xx.data(), yy.data(), mpl::contiguous_layout<float>(2) );
+\end{lstlisting}
+  The \indexmplshow{contiguous_layout} is a `derived type';
+this will be discussed in more detail elsewhere
+(see note~\ref{mpl:derived} and later).
+For now, interpret it as a way of indicating the count/type
+part of a buffer specification.
+\end{mplnote}
+
+\begin{mplnote}{Iterator buffers}
+  MPL point-to-point routines have a way of specifying the buffer(s)
+  through a \lstinline{begin} and \lstinline{end} iterator.
+  %
+  \cxxverbatimsnippet[examples/mpi/mpl/sendrange.cxx]{mplsendrange}
+  %
+  Not available for collectives.
+\end{mplnote}
+
+\Level 0 {Rooted collectives: broadcast, reduce}
+\label{sec:rooted}
+
+In some scenarios there is a certain process that has a privileged status.
+\begin{itemize}
+\item
+  One process can generate or read in the initial data for a program
+  run. This then needs to be communicated to all other processes.
+\item
+  At the end of a program run, often
+  one process needs to output some summary information.
+\end{itemize}
+This process is called the \indexterm{root} process, and we will now
+consider routines that have a root.
+
+\Level 1 {Reduce to a root}
+\label{sec:reduce-root}
+
+In the broadcast operation a single data item was communicated to all
+processes. A~reduction operation with
+%
+\indexmpiref{MPI_Reduce}
+%
+goes the other way: each process has a
+data item, and these are all brought together into a single item.
+
+Here are the essential elements of a reduction operation:
+\begin{lstlisting}
+MPI_Reduce( senddata, recvdata..., operator,
+    root, comm ); 
+\end{lstlisting}
+\begin{itemize}
+\item There is the original data, and the data resulting from the
+  reduction. It is a design decision of MPI that it will not by
+  default overwrite the original data. The send data and receive data
+  are of the same size and type: if every processor has one real
+  number, the reduced result is again one real number.
+\item It is possible to indicate explicitly that a single buffer
+  is used, and thereby the original data overwritten;
+  see section~\ref{sec:allreduce-inplace} for this `in place' mode.
+\item There is a reduction operator. Popular choices are
+  \indexmpishow{MPI_SUM}, \indexmpishow{MPI_PROD} and
+  \indexmpishow{MPI_MAX}, but complicated operators such as finding
+  the location of the maximum value exist.
+  (For the full list, see section~\ref{sec:operator-list}.)
+  You can also define your
+  own operators; section~\ref{sec:mpi-op-create}.
+\item There is a root process that receives the result of the
+  reduction. Since the nonroot processes do not receive the reduced
+  data, they can actually leave the receive buffer undefined.
+\end{itemize}
+
+\cverbatimsnippet[examples/mpi/c/reduce.c]{reduce}
+
+\begin{exercise}
+  \label{ex:randommax}
+  Write a program where each process computes a random number, and process~0
+  finds and prints the maximum generated value. Let each process print its value,
+  just to check the correctness of your program.
+\begin{book}
+  (See~\ref{ch:random} for a discussion of random number generation.)
+\end{book}
+\end{exercise}
+
+Collective operations can also take an array argument, instead of just a scalar.
+In that case, the operation is applied pointwise to each location in the array.
+
+\begin{exercise}
+  \label{ex:randomcoord}
+  Create on each process an array of length~2 integers, and put the
+  values $1,2$ in it on each process. Do a sum reduction on that
+  array. Can you predict what the result should be?  Code it. Was your
+  prediction right?
+\end{exercise}
+
+\Level 1 {Reduce in place}
+\label{sec:allreduce-inplace}
+
+By default MPI will not overwrite the original data with the reduction
+result, but you can tell it to do so
+using the \indexmpishow{MPI_IN_PLACE} specifier:
+%
+\cverbatimsnippet[examples/mpi/c/allreduceinplace.c]{allreduceinplace}
+%
+Now every process only has a receive buffer, so this
+has the advantage of saving half the memory.
+Each process puts its input values in the receive buffer,
+and these are overwritten by the reduced result.
+
+The above example used \indexmpishow{MPI_IN_PLACE} in
+\indexmpishow{MPI_Allreduce};
+in \indexmpishow{MPI_Reduce} it's little  tricky.
+The reasoning is a follows:
+\begin{itemize}
+\item In \indexmpishow{MPI_Reduce} every process has a buffer to
+  contribute, but only the root needs a receive buffer. Therefore,
+  \indexmpishow{MPI_IN_PLACE} takes the place of the receive buffer
+  on any processor except for the root~\ldots
+\item \dots~while the root, which needs a receive buffer,
+  has \indexmpishow{MPI_IN_PLACE} takes the place of the send buffer.
+  In order to contribute its value, the root needs to put this in the
+  receive buffer.
+\end{itemize}
+
+Here is one way you could write the in-place version of \indexmpishow{MPI_Reduce}:
+%
+\cverbatimsnippet[examples/mpi/c/allreduceinplace.c]{onereduceinplace}
+%
+However, as a point of style, having different versions of a a collective
+in different branches of a condition is infelicitous. The following may be preferable:
+%
+\cverbatimsnippet[examples/mpi/c/allreduceinplace.c]{tworeduceinplace}
+
+In Fortran  you can not do these address calculations.
+You can use the solution with a conditional:
+%
+\fverbatimsnippet[examples/mpi/f/reduceinplace.F90]{reduceinplace-f}
+%
+but you can also solve this with pointers:
+%
+\fverbatimsnippet[examples/mpi/f08/reduceinplaceptr.F90]{reduceinplace-fptr}
+
+\begin{pythonnote}{In-place collectives}
+  The value \lstinline+MPI.IN_PLACE+ can be used for the send buffer:
+  %
+  \pverbatimsnippet[examples/mpi/p/allreduceinplace.py]{allreduceip}
+\end{pythonnote}
+
+\begin{mplnote}{Reduce in place}
+  The in-place variant is activated by
+  specifying only one instead of two buffer arguments.
+  %
+  \cxxverbatimsnippet[examples/mpi/mpl/collectscalar.cxx]{mplallreduce}
+  %
+  Reducing a buffer requires specification of a \lstinline+contiguous_layout+:
+  %
+  \cxxverbatimsnippet[examples/mpi/mpl/collectbuffer.cxx]{mplallreducebuffer}
+  %
+  Note that the buffers are of type \lstinline+T *+, so it is necessary
+  to take the \lstinline+data()+ of any \lstinline+std::vector+ and such.
+\end{mplnote}
+
+%% \begin{mplnote}{Rooted reduce}
+%%   Same story for the rooted reduce:
+%%   %
+%%   \cxxverbatimsnippet[examples/mpi/mpl/collectscalar.cxx]{mplrootreduce}
+%% \end{mplnote}
+\begin{mplnote}{Reduce on non-root}
+  There is a separate variant for non-root usage of rooted collectives:
+  \cxxverbatimsnippet{mplreduceroot}
+\end{mplnote}
+
+\Level 1 {Broadcast}
+\label{sec:bcast}
+
+A broadcast models the scenario where one process,
+the `root' process,
+owns some data, and it communicates it to all other processes.
+
+The broadcast routine
+\indexmpiref{MPI_Bcast}
+has the following structure:
+\begin{lstlisting}
+MPI_Bcast( data..., root , comm);
+\end{lstlisting}
+Here:
+\begin{itemize}
+\item There is only one buffer, the send buffer.
+  Before the call, the root process has data in this buffer;
+  the other processes allocate a same sized buffer, but
+  for them the contents are irrelevant.
+\item 
+  The root is the process that is sending its data.
+  Typically, it will be the root of a broadcast tree.
+\end{itemize}
+
+Example: in general we can not assume that all processes get the
+commandline arguments, so we broadcast them from process~0.
+
+\cverbatimsnippet[examples/mpi/c/init.c]{usage}
+
+\begin{comment}
+  \begin{exercise}
+    \label{ex:argv-bcast}
+    If you give a commandline argument to a program, that argument is available
+    as a character string as part of the \n{argv,argc} pair that you typically use
+    as the arguments to your main program. You can use the function \n{atoi} to
+    convert such a string to integer.
+
+    Write a program where process~0 looks for an integer on the commandline, and
+    broadcasts it to the other processes. Initialize the buffer on all processes, and
+    let all processes print out the broadcast number,
+    just to check that you solved the problem correctly.
+  \end{exercise}
+\end{comment}
+
+\begin{pythonnote}{Sending objects}
+  In python it is both possible to send objects, and to send more
+  C-like buffers. The two possibilities correspond (see
+  section~\ref{sec:python-bind}) to different routine names; the
+  buffers have to be created as \n{numpy} objects.
+
+  We illustrate both the general Python and numpy variants. 
+  In the former variant the result is given as a function return;
+  in the numpy variant the send buffer is reused.
+
+\pverbatimsnippet[examples/mpi/p/bcast.py]{bcastp}
+\end{pythonnote}
+
+\begin{mplnote}{Broadcast}
+  The broadcast call comes in two variants, with scalar argument
+  and general layout:
+\begin{lstlisting}
+ template<typename T >
+void mpl::communicator::bcast
+   ( int root_rank, T &data ) const;
+void mpl::communicator::bcast
+   ( int root_rank, T *data, const layout< T > &l ) const;
+\end{lstlisting}
+  Note that the root argument comes first.
+\end{mplnote}
+
+%pyskipbegin
+\begin{figure}[p]
+  \tiny
+  \begin{multicols}{3}
+    Initial:\\ \nobreak
+    \input jordan1
+    Step 1:\\ \nobreak
+    \input jordan2
+    Step 2:\\ \nobreak
+    \input jordan3
+    Step 3:\\ \nobreak
+    \input jordan4
+    Step 4:\\ \nobreak
+    \input jordan5
+    Step 5:\\ \nobreak
+    \input jordan6
+    Step 6:\\ \nobreak
+    \input jordan7
+    Step 7:\\ \nobreak
+    \input jordan8
+    Step 8:\\ \nobreak
+    \input jordan9
+    Step 9:\\ \nobreak
+    \input jordan10
+    Step 10:\\ \nobreak
+    \input jordan11
+    Step 11:\\ \nobreak
+    \input jordan12
+    Step 12:\\ \nobreak
+    \input jordan13
+    Step 13:\\ \nobreak
+    \input jordan14
+    Step 14:\\ \nobreak
+    \input jordan15
+    Step 15:\\ \nobreak
+    \input jordan16
+    Step 16:\\ \nobreak
+    \input jordan17
+    Step 17:\\ \nobreak
+    \input jordan18
+    Step 18:\\ \nobreak
+    \input jordan19
+    Finished:\\ \nobreak
+    \input jordan20
+  \end{multicols}
+  \caption{Gauss-Jordan elimination example}
+  \label{fig:gauss-jordan-ex}
+\end{figure}
+%pyskipend
+
+For the following exercise, study figure~\ref{fig:gauss-jordan-ex}.
+
+\begin{exercise}
+  \label{ex:gaussjordancoll}
+  The \indexterm{Gauss-Jordan algorithm} for solving a linear system
+  with a matrix~$A$ (or computing its inverse) runs as follows:
+  %{\small
+  \begin{tabbing}
+    for \=pivot $k=1,\ldots,n$\\
+    \>let the vector of scalings $\ell^{(k)}_i=A_{ik}/A_{kk}$\\
+    \>for \=row $r\not=k$\\
+    \>\>for \=column $c=1,\ldots,n$\\
+    \>\>\> $A_{rc}\leftarrow A_{rc} - \ell^{(k)}_r A_{kc}$\\
+  \end{tabbing}
+  %}
+  where we ignore the update of the righthand side, or the formation
+  of the inverse.
+
+  Let a matrix be distributed with each process storing one
+  column. Implement the Gauss-Jordan algorithm as a series of
+  broadcasts: in iteration $k$ process $k$ computes and broadcasts the
+  scaling vector~$\{\ell^{(k)}_i\}_i$. Replicate the right-hand side on
+  all processors.
+  \skeleton{jordan}
+\end{exercise}
+
+\begin{exercise}
+  Add partial pivoting to your implementation of Gauss-Jordan elimination.
+
+  Change your implementation to let each processor store multiple columns,
+  but still do one broadcast per column. Is there a way to have only one
+  broadcast per processor?
+\end{exercise}
+

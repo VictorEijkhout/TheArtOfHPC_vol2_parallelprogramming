@@ -1,0 +1,9 @@
+// allreduce.c
+float myrandom,sumrandom;
+myrandom = (float) rand()/(float)RAND_MAX;
+// add the random variables together
+MPI_Allreduce(&myrandom,&sumrandom,
+		1,MPI_FLOAT,MPI_SUM,comm);
+// the result should be approx nprocs/2:
+if (procno==nprocs-1)
+  printf("Result %6.9f compared to .5\n",sumrandom/nprocs);

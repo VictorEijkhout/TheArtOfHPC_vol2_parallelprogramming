@@ -1,0 +1,12 @@
+Synopsis
+Allocates an array of memory aligned to PETSC_MEMALIGN
+
+C:
+#include <petscsys.h>
+PetscErrorCode PetscMalloc1(size_t m1,type **r1)
+
+Input Parameter:
+m1 - number of elements to allocate (may be zero)
+
+Output Parameter:
+r1 - memory allocated

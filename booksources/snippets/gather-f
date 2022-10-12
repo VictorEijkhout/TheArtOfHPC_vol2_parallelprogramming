@@ -1,0 +1,9 @@
+!! gather.F90
+  ! we assume that each process has a value "localsize"
+  ! the root process collectes these values
+  if (mytid==root) then
+     ALLOCATE(localsizes(ntids))
+  end if
+
+  call MPI_Gather(localsize,1,MPI_INTEGER,&
+       localsizes,1,MPI_INTEGER,root,comm,err)

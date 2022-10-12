@@ -1,0 +1,454 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%% mpi-topo.tex : about communicator topologies
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+A communicator describes a group of processes, but the structure of
+your computation may not be such that every process will communicate
+with every other process. For instance, in a computation that is
+mathematically defined on a
+Cartesian 2D grid, the
+processes themselves act as if they are two-dimensionally ordered and communicate
+with N/S/E/W neighbors. If MPI had this knowledge about your
+application, it could conceivably optimize for it, for instance by
+renumbering the ranks so that communicating processes are closer
+together physically in your cluster.
+
+The mechanism to declare this structure of a computation to MPI
+is known as a \indextermsub{virtual}{topology}. The following types of
+topology are defined:
+\begin{itemize}
+\item \indexmpishow{MPI_UNDEFINED}: this values holds for communicators where no
+  topology has explicitly been specified.
+\item \indexmpidef{MPI_CART}: this value holds for Cartesian
+  toppologies, where processes act as if they are ordered in a
+  multi-dimensional `brick'; see
+  section~\ref{sec:cartesian}.
+\item \indexmpidef{MPI_GRAPH}: this value describes the graph
+  topology that was defined in \mpistandard{1};
+  section~\ref{sec:mpi-1-graph}. It is unnecessarily burdensome, since
+  each process needs to know the total graph, and should therefore be
+  considered obsolete; the type \indexmpishow{MPI_DIST_GRAPH} should
+  be used instead.
+\item \indexmpidef{MPI_DIST_GRAPH}: this value describes the distributed graph
+  topology where each process only describes the edges in the process
+  graph that touch itself; see section~\ref{sec:mpi-dist-graph}.
+\end{itemize}
+These values can be discovered with the routine
+\indexmpishow{MPI_Topo_test}.
+
+\Level 0 {Cartesian grid topology}
+\label{sec:cartesian}
+
+A \indextermsub{Cartesian}{grid} is a structure, typically in 2~or~3 dimensions,
+of points that have two neighbors in each of the dimensions.
+Thus, if a Cartesian grid has sizes $K\times M\times N$, its
+points have coordinates $(k,m,n)$ with $0\leq k<K$ et cetera.
+Most points have six neighbors $(k\pm1,m,n)$, $(k,m\pm1,n)$, $(k,m,n\pm1)$;
+the exception are the edge points. A~grid where edge processors
+are connected through \indexterm{wraparound connections} is called
+a \indextermsub{periodic}{grid}.
+
+The auxiliary routine \indexmpidef{MPI_Dims_create}
+assists in finding a grid of a given dimension,
+attempting to minimize the diameter.
+%
+%%\cverbatimsnippet{dimscreate}
+{
+  \def\snippetcodefraction{.45}
+  \def\snippetlistfraction{.55}
+  \csnippetwithoutput{dimscreate}{examples/mpi/c}{cartdims}
+  }
+%
+If the dimensions array is nonzero in a component, that one is not touched. 
+Of course, the product of the specified dimensions has to divide in
+the input number of nodes.
+
+\begin{comment}
+  \Level 1 {Cartesian coordinates}
+
+  The most common use of Cartesian coordinates
+  is to find the rank of process by referring to it in grid terms.
+  For instance, one could ask `what are my neighbors offset by $(1,0,0)$, 
+  $(-1,0,0)$, $(0,1,0)$ et cetera'.
+
+  While the Cartesian topology interface is fairly easy to use, as
+  opposed to the more complicated general graph topology below, it is
+  not actually sufficient for all Cartesian graph uses. Notably, in
+  a so-called \indextermsub{star}{stencil}, such as the
+  \indextermsub{nine-point}{stencil}, there are diagonal connections,
+  which can not be described in a single step. Instead, it is necessary
+  to take a separate step along each coordinate dimension. In higher
+  dimensions this is of course fairly awkward.
+
+  Thus, even for Cartesian structures, it may be advisable to use the
+  general graph topology interface.
+\end{comment}
+
+\Level 1 {Cartesian topology communicator}
+\label{sec:cart-comm-create}
+
+The cartesian topology is specified by giving
+\indexmpiref{MPI_Cart_create} the sizes of the processor grid along
+each axis, and whether the grid is periodic along that axis.
+
+\cverbatimsnippet{cartcreate}
+
+(The Cartesian grid can have fewer processes than the input communicator:
+any processes not included get \indexmpishow{MPI_COMM_NULL} as output.)
+
+For a given communicator, you can test what type it is
+with \indexmpiref{MPI_Topo_test}:
+%
+\cverbatimsnippet{carttypetest}
+
+For a Cartesian communicator, you can retrieve
+its information with \indexmpidef{MPI_Cartdim_get}
+and \indexmpidef{MPI_Cart_get}:
+%
+\cverbatimsnippet{cartget}
+
+\Level 1 {Cartesian vs world rank}
+
+Each point in this new communicator has a coordinate and a rank.
+The translation from rank to Cartesian coordinate is done by 
+\indexmpiref{MPI_Cart_coords},
+and translation from coordinates to a rank is done by
+\indexmpiref{MPI_Cart_rank}.
+In both cases, this translation can be done on any process;
+for the latter routine note that coordinates outside the
+Cartesian grid are erroneous,
+if the grid is not periodic in the offending coordinate.
+
+\cverbatimsnippet[examples/mpi/c/cart.c]{cart}
+
+The \n{reorder} parameter to \indexmpishow{MPI_Cart_create}
+indicates whether processes can have a rank
+in the new communicator that is different from in the old one.
+
+\Level 1 {Cartesian communication}
+
+A common communication pattern in Cartesian grids is to
+do an \indexmpishow{MPI_Sendrecv} with processes that are adjacent
+along one coordinate axis.
+
+By way of example, consider a 3D grid that is periodic in the first dimension:
+%
+\cverbatimsnippet[examples/mpi/c/cartcoord.c]{cartperiod0}
+
+We shift process~0 in dimensions 0 and~1.
+In dimension~0 we get a wrapped-around source,
+and a target that is the next process in row-major ordering;
+in dimension~1 we get \indexmpishow{MPI_PROC_NULL} as source,
+and a legitimate target.
+%
+\csnippetwithoutput{cartshift01}{examples/mpi/c}{cartshift}
+
+\Level 1 {Communicators in subgrids}
+
+The routine \indexmpiref{MPI_Cart_sub} is similar to
+\indexmpishow{MPI_Comm_split}, in that it splits a communicator
+into disjoint subcommunicators.
+In this case, it splits a Cartesian communicator
+into disjoint Cartesian communicators,
+each corresponding to a subset of the dimensions.
+This subset inherits both sizes and periodicity from the original communicator.
+
+\csnippetwithoutput{hyperplane13p}{examples/mpi/c}{cartsub}
+
+\Level 1 {Reordering}
+
+The routine \indexmpidef{MPI_Cart_map} gives a re-ordered rank
+for the calling process.
+
+\Level 0 {Distributed graph topology}
+\label{sec:mpi-dist-graph}
+
+\begin{figure}[ht]
+  \includegraphics[scale=.5]{graphcollective}
+  \caption{Illustration of a distributed graph topology where each
+    node has four neighbors}
+  \label{fig:graphcollective}
+\end{figure}
+
+In many calculations on a grid (using the term in its mathematical,
+\ac{FEM}, sense), a grid point will collect information from grid
+points around it. Under a sensible distribution of the grid over
+processes, this means that each process will collect information from
+a number of neighbor processes. The number of 
+neighbors is dependent on that process. For instance, in a 2D
+grid (and assuming a five-point stencil for the computation) most
+processes communicate with four neighbors; processes on the edge with
+three, and processes in the corners with two.
+
+Such a topology is illustrated in figure~\ref{fig:graphcollective}.
+
+MPI's notion of \indextermbusdef{graph}{topology}, and the
+\indextermsubdef{neighborhood}{collectives}, offer an elegant way of
+expressing such communication structures. There are various reasons
+for using graph topologies over the older, simpler methods.
+\begin{itemize}
+\item MPI is allowed to reorder the processes, so that network proximity
+  in the cluster corresponds to proximity in the structure of the
+  code.
+\item Ordinary collectives could not directly be used for graph
+  problems, unless one would adopt a subcommunicator for each graph
+  neighborhood. However, scheduling would then lead to deadlock or
+  serialization.
+\item The normal way of dealing with graph problems is through
+  nonblocking communications. However, since the user indicates an
+  explicit order in which they are posted, congestion at certain
+  processes may occur.
+\item Collectives can pipeline data, while send/receive operations
+  need to transfer their data in its entirety.
+\item Collectives can use spanning trees, while send/receive uses a
+  direct connection.
+\end{itemize}
+
+Thus the minimal description of a process graph contains for each process:
+\begin{itemize}
+\item Degree: the number of neighbor processes; and
+\item the ranks of the processes to communicate with.
+\end{itemize}
+However, this ignores that communication is not always symmetric:
+maybe the processes you receive from are not the ones you send
+to.
+Worse, maybe only one side of this duality is easily described.
+Therefore, there are two routines:
+\begin{itemize}
+\item \indexmpishow{MPI_Dist_graph_create_adjacent} assumes that a
+  process knows both who it is sending it, and who will send to
+  it. This is the most work for the programmer to specify, but it is
+  ultimately the most efficient.
+\item \indexmpishow{MPI_Dist_graph_create} specifies on each process
+  only what it is the source for; that is, who this process will be sending
+  to. Consequently, some amount of processing
+  --~including communication~-- is needed to build the converse
+  information, the ranks that will be sending to a process.
+\end{itemize}
+
+\Level 1 {Graph creation}
+
+There are two creation routines for process graphs. These routines are
+fairly general in that they allow any process to specify any part of
+the topology. In practice, of course, you will mostly let each process
+describe its own neighbor structure.
+
+The routine \indexmpishow{MPI_Dist_graph_create_adjacent} assumes that a process
+knows both who it is sending it, and who will send to it. This means
+that every edge in the communication graph is represented twice, so
+the memory footprint is double of what is strictly necessary. However,
+no communication is needed to build the graph.
+
+The second creation routine, \indexmpiref{MPI_Dist_graph_create}, is
+probably easier to use, especially in cases where the communication
+structure of your program is symmetric, meaning that a process sends
+to the same neighbors that it receives from.  Now you specify on each
+process only what it is the source for; that is, who this process will
+be sending to.\footnote{I disagree with this design
+  decision. Specifying your sources is usually easier than specifying
+  your destinations.}. Consequently, some amount of processing
+--~including communication~-- is needed to build the converse
+information, the ranks that will be sending to a process.
+
+\begin{mplnote}{Distributed graph creation}
+  The class \lstinline+mpl::+\indexmpldef{dist_graph_communicator}
+  only has a constructor corresponding to \indexmpishow{MPI_Dist_graph_create}.
+\end{mplnote}
+
+Figure~\ref{fig:graphcollective} describes the common five-point
+stencil structure. If we let each process only describe itself, we get
+the following:
+\begin{itemize}
+\item \n{nsources}$=1$ because the calling process describes on node
+  in the graph: itself.
+\item \n{sources} is an array of length~1, containing the rank of the
+  calling process.
+\item \n{degrees} is an array of length~1, containing the degree
+  (probably:~4) of this process.
+\item \n{destinations} is an array of length the degree of this
+  process, probably again~4. The elements of this array are the ranks
+  of the neighbor nodes; strictly speaking the ones that this process
+  will send to.
+\item \n{weights} is an array declaring the relative importance of the
+  destinations. For an \indextermsub{unweighted}{graph} use
+  \indexmpishow{MPI_UNWEIGHTED}.
+  In the case the graph is weighted, but the degree of a source is zero, you can pass
+  an empty array as \indexmpidef{MPI_WEIGHTS_EMPTY}.
+\item \n{reorder} (\n{int} in~C, \n{LOGICAL} in~Fortran) indicates
+  whether MPI is allowed to shuffle processes to achieve greater locality.
+\end{itemize}
+
+The resulting communicator has all the processes of the original
+communicator, with the same ranks.
+In other words \indexmpishow{MPI_Comm_size} and \indexmpishow{MPI_Comm_rank}
+gives the same values on the graph communicator, as on the intra-communicator
+that it is constructed from.
+To get information about the grouping,
+use \indexmpishow{MPI_Dist_graph_neighbors}
+and \indexmpishow{MPI_Dist_graph_neighbors_count};
+section~\ref{sec:graph-neighbors}.
+
+By way of example we build an unsymmetric graph, that is,
+an edge $v_1\rightarrow v_2$ between vertices~$v_1,v_2$
+does not imply an edge~$v_2\rightarrow v_1$.
+%
+\csnippetwithblock{distgraphsetup}{\vbox to 0pt {\includegraphics[scale=.75]{distgraph}\vss}}
+
+Here we gather the coordinates of the source neighbors:
+
+{
+  \def\snippetcodefraction{.45}
+  \def\snippetlistfraction{.5}
+  \csnippetwithoutput{distgraphreadout}{examples/mpi/c}{graph}
+}
+
+However, we can't rely on the sources being ordered,
+so the following segment performs an explicit query for the
+source neighbors:
+
+{
+  \def\snippetcodefraction{.45}
+  \def\snippetlistfraction{.5}
+  \csnippetwithoutput{distgraphcount}{examples/mpi/c}{graphcount}
+}
+
+\begin{pythonnote}{Graph communicators}
+  Graph communicator creation is a method of the \plstinline{Comm} class,
+  and the graph communicator is a function return result:
+\begin{lstlisting}
+graph_comm = oldcomm.Create_dist_graph(sources, degrees, destinations)
+\end{lstlisting}
+  The weights, info, and reorder arguments have default values.
+\end{pythonnote}
+
+\begin{mplnote}{Graph communicators}
+  \label{mpl:graph-comm}
+  The constructor \indexmplshow{dist_graph_communicator}
+\begin{lstlisting}
+dist_graph_communicator
+   (const communicator &old_comm, const source_set &ss,
+    const dest_set &ds, bool reorder = true);    
+\end{lstlisting}
+is a wrapper around \indexmpishow{MPI_Dist_graph_create_adjacent}.
+\end{mplnote}
+\begin{mplnote}{Graph communicator querying}
+  \label{mpl:graph-query}
+  Methods \indexmplshow{indegree}, \indexmplshow{outdegree}
+  are wrappers around \indexmpishow{MPI_Dist_graph_neighbors_count}.
+  Sources and targets can be queried with
+  \indexmplshow{inneighbors} and \indexmplshow{outneighbors},
+  which are wrappers around \indexmpishow{MPI_Dist_graph_neighbors}.
+\end{mplnote}
+
+\Level 1 {Neighbor collectives}
+\label{sec:mpi-neigh-coll}
+
+We can now use the graph topology to perform a gather or allgather
+\indexmpiref{MPI_Neighbor_allgather}
+that combines only the processes directly connected to the calling
+process.
+
+The neighbor collectives have the same argument list as the regular
+collectives, but they apply to a graph communicator.
+
+\begin{figure}[ht]
+  \includegraphics[scale=.5]{rightgraph}
+  \caption{Solving the right-send exercise with neighborhood
+    collectives}
+  \label{fig:rightgraph}
+\end{figure}
+
+\begin{exercise}
+  \label{ex:rightgraph}
+  Revisit exercise~\ref{ex:serialsend} and solve it using
+  \indexmpishow{MPI_Dist_graph_create}.
+  Use figure~\ref{fig:rightgraph} for inspiration.
+
+  Use a degree value of~1.
+  \skeleton{rightgraph}
+\end{exercise}
+
+The previous exercise can be done with a degree value of:
+\begin{itemize}
+\item 1, reflecting that each process communicates with just 1 other; or
+\item 2, reflecting that you really gather from two processes.
+\end{itemize}
+In the latter case, results do not wind up in the receive buffer
+in order of increasing process number as with a traditional gather.
+Rather, you need to use~\indexmpishow{MPI_Dist_graph_neighbors}
+to find their sequencing; see section~\ref{sec:graph-neighbors}.
+
+Another neighbor collective is \indexmpishow{MPI_Neighbor_alltoall}.
+
+The vector variants are
+\indexmpishow{MPI_Neighbor_allgatherv}
+and
+\indexmpishow{MPI_Neighbor_alltoallv}.
+
+There is a heterogenous (multiple datatypes) variant:
+\indexmpishow{MPI_Neighbor_alltoallw}.
+
+The list is: \indexmpishow{MPI_Neighbor_allgather},
+\indexmpishow{MPI_Neighbor_allgatherv},
+\indexmpishow{MPI_Neighbor_alltoall},
+\indexmpishow{MPI_Neighbor_alltoallv},
+\indexmpishow{MPI_Neighbor_alltoallw}.
+
+Nonblocking:
+\indexmpishow{MPI_Ineighbor_allgather},
+\indexmpishow{MPI_Ineighbor_allgatherv},
+\indexmpishow{MPI_Ineighbor_alltoall},
+\indexmpishow{MPI_Ineighbor_alltoallv},
+\indexmpishow{MPI_Ineighbor_alltoallw}.
+
+For unclear reasons there is no \indexmpishow{MPI_Neighbor_allreduce}.
+
+\Level 1 {Query}
+\label{sec:graph-neighbors}
+
+There are two routines for querying the neighbors of a process:
+%
+\indexmpiref{MPI_Dist_graph_neighbors_count}
+and
+\indexmpiref{MPI_Dist_graph_neighbors}.
+
+While this information seems derivable from the graph construction,
+that is not entirely true for two reasons.
+\begin{enumerate}
+\item With the nonadjoint version \indexmpishow{MPI_Dist_graph_create},
+  only outdegrees and destinations are specified; this call then supplies
+  the indegrees and sources;
+\item As observed above, the order in which data is placed in the
+  receive buffer of a gather call is not determined by the create call,
+  but can only be queried this way.
+\end{enumerate}
+
+\Level 1 {Graph topology (deprecated)}
+\label{sec:mpi-1-graph}
+
+The original \mpistandard{1} had a graph topology interface
+\indexmpidef{MPI_Graph_create}
+which required each process to specify the full process graph. Since
+this is not scalable, it should be considered deprecated. Use the
+distributed graph topology (section~\ref{sec:mpi-dist-graph}) instead.
+
+Other legacy routines: 
+\indexmpidef{MPI_Graph_neighbors},
+\indexmpidef{MPI_Graph_neighbors_count},
+\indexmpidef{MPI_Graph_get},
+\indexmpidef{MPI_Graphdims_get}.
+
+\Level 1 {Re-ordering}
+
+The routine \indexmpidef{MPI_Graph_map} gives a re-ordered rank
+for the calling process.
+

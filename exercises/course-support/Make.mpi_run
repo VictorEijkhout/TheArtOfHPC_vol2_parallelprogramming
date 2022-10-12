@@ -1,0 +1,135 @@
+# -*- makefile -*-
+################################################################
+####
+#### This makefile is part of `Parallel Programming in MPI and OpenMP'
+#### by Victor Eijkhout, copyright 2013-2022
+#### eijkhout@tacc.utexas.edu
+####
+#### Make include file for MPI programs
+####
+#### https://apple.stackexchange.com/questions/3271/how-to-get-rid-of-firewall-accept-incoming-connections-dialog
+####
+#### sudo codesign --force --deep --sign - /path/to/application.app
+#### (possibly without the "--deep"
+####
+################################################################
+
+info ::
+	@echo && echo "================================ MPI run:"
+
+ifeq "${TACC_SYSTEM}" "macbookair"
+  MPIRUN=mpiexec
+  NPOPTION=-n
+else
+  MPIRUN=ibrun
+  NPOPTION=-np
+endif
+NP_default = 4
+CATCHER = ${SCRIPTSDIR}/catchout
+.PHONY: mpirun catchrun
+info ::
+	@echo "make mpirun / slurmrun / catchrun"
+	@echo "    ( catchrun gives orderly output)"
+	@echo "    [ PROGRAM=... NP=... ]"
+	@echo "    [ ENVOPTIONS=... stuff before mpiexec ]"
+	@if [ "${LANGUAGE}" = "python" ] ; then \
+	    if [ -z "${PYTHON}"  ] ; then \
+	        echo "    please set PYTHON variable" \
+	    ; else \
+	        echo "    [ PYTHON=... (default: $$( which ${PYTHON} ) ) ]" \
+	    ; fi \
+	fi
+mpi_nprocs :
+	@if [ ! -z "${np_${PROGRAM}}" ] ; then \
+	        echo ${np_${PROGRAM}} \
+	; elif [ ! -z "${NP}" ] ; then \
+	        echo ${NP} \
+	; elif [ ! -z "${SLURM_NPROCS}" ] ; then \
+	        echo ${SLURM_NPROCS} \
+	; else \
+	        echo ${NP_default} \
+	; fi
+mpirun :
+	@if [ ! -f "${PROGRAM}${PROGRAM_EXTENSION}" ] ; then \
+	    echo "No such program: ${PROGRAM}" && exit 1 ; fi \
+	 && progargs="${PROGRAM}${PROGRAM_EXTENSION} ${OPTIONS}" \
+	 && if [ "${LANGUAGE}" = "python" ] ; then \
+	        progargs="${PYTHON} $$progargs" ; fi \
+	 && np=`make --no-print-directory mpi_nprocs PROGRAM=${PROGRAM}` \
+	 && cmdline="${ENVOPTIONS} ${MPIRUN} ${NPOPTION} $$np $${progargs}" \
+	 && if [ "${ECHO}" = "1" ] ; then \
+	        echo $$cmdline ; fi \
+	 && eval $$cmdline \
+	 && echo >/dev/null
+slurmrun :
+	${ENVOPTIONS} ${MPIRUN} -np ${SLURM_NPROCS} ${PYTHON} ${PROGRAM}${PROGRAM_EXTENSION} ${OPTIONS}
+catchrun :
+	@if [ ! -f "${CATCHER}" ] ; then \
+	    echo "Can not find catcher script: <<${CATCHER}>>" \
+	     && exit 1 ; fi
+	@${MPIRUN} -np ${NP} ${CATCHER} ${PROGRAM} >/dev/null 2>&1
+	@for i in `seq 0 $$(( NP-1 ))` ; do \
+	    cat ${PROGRAM}.out$$i \
+	        ${CATCHFILTER} \
+	  ; done > ${PROGRAM}.outall \
+	 && cat ${PROGRAM}.outall
+clean ::
+	@rm -f *.outall
+
+info ::
+	@echo && echo "================ Output and regression "
+	@echo "make runs : compile and run everything"
+	@echo "make runouts :same, and generate output files"
+	@echo "    ${RUNS}"
+	@echo "    [ RUNOUTID= .... (extra id, default blank) ]"
+	@echo "    [ NP= .... (default=${NP}) ]"
+	@echo "    [ MPIRUN= .... (default=${MPIRUN}) ]"
+	@echo "    ( make totalclean removes *.runout )"
+	@echo "make run_generic PROGRAM=... : compile and default run"
+	@echo "    [ RUNOUT=0/1 ]"
+.PHONY: runs runouts run_generic
+run_generic :
+	@if [ -z "${PROGRAM}" ] ; then \
+	    echo "please specify PROGRAM variable" && exit 1 ; fi 
+	@if [ ! "${LANGUAGE}" = "python" ] ; then \
+	    make --no-print-directory \
+	            ENVOPTIONS=${ENVOPTIONS} NP=${NP} PYTHON=${PYTHON} \
+	            PROGRAM_EXTENSION=${PROGRAM_EXTENSION} OPTIONS=${OPTIONS} \
+	        ${PROGRAM} \
+	    ; fi \
+	 && make --no-print-directory \
+	            ECHO=${ECHO} MPIRUN=${MPIRUN} OPTIONS=${OPTIONS} \
+	            NP=${NP} PYTHON=${PYTHON} PROGRAM_EXTENSION=${PROGRAM_EXTENSION} \
+	        mpirun PROGRAM=${PROGRAM}
+runs :
+	@logfile=allruns.out \
+	 && for r in ${RUNS} ; do \
+	    echo "---------------- Test run: $$r ----------------" \
+	     && runname=$${r##run_} \
+	     && make --no-print-directory \
+	            $$r \
+	            ENVOPTIONS=${ENVOPTIONS} NP=${NP} PYTHON=${PYTHON} \
+	            PROGRAM_EXTENSION=${PROGRAM_EXTENSION} OPTIONS=${OPTIONS} \
+	     ; \
+	 done \
+	 2>&1 | tee $$logfile \
+	 && echo && echo "See $$logfile for full log" && echo
+runouts :
+	@for r in ${RUNS} ; do \
+	    echo "---------------- Test run: $$r ----------------" \
+	     && runname=$${r##run_} \
+	     && runout=$${runname}${RUNOUTID}.runout \
+	     && make --no-print-directory \
+	            $$r \
+	            ENVOPTIONS=${ENVOPTIONS} NP=${NP} PYTHON=${PYTHON} \
+	            PROGRAM_EXTENSION=${PROGRAM_EXTENSION} OPTIONS=${OPTIONS} \
+	            RUNOUT=1 \
+	        | grep -v TACC: | grep -v "up to date" > $${runout} 2>/dev/null \
+	     && echo "see output in $${runout}" && cat $${runout} \
+	     && git add $${runout} \
+	    ; \
+	 done
+clean ::
+	@rm -f *.out[0-9]*
+total_clean totalclean ::
+	@rm -f *.runout

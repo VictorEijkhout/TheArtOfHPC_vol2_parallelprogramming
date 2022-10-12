@@ -1,0 +1,364 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Computing'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%% mpl_course.tex : course in MPL interface to MPI
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt,headernav]{beamer}
+
+\beamertemplatenavigationsymbolsempty
+\usetheme{Madrid}%{Montpellier}
+\usecolortheme{seahorse}
+\setcounter{tocdepth}{1}
+%% \AtBeginSection[]
+%% {
+%%   \begin{frame}
+%%     \frametitle{Table of Contents}
+%%     \tableofcontents[currentsection]
+%%   \end{frame}
+%% }
+
+\setbeamertemplate{footline}{\hskip1em Eijkhout: MPI course\hfill
+  \hbox to 0in {\hss \includegraphics[scale=.1]{tacclogonew}}%
+  \hbox to 0in {\hss \arabic{page}\hskip 1in}}
+
+\usepackage{multicol,multirow}
+% custom arrays and tables
+\usepackage{array} %,multirow,multicol}
+\newcolumntype{R}{>{\hbox to 1.2em\bgroup\hss}{r}<{\egroup}}
+\newcolumntype{T}{>{\hbox to 8em\bgroup}{c}<{\hss\egroup}}
+
+\input commonmacs
+\input acromacs
+\input slidemacs
+\input coursemacs
+\input listingmacs
+
+\includecomment{full}
+\excludecomment{condensed}
+\excludecomment{online}
+
+\newcommand\referenceframe{\begingroup\catcode`\_=12 \referenceframett}
+\begingroup\catcode`\_=12
+\gdef\referenceframett#1{
+  \begin{numberedframe}{Reference: \texttt{MPI_#1}}
+    \small
+    \verbatiminput{mplreference/MPI_#1.tex}
+  \end{numberedframe}\endgroup}
+\endgroup
+
+\specialcomment{tacc}{\stepcounter{tacc}\def\CommentCutFile{tacc\arabic{tacc}.cut}}{}
+\newcounter{tacc}
+%\excludecomment{tacc}
+\includecomment{xsede}
+\includecomment{utonly}
+
+\includecomment{onesided}
+\includecomment{advanced}
+\includecomment{foundations}
+
+\def\Location{}% redefine in the inex file
+\def\courseyear{2021}
+\def\Location{TACC APP institute MPI training \courseyear}
+\begin{xsede}
+  \def\Location{TACC/XSEDE MPI training \courseyear}
+\end{xsede}
+\def\TitleExtra{}
+
+\input lang
+
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%% Document
+%%%%%%%%%%%%%%%%
+
+\begin{document}
+\parskip=10pt plus 5pt minus 3pt
+
+\title{Tutorial on the MPL interface to MPI}
+\author{Victor Eijkhout {\tt eijkhout@tacc.utexas.edu}}
+\date{\Location}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{xsede}
+  \input xsede-conduct
+\end{xsede}
+%% \begin{utonly}
+%%   \input tacc-conduct
+%% \end{utonly}
+
+\begin{frame}{Justification}
+  While the C API to MPI is usable from C++, it feels very unidiomatic
+  for that language.
+  \acf{MPL} is a modern C++11 interface to MPI.
+  It is both idiomatic and elegant, simplifying many calling sequences.
+\end{frame}
+
+\Level 0 {Basics}
+
+\begin{numberedframe}{Environment}
+  For doing the exercises:
+\begin{verbatim}
+module load mpl
+\end{verbatim}
+which defines \n{TACC_MPL_INC}, \n{TACC_MPL_DIR}
+\end{numberedframe}
+
+\begin{numberedframe}{Header file}
+  \input{mplnote-header-file.cut}
+\end{numberedframe}
+\begin{numberedframe}{Init, finalize}
+  \input{mplnote-init,-finalize.cut}
+\end{numberedframe}
+\begin{numberedframe}{World communicator}
+  \input{mplnote-world-communicator.cut}
+\end{numberedframe}
+\begin{numberedframe}{Processor name}
+  \input{mplnote-processor-name.cut}
+\end{numberedframe}
+\begin{numberedframe}{Rank and size}
+  \input{mplnote-rank-and-size.cut}
+\end{numberedframe}
+\referenceframe{Comm_size}
+\referenceframe{Comm_rank}
+
+\begin{numberedframe}{Timing}
+  \input{mplnote-timing.cut}
+\end{numberedframe}
+\begin{numberedframe}{Predefined communicators}
+  \input{mplnote-predefined-communicators.cut}
+\end{numberedframe}
+\begin{numberedframe}{Communicator copying}
+  \input{mplnote-communicator-copying.cut}
+\end{numberedframe}
+\begin{numberedframe}{Communicator duplication}
+  \input{mplnote-communicator-duplication.cut}
+\end{numberedframe}
+\begin{numberedframe}{Communicator passing}
+  \input{mplnote-communicator-passing.cut}
+\end{numberedframe}
+
+\Level 0 {Collectives}
+
+\begin{frame}{Introduction}
+  Collectives have many polymorphic variants, for instance for `in place',
+  and buffer handling.
+
+  Operators are handled through functors.
+\end{frame}
+\begin{numberedframe}{Scalar buffers}
+  \input{mplnote-scalar-buffers.cut}
+\end{numberedframe}
+\begin{numberedframe}{Vector buffers}
+  \input{mplnote-vector-buffers.cut}
+\end{numberedframe}
+\begin{numberedframe}{Iterator buffers}
+  \input{mplnote-iterator-buffers.cut}
+\end{numberedframe}
+
+\begin{numberedframe}{Reduction operator}
+  % this is really a reduce slide
+  \input{mplnote-reduction-operator.cut}
+\end{numberedframe}
+\referenceframe{Allreduce}
+\referenceframe{Reduce}
+\begin{numberedframe}{Broadcast}
+  \input{mplnote-broadcast.cut}
+\end{numberedframe}
+\referenceframe{Bcast}
+\begin{numberedframe}{Gather scatter}
+  \input{mplnote-gather-scatter.cut}
+\end{numberedframe}
+\begin{numberedframe}{Reduce on non-root processes}
+  \input{mplnote-reduce-on-non-root.cut}
+\end{numberedframe}
+\begin{numberedframe}{Gather on non-root}
+  \input{mplnote-gather-on-nonroot.cut}
+\end{numberedframe}
+\referenceframe{Gather}
+\begin{numberedframe}{Reduce in place}
+  \footnotesize
+  \input{mplnote-reduce-in-place.cut}
+\end{numberedframe}
+%% \begin{numberedframe}{Rooted reduce}
+%%   \input{mplnote-rooted-reduce.cut}
+%% \end{numberedframe}
+\begin{numberedframe}{Layouts for gatherv}
+  \input{mplnote-layouts-for-gatherv.cut}
+\end{numberedframe}
+\begin{numberedframe}{Scan operations}
+  \input{mplnote-scan-operations.cut}
+\end{numberedframe}
+
+\begin{exerciseframe}[scangather]
+  \input ex:scanprint
+\end{exerciseframe}
+\begin{exerciseframe}[scangather]
+  \input ex:scangather
+\end{exerciseframe}
+
+\begin{numberedframe}{Operators}
+  \input{mplnote-operators.cut}
+\end{numberedframe}
+\begin{numberedframe}{User defined operators}
+  \input{mplnote-user-defined-operators.cut}
+\end{numberedframe}
+\begin{numberedframe}{Lambda reduction operators}
+  \input{mplnote-lambda-operator.cut}
+\end{numberedframe}
+\begin{numberedframe}{Nonblocking collectives}
+  \input{mplnote-nonblocking-collectives.cut}
+\end{numberedframe}
+
+\Level 0 {Point-to-point communication}
+
+\begin{numberedframe}{Blocking send and receive}
+  \input{mplnote-blocking-send-and-receive.cut}
+\end{numberedframe}
+\begin{numberedframe}{Sending arrays}
+  \input{mplnote-sending-arrays.cut}
+\end{numberedframe}
+\referenceframe{Send}
+\referenceframe{Recv}
+\begin{numberedframe}{Message tag}
+  \input{mplnote-message-tag.cut}
+\end{numberedframe}
+\begin{numberedframe}{Any source}
+  \input{mplnote-any-source.cut}
+\end{numberedframe}
+\begin{numberedframe}{Send-recv call}
+  \input{mplnote-send-recv-call.cut}
+\end{numberedframe}
+\begin{numberedframe}{Status object}
+  \input{mplnote-status-object.cut}
+\end{numberedframe}
+\begin{numberedframe}{Status source querying}
+  \input{mplnote-status-source-querying.cut}
+\end{numberedframe}
+\begin{numberedframe}{Receive count}
+  \input{mplnote-receive-count.cut}
+\end{numberedframe}
+
+\begin{numberedframe}{Requests from nonblocking calls}
+  \input{mplnote-requests-from-nonblocking-calls.cut}
+\end{numberedframe}
+\begin{numberedframe}{Request pools}
+  \input{mplnote-request-pools.cut}
+\end{numberedframe}
+\begin{numberedframe}{Wait any}
+  \input{mplnote-wait-any.cut}
+\end{numberedframe}
+\begin{exerciseframe}[setdiff]
+  \input ex:setdiff
+\end{exerciseframe}
+
+\begin{numberedframe}{Buffered send}
+  \input{mplnote-buffered-send.cut}
+\end{numberedframe}
+\begin{numberedframe}{Buffer attach and detach}
+  \input{mplnote-buffer-attach-and-detach.cut}
+\end{numberedframe}
+\begin{numberedframe}{Persistent requests}
+  \input{mplnote-persistent-requests.cut}
+\end{numberedframe}
+
+\Level 0 {Derived Datatypes}
+
+\begin{numberedframe}{Datatypes}
+  \input{mplnote-data-types.cut}
+\end{numberedframe}
+\begin{numberedframe}{Other types}
+  \input{mplnote-other-types.cut}
+\end{numberedframe}
+\begin{numberedframe}{Derived type handling}
+  \input{mplnote-derived-type-handling.cut}
+\end{numberedframe}
+\begin{numberedframe}{Contiguous type}
+  \input{mplnote-contiguous-type.cut}
+\end{numberedframe}
+\begin{numberedframe}{Contiguous composing of types}
+  \input{mplnote-contiguous-composing.cut}
+\end{numberedframe}
+\begin{numberedframe}{Vector type}
+  \input{mplnote-vector-type.cut}
+\end{numberedframe}
+\begin{numberedframe}{Iterator buffers}
+  \input{mplnote-iterator-buffers.cut}
+\end{numberedframe}
+\begin{numberedframe}{Iterator layout}
+  \input{mplnote-iterator-layout.cut}
+\end{numberedframe}
+\begin{numberedframe}{Subarray layout}
+  \input{mplnote-subarray-layout.cut}
+\end{numberedframe}
+\begin{numberedframe}{Indexed type}
+  \input{mplnote-indexed-type.cut}
+\end{numberedframe}
+\begin{numberedframe}{Indexed block type}
+  \input{mplnote-indexed-block-type.cut}
+\end{numberedframe}
+\begin{numberedframe}{Struct type scalar}
+  \input{mplnote-struct-type-scalar.cut}
+\end{numberedframe}
+\begin{numberedframe}{Struct type general}
+  \input{mplnote-struct-type-general.cut}
+\end{numberedframe}
+\begin{numberedframe}{Extent resizing}
+  \input{mplnote-extent-resizing.cut}  
+\end{numberedframe}
+
+\Level 0 {Communicator manipulations}
+
+\begin{numberedframe}{Communicator errhandler}
+  \input{mplnote-communicator-errhandler.cut}
+\end{numberedframe}
+\begin{numberedframe}{Communicator splitting}
+  \input{mplnote-communicator-splitting.cut}
+\end{numberedframe}
+\begin{numberedframe}{Split by shared memory}
+  \input{mplnote-split-by-shared-memory.cut}
+\end{numberedframe}
+
+\Level 0 {Process topologies}
+
+%% \begin{numberedframe}{Distributed graph creation}
+%%   \input{mplnote-distributed-graph-creation.cut}
+%% \end{numberedframe}
+\begin{numberedframe}{Graph communicators}
+  \input{mplnote-graph-communicators.cut}
+\end{numberedframe}
+\begin{numberedframe}{Graph communicator querying}
+  \input{mplnote-graph-communicator-querying.cut}
+\end{numberedframe}
+
+\Level 0 {Other}
+
+\begin{numberedframe}{Timing}
+  \input{mplnote-timing.cut}
+\end{numberedframe}
+
+\begin{numberedframe}{Threading support}
+  \input{mplnote-threading-support.cut}
+\end{numberedframe}
+
+\begin{frame}{Missing from MPL}
+  MPL is not a full MPI implementation
+  \begin{itemize}
+  \item File I/O
+  \item One-sided communication
+  \item Shared memory
+  \item Process management
+  \end{itemize}
+\end{frame}
+
+\end{document}
+

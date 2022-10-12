@@ -1,0 +1,13 @@
+!! count.F90
+  if (procid==0) then
+     sendcount = N
+     call random_number(fraction)
+     if (fraction>.5) then
+        print *,"One less" ; sendcount = N-1
+     end if
+     call MPI_Send( buffer,sendcount,MPI_REAL,target,0,comm )
+  else if (procid==target) then
+    call MPI_Recv( buffer,N,MPI_REAL,0,0, comm, status )
+    call MPI_Get_count(status,MPI_FLOAT,recvcount)
+    print *,"Received",recvcount,"elements"
+ end if

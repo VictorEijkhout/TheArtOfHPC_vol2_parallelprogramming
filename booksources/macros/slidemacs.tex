@@ -1,0 +1,325 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newif\ifInBook
+\InBookfalse
+\excludecomment{fullsources}
+
+%%%%
+%%%% Outlining
+%%%%
+\usepackage{outliner}
+\OutlineLevelStart
+    0
+    {\part{#1}
+      \addcontentsline{toc}{part}{#1}
+      \frame{\partpage}
+    }
+%\OutlineLevelStart 1{\section{#1}}
+\OutlineLevelStart 1{\frame{\section{#1}\Large\bf#1}}
+\def\sectionframe#{\Level 1 }
+\def\subsectionframe#{\Level 2 }
+\setcounter{tocdepth}{2}
+\usepackage{framed}
+\colorlet{shadecolor}{blue!15}
+\OutlineLevelStart 2{\subsection{#1}
+  \frame{\begin{shaded}\large #1\end{shaded}}}
+%% \OutlineLevelCont 2{\end{frame}\begin{frame}{#1}}
+%% \OutlineLevelEnd 2{\end{frame}}
+%\OutlineTracetrue
+
+\newcommand\coursepart[1]{
+  %\addcontentsline{toc}{part}{Section: #1}
+  \begin{frame}{}
+    \setbox0=\hbox to \hsize{\hfil\Huge{#1}\hfil}
+    \dimen0=\vsize
+    \advance\dimen0 by -\ht0 \advance\dimen0 by -\dp0
+    \divide\dimen0 by 2
+    \hbox{}
+    \vskip \dimen0
+    \box0
+    \vskip \dimen0
+    \hbox{}
+  \end{frame}
+}
+
+
+%%
+%% stuff
+%%
+\newcommand\furtherreading{\Level 0 {Further Reading}\label{sec:furtherreading-\chapshortname}}
+\newcommand\heading[1]{\paragraph*{\textbf{#1}}}
+
+{\catcode`\^^I=13 \globaldefs=1
+ \newcommand\listing[2]{\begingroup\small\par\vspace{1ex}
+  \catcode`\^^I=13 \def^^I{\leavevmode\hspace{40pt}}
+  \noindent\fbox{#1}
+  \verbatiminput{#2}\endgroup}
+ \newcommand\codelisting[1]{\begingroup\small\par\vspace{1ex}
+  \catcode`\^^I=13 \def^^I{\leavevmode\hspace{40pt}}
+  \noindent\fbox{#1}
+  \verbatiminput{#1}\endgroup}
+}
+
+%%
+%% use beamer buttons for links to exercise slides
+%%
+\newcommand\exref[1]{%
+  % split at the colon and attach a colon to catch the label of the exercise
+  \exrefcolon#1:}
+\def\exrefcolon ex:#1:{%
+  % we use \label{ex:foo} and \frame[label=exfoo]
+  \hyperlink{#1}{\noexpand\beamergotobutton{ex#1}}%
+}
+\newcommand\skeleton[1]{}
+
+\newtheorem{remark}{Remark}
+\expandafter\ifx\csname definition\endcsname\relax
+    \newtheorem{definition}{Definition}
+\fi
+\expandafter\ifx\csname theorem\endcsname\relax
+    \newtheorem{theorem}{Theorem}
+\fi
+\expandafter\ifx\csname lemma\endcsname\relax
+    \newtheorem{lemma}{Lemma}
+\fi
+
+%%%%
+%%%% Verbatim source handling
+%%%%
+
+% each chapter has a list of sources
+\newtoks\chaptersourcelist
+\newcommand\addchaptersource[1]{
+  \edef\temp{\global\chaptersourcelist={\the\chaptersourcelist #1}}\temp
+}
+\newcommand\listchaptersources{
+  \expandafter\ChapterSourceHeader\the\chaptersourcelist\LSR
+  %\tracingmacros=2 \tracingonline=1
+  %\texttt{\the\chaptersourcelist}\par
+  \expandafter\ListSourcesRecursively\the\chaptersourcelist\LSR
+}
+\def\LSR{\LSR}
+\def\ChapterSourceHeader#1\LSR{
+  \def\test{#1\LSR}
+  \ifx\test\LSR
+  \else
+    \Level 0 {Sources used in this chapter}
+  \fi
+}
+\def\ListSourcesRecursively#1{
+  \def\test{#1}
+  \ifx\test\LSR
+  \else
+    % list the file
+    \textbf{Listing of code #1}:
+    {\footnotesize \verbatiminput{#1}}
+    \par
+    % continue
+    \expandafter\ListSourcesRecursively
+  \fi
+}
+
+%%%%
+%%%% snippets
+%%%%
+\begin{comment}
+\def\verbatimsnippet#1{\verbatiminput{#1}} % snippets/
+\newcommand{\cverbatimsnippet}[2][XX]{
+  % record this file as bracketed name
+  \addchaptersource{{#1}}
+  % typeset as nice C code
+  \lstset{style=reviewcode,language=C}\lstinputlisting{#2}}
+\newcommand{\csnippetwithoutput}[3]{
+  \begin{multicols}{2}
+    \lstset{style=reviewcode,language=C}\lstinputlisting{#1}
+    \vfill\hbox{}\columnbreak
+    \footnotesize
+    \verbatiminput{#2/#3.runout}
+    \vfill\hbox{}\columnbreak
+  \end{multicols}
+  }
+\newcommand{\cxxverbatimsnippet}[2][XX]{
+  % record this file as bracketed name
+  \addchaptersource{{#1}}
+  % typeset as nice C code
+  \lstset{style=reviewcode,language=C++}\lstinputlisting{#2}}
+\def\fverbatimsnippet#1{
+  \lstset{style=reviewcode,language=Fortran}\lstinputlisting{#1}
+  \lstset{style=reviewcode,language=C}
+}
+\def\pverbatimsnippet#1{
+  \lstset{style=reviewcode,language=Python}\lstinputlisting{#1}
+  \lstset{style=reviewcode,language=C}
+}
+\newenvironment{clisting}
+    {\lstset{style=reviewcode,language=C}\begin{lstlisting}}
+    {\end{lstlisting}
+}
+\newenvironment{cxxlisting}
+    {\lstset{style=reviewcode,language=C++}\begin{lstlisting}}
+    {\end{lstlisting}
+}
+\end{comment}
+
+%%%%
+%%%% Prototypes
+%%%%
+\def\underscore{_}
+\def\mpiRoutineRef#1{\RoutineRefStyle\verbatiminput{#1}}
+\def\RoutineRefStyle{\scriptsize}
+\newcommand\standardversion{}
+\newcommand\mpiparmtextsize{1.3in}
+\def\protoslide#{\bgroup \catcode`\_=12
+  \afterassignment\protoslideinclude \def\protoname}
+\def\protoslideinclude{%
+  \begin{frame}[containsverbatim]\frametitle{\texttt\protoname}
+      % mpi standard macros
+      \def\MPI/{MPI}\def\mpi/{MPI}\def\RMA/{RMA}
+      \def\mpifunc##1{\texttt{##1}}
+      \let\mpiarg\mpifunc \let\mpicode\mpifunc
+      \let\const\mpifunc  \let\constskip\mpifunc
+    \tiny
+    \edef\tmp{\lowercase{\def\noexpand\standardroutine{\protoname}}}\tmp
+    \IfFileExists
+        {standard/\standardroutine\standardversion.tex}
+        {\input{standard/\standardroutine\standardversion}}
+        {% if no standard file, then maybe handwritten file
+          \IfFileExists
+              {mpireference/\protoname.tex}
+              {\verbatiminput{mpireference/\protoname}}{}}
+        %\expandafter\mpiRoutineRef\expandafter{\protoname}
+  \end{frame}\egroup
+}
+    
+    
+\usepackage{acronym}
+\newwrite\acrowrite
+\openout\acrowrite=acronyms.tex
+\def\acroitem#1#2{\acrodef{#1}{#2}
+    \write\acrowrite{\message{defining #1}\noexpand\acitem{#1}{#2}}
+}
+\acroitem{AVX}{Advanced Vector Extensions}
+\acroitem{BSP}{Bulk Synchronous Parallel}
+\acroitem{CAF}{Co-array Fortran}
+\acroitem{CUDA}{Compute-Unified Device Architecture}
+\acroitem{DAG}{Directed Acyclic Graph}
+\acroitem{DSP}{Digital Signal Processing}
+\acroitem{FPU}{Floating Point Unit}
+\acroitem{FFT}{Fast Fourier Transform}
+\acroitem{FSA}{Finite State Automaton}
+\acroitem{GPU}{Graphics Processing Unit}
+\acroitem{HPC}{High-Performance Computing}
+\acroitem{HPF}{High Performance Fortran}
+\acroitem{ICV}{Internal Control Variable}
+\acroitem{MIC}{Many Integrated Cores}
+\acroitem{MPMD}{Multiple Program Multiple Data}
+\acroitem{MIMD}{Multiple Instruction Multiple Data}
+\acroitem{MPI}{Message Passing Interface}
+\acroitem{MTA}{Multi-Threaded Architecture}
+\acroitem{NUMA}{Non-Uniform Memory Access}
+\acroitem{OS}{Operating System}
+\acroitem{PGAS}{Partitioned Global Address Space}
+\acroitem{PDE}{Partial Diffential Equation}
+\acroitem{PRAM}{Parallel Random Access Machine}
+\acroitem{RDMA}{Remote Direct Memory Access}
+\acroitem{RMA}{Remote Memory Access}
+\acroitem{SAN}{Storage Area Network}
+\acroitem{SaaS}{Software as-a Service}
+\acroitem{SFC}{Space-Filling Curve}
+\acroitem{SIMD}{Single Instruction Multiple Data}
+\acroitem{SIMT}{Single Instruction Multiple Thread}
+\acroitem{SM}{Streaming Multiprocessor}
+\acroitem{SMP}{Symmetric Multi Processing}
+\acroitem{SOR}{Successive Over-Relaxation}
+\acroitem{SP}{Streaming Processor}
+\acroitem{SPMD}{Single Program Multiple Data}
+\acroitem{SPD}{symmetric positive definite}
+\acroitem{SSE}{SIMD Streaming Extensions}
+\acroitem{TLB}{Translation Look-aside Buffer}
+\acroitem{UMA}{Uniform Memory Access}
+\acroitem{UPC}{Unified Parallel C}
+\acroitem{WAN}{Wide Area Network}
+\acresetall
+\closeout\acrowrite
+
+
+\def\chaptertitle{\csname\chaptername title\endcsname}
+\def\chaptershorttitle{\csname\chaptername shorttitle\endcsname}
+
+%%%%
+%%%% index macros without index
+%%%%
+
+\newif\ifShowRoutine
+\def\indexmpishow#{\bgroup \InnocentChars
+  \ShowRoutinetrue
+  \afterassignment\mpitoindex\edef\indexedmpi}
+\def\mpitoindex{%\tracingmacros=2
+  \edef\tmp{%
+    \noexpand\ifShowRoutine
+        \noexpand\lstinline+\indexedmpi+\noexpand\nobreak
+    \noexpand\fi
+  }%
+  \tmp
+  \egroup\nobreak
+}
+\let\indexmpiref\indexmpishow
+\let\indexmpidef\indexmpishow
+\let\indexmpidepr\indexmpishow
+\let\indexmpldef\indexmpishow
+\let\indexmplref\indexmpishow
+\let\indexmplshow\indexmpishow
+\let\indexompshow\indexmpishow
+\let\indexpetscshow\indexmpishow
+\let\indexpragma\indexmpishow
+
+\newenvironment
+    {mplimpl}
+    {\begin{quotation}\textsl{MPL implementation note:}\ }
+    {\end{quotation}}
+
+\newcommand\petscroutineslide[1]{
+  \begin{frame}[containsverbatim]{#1}
+    \footnotesize
+    \verbatiminput{#1.tex}
+  \end{frame}
+}
+
+%%%%
+%%%% Environments
+%%%%
+\newcounter{slidecount}
+\setcounter{slidecount}{1}
+\newenvironment
+    {numberedframe}[1]
+    {\begin{frame}[containsverbatim]{\arabic{slidecount}.\ #1}
+        \refstepcounter{slidecount}
+    }
+    {\end{frame}}
+\newenvironment{question}{\begin{quotation}\textbf{Question.\ }}{\end{quotation}}
+\newenvironment{fortrannote}
+  {\begin{quotation}\noindent\textsl{Fortran note.\kern1em}\ignorespaces}
+  {\end{quotation}}
+\newenvironment{pythonnote}
+  {\begin{quotation}\noindent\textsl{Python note.\kern1em}\ignorespaces}
+  {\end{quotation}}
+\newenvironment{taccnote}
+  {\begin{quotation}\noindent\textsl{TACC note.\kern1em}\ignorespaces}
+  {\end{quotation}}
+\newenvironment{mpifour}
+  {\begin{quotation}\textbf{MPI-4:\ }\ignorespaces}{\end{quotation}}
+

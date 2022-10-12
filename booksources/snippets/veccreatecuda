@@ -1,0 +1,6 @@
+// kspcu.c
+#ifdef PETSC_HAVE_CUDA
+  ierr = VecCreateMPICUDA(comm,localsize,PETSC_DECIDE,&Rhs); 
+#else
+  ierr = VecCreateMPI(comm,localsize,PETSC_DECIDE,&Rhs); 
+#endif

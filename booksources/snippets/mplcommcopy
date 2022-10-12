@@ -1,0 +1,3 @@
+// commrank.cxx
+mpl::communicator comm_world =
+  mpl::environment::comm_world();

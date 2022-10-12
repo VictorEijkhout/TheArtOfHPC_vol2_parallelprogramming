@@ -1,0 +1,18 @@
+Synopsis
+MPI_Comm_create_errhandler( errhandler_fn, err_handler )
+Input argument:
+errhandler_fn
+
+Output argument:
+err_handler
+
+C:
+int MPI_Comm_create_errhandler
+   ( MPI_Comm_errhandler_function *errhandler_fn,
+     MPI_Errhandler *err_handler )
+typedef void MPI_Comm_errhandler_function(MPI_Comm *, int *, ...)
+
+Fortran:
+Subroutine MPI_Comm_errhandler_function(comm, error_code) BIND(C)
+TYPE(MPI_Comm) ::  comm
+INTEGER ::  error_code

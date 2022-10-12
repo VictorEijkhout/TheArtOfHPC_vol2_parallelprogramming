@@ -1,0 +1,3 @@
+// contiguous.cxx
+mpl::contiguous_layout<int> type1(7);
+mpl::vector_layout<int> type2(8,type1);

@@ -1,0 +1,38 @@
+// locktask.cxx
+class object {
+private:
+  omp_lock_t the_lock;
+  int _value{0};
+public:
+  object() {
+    omp_init_lock(&the_lock);
+  };
+  ~object() {
+    omp_destroy_lock(&the_lock);
+  };
+  void inc(int i) {
+// let's waste a little time,
+// otherwise the threads finish before they start
+    float s = i;
+    for (int i=0; i<1000; i++)
+      s += sin(i)*sin(i);
+
+// atomic increment
+    omp_set_lock(&the_lock);
+    _value += (s>0);
+    omp_unset_lock(&the_lock);
+  };
+  auto value() { return _value; };
+};
+//answersnippet ompatomicclass
+
+#define NTHREADS 50
+#define NOPS 100
+
+int main() {
+
+  /*
+   * Create a bunch of tasks that
+   * each do a bunch of updates
+   */
+//answersnippet ompatomicinc

@@ -1,0 +1,17 @@
+C:
+int MPI_Compare_and_swap
+   (const void *origin_addr, const void *compare_addr,
+    void *result_addr, MPI_Datatype datatype, 
+    int target_rank, MPI_Aint target_disp, 
+    MPI_Win win)
+
+Input Parameters
+
+origin_addr : initial address of buffer (choice)
+compare_addr : initial address of compare buffer (choice)
+result_addr : initial address of result buffer (choice)
+datatype : datatype of the entry in origin, result, and target buffers (handle)
+target_rank : rank of target (nonnegative integer)
+target_disp : displacement from start of window to beginning
+    of target buffer (non-negative integer)
+win : window object (handle)

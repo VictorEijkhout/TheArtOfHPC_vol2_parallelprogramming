@@ -1,0 +1,182 @@
+# -*- makefile -*-
+################################################################
+####
+#### This makefile is part of `Parallel Programming in MPI and OpenMP'
+#### Victor Eijkhout
+#### eijkhout@tacc.utexas.edu
+####
+#### copyright Victor Eijkhout 2012-2021
+####
+#### Make include file with general compile rules
+####
+################################################################
+
+MAKEFLAGS += --no-builtin-rules
+
+info ::
+	@echo "    [ OPTLEVEL=0/1/2, default:${OPTLEVEL} ]"
+OPTLEVEL = 2
+
+info ::
+	@echo "    [ EXTRA_OPTIONS=... ]"
+
+EXT_c = c
+EXT_C = c
+EXT_F = F90
+EXT_f = F90
+EXT_cxx = cxx
+EXT_mpl = cxx
+EXT = ${EXT_${LANGUAGE}}
+
+CFLAGS =
+CXXFLAGS =
+FFLAGS =
+
+C_STD_FLAGS = -std=c99
+CPPSTANDARD = 11
+CXX_STD_FLAGS = -std=c++${CPPSTANDARD}
+
+CFLAGS   += ${C_STD_FLAGS}
+CXXFLAGS += ${CXX_STD_FLAGS}
+
+ifdef PETSC_DIR
+  CFLAGS += ${PETSC_CC_INCLUDES} 
+  CXXFLAGS += ${PETSC_CXX_INCLUDES} 
+  FFLAGS += ${PETSC_FC_INCLUDES} 
+endif
+
+OPTFLAGS = -O${OPTLEVEL} -g
+
+ifdef TACC_TAU_DIR
+  C_COMPILER = tau_cc.sh -tau_options=-optCompInst
+  CXX_COMPILER = tau_cxx.sh
+  F_COMPILER = tau_f90.sh
+  MPI_C_COMPILER = tau_cc.sh -tau_options=-optCompInst
+  MPI_CXX_COMPILER = tau_cxx.sh
+  MPI_F_COMPILER = tau_f90.sh
+else
+
+ifdef PETSC_DIR
+  ##
+  ## annoyingly, there is only an mpicc/mpicxx/mpif90 script
+  ## in the petsc bin dir, if you have --download-mpich
+  ## this may have changed in 3.12.4
+  ##
+  C_COMPILER = mpicc
+  # ${PETSC_DIR}/${PETSC_ARCH}/bin/mpicc
+  CXX_COMPILER = mpicxx
+  #${PETSC_DIR}/${PETSC_ARCH}/bin/mpicxx
+  F_COMPILER = mpif90
+  #${PETSC_DIR}/${PETSC_ARCH}/bin/mpif90
+  MPI_C_COMPILER   = ${C_COMPILER}
+  MPI_CXX_COMPILER = ${CXX_COMPILER}
+  MPI_F_COMPILER   = ${F_COMPILER}
+
+else
+
+      MPI_C_COMPILER = mpicc
+      MPI_CXX_COMPILER = mpicxx
+      MPI_F_COMPILER = mpif90
+
+    ifeq "${MODE}" "mpi"
+      C_COMPILER   = ${MPI_C_COMPILER}
+      CXX_COMPILER = ${MPI_CXX_COMPILER}
+      F_COMPILER   = ${MPI_F_COMPILER}
+    else ifeq "${MODE}" "1api"
+      ifeq "${TACC_SYSTEM}" "frontera"
+        CXX_COMPILER = syclcc
+        CXXFLAGS += -I${TACC_BOOST_INC}
+        LINK_FLAGS += -L${TACC_BOOST_LIB}
+      else
+        CXX_COMPILER = dpcpp
+      endif
+    else # other modes use the regular compilers
+
+	ifeq "${TACC_FAMILY_COMPILER}" "intel"
+	  C_COMPILER   = icc
+	  CXX_COMPILER = icpc
+	  F_COMPILER   = ifort
+	else ifeq "${TACC_FAMILY_COMPILER}" "gcc"
+	  C_COMPILER   = gcc
+	  CXX_COMPILER = g++
+	  F_COMPILER   = gfortran
+	else ifeq "${TACC_FAMILY_COMPILER}" "clang"
+	  C_COMPILER   = clang
+	  CXX_COMPILER = clang++
+	  F_COMPILER   = gfortran
+	else ifeq "${TACC_FAMILY_COMPILER}" "devcloud"
+	  CXX_COMPILER = dpcpp
+	endif # end of non-mpi compiler setting
+
+    endif # end of mode choices
+
+endif # end of petsc section
+
+OMPFLAGS_intel    = -qopenmp 
+OMPFLAGS_gcc      = -ggdb -fopenmp
+OMPFLAGS_clang    = -fopenmp
+OMPFLAGS = ${OMPFLAGS_${TACC_FAMILY_COMPILER}}
+
+ifeq "${MODE}" "omp"
+  CFLAGS   += ${OMPFLAGS}
+  CXXFLAGS += ${OMPFLAGS}
+  FFLAGS   += ${OMPFLAGS}
+endif
+
+CFLAGS   += ${OPTFLAGS}
+CXXFLAGS += ${OPTFLAGS}
+FFLAGS   += ${OPTFLAGS}
+
+endif # end of TAU choices
+
+# we need extra options with all compilers
+CFLAGS   += ${EXTRA_OPTIONS}
+CXXFLAGS += ${EXTRA_OPTIONS}
+FFLAGS   += ${EXTRA_OPTIONS}
+
+%.o : %.c
+	${C_COMPILER}   -c $< ${CFLAGS}
+%.o : %.cxx
+	${CXX_COMPILER} -c $< ${CXXFLAGS}
+%.o : %.f
+	${F_COMPILER}   -c $< ${FFLAGS}
+%.o : %.F90
+	${F_COMPILER}   -c $< ${FFLAGS}
+
+ifeq "${MODE}" "mpi"
+C_LINKER   = ${MPI_C_COMPILER}
+CXX_LINKER = ${MPI_CXX_COMPILER}
+F_LINKER   = ${MPI_F_COMPILER}
+else
+C_LINKER   = ${C_COMPILER}
+CXX_LINKER = ${CXX_COMPILER}
+F_LINKER   = ${F_COMPILER}
+endif
+LINKER = ${${LANGUAGE}_LINKER}
+
+ifeq "${MODE}" "mpi"
+LINK_FLAGS += ${PETSC_LIB}
+endif
+ifeq "${MODE}" "omp"
+LINK_FLAGS += ${OMPFLAGS}
+endif
+
+.SECONDEXPANSION:
+${APPS} ${EXERCISES} ${WRONGS} : $$@.o
+	${LINKER} -o $@ $^ ${LINK_FLAGS} ${EXTRA_LIBS}
+
+info ::
+	@if [ ! -z "${APPS}" ] ; then \
+	    echo "make listapps : list all apps in this directory" \
+	    && echo "make apps : compile all applications in this directory" \
+	    ; \
+	fi
+.PHONY: apps listapps
+apps :
+	@for a in ${APPS} ; do \
+	    echo "%%%%%%%%%%%%%%%%" && echo "Compile $${a}" \
+	    && make $${a} \
+	    ; \
+	done
+listapps :
+	@echo ${APPS}

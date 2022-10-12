@@ -1,0 +1,9 @@
+for (int ithread=0; ithread<NTHREADS; ithread++) {
+  threads.push_back
+    ( thread(
+	       [&my_object] () {
+		 for (int iop=0; iop<NOPS; iop++)
+		   my_object += iop; } ) );
+}
+for ( auto &t : threads )
+  t.join();

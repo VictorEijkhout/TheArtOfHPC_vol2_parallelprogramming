@@ -1,0 +1,156 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the lecture slides for
+%%%% `Parallel Computing'
+%%%% by Victor Eijkhout, copyright 2022
+%%%%
+%%%% Bigdata-slides.tex : slides about messages beyond 2G
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{numberedframe}{Overview}
+  This section discusses big messages.
+
+  Commands learned:
+  \begin{itemize}
+  \item \indexmpishow{MPI_Send_c}, \indexmpishow{MPI_Allreduce_c},
+    \indexmpishow{MPI_Get_count_c} (MPI-4)
+  \item \indexmpishow{MPI_Get_elements_x}, \indexmpishow{MPI_Type_get_extent_x},
+    \indexmpishow{MPI_Type_get_true_extent_x} (MPI-3)
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{The problem with large messages}
+  \begin{itemize}
+  \item There is no problem allocating large buffers:
+\begin{lstlisting}
+size_t bigsize = 1<<33;
+double *buffer =
+    (double*) malloc(bigsize*sizeof(double));
+\end{lstlisting}
+\item But you can not tell MPI how big the buffer is:
+\begin{lstlisting}
+MPI_Send(buffer,bigsize,MPI_DOUBLE,...) // WRONG
+\end{lstlisting}
+because the size argument has to be \lstinline{int}.
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{MPI 3 count type}
+  Count type since MPI 3\\
+  C:
+\begin{lstlisting}
+MPI_Count count;
+\end{lstlisting}
+Fortran:
+\lstset{language=Fortran}
+\begin{lstlisting}
+Integer(kind=MPI_COUNT_KIND) :: count
+\end{lstlisting}
+\lstset{language=C}
+Big enough for
+\begin{itemize}
+\item
+  \lstinline{int};
+\item \indexmpishow{MPI_Aint}, used in one-sided;
+\item \indexmpishow{MPI_Offset}, used in file I/O.
+\end{itemize}
+However, this type could not be used in MPI-3 to describe send buffers.
+\end{numberedframe}
+
+\begin{numberedframe}{MPI 4 large count routines}
+C: routines with \lstinline+_c+ suffix
+\begin{lstlisting}
+MPI_Count count;
+MPI_Send_c( buff,count,MPI_INT, ... );
+\end{lstlisting}
+\lstset{language=Fortran}
+also \indexmpishow{MPI_Reduce_c}, \indexmpishow{MPI_Get_c},~\ldots
+(some 190 routines in all)
+
+Fortran: polymorphism rules
+\begin{lstlisting}
+Integer(kind=MPI_COUNT_KIND) :: count
+call MPI_Send( buff,count, MPI_INTEGER, ... )
+\end{lstlisting}
+\lstset{language=C}
+\end{numberedframe}
+
+\begin{numberedframe}{Big count example}
+  \cverbatimsnippet{bigpingpong}
+\end{numberedframe}
+
+\begin{numberedframe}{Same in F08}
+  \fverbatimsnippet{bigdataf}  
+\end{numberedframe}
+
+\protoslide{MPI_Send}
+
+\begin{numberedframe}{MPI 4 large count querying}
+C: 
+\begin{lstlisting}
+MPI_Count count;
+MPI_Get_count_c( &status,MPI_INT, &count );
+MPI_Get_elements_c( &status,MPI_INT, &count );
+\end{lstlisting}
+\lstset{language=Fortran}
+Fortran: 
+\begin{lstlisting}
+Integer(kind=MPI_COUNT_KIND) :: count
+call MPI_Get_count( status,MPI_INTEGER,count )
+call MPI_Get_elements( status,MPI_INTEGER,count )
+\end{lstlisting}
+\lstset{language=C}
+\end{numberedframe}
+
+\begin{numberedframe}{MPI 3 kludge: use semi-large types}
+  Make a derived datatype, and send a couple of those:
+  
+  \cverbatimsnippet{bigvectorptp}
+
+  You can even receive them:
+
+  \cverbatimsnippet{bigvectorrecv}
+\end{numberedframe}
+
+\begin{numberedframe}{Large int counting}
+  MPI-3 mechanism, deprecated (probably) in MPI-4.1: 
+
+  By composing types you can make a `big type'. Use\\
+  \indexmpishow{MPI_Type_get_extent_x},
+  \indexmpishow{MPI_Type_get_true_extent_x},
+   \lstinline{MPI_Get_elements_x}\\
+  to query.
+
+  \cverbatimsnippet{bigvectorq}
+\end{numberedframe}
+
+%\protoslide{MPI_Get_elements_x}
+
+\begin{comment}
+  \begin{numberedframe}{For your amusement}
+    What do you get if you print the following:
+    \cverbatimsnippet{compsizet}
+    ?
+  \end{numberedframe}
+\end{comment}
+
+\begin{comment}
+\begin{python}
+\begin{numberedframe}{Big data in python}
+  The \n{mpi4py} interface uses Python integers,\\
+  which are 8 bytes. So the \n{_x} routines are not needed.
+\end{numberedframe}
+\end{python}
+\end{comment}
+
+\endinput
+
+\begin{numberedframe}{}
+\begin{lstlisting}
+\end{lstlisting}
+\end{numberedframe}
+

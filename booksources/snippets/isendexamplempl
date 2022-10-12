@@ -1,0 +1,5 @@
+// isendandirecv.cxx
+double send_data = 1.;
+mpl::irequest send_request
+  ( comm_world.isend( send_data, receiver ) );
+send_request.wait();

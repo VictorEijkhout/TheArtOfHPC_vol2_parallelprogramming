@@ -1,0 +1,519 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% parcompbook.tex : master file for the book
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt,letterpaper,twoside,openany]{boek3}
+%\documentclass{book}
+
+\usepackage{verbatim}
+
+\usepackage{comment}
+\specialcomment{tacc}{\def\CommentCutFile{tacc.cut}}{}
+\newif\ifIncludeAnswers
+\IncludeAnswersfalse
+\input inex
+\includecomment{gpu}
+\includecomment{review}
+\includecomment{book}
+
+%% arbitrary numbers of output streams
+\usepackage{morewrites}
+
+% fancy text stuff
+\usepackage{fontspec}
+\setmainfont[
+  Extension=.otf,
+  UprightFont={*-Regular},
+  BoldFont={*-Bold},
+  ItalicFont={*-Italic},
+  BoldItalicFont={*-BoldItalic}
+]{LibertinusSerif}
+\usepackage{unicode-math}
+\setmathfont{LibertinusMath-Regular.otf}
+%%%%%%%%%%%%%%%%%%%
+\usepackage{dirtree} % ,times
+% table stuff
+\usepackage{booktabs,multicol,multirow}
+
+% AMS math
+%\usepackage[fleqn]{amsmath}
+%\usepackage{amssymb}
+
+% custom arrays and tables
+\usepackage{array} %,multirow,multicol}
+\newcolumntype{R}{>{\hbox to 1.2em\bgroup\hss}{r}<{\egroup}}
+\newcolumntype{T}{>{\hbox to 8em\bgroup}{c}<{\hss\egroup}}
+
+% algorithms
+\usepackage[algo2e,noline,noend]{algorithm2e}
+\newenvironment{displayalgorithm}
+ {\begin{algorithm2e}[H]\leftskip=\unitindent \DontPrintSemicolon
+  \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+ }
+ {\end{algorithm2e}}
+\newenvironment{displayprocedure}[2]
+ {\everymath{\strut}
+  \begin{procedure}[H]\leftskip=\unitindent\caption{#1(#2)}}
+ {\end{procedure}}
+
+\def\svnrev{428}
+% dashed lines; this may interfere with other table packages
+% \usepackage{arydshln}
+
+\edef\revision{\svnrev}
+\def\lulurevision{}
+
+%
+% page layout
+%
+\usepackage{geometry}
+\addtolength{\textwidth}{.5in}
+\addtolength{\textheight}{.5in}
+\addtolength{\evensidemargin}{-.5in}
+\renewcommand\topfraction{.95}
+\renewcommand\floatpagefraction{.75}
+\emergencystretch=1.5in
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}\fancyhead{}\fancyfoot{}
+% remove uppercase from fancy defs
+\makeatletter
+\def\chaptermark#1{\markboth {{\ifnum \c@secnumdepth>\m@ne
+ \thechapter. \ \fi #1}}{}}
+\def\sectionmark#1{\markright{{\ifnum \c@secnumdepth >\z@
+ \thesection. \ \fi #1}}}
+\makeatother
+% now the fancy specs
+%\fancyhead[LE]{\thepage \hskip.5\unitindent/\hskip.5\unitindent \leftmark}
+%\fancyhead[RO]{\rightmark \hskip.5\unitindent/\hskip.5\unitindent \thepage}
+\fancyhead[LE]{\leftmark}
+\fancyfoot[LE]{\thepage}
+\fancyhead[RO]{\rightmark}
+\fancyfoot[RO]{\thepage}
+\fancyfoot[RE]{\footnotesize\sl Parallel Computing -- r\revision}
+\begin{lulu}
+\fancyfoot[RE]{\footnotesize\sl Parallel Computing}
+\end{lulu}
+\fancyfoot[LO]{\footnotesize\sl Victor Eijkhout}
+\setlength{\headheight}{14pt}
+\addtolength{\topmargin}{-1.6pt}
+
+\begin{lulu}
+%% no source listing in the printed book
+\def\chaptersourcelisting#1{}
+\end{lulu}
+\begin{notlulu}
+%% source listing for online book online
+\def\chaptersourcelisting#1{\newpage\listchaptersources{#1}}
+\end{notlulu}
+
+\newwrite\nx
+\newcommand\CHAPTER[2]{
+  \Level 0 {#1}\label{ch:#2}
+  \def\chapshortname{#2}
+
+  % start scooping up example codes used in this chapter
+  \addchaptersource{header}%kludge because we have a bug for zero sources
+
+  % input the chapter
+  \SetBaseLevel 1 \input chapters/#2
+
+  % include the sources used in this chapter
+  \chaptersourcelisting{\chapshortname}
+
+  % write this chapter to a list of chapters
+  \write\chapterlist{\chapshortname}
+  \openout\nx=exercises/\chapshortname-nx.tex
+  \write\nx{\arabic{excounter}}
+  \closeout\nx
+
+  \SetBaseLevel 0
+}
+
+\includecomment{tutorials}
+\newcommand\TUTORIAL[2]{
+  \Level 0 {#1}\label{tut:#2}
+  \def\chapshortname{#2}
+  \setcounter{excounter}0\relax
+  \SetBaseLevel 1 \input tutorials/#2
+  \write\chapterlist{\chapshortname}
+  \openout\nx=exercises/\chapshortname-nx.tex
+  \write\nx{\arabic{excounter}}
+  \closeout\nx
+  \SetBaseLevel 0
+}
+\newif\ifprojects\projectsfalse
+\newcommand\PROJECT[2]{
+\ifprojects \vfill\pagebreak \else \projectstrue \fi
+\Level 0 {#1}\label{prj:#2}
+\def\chapshortname{#2}
+{\SetBaseLevel 1 \input projects/#2
+\write\chapterlist{\chapshortname}
+\openout\nx=exercises/\chapshortname-nx.tex
+\write\nx{\arabic{excounter}}
+\closeout\nx
+\SetBaseLevel 0
+}}
+\newcommand\APPENDIX[3]{
+  \vfill\pagebreak \Level 1 {#1}\label{app:#3}
+  \def\chapshortname{#3}
+  {\SetBaseLevel 2 {\index{#2|(}}
+   \setcounter{excounter}0
+   \input appendices/#3 {\index{#2|)}}
+   \write\chapterlist{\chapshortname}
+   \openout\nx=exercises/\chapshortname-nx.tex
+   \write\nx{\arabic{excounter}}
+   \closeout\nx
+   \SetBaseLevel 0
+}}
+\newcommand\APPENDIXac[3]{
+  \vfill\pagebreak \Level 1 {#1}\label{app:#3}
+  \def\chapshortname{#3}
+  {\SetBaseLevel 2 {\indexacstart{#2}}
+   \setcounter{excounter}0
+   \input appendices/#3 {\indexacend{#2}}
+   \write\chapterlist{\chapshortname}
+   \openout\nx=exercises/\chapshortname-nx.tex
+   \write\nx{\arabic{excounter}}
+   \closeout\nx
+   \SetBaseLevel 0
+}}
+
+\input commonmacs
+\input acromacs
+\input exmacs
+\input tutmacs
+
+\input idxmacs
+\makeindex
+\input listingmacs
+\input snippetmacs
+\input bookmacs
+
+\def\publicdraft{{\bf\normalsize \relax Public draft - open for comments}}
+\def\revdate{3rd edition 2022, formatted \today\\
+  \small
+  Book and slides download: \url{https://tinyurl.com/vle335course}\\
+  Public repository: \url{https://bitbucket.org/VictorEijkhout/parallel-programming-public/}\\
+  HTML version: \url{https://theartofhpc.com/pcse/}\\ [20pt]
+  This book is published under the CC-BY 4.0 license.
+}
+\begin{lulu}
+\def\publicdraft{}
+\def\revdate{3rd edition 2022}
+\end{lulu}
+
+\newwrite\chapterlist \openout\chapterlist=chapternames.tex
+
+\begin{document}
+
+\author{Victor Eijkhout}
+\title{Parallel Programming for Science and Engineering\\
+  \small The Art of HPC, volume 2}
+\expandafter\date\expandafter{\revdate}
+\maketitle
+
+\input introduction
+\vfill\pagebreak 
+
+{\setcounter{tocdepth}{1}
+\tableofcontents
+\setcounter{tocdepth}{2}
+}
+
+\acresetall
+\part{MPI}
+\addcontentsline{locpp}{cppnote}{MPI}
+\addcontentsline{loftn}{fortrannote}{MPI}
+\addcontentsline{lopy}{pythonnote}{MPI}
+
+\input chapters/mpi-competency
+\CHAPTER{Getting started with MPI}{mpi-started}
+\CHAPTER{MPI topic: Functional parallelism}{mpi-functional}
+\CHAPTER{MPI topic: Collectives}{mpi-collective}
+\CHAPTER{MPI topic: Point-to-point}{mpi-ptp}
+%\end{document}
+\CHAPTER{MPI topic: Communication modes}{mpi-persist}
+\CHAPTER{MPI topic: Data types}{mpi-data}
+\CHAPTER{MPI topic: Communicators}{mpi-comm}
+\CHAPTER{MPI topic: Process management}{mpi-proc}
+\CHAPTER{MPI topic: One-sided communication}{mpi-onesided}
+\CHAPTER{MPI topic: File I/O}{mpi-io}
+\CHAPTER{MPI topic: Topologies}{mpi-topo}
+\CHAPTER{MPI topic: Shared memory}{mpi-shared}
+\CHAPTER{MPI topic: Hybrid computing}{mpi-hybrid}
+\CHAPTER{MPI topic: Tools interface}{mpi-tools}
+\CHAPTER{MPI leftover topics}{mpi}
+\CHAPTER{MPI Examples}{mpi-examples}
+%\CHAPTER{MPI Review}{mpireview}
+
+\acresetall
+\part{OpenMP}
+\addcontentsline{locpp}{cppnote}{OpenMP}
+\addcontentsline{loftn}{fortrannote}{OpenMP}
+\addcontentsline{lopy}{pythonnote}{OpenMP}
+
+\input chapters/omp-competency
+\CHAPTER{Getting started with OpenMP}{omp-basics}
+\CHAPTER{OpenMP topic: Parallel regions}{omp-parallel}
+\CHAPTER{OpenMP topic: Loop parallelism}{omp-loop}
+\CHAPTER{OpenMP topic: Reductions}{omp-reduction}
+\CHAPTER{OpenMP topic: Work sharing}{omp-share}
+\CHAPTER{OpenMP topic: Controlling thread data}{omp-data}
+\CHAPTER{OpenMP topic: Synchronization}{omp-sync}
+\CHAPTER{OpenMP topic: Tasks}{omp-task}
+\CHAPTER{OpenMP topic: Affinity}{omp-affinity}
+\CHAPTER{OpenMP topic: Memory model}{omp-memory}
+\CHAPTER{OpenMP topic: SIMD processing}{omp-simd}
+\CHAPTER{OpenMP topic: Offloading}{omp-gpu}
+
+\CHAPTER{OpenMP remaining topics}{openmp}
+%%\CHAPTER{OpenMP Reference}{ompref}
+\CHAPTER{OpenMP Review}{ompreview}
+\CHAPTER{OpenMP Examples}{omp-examples}
+
+\part{PETSc}
+\label{part:petsc}
+\addcontentsline{locpp}{cppnote}{PETSc}
+\addcontentsline{loftn}{fortrannote}{PETSc}
+\addcontentsline{lopy}{pythonnote}{PETSc}
+
+\CHAPTER{PETSc basics}{petsc-design}
+\CHAPTER{PETSc objects}{petsc-objects}
+\CHAPTER{Grid support}{petsc-dmda}
+\CHAPTER{Finite Elements support}{petsc-fem}
+\CHAPTER{PETSc solvers}{petsc-solver}
+\CHAPTER{PETSC nonlinear solvers}{petsc-nonlinear}
+\CHAPTER{PETSc GPU support}{petsc-gpu}
+\CHAPTER{PETSc tools}{petsc-tools}
+\CHAPTER{PETSc topics}{petsc}
+
+\part{Other programming models}
+\addcontentsline{loftn}{fortrannote}{Other}
+\addcontentsline{lopy}{fortrannote}{Other}
+
+\lstset{language=Fortran}
+\CHAPTER{Co-array Fortran}{caf}
+\lstset{language=C++}
+\CHAPTER{Kokkos}{kokkos}
+\CHAPTER{Sycl, OneAPI, DPC++}{dpcpp}
+\CHAPTER{Python multiprocessing}{multiprocessing}
+
+\part{The Rest}
+
+%\CHAPTER{Ruminations on parallelism}{patterns}
+\CHAPTER{Exploring computer architecture}{architecture}
+%% merged into next \CHAPTER{Process and thread affinity}{affinity}
+\CHAPTER{Hybrid computing}{hybrid}
+\CHAPTER{Parallel I/O}{io}
+\CHAPTER{Support libraries}{libraries}
+
+%% \vfill\pagebreak
+%% \appendix
+%% \makeatletter
+%% \renewcommand\exercisenumber{\Alph{chapter}.\arabic{section}.\arabic{excounter}}
+%% \makeatother
+%% \setcounter{tocdepth}{1}
+%% \addcontentsline{toc}{toc}{Appendices}
+
+%\Level 0 {Theoretical background}
+
+%\input appendices/blurb
+
+%\APPENDIX{Linear algebra}{linear algebra}{norms}
+
+\part{Tutorials}
+\label{app:practical}
+\addcontentsline{loftn}{fortrannote}{Tutorials}
+\addcontentsline{lopy}{fortrannote}{Tutorials}
+
+\input tutorials/blurb
+
+\TUTORIAL{Debugging}{debug} % VLE is this the same as gnudebug in scicompbook?
+\TUTORIAL{Tracing, timing, and profiling}{tracing}
+\TUTORIAL{SimGrid}{simgrid}
+\TUTORIAL{Batch systems}{slurm}
+\TUTORIAL{Parallel I/O}{io}
+
+\part{Class projects}
+
+\PROJECT{A Style Guide to Project Submissions}{projectstyle}
+\PROJECT{Warmup Exercises}{warmup}
+\PROJECT{Mandelbrot set}{mandelbrot}
+\PROJECT{Data parallel grids}{grid}
+\PROJECT{N-body problems}{nbody}
+
+%pyskipbegin
+\part{Didactics}
+
+\CHAPTER{Teaching guide}{mpi-course}
+\CHAPTER{Teaching from mental models}{mpi-mental}
+%pyskipend
+
+%\CHAPTER{Introduction to parallel programming}{conwaysection}
+
+
+\part {Bibliography, index, and list of acronyms}
+
+%% \Level 1 {Ascii table}
+%% \input ascii
+%% \vfill\pagebreak
+
+\Level 0 {Bibliography}
+
+\bibliography{vle}
+\bibliographystyle{plain}
+\vfill\pagebreak
+
+\Level 0 {List of acronyms}
+
+\def\acitem#1#2{\item[#1] #2}
+\def\acitemi#1#2#3{\item[#1]{#2}\index{#1|see{#3}}}
+
+\begin{multicols}{2}
+\begin{description}
+\input acronyms
+\end{description}
+\end{multicols}
+\vfill\pagebreak
+
+\Level 0 {General Index}
+
+\index{parallel!prefix|see{prefix}}
+
+%\begin{multicols*}{2}
+\printindex
+%\end{multicols*}
+
+\Level 0 {Lists of notes}
+
+\Level 1 {MPI-4 notes}
+
+\listofmpifournote
+
+\Level 1 {Fortran notes}
+
+\listoffortrannote
+
+\Level 1 {C++ notes}
+
+\listofcppnote
+
+\Level 1 {The MPL C++ interface}
+\label{sec:idx:mpl}
+
+\listofmplnote
+
+\Level 1 {Python notes}
+
+\listofpythonnote
+
+\Level 0 {Index of MPI commands and keywords}
+
+\begin{multicols*}{2}
+\printindex[mpi]
+\end{multicols*}
+
+\Level 1 {From the standard document}
+
+This is an automatically generated list of every
+function, type, and constant in the MPI standard document.
+Where these appear in this book, a page reference is given.
+
+\Level 2 {List of all functions}
+\input{standard/standard-functions}
+\Level 2 {List of all dtypes}
+%%%% empty list?
+%\input{standard/standard-dtypes}
+\Level 2 {List of all ctypes}
+\input{standard/standard-ctypes}
+\Level 2 {List of all ftypes}
+\input{standard/standard-ftypes}
+\Level 2 {List of all constants}
+\input{standard/standard-consts}
+\Level 2 {List of all callbacks}
+\input{standard/standard-callbacks}
+
+\Level 1 {MPI for Python}
+
+\Level 2 {Buffer specifications}
+
+{\small
+%\begin{multicols}{2}
+  \verbatiminput{standardp/bufspec.tex}
+  \verbatiminput{standardp/bufspecb.tex}
+  \verbatiminput{standardp/bufspecv.tex}
+  \verbatiminput{standardp/bufspecw.tex}
+%\end{multicols}
+}
+
+\Level 2 {Listing of python routines}
+
+\begin{multicols}{3}
+\small
+\pylist{Comm}
+\pylist{Cartcomm}
+\pylist{Distgraphcomm}
+\pylist{Graphcomm}
+\pylist{Intercomm}
+\pylist{Intracomm}
+\pylist{Topocomm}
+\pylist{Group}
+
+\pylist{Request}
+\pylist{Grequest}
+\pylist{Prequest}
+\pylist{Status}
+
+\pylist{Win}
+
+\pylist{Datatype}
+\pylist{File}
+\pylist{Info}
+\pylist{Op}
+
+\pylist{Errhandler}
+\pylist{Message}
+%\pylist{_InPlace}
+%\pylist{Exception}
+%\pylist{_Pickle}
+\end{multicols}
+
+\Level 0 {Index of OpenMP keywords}
+
+\begin{multicols*}{2}
+\printindex[omp]
+\end{multicols*}
+
+\Level 0 {Index of PETSc keywords}
+
+\begin{multicols*}{2}
+\printindex[petsc]
+\end{multicols*}
+
+\Level 0 {Index of KOKKOS keywords}
+
+\begin{multicols*}{2}
+\printindex[kokkos]
+\end{multicols*}
+
+\Level 0 {Index of SYCL keywords}
+
+\begin{multicols*}{2}
+\printindex[sycl]
+\end{multicols*}
+
+\hbox{}\vfill
+\includegraphics{isbnbarcode}
+
+\closeout\chapterlist
+\end{document}

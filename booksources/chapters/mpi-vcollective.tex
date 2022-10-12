@@ -1,0 +1,114 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%% mpi-bcastreduce.tex : about broadcast & reduce collectives
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Level 0 {Variable-size-input collectives}
+\label{sec:v-collective}
+
+In the gather and scatter call above each processor received or sent
+an identical number of items. In many cases this is appropriate, but
+sometimes each processor wants or contributes an individual number of
+items. 
+
+Let's take the gather calls as an example. Assume that each processor 
+does a local computation that produces a number of data elements,
+and this number is different for each processor (or at least not
+the same for all). In the regular \indexmpishow{MPI_Gather} call the root processor
+had a buffer of size~$nP$, where $n$~is the number of elements produced
+on each processor, and $P$~the number of processors. The contribution
+from processor~$p$ would go into locations $pn,\ldots,(p+1)n-1$.
+
+For the variable case, we first need to compute the total required
+buffer size. This can be done through a simple \indexmpishow{MPI_Reduce}
+with \indexmpishow{MPI_SUM} as reduction operator:
+the buffer size is $\sum_p n_p$ where $n_p$~is the number of elements
+on processor~$p$. But you can also postpone
+this calculation for a minute. 
+
+The next question is where the contributions of the processor will
+go into this buffer. For the contribution from processor~$p$
+that is $\sum_{q<p}n_p,\ldots\sum_{q\leq p}n_p-1$. To compute this,
+the root processor needs to have all the $n_p$ numbers, and it can collect
+them with an \indexmpishow{MPI_Gather} call.
+
+We now have all the ingredients.
+All the processors specify a send buffer just as with \indexmpishow{MPI_Gather}.
+However, the receive buffer specification on the root is more complicated. 
+It now consists of:
+\begin{verbatim}
+outbuffer, array-of-outcounts, array-of-displacements, outtype
+\end{verbatim}
+and you have just seen how to construct that information.
+
+For example, in an \indexmpiref{MPI_Gatherv} call each process has an individual
+number of items to contribute. To gather this, the root process needs
+to find these individual amounts with an \indexmpishow{MPI_Gather} call, and
+locally construct the offsets array. Note how the offsets array has
+size \n{ntids+1}: the final offset value is automatically the total
+size of all incoming data. See the example below.
+
+There are various calls where processors can have
+buffers of differing sizes.
+\begin{itemize}
+\item In \indexmpiref{MPI_Scatterv} the root process has a different
+  amount of data for each recipient.
+\item In \indexmpishow{MPI_Gatherv}, conversely, each process
+  contributes a different sized send buffer to the received result;
+  \indexmpiref{MPI_Allgatherv} does the same, but leaves its result
+  on all processes; \indexmpishow{MPI_Alltoallv} does a different
+  variable-sized gather on each process.
+\end{itemize}
+
+\Level 1 {Example of Gatherv}
+
+We use \indexmpishow{MPI_Gatherv} to do an irregular gather onto a root. We first need an
+\indexmpishow{MPI_Gather} to determine offsets.
+%
+\csnippetwithoutput{gatherv}{examples/mpi/c}{gatherv}
+%
+\pverbatimsnippet[examples/mpi/p/gatherv.py]{gathervp}
+
+%% \begin{mplnote}{Displacement handling in gatherv}
+%%   No specification of displacement is neded.
+%%   Instead, a \indexmpldef{layouts} object,
+%%   essentially a \lstinline+std::vector+ of \indexmplshow{layout}s,
+%%   is used.
+%%   %
+%%   \cxxverbatimsnippet{mpllayouts}
+%%   %
+%% \begin{lstlisting}
+%% comm_world.gatherv
+%%    ( root, sendbuffer, gatherbuffer,
+%%      receive_layout );
+%% \end{lstlisting}
+%% \end{mplnote}
+
+\Level 1 {Example of Allgatherv}
+
+Prior to the actual gatherv call, we need to construct the count and
+displacement arrays. The easiest way is to use a reduction.
+
+\cverbatimsnippet[examples/mpi/c/allgatherv.c]{allgathervc}
+
+In python the receive buffer has to contain the counts and
+displacements arrays.
+
+\pverbatimsnippet[examples/mpi/p/allgatherv.py]{bufallocp}
+
+\pverbatimsnippet[examples/mpi/p/allgatherv.py]{allgathervp}
+
+\Level 1 {Variable all-to-all}
+
+The variable all-to-all routine \indexmpishow{MPI_Alltoallv}
+is discussed in section~\ref{sec:alltoallv}.
+
+

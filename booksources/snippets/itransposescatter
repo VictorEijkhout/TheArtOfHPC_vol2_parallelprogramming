@@ -1,0 +1,7 @@
+MPI_Request scatter_requests[nprocs];
+for (int iproc=0; iproc<nprocs; iproc++) {
+  MPI_Iscatter( regular,1,MPI_DOUBLE,
+		  &(transpose[iproc]),1,MPI_DOUBLE,
+		  iproc,comm,scatter_requests+iproc);
+}
+MPI_Waitall(nprocs,scatter_requests,MPI_STATUSES_IGNORE);

@@ -1,0 +1,245 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% tau.tex : tutorial about tracing with TAU
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Level 0 {Tau}
+\label{sec:tau}
+
+\index{TAU|(}
+
+TAU~\url{http://www.cs.uoregon.edu/Research/tau/home.php} is a utility
+for profiling and tracing your parallel programs. Profiling is the
+gathering and displaying of bulk statistics, for instance showing you
+which routines take the most time, or whether communication takes a
+large portion of your runtime. When you get concerned about
+performance, a good profiling tool is indispensible.
+
+Tracing is the construction and displaying of time-dependent
+information on  your program run, for instance showing you if one
+process lags behind others. For understanding a program's behaviour,
+and the reasons behind profiling statistics, a tracing tool can be
+very insightful.
+
+\Level 1 {Instrumentation}
+
+Unlike such tools as \indexterm{VTune} which profile your binary as-is,
+TAU works by adding \indexterm{instrumentation} to your code: in
+effect it is a source-to-source translator that takes your code and
+turns it into one that generates run-time statistics.
+
+This instrumentation is largely done for you; you mostly need to recompile
+your code with a script that does the source-to-source translation,
+and subsequently compiles that instrumented code.
+You could for instance have the following in your makefile:
+\begin{verbatim}
+ifdef TACC_TAU_DIR
+  CC = tau_cc.sh
+else
+  CC = mpicc
+endif
+
+% : %.c
+<TAB>${CC} -o $@ $^
+\end{verbatim}
+If TAU is to be used (which we detect here by checking for the environment variable
+\indextermtt{TACC_TAU_DIR}), we define the \indextermtt{CC} variable as
+one of the TAU compilation scripts; otherwise we set it to a regular MPI compiler.
+
+\begin{fortrannote}{Cpp includes}
+  If your source contains 
+  \begin{lstlisting}
+    #include "something.h" 
+  \end{lstlisting}
+  directives, add the option
+\begin{verbatim}
+  -optPreProcess
+\end{verbatim}
+to the TAU compiler.
+\end{fortrannote}
+
+\begin{istc}
+To use \emph{TAU} on \emph{TACC}\index{TAU!on TACC resources} resources,
+do \n{module load tau}.
+\end{istc}
+
+\Level 1 {Running}
+
+You can now run your instrumented code;
+trace/profile output will be written to file 
+if environment variables \indextermtt{TAU_PROFILE} and/or \indextermtt{TAU_TRACE} are set:
+\begin{verbatim}
+export TAU_PROFILE=1
+export TAU_TRACE=1
+\end{verbatim}
+
+A TAU run can generate many files: typically at least one per process.
+It is therefore advisabe to create a directory for your tracing and profiling
+information. You declare them to TAU by setting the environment variables
+\indextermtt{PROFILEDIR} and \indextermtt{TRACEDIR}.
+\begin{verbatim}
+mkdir tau_trace
+mkdir tau_profile
+export PROFILEDIR=tau_profile
+export TRACEDIR=tau_trace
+\end{verbatim}
+
+The actual program invocation is then unchanged:
+\begin{verbatim}
+mpirun -np 26 myprogram
+\end{verbatim}
+
+\begin{taccnote}
+At TACC, use \indextermtt{ibrun} without a processor count;
+the count is derived from the queue submission parameters.
+\end{taccnote}
+
+While this example uses two separate directories, there is no
+harm in using the same for both.
+
+\Level 1 {Output}
+
+The tracing/profiling information is spread over many files, and hard to read as such.
+Therefore, you need some further programs to consolidate and display the information.
+
+You view profiling information with \indextermtt{paraprof}
+\begin{verbatim}
+paraprof tau_profile
+\end{verbatim}
+Viewing the traces takes a few steps:
+\begin{verbatim}
+cd tau_trace
+rm -f tau.trc tau.edf align.trc align.edf
+tau_treemerge.pl
+tau_timecorrect tau.trc tau.edf align.trc align.edf
+tau2slog2 align.trc align.edf -o yourprogram.slog2
+\end{verbatim}
+If you skip the \indextermtt{tau_timecorrect} step, you can generate the
+\n{slog2} file by:
+\begin{verbatim}
+tau2slog2 tau.trc tau.edf -o yourprogram.slog2
+\end{verbatim}
+
+The \n{slog2} file can be viewed with \indextermtt{jumpshot}:
+\begin{verbatim}
+jumpshot yourprogram.slog2
+\end{verbatim}
+
+\Level 1 {Without instrumentation}
+
+Event-based sampling on uninstrumented code:
+\begin{verbatim}
+tau_exec -ebs yourprogram
+\end{verbatim}
+The resulting \n{.trc} file can be viewed with \indextermtt{paraprof}.
+
+\Level 1 {Examples}
+
+\Level 2 {Bucket brigade}
+
+Let's consider a \indexterm{bucket brigade} implementation of a broadcast:
+each process sends its data to the next higher rank. 
+%
+\begin{lstlisting}
+int sendto =
+    ( procno<nprocs-1 ? procno+1 : MPI_PROC_NULL )
+    ;
+int recvfrom =
+    ( procno>0 ? procno-1 : MPI_PROC_NULL )
+    ;
+
+MPI_Recv( leftdata,1,MPI_DOUBLE,recvfrom,0,comm,MPI_STATUS_IGNORE);
+myvalue = leftdata
+MPI_Send( myvalue,1,MPI_DOUBLE,sendto,0,comm);
+\end{lstlisting}
+
+We implement the bucket brigade
+with blocking sends and receives: each process waits to receive from its
+predecessor, before sending to its successor.
+%
+\cverbatimsnippet{bucketblock}
+%
+\begin{figure}[ht]
+\includegraphics[scale=.4]{tau-bucketblock}
+\caption{Trace of a bucket brigade broadcast}
+\label{fig:tau-bucketblock}
+\end{figure}
+%
+The TAU trace of this is in figure~\ref{fig:tau-bucketblock},
+using 4~nodes of 4~ranks each.
+We see that the processes within each node are fairly well synchronized,
+but there is less synchronization between the nodes.
+However, the bucket brigade then imposes its own synchronization on the processes
+because each has to wait for its predecessor, no matter if it posted
+the receive operation early.
+
+Next, we introduce pipelining into this operation:
+each send is broken up into parts, and these parts are sent
+and received with non-blocking calls.
+%
+\cverbatimsnippet{bucketpiperecv}
+%
+\begin{figure}[ht]
+\includegraphics[scale=.4]{tau-bucketpipe}
+\caption{Trace of a pipelined bucket brigade broadcast}
+\label{fig:tau-bucketpipe}
+\end{figure}
+%
+The TAU trace is in figure~\ref{fig:tau-bucketpipe}.
+
+\Level 2 {Butterfly exchange}
+
+\begin{figure}[ht]
+\includegraphics[scale=.4]{butterfly8-legend}
+\caption{Trace of a butterfly exchange}
+\label{fig:tau-b8legend}
+\end{figure}
+
+\begin{figure}[ht]
+\includegraphics[scale=.4]{butterfly8-gaps}
+\caption{Trace of a butterfly exchange}
+\label{fig:tau-b8gaps}
+\end{figure}
+
+The NAS Parallel Benchmark suite~\cite{nas-website}
+contains a \ac{CG} implementation
+that spells out its all-reduce operations as a
+\indexterm{butterfly exchange}.
+
+\fverbatimsnippet{nascgbutterfly}
+
+\begin{figure}[p]
+  \includegraphics[scale=.3]{cgdelay0}
+  \vskip\baselineskip
+  \includegraphics[scale=.3]{cgdelay1}
+  \vskip\baselineskip
+  \includegraphics[scale=.3]{cgdelay2}
+  \caption{Four stages of processes waiting caused by a single lagging process}
+  \label{fig:cgdelay}
+\end{figure}
+
+\begin{figure}[p]
+  \includegraphics[scale=.3]{cgdelay3}
+  \vskip\baselineskip
+  \includegraphics[scale=.3]{cgdelay4}
+  \caption{Four stages of processes waiting caused by a single lagging process}
+  \label{fig:cgdelay2}
+\end{figure}
+
+We recognize this structure in the TAU trace: figure~\ref{fig:tau-b8legend}.
+Upon closer examination, we see how this particular algorithm
+induces a lot of wait time.
+Figures \ref{fig:cgdelay} and \ref{fig:cgdelay2} show a whole cascade of processes
+waiting for each other.
+%% ; figure~\ref{fig:tau-b8gaps}.
+%% First processes 0/1 wait for 2/3, then 0/1/2/3 wait for 4/5/6/7.
+
+\index{TAU|)}

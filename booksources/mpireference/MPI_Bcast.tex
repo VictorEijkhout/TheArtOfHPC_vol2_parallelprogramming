@@ -1,0 +1,23 @@
+C:
+int MPI_Bcast(
+    void* buffer, int count, MPI_Datatype datatype,
+    int root, MPI_Comm comm)
+
+Fortran:
+MPI_Bcast(buffer, count, datatype, root, comm, ierror)
+TYPE(*), DIMENSION(..) :: buffer
+INTEGER, INTENT(IN) :: count, root
+TYPE(MPI_Datatype), INTENT(IN) :: datatype
+TYPE(MPI_Comm), INTENT(IN) :: comm
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+
+Python native:
+rbuf = MPI.Comm.bcast(self, obj=None, int root=0)
+Python numpy:
+MPI.Comm.Bcast(self, buf, int root=0)
+
+MPL:
+template<typename T >
+void mpl::communicator::bcast
+   ( int  root, T &  data ) const
+   ( int  root, T *  data, const layout< T > &  l ) const

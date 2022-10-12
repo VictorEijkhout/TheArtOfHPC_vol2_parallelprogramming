@@ -1,0 +1,13 @@
+// typefloat.c
+#ifdef DOUBLE
+  MPI_Datatype buffertype = MPI_DOUBLE;
+  double send_buffer,recv_buffer; 
+#else
+  MPI_Datatype buffertype = MPI_FLOAT;
+  float send_buffer,recv_buffer; 
+#endif
+  send_buffer = 1.1;
+  if (procno==processA) {
+      MPI_Send(&send_buffer,1,buffertype,
+	       processB,0,
+	       comm);

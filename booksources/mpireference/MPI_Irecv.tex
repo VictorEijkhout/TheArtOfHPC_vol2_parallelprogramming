@@ -1,0 +1,36 @@
+C:
+int MPI_Irecv(
+  void* buf, int count, MPI_Datatype datatype,
+  int source, int tag, MPI_Comm comm, MPI_Request *request)
+
+Semantics:
+OUT buf: initial address of receive buffer (choice)
+IN count: number of elements in receive buffer (non-negative integer)
+IN datatype: datatype of each receive buffer element (handle)
+IN source: rank of source or MPI_ANY_SOURCE (integer)
+IN tag: message tag or MPI_ANY_TAG (integer)
+IN comm: communicator (handle)
+OUT request: request object (Request)
+
+Fortran:
+MPI_Irecv(buf, count, datatype, source, tag, comm, request, ierror)
+TYPE(*), DIMENSION(..) :: buf
+INTEGER, INTENT(IN) :: count, source, tag
+TYPE(MPI_Datatype), INTENT(IN) :: datatype
+TYPE(MPI_Comm), INTENT(IN) :: comm
+TYPE(MPI_Request), INTENT(out) :: request
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+
+Python native:
+recvbuf = Comm.irecv(self, buf=None, int source=ANY_SOURCE, int tag=ANY_TAG,
+    Request request=None)
+Python numpy:
+Comm.Irecv(self, buf, int source=ANY_SOURCE, int tag=ANY_TAG,
+    Request status=None)
+
+MPL:
+template<typename T >
+irequest mpl::communicator::irecv
+   ( const T & data, int src, tag t = tag(0) ) const;
+   ( const T * data, const layout< T > &  l, int  src, tag  t = tag(0) ) const;
+   ( iterT  begin, iterT  end, int  src, tag  t = tag(0) ) const;

@@ -1,0 +1,10 @@
+#include "petscmat.h"
+PetscErrorCode MatShellSetOperation
+   (Mat mat,MatOperation op,void (*g)(void))
+
+Logically Collective on Mat
+
+Input Parameters:
+mat- the shell matrix
+op- the name of the operation
+g- the function that provides the operation.

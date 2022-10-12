@@ -1,0 +1,5 @@
+MPI_Count buffersize = 1000;
+double *indata,*outdata;
+indata = (double*) malloc( buffersize*sizeof(double) );
+outdata = (double*) malloc( buffersize*sizeof(double) );
+MPI_Allreduce_c(indata,outdata,buffersize,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);

@@ -1,0 +1,10 @@
+## rowcol.py
+rowsize = 4; colsize = 5
+coltype = MPI.INT.Create_vector(4, 1, 5)
+coltype.Commit()
+columntosend = 2
+    comm.Send\
+        ( [np.frombuffer(matrix.data, intc,
+                         offset=columntosend*np.dtype('intc').itemsize),
+           1,coltype],
+          receiver)

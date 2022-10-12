@@ -1,0 +1,7 @@
+// mandel.h
+class circle {
+ public :
+  circle(int pxls,int bound,int bs);
+  void next_coordinate(struct coordinate& xy);
+  int is_valid_coordinate(struct coordinate xy);
+  void invalid_coordinate(struct coordinate& xy);

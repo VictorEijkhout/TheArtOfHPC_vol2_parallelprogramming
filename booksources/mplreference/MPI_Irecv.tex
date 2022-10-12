@@ -1,0 +1,5 @@
+template<typename T >
+irequest mpl::communicator::irecv
+   ( const T & data, int src, tag t = tag(0) ) const;
+   ( const T * data, const layout< T > &  l, int  src, tag  t = tag(0) ) const;
+   ( iterT  begin, iterT  end, int  src, tag  t = tag(0) ) const;

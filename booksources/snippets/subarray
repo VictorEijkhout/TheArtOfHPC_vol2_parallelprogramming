@@ -1,0 +1,15 @@
+// subarray.c
+MPI_Datatype subarraytype;
+if (procno==sender) {
+  MPI_Type_create_subarray
+    (2,sizes,subsizes,starts,MPI_ORDER_C,MPI_DOUBLE,&subarraytype);
+  MPI_Type_commit(&subarraytype);
+  MPI_Send(source,1,subarraytype,the_other,0,comm);
+} else if (procno==receiver) {
+  MPI_Status recv_status;
+  int recv_count;
+  MPI_Recv(target,count,MPI_DOUBLE,the_other,0,comm,
+    &recv_status);
+  MPI_Get_count(&recv_status,MPI_DOUBLE,&recv_count);
+  ASSERT(recv_count==count);
+}

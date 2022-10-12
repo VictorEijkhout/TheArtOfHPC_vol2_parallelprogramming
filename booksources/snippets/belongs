@@ -1,0 +1,13 @@
+int belongs(struct coordinate xy,int itbound) {
+  double x=xy.x, y=xy.y; int it;
+  for (it=0; it<itbound; it++) {
+    double xx,yy;
+    xx = x*x - y*y + xy.x;
+    yy = 2*x*y + xy.y;
+    x = xx; y = yy;
+    if (x*x+y*y>4.) {
+      return it;
+    }
+  }
+  return 0;
+}

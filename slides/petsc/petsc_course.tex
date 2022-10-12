@@ -1,0 +1,106 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This TeX file is part of the tutorial
+%%%% `Introduction to the PETSc library'
+%%%% by Victor Eijkhout, eijkhout@tacc.utexas.edu
+%%%%
+%%%% copyright Victor Eijkhout 2012-2020
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt]{beamer}
+
+\beamertemplatenavigationsymbolsempty
+\usepackage{beamerthemeTACC}
+\usetheme{Boadilla}
+\usecolortheme{seagull}
+%% left align frame title
+\setbeamertemplate{frametitle}{\insertframetitle} 
+
+\AtBeginSection[]
+{
+    \begin{frame}
+      \scriptsize
+        \frametitle{Table of Contents}
+        \tableofcontents[currentsection]
+    \end{frame}
+}
+
+%% \parskip=.5\baselineskip plus .5\baselineskip
+
+\event{PETSc Course 2022}
+\def\hpcteachers{Victor Eijkhout}
+
+\input commonmacs
+\input slidemacs
+\input listingmacs
+\input coursemacs
+\let\sectionframe\section
+
+\usepackage{graphicx,multicol,amsmath}
+
+%%%%
+%%%% In/exclude this that and the other
+%%%%
+% \usepackage{comment} already in coursemacs
+\excludecomment{higher}
+\excludecomment{xsede}
+
+% not for edit
+\excludecomment{details}
+\includecomment{shortversion}
+\excludecomment{shortversion}
+\includecomment{details}
+%
+
+\includecomment{compat} %% VLE what?!
+
+%%%%
+%%%% Layout stuff
+%%%%
+\usepackage{enumitem}
+\setlist{nosep,label=$\bullet$}
+\parskip=12pt plus 2pt
+
+%%%%
+%%%% language specific
+%%%%
+\input lang
+
+%%%%
+%%%% And here we go....
+%%%%
+\begin{document}
+
+\title{Introduction to the PETSc library}
+\author[Victor Eijkhout]{Victor Eijkhout\\
+\tt\normalsize eijkhout@tacc.utexas.edu}
+\date[2022/02/04]{TACC Training 2022/02/04}
+\frame{\titlepage}
+
+\begin{xsede}
+  \input xsede-conduct
+\end{xsede}
+
+%% \begin{frame}{Exercises}
+%%   \printindex[programming]
+%% \end{frame}
+
+\section{Introduction}
+\input introduction
+\input spmd
+\input starting
+\input vector
+\input matrix
+\input iterative
+\input grid
+\input is
+
+\input nonlinear
+\input higher
+
+\input profiling
+
+\end{document}
+

@@ -1,0 +1,27 @@
+int MPI_Dist_graph_create
+   (MPI_Comm comm_old, int n, const int sources[],
+    const int degrees[], const int destinations[], const int weights[],
+    MPI_Info info, int reorder,
+    MPI_Comm *comm_dist_graph)
+
+Input Parameters:
+comm_old : input communicator (handle)
+n : number of source nodes for which this process specifies edges (non-negative integer)
+sources : array containing the n source nodes for which this process specifies edges (array of non-negative integers)
+degrees : array specifying the number of destinations for each source node in the source node array (array of non-negative integers)
+destinations : destination nodes for the source nodes in the source
+node array (array of
+non-negative
+integers)
+weights : weights for source to destination edges (array of
+non-negative integers or MPI_UNWEIGHTED)
+info : hints on optimization and interpretation of weights (handle)
+reorder : the process may be reordered (true) or not (false) (logical)
+
+Output Parameters:
+comm_dist_graph : communicator with distributed graph topology added (handle)
+
+Python:
+MPI.Comm.Create_dist_graph
+    (self, sources, degrees, destinations, weights=None, Info info=INFO_NULL, bool reorder=False)
+returns graph communicator

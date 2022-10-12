@@ -1,0 +1,10 @@
+// gather.c
+// we assume that each process has a value "localsize"
+// the root process collects these values
+
+  if (procno==root)
+    localsizes = (int*) malloc( nprocs*sizeof(int) );
+
+// everyone contributes their info
+  MPI_Gather(&localsize,1,MPI_INT,
+             localsizes,1,MPI_INT,root,comm);

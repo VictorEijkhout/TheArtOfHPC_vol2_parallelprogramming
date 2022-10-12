@@ -1,0 +1,15 @@
+Synopsis
+
+#include "petscviewer.h" 
+PetscErrorCode  PetscViewerRead(PetscViewer viewer, void *data, PetscInt num, PetscInt *count, PetscDataType dtype)
+
+Collective
+
+Input Parameters
+	viewer 	- The viewer
+	data 	- Location to write the data
+	num 	- Number of items of data to read
+	datatype 	- Type of data to read
+
+Output Parameters
+count -number of items of data actually read, or NULL

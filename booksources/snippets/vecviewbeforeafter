@@ -1,0 +1,5 @@
+// fftsine.c
+ierr = VecView(signal,PETSC_VIEWER_STDOUT_WORLD); 
+ierr = MatMult(transform,signal,frequencies); 
+ierr = VecScale(frequencies,1./Nglobal); 
+ierr = VecView(frequencies,PETSC_VIEWER_STDOUT_WORLD); 

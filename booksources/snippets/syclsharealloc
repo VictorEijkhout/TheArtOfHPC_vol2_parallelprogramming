@@ -1,0 +1,9 @@
+// outshared.cxx
+floattype
+  *host_float = (floattype*)malloc_host( sizeof(floattype),ctx ),
+  *shar_float = (floattype*)malloc_shared( sizeof(floattype),dev,ctx );
+    cgh.single_task
+      ( [=] () {
+        shar_float[0] = 2 * host_float[0];
+        sout << "Device sets " << shar_float[0] << sycl::endl;
+      } );

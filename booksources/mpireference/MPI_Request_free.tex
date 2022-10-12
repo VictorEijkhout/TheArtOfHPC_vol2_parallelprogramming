@@ -1,0 +1,17 @@
+C:
+#include <mpi.h>
+int MPI_Request_free(MPI_Request *request)
+
+Fortran2008:
+USE mpi_f08
+MPI_Request_free(request, ierror)
+TYPE(MPI_Request), INTENT(INOUT) :: request
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+
+Fortran legacy:
+INCLUDE ’mpif.h’
+MPI_REQUEST_FREE(REQUEST, IERROR)
+INTEGER    REQUEST, IERROR
+
+Input/output parameter:
+request : Communication request (handle).

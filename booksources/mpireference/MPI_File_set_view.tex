@@ -1,0 +1,27 @@
+Semantics:
+MPI_FILE_SET_VIEW(fh, disp, etype, filetype, datarep, info)
+INOUT fh: file handle (handle)
+IN disp: displacement (integer)
+IN etype: elementary datatype (handle)
+IN filetype: filetype (handle)
+IN datarep: data representation (string)
+IN info: info object (handle)
+
+C:
+int MPI_File_set_view
+   (MPI_File fh,
+    MPI_Offset disp, MPI_Datatype etype, MPI_Datatype filetype,
+    char *datarep, MPI_Info info)
+
+Fortran:
+MPI_FILE_SET_VIEW(FH, DISP, ETYPE, FILETYPE, DATAREP, INFO, IERROR)
+INTEGER FH, ETYPE, FILETYPE, INFO, IERROR
+CHARACTER*(*) DATAREP
+INTEGER(KIND=MPI_OFFSET_KIND) DISP 
+
+Python:
+mpifile = MPI.File.Open( .... )
+mpifile.Set_view
+  (self,
+   Offset disp=0, Datatype etype=None, Datatype filetype=None,
+   datarep=None, Info info=INFO_NULL)

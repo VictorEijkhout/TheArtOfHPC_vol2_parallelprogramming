@@ -1,0 +1,124 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This TeX file is part of the tutorial
+%%%% `Introduction to the PETSc library'
+%%%% Victor Eijkhout, eijkhout@tacc.utexas.edu
+%%%% copyright Victor Eijkhout 2012-2022
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\sectionframe{Grid manipulation}
+
+\begin{numberedframe}{Regular grid: DMDA}
+DMDAs are for storing vector field, not matrix.
+
+Support for different stencil types:
+
+\includegraphics[scale=.07]{starbox}
+\end{numberedframe}
+
+\begin{numberedframe}{Ghost regions around processors}
+A DMDA defines a global vector, which contains the elements of the grid,
+and a local vector for each processor which
+has space for "ghost points".
+
+\includegraphics[scale=.6]{ghost}
+\end{numberedframe}
+
+\begin{numberedframe}{DMDA construction}
+\begin{lstlisting}
+DMDACreate2d(comm, bndx,bndy, type, M, N, m, n, 
+  dof, s, lm[], ln[], DMDA *da)
+\end{lstlisting}
+\footnotesize
+\n{bndx,bndy} boundary behaviour: none/ghost/periodic
+
+type: Specifies stencil\\
+\lstinline{DMDA_STENCIL_BOX} or \lstinline{DMDA_STENCIL_STAR}
+
+M/N: Number of grid points in x/y-direction\\
+m/n: Number of processes in x/y-direction\\
+dof: Degrees of freedom per node\\
+s: The stencil width (for instance, 1 for 2D five-point stencil)\\
+lm/n: array of local sizes (optional; 
+Use \lstinline{PETSC_NULL} for the default)
+\end{numberedframe}
+
+\begin{numberedframe}{Grid info}
+  Divide $100\times 100$ grid over 4 processes,\\
+  stencil width$=1$:
+
+  \def\codefontsize{\tiny}
+  \csnippetwithoutput{dm2dcreate}{examples/petsc/c}{dmcreate}
+\end{numberedframe}
+
+\begin{numberedframe}{Associated vectors}
+  \begin{itemize}
+  \item Global vector: based on grid partitioning.
+  \item Local vector: including halo regions
+  \end{itemize}
+  \cverbatimsnippet[examples/petsc/c/dmrhs.c]{dmghostvec}
+\end{numberedframe}
+
+\begin{numberedframe}{Grid info}
+\begin{lstlisting}
+typedef struct {
+  PetscInt     dim,dof,sw;
+  PetscInt     mx,my,mz;    /* grid points in x,y,z */
+  PetscInt     xs,ys,zs;    /* starting point, excluding ghosts */
+  PetscInt     xm,ym,zm;    /* grid points, excluding ghosts */
+  PetscInt     gxs,gys,gzs; /* starting point, including ghosts */
+  PetscInt     gxm,gym,gzm; /* grid points, including ghosts */
+  DMBoundaryType   bx,by,bz;    /* type of ghost nodes */
+  DMDAStencilType  st;
+  DM               da;
+} DMDALocalInfo;
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Range over local subdomain}
+\begin{lstlisting}
+for (int j=info.ys; j<info.ys+info.ym; j++) {
+  for (int i=info.xs; i<info.xs+info.xm; i++) {
+    // actions on point i,j
+  }
+}
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Arrays of vectors}
+  \cverbatimsnippet[examples/petsc/c/dmrhs.c]{dmghostvec}
+\end{numberedframe}
+
+\begin{numberedframe}{Operating on arrays}
+  \cverbatimsnippet[examples/petsc/c/dmrhs.c]{dmghostsweep}  
+\end{numberedframe}
+
+\begin{numberedframe}{Associated matrix}
+Matrix that has knowledge of the grid:
+\begin{lstlisting}
+DMSetUp(DM grid);
+DMCreateMatrix(DM grid,Mat *J)
+\end{lstlisting}
+Set matrix values based on stencil:
+\begin{lstlisting}
+MatSetValuesStencil(Mat mat,
+  PetscInt m,const MatStencil idxm[],
+  PetscInt n,const MatStencil idxn[],
+  const PetscScalar v[],InsertMode addv)
+\end{lstlisting}
+(ordering of row/col variables too complicated for \lstinline{MatSetValues})
+\end{numberedframe}
+
+\begin{numberedframe}{Set values by stencil}
+  \footnotesize
+  \cverbatimsnippet{grid2d5pt}
+\end{numberedframe}
+
+\begin{numberedframe}{DMPlex}
+  Support for unstructured grids and node/edge/cell relations.
+
+  This is complicated and under-documented.
+\end{numberedframe}
+

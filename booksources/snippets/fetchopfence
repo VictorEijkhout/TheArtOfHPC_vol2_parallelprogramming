@@ -1,0 +1,17 @@
+MPI_Win_fence(0,the_window);
+int 
+  counter_value;
+if (i_am_available) {
+  int
+    decrement = -1;
+  total_decrement++;
+  MPI_Fetch_and_op
+    ( /* operate with data from origin: */   &decrement,
+      /* retrieve data from target:     */   &counter_value,
+      MPI_INT, counter_process, 0, MPI_SUM,
+      the_window);
+}
+MPI_Win_fence(0,the_window);
+if (i_am_available) {
+  my_counter_values[n_my_counter_values++] = counter_value;
+}

@@ -1,0 +1,19 @@
+Semantics:
+MPI_TESTALL(count, array_of_requests, flag, array_of_statuses)
+IN countlists length (non-negative integer)
+INOUT array_of_requestsarray of requests (array of handles)
+OUT flag(logical)
+OUT array_of_statusesarray of status objects (array of Status)
+
+C:
+int MPI_Testall(
+    int count, MPI_Request array_of_requests[],
+    int *flag, MPI_Status array_of_statuses[])
+
+Fortran:
+MPI_Testall(count, array_of_requests, flag, array_of_statuses, ierror)
+INTEGER, INTENT(IN) :: count
+TYPE(MPI_Request), INTENT(INOUT) :: array_of_requests(count)
+LOGICAL, INTENT(OUT) :: flag
+TYPE(MPI_Status) :: array_of_statuses(*)
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror

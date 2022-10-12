@@ -1,0 +1,3 @@
+MPI_Datatype targetcolumn;
+MPI_Type_vector( blocksize_i,1,jsize, MPI_INT,&targetcolumn);
+MPI_Type_commit( &targetcolumn );

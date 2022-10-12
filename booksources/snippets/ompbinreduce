@@ -1,0 +1,12 @@
+string text{"the quick brown fox jumps over the lazy dog"};
+bincounter<char> charcount;
+#pragma omp declare reduction\
+(	\
+	+:bincounter<char>:omp_out += omp_in	\
+	) \
+initializer( omp_priv = bincounter<char>{} )
+#pragma omp parallel for reduction(+ : charcount)
+for ( int i=0; i<text.size(); i++ ) {
+  char c = text[i];
+  charcount.inc(c);
+}

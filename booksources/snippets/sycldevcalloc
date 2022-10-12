@@ -1,0 +1,7 @@
+// reductimpl.cxx
+floattype
+  *host_float = (floattype*)malloc( sizeof(floattype) ),
+  *devc_float = (floattype*)malloc_device( sizeof(floattype),dev,ctx );
+   [&](sycl::handler &cgh) {
+     cgh.memcpy(devc_float,host_float,sizeof(floattype));
+   }

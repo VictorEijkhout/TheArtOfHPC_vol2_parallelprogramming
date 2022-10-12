@@ -1,0 +1,340 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%% openmp.tex : topics that have not been rolled into their
+%%%%              own chapter yet.
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Level 0 {Runtime functions, environment variables, internal control variables}
+\label{ref:omp-environ}
+\index{OpenMP!environment variables|(textbf}
+\index{OpenMP!library routines|(textbf}
+\index{Internal Control Variable (ICV)|(textbf}
+
+OpenMP has a number of settings that can be set through \emph{environment variables},
+and both queried and set through \emph{library routines}. These settings are called
+\emph{\acfp{ICV}}: an OpenMP implementation behaves as if there is an internal variable
+storing this setting.
+
+The runtime functions are:
+\begin{itemize}
+\item Counting threads and cores: \indexompshow{omp_set_num_threads},
+  \indexompshow{omp_get_num_threads},
+  \indexompshow{omp_get_max_threads}, \indexompshow{omp_get_num_procs};
+  see section~\ref{sec:omp-howmany}.
+\item Querying the current thread: \indexompshow{omp_get_thread_num}, \indexompshow{omp_in_parallel}
+\item \indexompshow{omp_set_dynamic}
+\item \indexompshow{omp_get_dynamic}
+\item \indexompshow{omp_set_nested}
+\item \indexompshow{omp_get_nested}
+\item \indexompshow{omp_get_wtime}
+\item \indexompshow{omp_get_wtick}
+\item \indexompshow{omp_set_schedule}
+\item \indexompshow{omp_get_schedule}
+\item \indexompshow{omp_set_max_active_levels}
+\item \indexompshow{omp_get_max_active_levels}
+\item \indexompshow{omp_get_thread_limit}
+\item \indexompshow{omp_get_level}
+\item \indexompshow{omp_get_active_level}
+\item \indexompshow{omp_get_ancestor_thread_num}
+\item \indexompshow{omp_get_team_size}
+%\item \indexompdef{omp_}
+\end{itemize}
+
+Here are the OpenMP \emph{environment variables}:
+\begin{itemize}
+\item \indexompshow{OMP_CANCELLATION} Set whether cancellation is activated;
+  see section~\ref{sec:omp-cancel}.
+\item \indexompshow{OMP_DISPLAY_ENV} Show OpenMP version and environment variables
+\item \indexompdef{OMP_DEFAULT_DEVICE} Set the device used in target regions
+\item \indexompdef{OMP_DYNAMIC} Dynamic adjustment of threads
+\item \indexompshow{OMP_MAX_ACTIVE_LEVELS} Set the maximum number of nested parallel
+  regions; section~\ref{sec:omp-levels}.
+\item \indexompshow{OMP_MAX_TASK_PRIORITY} Set the maximum task priority value;
+  section~\ref{sec:omp-task-hint}.
+\item \indexompdef{OMP_NESTED} Nested parallel regions
+\item \indexompdef{OMP_NUM_THREADS} Specifies the number of threads to use
+\item \indexompshow{OMP_PROC_BIND} Whether theads may be moved between CPUs;
+  section~\ref{sec:omp-proc-bind}.
+\item \indexompshow{OMP_PLACES} Specifies on which CPUs the theads should be placed;
+  section~\ref{sec:omp-proc-bind}.
+\item \indexompdef{OMP_STACKSIZE} Set default thread stack size
+\item \indexompdef{OMP_SCHEDULE} How threads are scheduled
+\item \indexompshow{OMP_THREAD_LIMIT} Set the maximum number of threads;
+  see section~\ref{sec:omp-team}.
+\item \indexompdef{OMP_WAIT_POLICY} How waiting threads are
+  handled; \ac{ICV} \indexompdef{wait-policy-var}. Values:
+  \n{ACTIVE} for keeping threads spinning, \n{PASSIVE} for possibly
+  yielding the processor when threads are waiting.
+\end{itemize}
+
+There are 4 \acp{ICV} that behave as if each thread has its own copy of them.
+The default is implementation-defined unless otherwise noted.
+\begin{itemize}
+  \item It may be possible to adjust dynamically the number of threads
+    for a parallel region. Variable: \indexompshow{OMP_DYNAMIC};
+    routines: \indexompshow{omp_set_dynamic},
+    \indexompshow{omp_get_dynamic}.
+  \item If a code contains \indextermsub{nested}{parallel regions},
+    the inner regions may create new teams, or they may be executed by
+    the single thread that encounters them. Variable:
+    \indexompshow{OMP_NESTED}; routines \indexompshow{omp_set_nested},
+    \indexompshow{omp_get_nested}. Allowed values are \n{TRUE} and
+    \n{FALSE}; the default is false.
+  \item The number of threads used for an encountered parallel region
+    can be controlled. Variable: \indexompshow{OMP_NUM_THREADS};
+    routines \indexompshow{omp_set_num_threads},
+    \indexompshow{omp_get_max_threads}.
+  \item The schedule for a parallel loop can be set. Variable:
+    \indexompshow{OMP_SCHEDULE}; routines
+    \indexompshow{omp_set_schedule}, \indexompshow{omp_get_schedule}.
+\end{itemize}
+
+Nonobvious syntax:
+\begin{verbatim}
+export OMP_SCHEDULE="static,100"
+\end{verbatim}
+
+Other settings:
+\begin{itemize}
+\item\indexompshow{omp_get_num_threads}: query the number of threads
+  active at the current place in the code; this can be lower than what
+  was set with \indexompshow{omp_set_num_threads}. For a meaningful answer, this
+  should be done in a parallel region.
+\item\indexompshow{omp_get_thread_num}
+\item\indexompshow{omp_in_parallel}: test if you are in a parallel
+  region.
+\item\indexompshow{omp_get_num_procs}: query the physical number of cores available.
+\end{itemize}
+
+Other environment variables:
+\begin{itemize}
+\item \indexompshow{OMP_STACKSIZE} controls the amount of space that is
+  allocated as per-thread \indexterm{stack}; the space for private
+  variables.
+\item \indexompshow{OMP_WAIT_POLICY} determines the behavior of
+  threads that wait, for instance for \indexterm{critical section}:
+  \begin{itemize}
+  \item \n{ACTIVE} puts the thread in a \indexterm{spin-lock}, where
+    it actively checks whether it can continue;
+  \item \n{PASSIVE} puts the thread to sleep until the \ac{OS} wakes
+    it up.
+  \end{itemize}
+  The `active' strategy uses CPU while the thread is waiting; on the
+  other hand, activating it after the wait is instantaneous. With the
+  `passive' strategy, the thread does not use any CPU while waiting,
+  but activating it again is expensive. Thus, the passive strategy
+  only makes sense if threads will be waiting for a (relatively) long
+  time.
+\item \indexompshow{OMP_PROC_BIND} with values \n{TRUE} and \n{FALSE}
+  can bind threads to a processor. On the one hand, doing so can
+  minimize data movement; on the other hand, it may increase load
+  imbalance.
+\end{itemize}
+
+\index{OpenMP!environment variables|)}
+\index{OpenMP!library routines|)}
+\index{Internal Control Variable (ICV)|)}
+
+\Level 0 {Timing}
+\label{sec:omp-timing}
+
+OpenMP has a wall clock timer routine \indexompshow{omp_get_wtime}
+\begin{lstlisting}
+double omp_get_wtime(void);
+\end{lstlisting}
+The starting point is arbitrary and is different for each program run;
+however, in one run it is identical for all threads.
+This timer has a resolution given by \indexompshow{omp_get_wtick}.
+
+\begin{exercise}
+  Use the timing routines to demonstrate speedup from using
+  multiple threads.
+  \begin{itemize}
+  \item Write a code segment that takes a measurable amount of time, that is,
+    it should take a multiple of the tick time.
+  \item Write a parallel loop and measure the speedup. You can for instance do this
+\begin{lstlisting}
+for (int use_threads=1; use_threads<=nthreads; use_threads++) {
+#pragma omp parallel for num_threads(use_threads)
+    for (int i=0; i<nthreads; i++) {
+        .....
+    }
+    if (use_threads==1)
+      time1 = tend-tstart;
+    else // compute speedup
+\end{lstlisting}
+\item In order to prevent the compiler from optimizing your loop away, let
+  the body compute a result and use a reduction to preserve these results.
+  \end{itemize}
+\end{exercise}
+
+\Level 0 {Thread safety}
+\index{thread-safe|(}
+
+With OpenMP it is relatively easy to take existing code and make
+it parallel by introducing parallel sections. If you're careful
+to declare the appropriate variables shared and private,
+this may work fine. However, your code may include
+calls to library routines that include a \indexterm{race condition};
+such code is said not to be \emph{thread-safe}.
+
+For example a routine
+\begin{lstlisting}
+static int isave;
+int next_one() {
+ int i = isave;
+ isave += 1;
+ return i;
+}
+
+...
+for ( .... ) {
+  int ivalue = next_one();
+}
+\end{lstlisting}
+has a clear race condition, as the iterations of the loop
+may get different \n{next_one} values, as they are supposed to,
+or not. This can be solved by using an \indexpragma{critical}
+pragma for the \n{next_one} call; another solution 
+is to use an \indexpragma{threadprivate} declaration for \n{isave}.
+This is for instance the right solution if  the \n{next_one}
+routine implements a \indexterm{random number generator}.
+
+\index{thread-safe|)}
+
+\Level 0 {Performance and tuning}
+
+%See the EPCC benchmark suite~\cite{epcc-ompbench}.
+
+The performance of an OpenMP code can be influenced by the following.
+
+\begin{description}
+\item[Amdahl effects] Your code needs to have enough parts that are
+  parallel (see~\HPSCref{sec:amdahl}). Sequential parts may be sped up
+  by having them executed redundantly on each thread, since that keeps
+  data locally.
+\item[Dynamism] Creating a thread team takes time. In practice, a team
+  is not created and deleted for each parallel region, but creating
+  teams of different sizes, or recursize thread creation, may
+  introduce overhead.
+\item[Load imbalance] Even if your program is parallel, you need to
+  worry about load balance. In the case of a parallel loop you can set
+  the \indexclause{schedule} clause to \indexompshow{dynamic}, which evens out
+  the work, but may cause increased communication.
+\item[Communication] Cache coherence causes communication. Threads
+  should, as much as possible, refer to their own data.
+  \begin{itemize}
+  \item Threads are likely to read from each other's data. That is
+    largely unavoidable.
+  \item Threads writing to each other's data should be avoided: it may
+    require synchronization, and it causes coherence traffic.
+  \item If threads can migrate, data that was local at one time is no
+    longer local after migration.
+  \item Reading data from one socket that was allocated on another
+    socket is inefficient; see section~\ref{sec:first-touch}.
+  \end{itemize}
+\item[Affinity] Both data and execution threads can be bound to a
+  specific locale to some extent. Using local data is more efficient
+  than remote data, so you want to use local data, and minimize the extent to which data
+  or execution can move.
+  \begin{itemize}
+  \item See the above points about phenomena that cause communication.
+  \item Section~\ref{omp:threadbind} describes how you can specify the
+    binding of threads to places. There can, but does not need, to be
+    an effect on affinity. For instance, if an OpenMP thread can
+    migrate between hardware threads, cached data will stay local.
+    Leaving an OpenMP thread completely free to migrate can be
+    advantageous for load balancing, but you should only do that if
+    data affinity is of lesser importance.
+  \item Static loop schedules have a higher chance of using data that
+    has affinity with the place of execution, but they are worse for
+    load balancing. On the other hand, the \indexclause{nowait} clause
+    can aleviate some of the problems with static loop schedules.
+  \end{itemize}
+\item[Binding] You can choose to put OpenMP threads close together or
+  to spread them apart. Having them close together makes sense if they
+  use lots of shared data. Spreading them apart may increase
+  bandwidth. (See the examples in section~\ref{sec:omp:bindeffect}.)
+\item[Synchronization] Barriers are a form of synchronization. They
+  are expensive by themselves, and they expose load
+  imbalance. Implicit barriers happen at the end of worksharing
+  constructs; they can be removed with \indexompshow{nowait}.
+
+  Critical sections imply a loss of parallelism, but they are also
+  slow as they are realized through \indexterm{operating system}
+  functions. These are often quite costly, taking many thousands of
+  cycles.  Critical sections should be used only if the parallel work
+  far outweighs it.
+\end{description}
+
+\Level 0 {Accelerators}
+
+In \ompstandard{4.0} there is support for offloading work to an
+\emph{accelerator}\index{OpenMP!accelerator support in}
+or
+\emph{co-processor}\index{OpenMP!co-processor support in}:
+\begin{lstlisting}
+#pragma omp target [clauses]
+\end{lstlisting}
+with clauses such as
+\begin{itemize}
+\item \n{data}: place data
+\item \n{update}: make data consistent between host and device
+\end{itemize}
+
+\Level 0 {Tools interface}
+
+The \ompstandard{5.0} defines a tools interface.
+This means that routines can be defined that get called by the OpenMP runtime.
+For instance, the following example defines callback that are evaluated
+when OpenMP is initialized and finalized, thereby giving the
+runtime for the application.
+
+\begin{lstlisting}
+int ompt_initialize(ompt_function_lookup_t lookup, int initial_device_num,
+                    ompt_data_t *tool_data) {
+  printf("libomp init time: %f\n",
+         omp_get_wtime() - *(double *)(tool_data->ptr));
+  *(double *)(tool_data->ptr) = omp_get_wtime();
+  return 1; // success: activates tool
+}
+
+void ompt_finalize(ompt_data_t *tool_data) {
+  printf("application runtime: %f\n",
+         omp_get_wtime() - *(double *)(tool_data->ptr));
+}
+
+ompt_start_tool_result_t *ompt_start_tool(unsigned int omp_version,
+                                          const char *runtime_version) {
+  static double time = 0; // static defintion needs constant assigment
+  time = omp_get_wtime();
+  static ompt_start_tool_result_t ompt_start_tool_result = {
+      &ompt_initialize, &ompt_finalize, {.ptr = &time}};
+  return &ompt_start_tool_result; // success: registers tool
+}  
+\end{lstlisting}
+(Example courtesy of \url{https://git.rwth-aachen.de/OpenMPTools/OMPT-Examples}.)
+
+\Level 0 {OpenMP standards}
+\label{sec:omp-standards}
+
+Here is the correspondence between the value of OpenMP versions
+(given by the \indexompshow{_OPENMP} macro)
+and the standard versions:
+
+\begin{itemize}
+\item \n{201511} \ompstandard{4.5},
+\item \n{201611} Technical report 4: information about the \ompstandard{5.0}
+  but not yet mandated.
+\item \n{201811} \ompstandard{5.0}
+\item \n{202011} \ompstandard{5.1},
+\item \n{202111} \ompstandard{5.2}.
+\end{itemize}

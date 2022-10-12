@@ -1,0 +1,11 @@
+// linear-serial-null.c
+if (mytid<ntids-1) next = mytid+1;
+else next = MPI_PROC_NULL;
+
+if (mytid>0) prev = mytid-1;
+else prev = MPI_PROC_NULL;
+
+MPI_Ssend( /* data: */ &my_number,1,MPI_DOUBLE,
+           /* to: */ next, /* tag: */ 0, comm);
+MPI_Recv( /* data: */ &other_number,1,MPI_DOUBLE,
+          /* from: */ prev, 0, comm, &status);

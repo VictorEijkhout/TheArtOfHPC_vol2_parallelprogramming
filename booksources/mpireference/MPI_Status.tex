@@ -1,0 +1,13 @@
+C:
+MPI_Status status;
+
+Fortran:
+integer :: status(MPI_STATUS_SIZE)
+
+Fortran2008:
+type(MPI_Status) :: recv_status
+
+Python:
+MPI.Status() # returns object
+
+

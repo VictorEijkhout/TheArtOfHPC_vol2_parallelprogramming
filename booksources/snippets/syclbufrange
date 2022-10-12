@@ -1,0 +1,11 @@
+// range2.cxx
+sycl::buffer<int, 2>
+  a_buf(a.data(), sycl::range<2>(N, M)),
+  b_buf(b.data(), sycl::range<2>(N, M)), 
+  c_buf(c.data(), sycl::range<2>(N, M));
+
+sycl::range<2>
+  a_range = a_buf.get_range(),
+  b_range = b_buf.get_range();
+
+if (a_range==b_range) {

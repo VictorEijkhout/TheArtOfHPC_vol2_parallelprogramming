@@ -1,0 +1,162 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-9
+%%%%
+%%%% omp-simd.tex : SIMD instruction processing
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+You can declare a loop to be executable with
+\indextermbus{vector}{instructions} with
+\indexpragmadef{simd}.
+
+\begin{remark}
+  Depending on your compiler, it may be necessary to give an extra option
+  enabling SIMD:
+  \begin{itemize}
+  \item  \n{-fopenmp-simd} for \indexterm{GCC}~/ \indexterm{Clang}, and
+  \item \n{-qopenmp-simd} for \indexterm{ICC}.
+  \end{itemize}
+\end{remark}
+
+The \indexpragma{simd} pragma has the following clauses:
+\begin{itemize}
+\item \indexclause{safelen($n$)}: limits the number of iterations in a
+  SIMD chunk. Presumably useful if you combine \n{parallel for simd}.
+\item \indexclause{linear}: lists variables that have a linear
+  relation to the iteration parameter.
+\item \indexclause{aligned}: specifies alignment of variables.
+\end{itemize}
+
+If your SIMD loop includes a function call, you can declare that the
+function can be turned into vector instructions with
+%
+\indexpragma{declare simd}
+
+If a loop is both multi-threadable and vectorizable, you can combine
+directives as \n{pragma omp parallel for simd}.
+
+Compilers can be made to report whether a loop was vectorized:
+\begin{verbatim}
+   LOOP BEGIN at simdf.c(61,15)
+      remark #15301: OpenMP SIMD LOOP WAS VECTORIZED
+   LOOP END
+\end{verbatim}
+with such options as \n{-Qvec-report=3} for the Intel compiler.
+
+Performance improvements of these directives need not be immediately
+obvious.  In cases where the operation is bandwidth-limited, using
+\n{simd} parallelism may give the same or worse performance as thread
+parallelism.
+
+The following function can be vectorized:
+%
+\cverbatimsnippet[code/omp/c/simd/tools.c]{simdfunction}
+%
+Compiling this the regular way
+\begin{verbatim}
+# parameter 1(x1): %xmm0
+# parameter 2(x2): %xmm1
+# parameter 3(y1): %xmm2
+# parameter 4(y2): %xmm3
+
+movaps    %xmm0, %xmm5    5 <- x1
+movaps    %xmm2, %xmm4    4 <- y1
+mulsd     %xmm1, %xmm5    5 <- 5 * x2 = x1 * x2
+mulsd     %xmm3, %xmm4    4 <- 4 * y2 = y1 * y2
+mulsd     %xmm0, %xmm0    0 <- 0 * 0 = x1 * x1
+mulsd     %xmm1, %xmm1    1 <- 1 * 1 = x2 * x2
+addsd     %xmm4, %xmm5    5 <- 5 + 4 = x1*x2 + y1*y2
+mulsd     %xmm2, %xmm2    2 <- 2 * 2 = y1 * y1
+mulsd     %xmm3, %xmm3    3 <- 3 * 3 = y2 * y2
+addsd     %xmm1, %xmm0    0 <- 0 + 1 = x1*x1 + x2*x2
+addsd     %xmm3, %xmm2    2 <- 2 + 3 = y1*y1 + y2*y2
+sqrtsd    %xmm0, %xmm0    0 <- sqrt(0) = sqrt( x1*x1 + x2*x2 )
+sqrtsd    %xmm2, %xmm2    2 <- sqrt(2) = sqrt( y1*y1 + y2*y2 )
+\end{verbatim}
+which uses the scalar instruction \indextermtt{mulsd}: multiply scalar double precision.
+
+With a \n{declare simd} directive:
+\begin{verbatim}
+movaps    %xmm0, %xmm7
+movaps    %xmm2, %xmm4
+mulpd     %xmm1, %xmm7
+mulpd     %xmm3, %xmm4
+\end{verbatim}
+which uses the vector instruction \indextermtt{mulpd}: multiply packed
+double precision, operating on 128-bit \indextermsub{SSE2}{register}s.
+
+%% make tools.o MOREOPTIONS="-Fa -xMIC-AVX512"
+
+Compiling for the \indextermbus{Intel}{Knight's Landing} gives more complicated code:
+\begin{verbatim}
+# parameter 1(x1): %xmm0
+# parameter 2(x2): %xmm1
+# parameter 3(y1): %xmm2
+# parameter 4(y2): %xmm3
+
+vmulpd    %xmm3, %xmm2, %xmm4                           4 <- y1*y2
+vmulpd    %xmm1, %xmm1, %xmm5                           5 <- x1*x2
+vbroadcastsd .L_2il0floatpacket.0(%rip), %zmm21         
+movl      $3, %eax                                      set accumulator EAX
+vbroadcastsd .L_2il0floatpacket.5(%rip), %zmm24         
+kmovw     %eax, %k3                                     set mask k3
+vmulpd    %xmm3, %xmm3, %xmm6                           6 <-y1*y1 (stall)
+vfmadd231pd %xmm0, %xmm1, %xmm4                         4 <- 4 + x1*x2 (no reuse!)
+vfmadd213pd %xmm5, %xmm0, %xmm0                         0 <- 0 + 0*5 = x1 + x1*(x1*x2)
+vmovaps   %zmm21, %zmm18                                #25.26 c7
+vmovapd   %zmm0, %zmm3{%k3}{z}                          #25.26 c11
+vfmadd213pd %xmm6, %xmm2, %xmm2                         #24.29 c13
+vpcmpgtq  %zmm0, %zmm21, %k1{%k3}                       #25.26 c13
+vscalefpd .L_2il0floatpacket.1(%rip){1to8}, %zmm0, %zmm3{%k1} #25.26 c15
+vmovaps   %zmm4, %zmm26                                 #25.26 c15
+vmovapd   %zmm2, %zmm7{%k3}{z}                          #25.26 c17
+vpcmpgtq  %zmm2, %zmm21, %k2{%k3}                       #25.26 c17
+vscalefpd .L_2il0floatpacket.1(%rip){1to8}, %zmm2, %zmm7{%k2} #25.26 c19
+vrsqrt28pd %zmm3, %zmm16{%k3}{z}                        #25.26 c19
+vpxorq    %zmm4, %zmm4, %zmm26{%k3}                     #25.26 c19
+vrsqrt28pd %zmm7, %zmm20{%k3}{z}                        #25.26 c21
+vmulpd    {rn-sae}, %zmm3, %zmm16, %zmm19{%k3}{z}       #25.26 c27 stall 2
+vscalefpd .L_2il0floatpacket.2(%rip){1to8}, %zmm16, %zmm17{%k3}{z} #25.26 c27
+vmulpd    {rn-sae}, %zmm7, %zmm20, %zmm23{%k3}{z}       #25.26 c29
+vscalefpd .L_2il0floatpacket.2(%rip){1to8}, %zmm20, %zmm22{%k3}{z} #25.26 c29
+vfnmadd231pd {rn-sae}, %zmm17, %zmm19, %zmm18{%k3}      #25.26 c33 stall 1
+vfnmadd231pd {rn-sae}, %zmm22, %zmm23, %zmm21{%k3}      #25.26 c35
+vfmadd231pd {rn-sae}, %zmm19, %zmm18, %zmm19{%k3}       #25.26 c39 stall 1
+vfmadd231pd {rn-sae}, %zmm23, %zmm21, %zmm23{%k3}       #25.26 c41
+vfmadd213pd {rn-sae}, %zmm17, %zmm17, %zmm18{%k3}       #25.26 c45 stall 1
+vfnmadd231pd {rn-sae}, %zmm19, %zmm19, %zmm3{%k3}       #25.26 c47
+vfmadd213pd {rn-sae}, %zmm22, %zmm22, %zmm21{%k3}       #25.26 c51 stall 1
+vfnmadd231pd {rn-sae}, %zmm23, %zmm23, %zmm7{%k3}       #25.26 c53
+vfmadd213pd %zmm19, %zmm18, %zmm3{%k3}                  #25.26 c57 stall 1
+vfmadd213pd %zmm23, %zmm21, %zmm7{%k3}                  #25.26 c59
+vscalefpd .L_2il0floatpacket.3(%rip){1to8}, %zmm3, %zmm3{%k1} #25.26 c63 stall 1
+vscalefpd .L_2il0floatpacket.3(%rip){1to8}, %zmm7, %zmm7{%k2} #25.26 c65
+vfixupimmpd $112, .L_2il0floatpacket.4(%rip){1to8}, %zmm0, %zmm3{%k3} #25.26 c65
+vfixupimmpd $112, .L_2il0floatpacket.4(%rip){1to8}, %zmm2, %zmm7{%k3} #25.26 c67
+vmulpd    %xmm7, %xmm3, %xmm0                           #25.26 c71
+vmovaps   %zmm0, %zmm27                                 #25.26 c79
+vmovaps   %zmm0, %zmm25                                 #25.26 c79
+vrcp28pd  {sae}, %zmm0, %zmm27{%k3}                     #25.26 c81
+vfnmadd213pd {rn-sae}, %zmm24, %zmm27, %zmm25{%k3}      #25.26 c89 stall 3
+vfmadd213pd {rn-sae}, %zmm27, %zmm25, %zmm27{%k3}       #25.26 c95 stall 2
+vcmppd    $8, %zmm26, %zmm27, %k1{%k3}                  #25.26 c101 stall 2
+vmulpd    %zmm27, %zmm4, %zmm1{%k3}{z}                  #25.26 c101
+kortestw  %k1, %k1                                      #25.26 c103
+je        ..B1.3        # Prob 25%                      #25.26 c105
+vdivpd    %zmm0, %zmm4, %zmm1{%k1}                      #25.26 c3 stall 1
+vmovaps   %xmm1, %xmm0                                  #25.26 c77
+ret                                                     #25.26 c79
+\end{verbatim}
+
+\begin{lstlisting}
+#pragma omp declare simd uniform(op1) linear(k) notinbranch
+  double SqrtMul(double *op1, double op2, int k) {
+    return (sqrt(op1[k]) * sqrt(op2));
+  }
+\end{lstlisting}

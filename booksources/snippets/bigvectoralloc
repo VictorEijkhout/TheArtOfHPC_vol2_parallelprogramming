@@ -1,0 +1,7 @@
+// vectorx.c
+float *source=NULL,*target=NULL;
+int mediumsize = 1<<30;
+int nblocks = 8;
+size_t datasize = (size_t)mediumsize * nblocks * sizeof(float);
+if (procno==sender) {
+  source = (float*) malloc(datasize);

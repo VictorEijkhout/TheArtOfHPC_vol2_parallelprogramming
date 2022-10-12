@@ -1,0 +1,18 @@
+// commdupright.cxx
+class library {
+private:
+  MPI_Comm comm;
+  int procno,nprocs,other;
+  MPI_Request request[2];
+public:
+  library(MPI_Comm incomm) {
+    MPI_Comm_dup(incomm,&comm);
+    MPI_Comm_rank(comm,&procno);
+    other = 1-procno;
+  };
+  ~library() {
+    MPI_Comm_free(&comm);
+  }
+  int communication_start();
+  int communication_end();
+};

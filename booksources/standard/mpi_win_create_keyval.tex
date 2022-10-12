@@ -1,0 +1,42 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% This text file is part of the source of 
+%% `Parallel Computing'
+%% by Victor Eijkhout, copyright 2012-2022
+%%
+%% MPI API file for MPI_Win_create_keyval
+%%
+%% THIS FILE IS AUTO-GENERATED
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begingroup
+\ttfamily\bfseries
+\catcode`\_=12
+\begin{tabular}{
+l       % name
+l       % param name
+p{\mpiparmtextsize}  % explanation
+p{.7in} % ctype
+p{.9in} % ftype
+l       % inout
+}
+\toprule
+\mdseries\textrm{Name}&
+\mdseries\textrm{Param name}&
+\mdseries\textrm{Explanation}&
+\mdseries\textrm{C type}&
+\mdseries\textrm{F type}&
+\mdseries\textrm{inout}\\
+\midrule
+\hbox to 18pt{MPI_Win_create_keyval (\hss} \\
+ & win_copy_attr_fn & copy callback function for \mpiarg{win_keyval} & MPI_Win_copy_attr_function* & PROCEDURE\discretionary{}{\kern10pt}{}(MPI_Win_copy_attr_function)  & IN \\ & win_delete_attr_fn & delete callback function for \mpiarg{win_keyval} & MPI_Win_delete_attr_function* & PROCEDURE\discretionary{}{\kern10pt}{}(MPI_Win_delete_attr_function)  & IN \\ & win_keyval & key value for future access & int* & INTEGER  & OUT \\ & extra_state & extra state for callback function & void* & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_ADDRESS_KIND)  & IN \\
+&)\\
+
+\bottomrule
+\end{tabular}
+\endgroup
+

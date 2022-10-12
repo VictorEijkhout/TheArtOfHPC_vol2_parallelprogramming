@@ -1,0 +1,16 @@
+Semantics:
+MPI_COMM_REMOTE_SIZE(comm, size)
+IN comm: inter-communicator (handle)
+OUT size: number of processes in the remote group of comm (integer)
+
+C:
+int MPI_Comm_remote_size(MPI_Comm comm, int *size)
+
+Fortran:
+MPI_Comm_remote_size(comm, size, ierror)
+TYPE(MPI_Comm), INTENT(IN) ::  comm
+INTEGER, INTENT(OUT) ::  size
+INTEGER, OPTIONAL, INTENT(OUT) ::  ierror
+
+Python:
+Intercomm.Get_remote_size(self)

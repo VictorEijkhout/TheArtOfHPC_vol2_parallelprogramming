@@ -1,0 +1,7 @@
+int total_number_of_elements;
+vector<int> my_elements( my_number_of_elements );
+for (int i_element=0; i_element<my_number_of_elements; i_element++)
+  my_elements[i_element] = my_first_index+i_element;
+
+MPI_Reduce( &my_number_of_elements,&total_number_of_elements,
+	      1,MPI_INT,MPI_SUM,0,comm);

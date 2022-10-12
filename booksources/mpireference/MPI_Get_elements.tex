@@ -1,0 +1,14 @@
+Synopsis
+Returns the number of basic elements in a datatype
+
+int MPI_Get_elements
+    (const MPI_Status *status, MPI_Datatype datatype, int *count)
+int MPI_Get_elements_x
+    (const MPI_Status *status, MPI_Datatype datatype, MPI_Count *count)
+
+Input Parameters:
+status : return status of receive operation (Status) 
+datatype : datatype used by receive operation (handle) 
+
+Output Parameters:
+count : number of received basic elements (integer/MPI_Count)

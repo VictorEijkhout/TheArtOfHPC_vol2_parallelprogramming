@@ -1,0 +1,18 @@
+VecGetSize / VecGetLocalSize
+
+C:
+#include "petscvec.h"
+PetscErrorCode  VecGetSize(Vec x,PetscInt *gsize)
+PetscErrorCode  VecGetLocalSize(Vec x,PetscInt *lsize)
+
+Input Parameter
+x -the vector
+
+Output Parameters
+gsize - the global length of the vector
+lsize - the local length of the vector
+
+Python:
+PETSc.Vec.getLocalSize(self)
+PETSc.Vec.getSize(self)
+PETSc.Vec.getSizes(self)

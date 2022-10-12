@@ -1,0 +1,23 @@
+C:
+int MPI_Scan(const void* sendbuf, void* recvbuf,
+    int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+IN sendbuf: starting address of send buffer (choice)
+OUT recvbuf: starting address of receive buffer (choice)
+IN count: number of elements in input buffer (non-negative integer)
+IN datatype: data type of elements of input buffer (handle)
+IN op: operation (handle)
+IN comm: communicator (handle)
+
+Fortran:
+MPI_Scan(sendbuf, recvbuf, count, datatype, op, comm, ierror)
+TYPE(*), DIMENSION(..), INTENT(IN) :: sendbuf
+TYPE(*), DIMENSION(..) :: recvbuf
+INTEGER, INTENT(IN) :: count
+TYPE(MPI_Datatype), INTENT(IN) :: datatype
+TYPE(MPI_Op), INTENT(IN) :: op
+TYPE(MPI_Comm), INTENT(IN) :: comm
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+
+Python:
+res = Intracomm.scan( sendobj=None,recvobj=None,op=MPI.SUM)
+res = Intracomm.exscan( sendobj=None,recvobj=None,op=MPI.SUM)

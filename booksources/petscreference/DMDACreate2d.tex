@@ -1,0 +1,22 @@
+#include "petscdmda.h"
+PetscErrorCode  DMDACreate2d(MPI_Comm comm,
+    DMBoundaryType bx,DMBoundaryType by,DMDAStencilType stencil_type,
+    PetscInt M,PetscInt N,PetscInt m,PetscInt n,PetscInt dof,
+    PetscInt s,const PetscInt lx[],const PetscInt ly[],
+    DM *da)
+
+Input Parameters
+
+comm - MPI communicator
+bx,by - type of ghost nodes: DM_BOUNDARY_NONE, DM_BOUNDARY_GHOSTED, DM_BOUNDARY_PERIODIC.
+stencil_type - stencil type: DMDA_STENCIL_BOX or DMDA_STENCIL_STAR.
+M,N - global dimension in each direction of
+m,n - corresponding number of processors in each dimension (or PETSC_DECIDE)
+dof - number of degrees of freedom per node
+s - stencil width
+lx, ly - arrays containing the number of
+    nodes in each cell along the x and y coordinates, or NULL.
+
+Output Parameter
+
+da  -the resulting distributed array object

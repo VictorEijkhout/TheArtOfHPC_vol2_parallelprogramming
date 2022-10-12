@@ -1,0 +1,19 @@
+Semantics:
+MPI_COMM_RANK(comm, rank)
+IN comm: communicator (handle)
+OUT rank: rank of the calling process in group of comm (integer)
+
+C:
+int MPI_Comm_rank(MPI_Comm comm, int *rank)
+
+Fortran:
+MPI_Comm_rank(comm, rank, ierror)
+TYPE(MPI_Comm), INTENT(IN) :: comm
+INTEGER, INTENT(OUT) :: rank
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+
+Python:
+MPI.Comm.Get_rank(self)
+
+MPL:
+int mpl::communicator::rank ( ) const

@@ -1,0 +1,4 @@
+// sendarray.cxx
+double v[2][2][2];
+  comm_world.send(v, 1);  // send to rank 1
+  comm_world.recv(v, 0);  // receive from rank 0

@@ -1,0 +1,3 @@
+force operator+( const force& g ) {
+  return { _x+g._x, _y+g._y, _f+g._f };
+}

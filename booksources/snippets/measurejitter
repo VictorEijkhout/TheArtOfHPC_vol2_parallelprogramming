@@ -1,0 +1,4 @@
+if (mytid==0)
+  sendbuf = MPI_IN_PLACE;
+else sendbuf = (void*)&jitter;
+MPI_Reduce(sendbuf,(void*)&jitter,1,MPI_DOUBLE,MPI_MAX,0,comm);

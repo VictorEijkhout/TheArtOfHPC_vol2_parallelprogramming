@@ -1,0 +1,3 @@
+!! hello.F90
+  write(*,*) "Hello from image ", this_image(), &
+       "out of ", num_images()," total images"

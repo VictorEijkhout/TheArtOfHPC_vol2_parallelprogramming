@@ -1,0 +1,4 @@
+// sendrange.cxx
+vector<double> v(15);
+  comm_world.send(v.begin(), v.end(), 1);  // send to rank 1
+  comm_world.recv(v.begin(), v.end(), 0);  // receive from rank 0

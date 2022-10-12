@@ -1,0 +1,8 @@
+float *sendbuf,*recvbuf;
+if (procno==root) {
+  sendbuf = MPI_IN_PLACE; recvbuf = myrandoms;
+} else {
+  sendbuf = myrandoms; recvbuf = MPI_IN_PLACE;
+}
+MPI_Reduce(sendbuf,recvbuf,
+  	 nrandoms,MPI_FLOAT,MPI_SUM,root,comm);

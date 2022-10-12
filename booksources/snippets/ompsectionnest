@@ -1,0 +1,9 @@
+// sectionnest.c
+#pragma omp parallel sections reduction(+:s)
+    {
+    #pragma omp section
+      {
+	double s1=0;
+	omp_set_num_threads(team);
+        #pragma omp parallel for reduction(+:s1)
+	for (int i=0; i<N; i++) {

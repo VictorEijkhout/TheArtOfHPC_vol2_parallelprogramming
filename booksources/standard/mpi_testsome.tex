@@ -1,0 +1,42 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% This text file is part of the source of 
+%% `Parallel Computing'
+%% by Victor Eijkhout, copyright 2012-2022
+%%
+%% MPI API file for MPI_Testsome
+%%
+%% THIS FILE IS AUTO-GENERATED
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begingroup
+\ttfamily\bfseries
+\catcode`\_=12
+\begin{tabular}{
+l       % name
+l       % param name
+p{\mpiparmtextsize}  % explanation
+p{.7in} % ctype
+p{.9in} % ftype
+l       % inout
+}
+\toprule
+\mdseries\textrm{Name}&
+\mdseries\textrm{Param name}&
+\mdseries\textrm{Explanation}&
+\mdseries\textrm{C type}&
+\mdseries\textrm{F type}&
+\mdseries\textrm{inout}\\
+\midrule
+\hbox to 18pt{MPI_Testsome (\hss} \\
+ & incount & length of array_of_requests & int & INTEGER  & IN \\ & array_of_requests & array of requests & MPI_Request[] & TYPE\discretionary{}{\kern10pt}{}(MPI_Request)\discretionary{}{\kern10pt}{}(incount)  & INOUT \\ & outcount & number of completed requests & int* & INTEGER  & OUT \\ & array_of_indices & array of indices of operations that completed & int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  & OUT \\ & array_of_statuses & array of status objects for operations that completed & MPI_Status[] & TYPE\discretionary{}{\kern10pt}{}(MPI_Status)\discretionary{}{\kern10pt}{}(*)  & OUT \\
+&)\\
+
+\bottomrule
+\end{tabular}
+\endgroup
+

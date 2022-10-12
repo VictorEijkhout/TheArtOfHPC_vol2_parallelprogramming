@@ -1,0 +1,42 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% This text file is part of the source of 
+%% `Parallel Computing'
+%% by Victor Eijkhout, copyright 2012-2022
+%%
+%% MPI API file for MPI_Type_get_contents
+%%
+%% THIS FILE IS AUTO-GENERATED
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begingroup
+\ttfamily\bfseries
+\catcode`\_=12
+\begin{tabular}{
+l       % name
+l       % param name
+p{\mpiparmtextsize}  % explanation
+p{.7in} % ctype
+p{.9in} % ftype
+l       % inout
+}
+\toprule
+\mdseries\textrm{Name}&
+\mdseries\textrm{Param name}&
+\mdseries\textrm{Explanation}&
+\mdseries\textrm{C type}&
+\mdseries\textrm{F type}&
+\mdseries\textrm{inout}\\
+\midrule
+\hbox to 18pt{MPI_Type_get_contents (\hss} \\
+ & datatype & datatype to decode & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\ & max_integers & number of elements in \mpiarg{array_of_integers} & int & INTEGER  & IN \\ & max_addresses & number of elements in \mpiarg{array_of_addresses} & int & INTEGER  & IN \\ & max_datatypes & number of elements in \mpiarg{array_of_large_counts} & int & INTEGER  & IN \\ & array_of_integers & number of elements in \mpiarg{array_of_datatypes} & int[] & INTEGER\discretionary{}{\kern10pt}{}(max_integers)  & IN \\ & array_of_addresses & contains integer arguments used in constructing \mpiarg{datatype} & MPI_Aint[] & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_ADDRESS_KIND)\discretionary{}{\kern10pt}{}(max_addresses)  & OUT \\ & array_of_datatypes & contains address arguments used in constructing \mpiarg{datatype} & MPI_Datatype[] & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)\discretionary{}{\kern10pt}{}(max_datatypes)  & OUT \\
+&)\\
+
+\bottomrule
+\end{tabular}
+\endgroup
+

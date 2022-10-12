@@ -1,0 +1,5 @@
+// mandel_bulk.cxx
+class bulkqueue : public queue {
+public :
+  bulkqueue(MPI_Comm queue_comm,circle *workcircle)
+    : queue(queue_comm,workcircle) {

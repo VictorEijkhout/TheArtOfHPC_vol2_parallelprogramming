@@ -1,0 +1,7 @@
+// tmpvar.c
+double h,x,y,s;
+#pragma omp parallel for reduction(+:s)
+for (int i=0; i<n; i++) {
+  h = (1./n); x = i*h; y = sqrt( 1-x*x );
+  s += h*y;
+}

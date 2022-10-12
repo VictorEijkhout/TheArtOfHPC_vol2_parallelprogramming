@@ -1,0 +1,126 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% mpi-commbasic.tex : communicator basics
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+With \indexmpiref{MPI_Comm_dup}
+you can make an exact duplicate of a communicator
+(see section~\ref{sec:mpi-comm-dup-lib} for an application).
+There is a nonblocking variant \indexmpiref{MPI_Comm_idup}.
+
+These calls do not propagate info hints
+(sections \ref{sec:mpi-info} and~\ref{sec:mpi-comm-info});
+to achieve this,
+use \indexmpidef{MPI_Comm_dup_with_info} and \indexmpidef{MPI_Comm_idup_with_info};
+section~\ref{sec:mpi-comm-info}.
+
+\begin{pythonnote}{Communicator duplication}
+  Duplicate communicators are created as output of the duplication routine:
+  \begin{lstlisting}
+    newcomm = comm.Dup()
+  \end{lstlisting}
+\end{pythonnote}
+
+\begin{mplnote}{Communicator duplication}
+  Communicators can be duplicated but only during initialization.
+  Copy assignment has been deleted. Thus:
+\begin{lstlisting}
+// LEGAL: 
+mpl::communicator init = comm;
+// WRONG:
+mpl::communicator init;
+init = comm;
+\end{lstlisting}
+\end{mplnote}
+
+\Level 1 {Communicator comparing}
+\label{sec:comm-compare}
+
+You may wonder what `an exact copy' means precisely.
+For this, think of a communicator as a context label that you can attach to,
+among others, operations such as sends and receives.
+And it's that label that counts, not what processes are in the communicator.
+A~send and a receive `belong together' if they have the same communicator context.
+Conversely, a~send in one communicator can not be matched
+to a receive in a duplicate communicator, made by \indexmpishow{MPI_Comm_dup}.
+
+Testing whether two communicators are really the same
+is then more than testing if they comprise the same processes.
+The call \indexmpidef{MPI_Comm_compare} returns \indexmpishow{MPI_IDENT}
+if two communicator values are the same,
+and not if one is derived from the other by duplication:
+%
+\csnippetwithoutput{commcopycompare}{examples/mpi/c}{commcompare}
+
+Communicators that are not actually the same can be
+\begin{itemize}
+\item consisting of the same processes, in the same order,
+  giving \indexmpidef{MPI_CONGRUENT};
+\item merely consisting of the same processes, but not in the same order,
+  giving \indexmpidef{MPI_SIMILAR};
+\item different, giving \indexmpidef{MPI_UNEQUAL}.
+\end{itemize}
+
+Comparing against \indexmpishow{MPI_COMM_NULL} is not allowed.
+
+\Level 1 {Communicator duplication for library use}
+\label{sec:mpi-comm-dup-lib}
+
+Duplicating a communicator may seem pointless, but it is actually very useful for the design of
+software libraries. Imagine that you have a code
+\lstset{style=reviewcode,language=C}
+\begin{lstlisting}
+MPI_Isend(...); MPI_Irecv(...);
+// library call
+MPI_Waitall(...);
+\end{lstlisting}
+and suppose that the library has receive calls. Now it is possible that the 
+receive in the library inadvertently
+catches the message that was sent in the outer environment.
+
+Let us consider an example.
+First of all, here is code where the library stores the communicator
+of the calling program:
+%
+\cxxverbatimsnippet[examples/mpi/c/commdupwrong.cxx]{wrongcatchlib}
+
+This models a main program that does a simple message exchange, and it
+makes two calls to library routines. Unbeknown to the user, the
+library also issues send and receive calls, and they turn out to
+interfere.
+
+Here
+\begin{itemize}
+\item The main program does a send,
+\item the library call \n{function_start} does a send and a receive;
+  because the receive can match either send, it is paired with the
+  first one;
+\item the main program does a receive, which will be paired with the send of the 
+  library call;
+\item both the main program and the library do a wait call, and in
+  both cases all requests are succesfully fulfilled, just not the way
+  you intended.
+\end{itemize}
+
+To prevent this confusion, the library should duplicate the outer
+communicator with \indexmpishow{MPI_Comm_dup}
+%
+and send all messages with respect to its duplicate. Now messages from the user
+code can never reach the library software, since they are on different communicators.
+
+\cverbatimsnippet[examples/mpi/c/commdupright.cxx]{rightcatchlib}
+
+Note how the preceding example
+performs the \indexmpishow{MPI_Comm_free}
+cal in a C++ \indexterm{destructor}.
+
+\pverbatimsnippet[examples/mpi/p/commdup.py]{catchlibp}
+

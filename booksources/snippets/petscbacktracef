@@ -1,0 +1,9 @@
+!! backtrace.F90
+  Subroutine this_function_bombs(ierr)
+    implicit none
+    integer,intent(out) :: ierr
+
+    SETERRQ(PETSC_COMM_SELF,1,"We cannot go on like this")
+    ierr = -1
+
+  end Subroutine this_function_bombs

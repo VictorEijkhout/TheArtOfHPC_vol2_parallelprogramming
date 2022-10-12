@@ -1,0 +1,17 @@
+% -*- latex -*-
+%%
+%% include definitions for the online course
+%%
+\includecomment{online}
+
+\excludecomment{tacc}
+%\specialcomment{tacc}{\stepcounter{tacc}\def\CommentCutFile{tacc\arabic{tacc}.cut}}{}
+%\newcounter{tacc}
+
+\excludecomment{imperial}
+%\specialcomment{imperial}{\stepcounter{imperial}\def\CommentCutFile{imperial\arabic{imperial}.cut}}{}
+
+\includecomment{foundations}
+\includecomment{onesided}
+\includecomment{advanced}
+\includecomment{full}

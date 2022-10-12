@@ -1,0 +1,27 @@
+# -*- makefile -*-
+################################################################
+################################################################
+####
+#### This makefile is part of the source of 
+#### "Parallel Computing for Science and Engineering"
+#### by Victor Eijkhout, copyright 2013-2021
+####
+#### Make include file for clean rules
+####
+################################################################
+################################################################
+
+info ::
+	@echo "make runs : compile and run everything and generate output file"
+.PHONY: runs
+runs :
+	@for r in ${RUNS} ; do \
+	    echo "---------------- Test run: $$r ----------------" \
+	     && runname=$${r##run_} \
+	     && make $$r \
+	           EXTRALIBS=${EXTRALIBS} OPTIONS=${OPTIONS} OPTLEVEL=${OPTLEVEL} \
+	        2>&1 | tee $$runname.runout \
+	 ; done
+total_clean ::
+	@rm -f *.runout
+

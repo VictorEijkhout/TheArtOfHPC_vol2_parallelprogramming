@@ -1,0 +1,37 @@
+Semantics:
+MPI_Reduce_scatter
+   ( sendbuf, recvbuf, recvcounts, datatype, op, comm)
+MPI_Reduce_scatter_block
+   ( sendbuf, recvbuf, recvcount, datatype, op, comm)
+
+Input parameters:
+sendbuf: starting address of send buffer (choice)
+recvcount: element count per block (non-negative integer) 
+recvcounts: non-negative integer array (of length group size)
+    specifying the number of elements of the result distributed to each
+    process.
+datatype: data type of elements of send and receive buffers (handle)
+op: operation (handle)
+comm: communicator (handle)
+
+Output parameters:
+recvbuf: starting address of receive buffer (choice)
+
+C:
+int MPI_Reduce_scatter
+   (const void* sendbuf, void* recvbuf, const int recvcounts[],
+    MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+
+F:
+MPI_Reduce_scatter(sendbuf, recvbuf, recvcounts, datatype, op, comm,
+ierror)
+TYPE(*), DIMENSION(..), INTENT(IN) :: sendbuf
+TYPE(*), DIMENSION(..) :: recvbuf
+INTEGER, INTENT(IN) :: recvcounts(*)
+TYPE(MPI_Datatype), INTENT(IN) :: datatype
+TYPE(MPI_Op), INTENT(IN) :: op
+TYPE(MPI_Comm), INTENT(IN) :: comm
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+
+Py:
+comm.Reduce_scatter(sendbuf, recvbuf, recvcounts=None, Op op=SUM)

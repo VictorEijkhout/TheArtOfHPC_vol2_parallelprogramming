@@ -1,0 +1,9 @@
+// collectarray.cxx
+float
+  xrank = static_cast<float>( comm_world.rank() );
+float rank2p2p1[2] = { 2*xrank,2*xrank+1 };
+// DOES NOT WORK
+comm_world.allreduce(mpl::plus<float>(), rank2p2p1);
+if ( iprint )
+  cout << "Got: " << rank2p2p1[0] << ","
+	 << rank2p2p1[1] << endl;

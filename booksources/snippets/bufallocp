@@ -1,0 +1,3 @@
+## allgatherv.py
+mycount = procid+1
+my_array = np.empty(mycount,dtype=np.float64)

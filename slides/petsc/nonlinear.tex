@@ -1,0 +1,155 @@
+% -*- latex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This TeX file is part of the tutorial
+%%%% `Introduction to the PETSc library'
+%%%% Victor Eijkhout, eijkhout@tacc.utexas.edu
+%%%% copyright Victor Eijkhout 2012-2022
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\sectionframe{\texttt{SNES}: Nonlinear solvers}
+
+\begin{numberedframe}{Nonlinear problems}
+
+Basic equation
+\[ f(u) = 0 \]
+where $u$ can be big, for instance nonlinear PDE.
+
+Typical solution method:
+\[ u_{n+1} = u_n- J(u_n)\inv f(u_n) \]
+Newton iteration.
+
+Needed: function and Jacobian.
+\end{numberedframe}
+
+\begin{numberedframe}{Basic SNES usage}
+
+User supplies function and Jacobian:
+\begin{verbatim}
+SNES           snes;
+
+SNESCreate(PETSC_COMM_WORLD,&snes)
+SNESSetType(snes,type);
+SNESSetFromOptions(snes);
+SNESDestroy(SNES snes);
+\end{verbatim}
+
+where \n{type}: 
+\begin{itemize}
+\item \lstinline{SNESLS} Newton with line search
+\item \lstinline{SNESTR} Newton with trust region
+\item several specialized ones
+\end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{SNES specification: function evaluation}
+\begin{lstlisting}
+PetscErrorCode (*FunctionEvaluation)(SNES,Vec,Vec,void*);
+VecCreate(PETSC_COMM_WORLD,&r);
+SNESSetFunction(snes,r,FunctionEvaluation,*ctx);
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{SNES specification: jacobian evaluation}
+\begin{lstlisting}
+PetscErrorCode (*FormJacobian)(SNES,Vec,Mat,Mat,void*);
+MatCreate(PETSC_COMM_WORLD,&J);
+SNESSetJacobian(snes,J,J,FormJacobian,*ctx);
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{SNES solution}
+\begin{lstlisting}
+SNESSolve(snes,/* rhs= */ PETSC_NULL,x)
+SNESGetConvergedReason(snes,&reason)
+SNESGetIterationNumber(snes,&its)
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Example: two-variable problem}
+Define a context
+\begin{verbatim}
+typedef struct {
+  Vec xloc,rloc; VecScatter scatter; } AppCtx;
+
+/* User context */
+AppCtx         user;
+
+/* Work vectors in the user context */
+VecCreateSeq(PETSC_COMM_SELF,2,&user.xloc);
+VecDuplicate(user.xloc,&user.rloc);
+
+/* Create the scatter between the global and local x */
+ISCreateStride(MPI_COMM_SELF,2,0,1,&idx);
+VecScatterCreate(x,idx,user.xloc,idx,&user.scatter);
+\end{verbatim}
+\end{numberedframe}
+
+\begin{numberedframe}
+In the user function:
+\begin{verbatim}
+PetscErrorCode FormFunction
+    (SNES snes,Vec x,Vec f,void *ctx)
+{
+  VecScatterBegin(user->scatter,
+    x,user->xloc,INSERT_VALUES,SCATTER_FORWARD); // & End
+  VecGetArray(xloc,&xx);CHKERRQ(ierr);
+  VecSetValue
+    (f,0,/* something with xx[0]) & xx[1] */,
+     INSERT_VALUES);
+  VecRestoreArray(x,&xx);
+  PetscFunctionReturn(0);
+}
+\end{verbatim}
+\end{numberedframe}
+
+\begin{numberedframe}{Jacobian calculation through
+    finite differences}
+Jacobian calculation is difficult. It can be approximated through
+finite differences:
+\[ J(u)v \approx \frac{f(u+hv)-f(u)}{h} \]
+\begin{verbatim}
+MatCreateSNESMF(snes,&J);
+SNESSetJacobian
+ (snes,J,J,MatMFFDComputeJacobian,(void*)&user);
+\end{verbatim}
+\end{numberedframe}
+
+\begin{numberedframe}{Further possibilities}
+
+\begin{lstlisting}
+SNESSetTolerances
+(SNES snes,double atol,double rtol,double stol,
+int its,int fcts);
+\end{lstlisting}
+
+convergence test and monitoring, specific options for line search and
+trust region
+
+adaptive converngence: \n{-snes_ksp_ew_conv} (Eisenstat Walker)
+\end{numberedframe}
+
+
+\begin{numberedframe}{Solve customization}
+\begin{verbatim}
+SNESSetType(snes,SNESTR); /* newton with trust region */
+SNESGetKSP(snes,&ksp)
+KSPGetPC(ksp,&pc)
+PCSetType(pc,PCNONE)
+KSPSetTolerances(ksp,1.e-4,PETSC_DEFAULT,PETSC_DEFAULT,20)
+\end{verbatim}
+\end{numberedframe}
+
+\endinput
+
+PetscMPIInt    size,rank;
+PetscScalar    pfive = .5,*xx;
+PetscTruth     flg;
+AppCtx         user;         /* user-defined work context */
+IS             isglobal,islocal;
+
+/* ------------------------------------------------------------------- */
+#undef __FUNCT__
+#define __FUNCT__ "FormJacobian2"
+

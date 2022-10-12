@@ -1,0 +1,11 @@
+// molecularstruct.c
+struct point{ double x,y; double c; };
+struct force{ double x,y; double f; };
+
+/* Force on p1 from p2 */
+struct force force_calc( struct point p1,struct point p2 ) {
+  double dx = p2.x - p1.x, dy = p2.y - p1.y;
+  double  f = p1.c * p2.c / sqrt( dx*dx + dy*dy );
+  struct force exert = {dx,dy,f};
+  return exert;
+}

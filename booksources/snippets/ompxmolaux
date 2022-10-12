@@ -1,0 +1,43 @@
+// molecular.cxx
+class force {
+private:
+  double _x,_y; double _f;
+public:
+  force() { _x=0.; _y=0.; _f=0.; };
+  force(double x,double y,double f) 
+    : _x(x),_y(y),_f(f) {};
+  auto x() const { return _x; };
+  auto y() const { return _y; };
+  auto f() const { return _f; };
+  void add( const force& g ) {
+#pragma omp atomic
+    _x += g._x;
+#pragma omp atomic
+    _y += g._y;
+#pragma omp atomic
+    _f += g._f;
+  }
+  void sub( const force& g ) {
+#pragma omp atomic
+    _x -= g._x;
+#pragma omp atomic
+    _y -= g._y;
+#pragma omp atomic
+    _f += g._f;
+  }
+};
+
+class point {
+private:
+ double x,y; double c;
+public:
+  point() {
+    x = rand()/(double)RAND_MAX; y = rand()/(double)RAND_MAX; c = rand()/(double)RAND_MAX;
+  };
+  /* Force on p1 from p2 */
+  force force_calc( point p2 ) const {
+    double dx = p2.x - this->x, dy = p2.y - this->y;
+    double  f = this->c * p2.c / sqrt( dx*dx + dy*dy );
+    return force{dx,dy,f};
+  }
+};

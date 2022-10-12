@@ -1,0 +1,15 @@
+C:
+MPI_Comm commvariable; // datatype is defined in mpi.h
+
+Fortran with 2008 support:
+Type(MPI_Comm) :: commvariable
+
+Fortran legacy interface:
+Integer :: commvariable
+
+Python:
+MPI.Comm            : class of communicators
+MPI.Intracomm
+MPI.Intercomm       : subclasses of the MPI.Comm class.
+MPI.Comm.Is_inter()
+MPI.Comm.Is_intra() : convenience functions, not part of the MPI standard.

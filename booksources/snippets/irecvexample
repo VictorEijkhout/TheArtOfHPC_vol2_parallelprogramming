@@ -1,0 +1,8 @@
+double recv_data;
+MPI_Request request;
+MPI_Irecv
+  ( /* recv buffer/count/type: */ &recv_data,1,MPI_DOUBLE,
+	/* from: */ sender, /* tag: */ 0,
+	/* communicator: */ comm,
+	/* request: */ &request);
+MPI_Wait(&request,MPI_STATUS_IGNORE);

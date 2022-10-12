@@ -1,0 +1,34 @@
+Synopsis:
+Reads a file starting at the location specified by the
+individual file pointer (blocking, noncollective).
+
+C Syntax
+#include <mpi.h>
+int MPI_File_read(MPI_File fh, void *buf,
+    int count, MPI_Datatype datatype, MPI_Status *status)
+
+USE mpi_f08
+MPI_File_read(fh, buf, count, datatype, status, ierror)
+    TYPE(MPI_File), INTENT(IN) :: fh
+    TYPE(*), DIMENSION(..) :: buf
+    INTEGER, INTENT(IN) :: count
+    TYPE(MPI_Datatype), INTENT(IN) :: datatype
+    TYPE(MPI_Status) :: status
+    INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+
+USE MPI
+! or the older form: INCLUDE ’mpif.h’
+MPI_FILE_READ(FH, BUF, COUNT,
+    DATATYPE, STATUS, IERROR)
+    <type>    BUF(*)
+    INTEGER    FH, COUNT, DATATYPE, STATUS(MPI_STATUS_SIZE),IERROR
+
+Input parameters:
+fh : File handle (handle). 
+count : Number of elements in buffer (integer). 
+datatype : Data type of each buffer element (handle). 
+
+Output parameters:
+buf : Initial address of buffer (integer). 
+status : Status object (status). 
+IERROR : Fortran only: Error status (integer). 

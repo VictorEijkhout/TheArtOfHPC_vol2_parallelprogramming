@@ -1,0 +1,8 @@
+// reductpar.c
+m = INT_MIN;
+#pragma omp parallel reduction(max:m) num_threads(ndata)
+{
+  int t = omp_get_thread_num();
+  int d = data[t];
+  m = d>m ? d : m;
+};

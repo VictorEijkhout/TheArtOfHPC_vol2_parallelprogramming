@@ -1,0 +1,22 @@
+Synopsis
+nonblocking write using individual file pointer
+MPI_File_iwrite: non-collective
+
+C syntax:
+#ifdef HAVE_MPI_GREQUEST
+#include "mpiu_greq.h"
+#endif
+int MPI_File_iwrite(MPI_File fh,
+    ROMIO_CONST void *buf, int count, MPI_Datatype datatype, 
+    MPI_Request * request)
+
+Input parameters:
+fh  : file handle
+buf : Initial address of buffer (choice). 
+count : Number of elements in buffer (integer). 
+datatype : Data type of each buffer element (handle). 
+
+Output parameters:
+request : request object (handle) 
+status : Status object (status). 
+IERROR : Fortran only: Error status (integer). 

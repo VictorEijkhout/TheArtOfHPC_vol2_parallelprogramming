@@ -1,0 +1,18 @@
+// mapreduce.cxx
+template<typename key>
+class bincounter : public map<key,int> {
+public:
+  void operator+=( const bincounter<key>& other ) {
+    for ( auto [k,v] : other )
+      if ( map<key,int>::this->contains(k) )
+	this->at(k) += v;
+      else
+	this->insert( {k,v} );
+  };
+  void inc(char k) {
+    if ( map<key,int>::this->contains(k) )
+      this->at(k) += 1;
+    else
+      this->insert( {k,1} );
+  };
+};

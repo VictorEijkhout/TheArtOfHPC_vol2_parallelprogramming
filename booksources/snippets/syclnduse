@@ -1,0 +1,14 @@
+sycl::id<2> offset(1, 1);
+h.parallel_for
+  ( sycl::nd_range<2>(stencil_range, local_range, offset),
+    [=] ( sycl::nd_item<2> it ) {
+// Load this tile into work-group local memory
+    sycl::id<2>    lid    = it.get_local_id();
+    sycl::range<2> lrange = it.get_local_range();
+    for   (int ti = lid[0]; ti < B + 2; ti += lrange[0]) {
+      for (int tj = lid[1]; tj < B + 2; tj += lrange[1]) {
+        int gi = ti + B * it.get_group(0);
+        int gj = tj + B * it.get_group(1);
+        tile[ti][tj] = input[gi][gj];
+      }
+    }

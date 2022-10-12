@@ -1,0 +1,16 @@
+Synopsis:
+int MPI_Type_match_size
+   (int typeclass, int size, MPI_Datatype *datatype)
+
+Input Parameters
+typeclass : generic type specifier (integer)
+size : size, in bytes, of representation (integer)
+
+Output Parameters
+datatype : datatype with correct type, size (handle)
+
+Notes
+typeclass is one of:
+- MPI_TYPECLASS_REAL,
+- MPI_TYPECLASS_INTEGER and
+- MPI_TYPECLASS_COMPLEX.

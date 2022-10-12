@@ -1,0 +1,521 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-9
+%%%%
+%%%% debug.tex : tutorial about parallel debugging
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{debugging|(}
+
+When a program misbehaves, \emph{debugging} is the process of finding
+out \emph{why}.
+There are various strategies of finding errors in a program.
+The crudest one is debugging by print statements. If you have a
+notion of where in your code the error arises, you can edit your code
+to insert print statements, recompile, rerun, and see if the output
+gives you any suggestions. There are several problems with this:
+\begin{itemize}
+\item The edit/compile/run cycle is time consuming, especially since
+\item often the error will be caused by an earlier section of code,
+  requiring you to edit, compile, and rerun repeatedly. Furthermore,
+\item the amount of data produced by your program can be too large to
+  display and inspect effectively, and
+\item if your program is parallel, you probably need to print out data
+  from all proccessors, making the inspection process very tedious.
+\end{itemize}
+
+\index{gdb|(}
+
+For these reasons, the best way to debug is by the use of an
+interactive \indexterm{debugger}, a program that allows you to monitor
+and control the behaviour of a running program. In this section you
+will familiarize yourself with
+\emph{gdb}\index{GNU!gdb|see{gdb}}, which is the open source
+debugger of the \indexterm{GNU} project. Other debuggers are
+proprietary, and typically come with a compiler suite. Another
+distinction is that gdb is a commandline debugger; there are
+graphical debuggers such as \indexterm{ddd} (a~frontend to gdb) or
+\indexterm{DDT} and \indexterm{TotalView} (debuggers for parallel
+codes). We limit ourselves to gdb, since it incorporates the basic
+concepts common to all debuggers.
+
+In this tutorial you will debug a number of simple programs with
+gdb and valgrind. The files can be found in the repository
+in the directory \n{tutorials/debug_tutorial_files}.
+%\n{http://tinyurl.com/ISTC-debug-tutorial}.
+
+\Level 0 {Step 0: compiling for debug}
+
+You often need to recompile your code before you can debug it.
+A~first reason for this is that the binary code typically knows
+nothing about what variable names corresponded to what memory locations,
+or what lines in the source to what instructions. In order to make
+the binary executable know this, you have to include the \indexterm{symbol table}
+in it, which is done by adding the \n{-g} option to the compiler line.
+
+Usually, you also need to lower
+the \indextermbus{compiler}{optimization level}: a production code
+will often be compiled with flags such as \n{-O2} or \n{-Xhost} that
+try to make the code as fast as possible, but for debugging you need
+to replace this by~\n{-O0} (`oh-zero').  The reason is that higher
+levels will reorganize your code, making it hard to relate the
+execution to the source\footnote{Typically, actual code motion is done
+by \n{-O3}, but at level \n{-O2} the compiler will inline functions
+and make other simplifications.}.
+
+\Level 0 {Invoking {\tt gdb}}
+
+There are three ways of using gdb: using it to start a program,
+attaching it to an already running program, or using it to inspect a
+\indexterm{core dump}. We will only consider the first possibility.
+
+Here is an exaple of how to start gdb with program that has no
+arguments (Fortran users, use \n{hello.F}):
+\codelisting{tutorials/gdb/c/hello.c}
+\begin{verbatim}
+%% cc -g -o hello hello.c
+# regular invocation:
+%% ./hello
+hello world
+# invocation from gdb:
+%% gdb hello
+GNU gdb 6.3.50-20050815 # ..... version info
+Copyright 2004 Free Software Foundation, Inc. .... copyright info ....
+(gdb) run
+Starting program: /home/eijkhout/tutorials/gdb/hello 
+Reading symbols for shared libraries +. done
+hello world
+
+Program exited normally.
+(gdb) quit
+%%
+\end{verbatim}
+
+Important note: the program was compiled with the \indexterm{debug
+  flag}~\n{-g}. This causes the \indexterm{symbol table} (that is, the
+translation from machine address to program variables) and other debug
+information to be included in the binary. This will make your binary
+larger than strictly necessary, but it will also make it slower, for
+instance because the compiler will not perform certain
+optimizations\footnote{Compiler optimizations are not supposed to
+  change the semantics of a program, but sometimes do. This can lead
+  to the nightmare scenario where a program crashes or gives incorrect
+  results, but magically works correctly with compiled with debug and
+  run in a debugger.}.
+
+To illustrate the presence of the symbol table do
+\begin{verbatim}
+%% cc -g -o hello hello.c
+%% gdb hello
+GNU gdb 6.3.50-20050815 # ..... version info
+(gdb) list
+\end{verbatim}
+and compare it with leaving out the \n{-g} flag:
+\begin{verbatim}
+%% cc -o hello hello.c
+%% gdb hello
+GNU gdb 6.3.50-20050815 # ..... version info
+(gdb) list
+\end{verbatim}
+
+For a program with commandline input we give the arguments to the
+\n{run} command (Fortran users use \n{say.F}):
+\codelisting{tutorials/gdb/c/say.c}
+\begin{verbatim}
+%% cc -o say -g say.c
+%% ./say 2
+hello world
+hello world
+%% gdb say
+.... the usual messages ...
+(gdb) run 2
+Starting program: /home/eijkhout/tutorials/gdb/c/say 2
+Reading symbols for shared libraries +. done
+hello world
+hello world
+
+Program exited normally.
+\end{verbatim}
+
+\Level 0 {Finding errors}
+
+Let us now consider some programs with errors.
+
+\Level 1 {C programs}
+
+\codelisting{tutorials/gdb/c/square.c}
+\begin{verbatim}
+%% cc -g -o square square.c
+ %% ./square
+5000
+Segmentation fault
+\end{verbatim}
+The \indexterm{segmentation fault} (other messages are possible too) 
+indicates that we are accessing
+memory that we are not allowed to, making the program stop.
+A~debugger will quickly tell us where this happens:
+\begin{verbatim}
+%% gdb square
+(gdb) run
+50000
+
+Program received signal EXC_BAD_ACCESS, Could not access memory.
+Reason: KERN_INVALID_ADDRESS at address: 0x000000000000eb4a
+0x00007fff824295ca in __svfscanf_l ()
+\end{verbatim}
+Apparently the error occurred in a function \n{__svfscanf_l}, which is
+not one of ours, but a system function. Using the \n{backtrace}
+(or~\n{bt}, also \n{where} or~\n{w}) command we quickly find out how
+this came to be called:
+\begin{verbatim}
+(gdb) backtrace
+#0  0x00007fff824295ca in __svfscanf_l ()
+#1  0x00007fff8244011b in fscanf ()
+#2  0x0000000100000e89 in main (argc=1, argv=0x7fff5fbfc7c0) at square.c:7
+\end{verbatim}
+We take a close look at line~7, and see that we need to
+change \n{nmax} to~\n{&nmax}.
+
+There is still an error in our program:
+\begin{verbatim}
+(gdb) run
+50000
+
+Program received signal EXC_BAD_ACCESS, Could not access memory.
+Reason: KERN_PROTECTION_FAILURE at address: 0x000000010000f000
+0x0000000100000ebe in main (argc=2, argv=0x7fff5fbfc7a8) at square1.c:9
+9           squares[i] = 1./(i*i); sum += squares[i];
+\end{verbatim}
+We investigate further:
+\begin{verbatim}
+(gdb) print i
+$1 = 11237
+(gdb) print squares[i]
+Cannot access memory at address 0x10000f000
+\end{verbatim}
+and we quickly see that we forgot to allocate \n{squares}.
+
+By the way, we were lucky here: this sort of memory errors is not always
+detected. Starting our programm with a smaller input does not lead to
+an error:
+\begin{verbatim}
+(gdb) run
+50
+Sum: 1.625133e+00
+
+Program exited normally.
+\end{verbatim}
+
+\Level 1 {Fortran programs}
+
+Compile and run the following program:
+\codelisting{tutorials/gdb/f/square.F}
+It should end prematurely with a message such as `Illegal instruction'.
+Running the program in gdb quickly tells you where the problem lies:
+\begin{verbatim}
+(gdb) run
+Starting program: tutorials/gdb//fsquare 
+Reading symbols for shared libraries ++++. done
+
+Program received signal EXC_BAD_INSTRUCTION, Illegal instruction/operand.
+0x0000000100000da3 in square () at square.F:7
+7                sum = sum + squares(i)
+\end{verbatim}
+We take a close look at the code and see that we did not allocate
+\n{squares} properly.
+
+\Level 0 {Memory debugging with Valgrind}
+\label{sec:valgrind}
+
+Insert the following allocation of \n{squares} in your program:
+\begin{verbatim}
+squares = (float *) malloc( nmax*sizeof(float) );
+\end{verbatim}
+Compile and run your program. The output will likely be correct,
+although the program is not. Can you see the problem?
+
+\index{valgrind|(}
+
+To find such subtle memory errors you need a different tool: a memory
+debugging tool. A~popular (because open source) one is
+\emph{valgrind}; a~common commercial tool is \indexterm{purify}.
+
+\codelisting{tutorials/gdb/c/square1.c}
+%
+Compile this program with \n{cc -o square1 square1.c} and run it with
+\n{valgrind square1} (you need to type the input value). You will lots
+of output, starting with:
+{\small
+\begin{verbatim}
+%% valgrind square1
+==53695== Memcheck, a memory error detector
+==53695== Copyright (C) 2002-2010, and GNU GPL'd, by Julian Seward et al.
+==53695== Using Valgrind-3.6.1 and LibVEX; rerun with -h for copyright info
+==53695== Command: a.out
+==53695== 
+10
+==53695== Invalid write of size 4
+==53695==    at 0x100000EB0: main (square1.c:10)
+==53695==  Address 0x10027e148 is 0 bytes after a block of size 40 alloc'd
+==53695==    at 0x1000101EF: malloc (vg_replace_malloc.c:236)
+==53695==    by 0x100000E77: main (square1.c:8)
+==53695== 
+==53695== Invalid read of size 4
+==53695==    at 0x100000EC1: main (square1.c:11)
+==53695==  Address 0x10027e148 is 0 bytes after a block of size 40 alloc'd
+==53695==    at 0x1000101EF: malloc (vg_replace_malloc.c:236)
+==53695==    by 0x100000E77: main (square1.c:8)
+\end{verbatim}
+}
+Valgrind is informative but cryptic, since it works on the bare
+memory, not on variables. Thus, these error messages take some
+exegesis. They state that a line 10 writes a 4-byte object immediately
+after a block of 40 bytes that was allocated. In other words: the code
+is writing outside the bounds of an allocated array. Do you see what
+the problem in the code is?
+
+Note that valgrind also reports at the end of the program run how much
+memory is still in use, meaning not properly \n{free}d.
+
+If you fix the array bounds and recompile and rerun the program,
+valgrind still complains:
+{\small
+\begin{verbatim}
+==53785== Conditional jump or move depends on uninitialised value(s)
+==53785==    at 0x10006FC68: __dtoa (in /usr/lib/libSystem.B.dylib)
+==53785==    by 0x10003199F: __vfprintf (in /usr/lib/libSystem.B.dylib)
+==53785==    by 0x1000738AA: vfprintf_l (in /usr/lib/libSystem.B.dylib)
+==53785==    by 0x1000A1006: printf (in /usr/lib/libSystem.B.dylib)
+==53785==    by 0x100000EF3: main (in ./square2)
+\end{verbatim}
+}
+Although no line number is given, the mention of \n{printf} gives an
+indication where the problem lies.
+The reference to an `uninitialized value' is again cryptic: the only
+value being output is \n{sum}, and that is not uninitialized: it has
+been added to several times. Do you see why valgrind calls is
+uninitialized all the same?
+
+\index{valgrind|)}
+
+\Level 0 {Stepping through a program}
+
+Often the error in a program is sufficiently obscure that you need to
+investigate the program run in detail. Compile the following program
+%
+\codelisting{tutorials/gdb/c/roots.c}
+%
+and run it:
+\begin{verbatim}
+%% ./roots
+sum: nan
+\end{verbatim}
+Start it in gdb as follows:
+\begin{verbatim}
+%% gdb roots
+GNU gdb 6.3.50-20050815 (Apple version gdb-1469) (Wed May  5 04:36:56 UTC 2010)
+Copyright 2004 Free Software Foundation, Inc.
+....
+(gdb) break main
+Breakpoint 1 at 0x100000ea6: file root.c, line 14.
+(gdb) run
+Starting program: tutorials/gdb/c/roots
+Reading symbols for shared libraries +. done
+
+Breakpoint 1, main () at roots.c:14
+14        float x=0;
+\end{verbatim}
+Here you have done the following:
+\begin{itemize}
+\item Before calling \n{run} you set a \indexterm{breakpoint} at the
+  main program, meaning that the execution will stop when it reaches
+  the main program.
+\item You then call \n{run} and the program execution starts;
+\item The execution stops at the first instruction in main.
+\end{itemize}
+If execution is stopped at a breakpoint, you can do various things,
+such as issuing the \n{step} command:
+\begin{verbatim}
+Breakpoint 1, main () at roots.c:14
+14        float x=0;
+(gdb) step
+15        for (i=100; i>-100; i--)
+(gdb) 
+16          x += root(i);
+(gdb) 
+\end{verbatim}
+(if you just hit return, the previously issued command is
+repeated). Do a number of \n{step}s in a row by hitting return. What
+do you notice about the function and the loop?
+
+Switch from doing \n{step} to doing \n{next}. Now what do you notice
+about the loop and the function? 
+
+Set another breakpoint: \n{break 17} and do \n{cont}. What happens?
+
+Rerun the program after you set a breakpoint on the line with the
+\n{sqrt} call. When the execution stops there do \n{where} and
+\n{list}.
+
+\begin{itemize}
+\item If you set many breakpoints, you can find out what they are with
+  \n{info breakpoints}. 
+\item You can remove breakpoints with \n{delete n} where \n{n} is the
+  number of the breakpoint.
+\item If you restart your program with \n{run} without leaving gdb,
+  the breakpoints stay in effect.
+\item If you leave gdb, the breakpoints are cleared but you can save
+  them: \n{save breakpoints <file>}. Use \n{source <file>} to read
+  them in on the next gdb run.
+\end{itemize}
+
+\Level 0 {Inspecting values}
+
+Run the previous program again in gdb: set a breakpoint at the line
+that does the \n{sqrt} call before you actually call \n{run}. When the
+program gets to line~8 you can do \n{print n}. Do \n{cont}. Where does
+the program stop?
+
+If you want to repair a variable, you can do \n{set var=value}. Change
+the variable \n{n} and confirm that the square root of the new value
+is computed. Which commands do you do?
+
+If a problem occurs in a loop, it can be tedious keep typing \n{cont}
+and inspecting the variable with \n{print}. Instead you can add a
+condition to an existing breakpoint:
+the following:
+\begin{verbatim}
+condition 1 if (n<0)
+\end{verbatim}
+or set the condition when you define the breakpoint:
+\begin{verbatim}
+break 8 if (n<0)
+\end{verbatim}
+Another possibility is to use \n{ignore 1 50}, which will not stop at
+breakpoint 1 the next 50 times.
+
+Remove the existing breakpoint, redefine it with the condition \n{n<0}
+and rerun your program. When the program breaks, find for what value
+of the loop variable it happened. What is the sequence of commands you use?
+
+\index{gdb|)}
+
+\Level 0 {Parallel debugging}
+\index{debugging!parallel|(}
+
+Debugging parallel programs is harder than than sequential
+programs, because every sequential bug may show up, plus a number
+of new types, caused by the interaction of the various processes.
+
+Here are a few possible parallel bugs:
+\begin{itemize}
+\item Processes can \indexterm{deadlock} because they are waiting for
+  a message that never comes. This typically happens with blocking
+  send/receive calls due to an error in program logic.
+\item If an incoming message is unexpectedly larger than anticipated,
+  a memory error can occur.
+\item A collective call will hang if somehow one of the processes does
+  not call the routine.
+\end{itemize}
+
+There are few low-budget solutions to parallel debugging. The main one
+is to create an xterm for each process. We will describe this next.
+There are also commercial packages such as \indexterm{DDT} and
+\indexterm{TotalView}, that offer a GUI. They are very convenient but
+also expensive. The \indexterm{Eclipse} project has a parallel package, 
+\indextermbus{Eclipse}{PTP}, that includes a graphic debugger.
+
+\Level 1 {MPI debugging with gdb}
+\index{gdb|(}
+
+You can not run parallel programs in gdb, but you can start multiple
+gdb processes that behave just like MPI processes! The command
+\begin{verbatim}
+mpirun -np <NP> xterm -e gdb ./program 
+\end{verbatim}
+create a number of \n{xterm} windows, each of which execute
+the commandline \n{gdb ./program}. And because these xterms have
+been started with \n{mpirun}, they actually form a communicator.
+
+\index{gdb|)}
+\begin{pcse}
+\Level 1 {Full-screen parallel debugging with DDT}
+\index{DDT|(}
+
+In this tutorial you will run and diagnose a few incorrect MPI
+programs using DDT.  You can start a session with \n{ddt yourprogram
+  &}, or use \n{File > New Session > Run} to specify a program name,
+and possibly parameters.  In both cases you get a dialog where you
+can specify program parameters. It is also important to check the following:
+\begin{itemize}
+\item You can specify the number of cores here;
+\item It is usually a good idea to turn on memory checking;
+\item Make sure you specify the right MPI.
+\end{itemize}
+
+When DDT opens on your main program, it halts at the \n{MPI_Init}
+statement, and need to press the forward arrow, top left of the main
+window.
+
+\heading{Problem1} This program has every process independently generate
+random numbers, and if the number meets a certain condition, stops execution.
+There is no problem with this code as such, so let's suppose you simply want
+to monitor its execution.
+\begin{itemize}
+\item Compile \n{abort.c}. Don't forget about the \n{-g -O0} flags;
+  if you use the makefile they are included automatically.
+\item Run the program with DDT, you'll see that it concludes
+  succesfully.
+\item Set a breakpoint at the Finalize statement in the subroutine, by
+  clicking to the left of the line number. Now if you run the program
+  you'll get a message that all processes are stopped at a
+  breakpoint. Pause the execution.
+\item The `Stacks' tab will tell you that all processes are the same
+  point in the code, but they are not in fact in the same
+  iteration. 
+\item You can for instance use the `Input/Output' tabs to see what every process has been doing.
+\item Alternatively, use the variables pane on the right to examine
+  the \n{it} variable. You can do that for individual processes, but
+  you can also control click on the \n{it} variable and choose \n{View
+    as Array}. Set up the display as a one-dimensional array and check
+  the iteration numbers.
+\item Activate the barrier statement and rerun the code. Make sure you
+  have no breakpoints. Reason that the code will not complete, but
+  just hang.
+\item Hit the general Pause button. Now what difference do you see in the `Stacks' tab?
+\end{itemize}
+
+\heading{Problem2} Compile \n{problem1.c} and run it in DDT. You'll
+get a dialog warning about an error condition.
+\begin{itemize}
+\item Pause the program in the dialog. Notice that only the root process is
+  paused. If you want to inspect other processes, press the general
+  pause button. Do this.
+\item In the bottom panel click on \n{Stacks}. This gives you the
+  `call stack', which tells you what the processes were doing when you
+  paused them. Where is the root process in the execution? Where are
+  the others?
+\item From the call stack it is clear what the error was. Fix it and
+  rerun with \n{File > Restart Session}.
+\end{itemize}
+
+\heading{Problem2}
+
+\index{DDT|)}
+\end{pcse}
+
+\index{debugging!parallel|(}
+
+\Level 0 {Further reading}
+
+A good tutorial: \url{http://www.dirac.org/linux/gdb/}.
+
+Reference manual: \url{http://www.ofb.net/gnu/gdb/gdb_toc.html}.
+
+\index{debugging|)}

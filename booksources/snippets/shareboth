@@ -1,0 +1,12 @@
+// sharing.c
+#pragma omp parallel
+  { // not a parallel for: just a bunch of reps
+    for (int j = 0; j < reps; j++) {
+#pragma omp for schedule(static,1)
+      for (int i = 0; i < N; i++){
+#pragma omp atomic
+	a++;  
+      }
+      
+    }
+  }

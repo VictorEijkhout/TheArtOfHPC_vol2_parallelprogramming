@@ -1,0 +1,8 @@
+// qforwait.cxx
+[=](sycl::id<1> i) {
+#ifdef __INTEL_CLANG_COMPILER
+  data[i] = i;  // Intel extension
+#else
+  data[i[0]] = i[0];
+#endif
+}

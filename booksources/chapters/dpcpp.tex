@@ -1,0 +1,526 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%% dpcpp.tex : intro stuff about DPC++
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+This chapter explains the basic concepts of Sycl/Dpc++,
+and helps you get
+started on running your first program.
+
+\begin{itemize}
+\item \indextermdef{SYCL} is a C++-based language for portable parallel programming.
+\item \indexac{DPCPP} is Intel's extension of Sycl.
+\item \indextermdef{OneAPI} is Intel's compiler suite,
+  which contains the \ac{DPCPP} compiler.
+\end{itemize}
+
+\begin{dpcppnote}
+  The various Intel extensions are listed here:
+  \url{https://spec.oneapi.com/versions/latest/elements/dpcpp/source/index.html#extensions-table}
+\end{dpcppnote}
+
+\Level 0 {Logistics}
+
+Headers:
+\begin{lstlisting}
+#include <CL/sycl.hpp>
+\end{lstlisting}
+
+You can now include namespace, but with care!
+If you use
+\begin{lstlisting}
+using namespace cl;
+\end{lstlisting}
+you have to prefix all SYCL class with \lstinline+sycl::+,
+which is a bit of a bother.
+However, if you use
+\begin{lstlisting}
+using namespace cl::sycl;
+\end{lstlisting}
+you run into the fact that SYCL has its own versions of many \ac{STL}
+commands, and so you will get name collisions.
+The most obvious example is that 
+the \lstinline+cl::sycl+ name space has its own versions of \n{cout} and \n{endl}.
+Therefore you have to use explicitly \lstinline+std::cout+ and \lstinline+std::end+.
+Using the wrong I/O will cause tons of inscrutable error messages.
+Additionally, SYCL has its own version of \lstinline{free},
+and of several math routines.
+
+\begin{dpcppnote}
+  \begin{lstlisting}
+    using namespace sycl;
+  \end{lstlisting}
+\end{dpcppnote}
+
+\Level 0 {Platforms and devices}
+
+Since \ac{DPCPP} is cross-platform, we first need to discovers
+the devices.
+
+First we list the platforms:
+\cxxverbatimsnippet[code/dpcpp/cxx/devices.cxx]{dpcppplatforms}
+
+Then for each platform we list the devices:
+\cxxverbatimsnippet[code/dpcpp/cxx/devices.cxx]{dpcppdevices}
+
+You can query what type of device you are dealing with by
+\indexsyclshow{is_host}, \indexsyclshow{is_cpu}, \indexsyclshow{is_gpu}.
+
+\Level 0 {Queues}
+
+The execution mechanism of SYCL is the
+\emph{queue}\index{queue!SYCL}:
+a sequence of actions that will be executed on a selected device.
+The only user action is submitting actions to a queue;
+the queue is executed at the end of the scope where it is declared.
+
+Queue execution is asynchronous with host code.
+
+\Level 1 {Device selectors}
+
+You need to select a device on which to execute the queue.
+A~single queue can only dispatch to a single device.
+
+A queue is coupled to one specific device,
+so it can not spread work over multiple devices.
+You can find a default device for the queue with
+\begin{lstlisting}
+  sycl::queue myqueue;
+\end{lstlisting}
+
+The following example explicitly assigns the queue to the CPU device
+using the \lstinline+sycl::+\indexsyclshow{cpu_selector}.
+\cxxverbatimsnippet[code/dpcpp/cxx/cpuname.cxx]{cpuclass}
+
+The \lstinline+sycl::+\indexsyclshow{host_selector} bypasses any devices and
+make the code run on the host.
+
+It is good for your sanity to print the name of the device
+you are running on:
+\cxxverbatimsnippet[code/dpcpp/cxx/devname.cxx]{devname}
+
+If you try to select a device that is not available,
+a \lstinline+sycl::+\indexsyclshow{runtime_error} exception will be thrown.
+
+\begin{dpcppnote}
+  \begin{lstlisting}
+    #include "CL/sycl/intel/fpga_extensions.hpp"
+    fpga_selector
+  \end{lstlisting}
+\end{dpcppnote}
+
+\Level 1 {Queue execution}
+
+It seems that queue kernels will also be executed when only they
+go out of scope, but not the queue:
+\begin{lstlisting}
+cpu_selector selector;
+queue q(selector);
+{
+  q.submit( /* some kernel */ );
+} // here the kernel executes
+\end{lstlisting}
+
+\Level 1 {Kernel ordering}
+
+Kernels are not necessarily executed in the order in which they are submitted.
+You can enforce this by specifying an \indextermsub{in-order}{queue}:
+\begin{lstlisting}
+sycl::queue myqueue{property::queue::inorder()};
+\end{lstlisting}
+
+\Level 0 {Kernels}
+
+One kernel per submit.
+
+\begin{lstlisting}
+myqueue.submit( [&] ( handler &commandgroup ) {
+    commandgroup.parallel_for<uniquename> 
+      ( range<1>{N},
+        [=] ( id<1> idx ) { ... idx }
+      )
+    } );
+\end{lstlisting}
+
+Note that the lambda in the kernel captures by value.
+Capturing by reference makes no sense,
+since the kernel is executed on a device.
+
+\begin{lstlisting}
+cgh.single_task(
+  [=]() {
+    // kernel function is executed EXACTLY once on a SINGLE work-item
+});
+\end{lstlisting}
+
+The \indexsyclshow{submit} call results in an event object:
+\begin{lstlisting}
+auto myevent = myqueue.submit( /* stuff */ );
+\end{lstlisting}
+This can be used for two purposes:
+\begin{enumerate}
+\item It becomes possible to wait for this specific event:
+\begin{lstlisting}
+myevent.wait();    
+\end{lstlisting}
+\item It can be used to indicate kernel dependencies:
+\begin{lstlisting}
+myqueue.submit( [=] (handler &h) {
+    h.depends_on(myevent);
+    /* stuff */
+    } );
+\end{lstlisting}
+\end{enumerate}
+
+\Level 0 {Parallel operations}
+
+\Level 1 {Loops}
+  
+\begin{lstlisting}
+cgh.parallel_for(
+  range<3>(1024,1024,1024),
+  // using 3D in this example
+  [=](id<3> myID) {
+    // kernel function is executed on an n-dimensional range (NDrange)
+});
+
+cgh.parallel_for(
+  nd_range<3>( {1024,1024,1024},{16,16,16} ),
+  // using 3D in this example 
+  [=](nd_item<3> myID) {
+    // kernel function is executed on an n-dimensional range (NDrange)
+});
+
+cgh.parallel_for_work_group(
+  range<2>(1024,1024),
+  // using 2D in this example
+  [=](group<2> myGroup) {
+    // kernel function is executed once per work-group
+});
+
+grp.parallel_for_work_item(
+  range<1>(1024),
+  // using 1D in this example
+  [=](h_item<1> myItem) {
+    // kernel function is executed once per work-item
+});
+\end{lstlisting}
+
+\Level 2 {Loop bounds: ranges}
+
+SYCL adopts the modern C++ philosophy that one does not iterate
+over by explicitly enumerating indices, but by indicating their range.
+This is realized by the \indexsycldef{range} class,
+which is templated over the number of space dimensions.
+
+\begin{lstlisting}
+sycl::range<2> matrix{10,10};
+\end{lstlisting}
+
+Some compilers are sensitive to the type of the integer arguments:
+\begin{lstlisting}
+sycl::range<1> array{ static_cast<size_t>(size)} ;
+\end{lstlisting}
+
+\Level 2 {Loop indices}
+
+Kernels such as \indexsyclshow{parallel_for}
+expects two arguments:
+\begin{itemize}
+\item a \indexsyclshow{range} over which to index; and
+\item a lambda of one argument: an index.
+\end{itemize}
+
+There are several ways of indexing.
+The \indexsyclshow{id<nd>} class of multi-dimensional indices.
+\begin{lstlisting}
+myHandle.parallel_for<class uniqueID>
+   ( mySize,
+     [=]( id<1> index ) {
+       float x = index.get(0) * h;
+       deviceAccessorA[index] *= 2.;
+     }
+   )
+\end{lstlisting}
+
+\begin{lstlisting}
+cgh.parallel_for<class foo>(
+    range<1>{D*D*D},
+    [=](id<1> item) {
+        xx[ item[0] ] = 2 * item[0] + 1;
+    }
+)
+\end{lstlisting}
+
+While the C++ vectors remain one-dimensional,
+\ac{DPCPP} allows you to make multi-dimensional buffers:
+\begin{lstlisting}
+std::vector<int> y(D*D*D);
+buffer<int,1> y_buf(y.data(), range<1>(D*D*D));
+cgh.parallel_for<class foo2D>
+   (range<2>{D,D*D},
+    [=](id<2> item) {
+        yy[ item[0] + D*item[1] ] = 2;
+    }
+   );
+\end{lstlisting}
+
+\begin{dpcppnote}
+  There is an implicit conversion from the one-dimensional
+  \lstinline+sycl::+\indexsyclshow{id<1>}
+  to \lstinline+size_t+, so
+\begin{lstlisting}
+[=](sycl::id<1> i) {
+   data[i] = i;
+}
+\end{lstlisting}
+is legal, which in SYCL requires
+\begin{lstlisting}
+data[i[0]] = i[0];
+\end{lstlisting}
+\end{dpcppnote}
+
+\Level 2 {Multi-dimensional indexing}
+
+\cxxverbatimsnippet{syclrange2}
+
+\cxxverbatimsnippet{syclrange2nd}
+
+We first copy global data into an array local to the work group:
+%
+\cxxverbatimsnippet{syclnduse}
+
+Global coordinates in the input are computed from the
+ \indexsyclshow{nd_item}'s coordinate and group:
+\begin{lstlisting}
+[=] ( sycl::nd_item<2> it ) {
+for   (int ti ... ) {
+  for (int tj ... ) {
+    int gi = ti + B * it.get_group(0);
+    int gj = tj + B * it.get_group(1);
+    ... = input[gi][gj];
+\end{lstlisting}
+
+Local coordinates in the tile, including boundary,
+I DON'T QUITE GET THIS YET.
+\begin{lstlisting}
+[=] ( sycl::nd_item<2> it ) {
+sycl::id<2>    lid    = it.get_local_id();
+sycl::range<2> lrange = it.get_local_range();
+for   (int ti = lid[0]; ti < B + 2; ti += lrange[0]) {
+  for (int tj = lid[1]; tj < B + 2; tj += lrange[1]) {
+    tile[ti][tj] = ..
+\end{lstlisting}
+
+\Level 1 {Task dependencies}
+
+Each \indexmplshow{submit} call can be said to correspond to a `task'.
+Since it returns a token, it becomes possible to specify
+task dependencies by refering to a token as a dependency
+in a later specified task.
+\begin{lstlisting}
+queue myQueue;
+auto myTokA = myQueue.submit
+   ( [&](handler& h) {
+       h.parallel_for<class taskA>(...);
+     }
+   );
+auto myTokB = myQueue.submit
+   ( [&](handler& h) {
+       h.depends_on(myTokA);
+       h.parallel_for<class taskB>(...);
+     }
+   );
+\end{lstlisting}
+
+\Level 1 {Race conditions}
+
+Sycl has the same problems with
+\emph{race conditions}\index{race condition!in SYCL}
+that other shared memory system have:
+
+\cxxverbatimsnippet{dpcppsumreduct}
+
+To get this working correctly would need either
+a reduction primitive or atomics on the accumulator.
+The 2020 proposed standard has improved atomics.
+
+\cxxverbatimsnippet{dpcppsumreduction}
+
+\Level 1 {Reductions}
+
+Reduction operations were added in the the SYCL 2020 Provisional Standard,
+meaning that they are not yet finalized.
+
+Here is one approach, which works in \indexterm{hipsycl}:
+%
+\cxxverbatimsnippet{syclsumreduct}
+%
+Here a \lstinline+sycl::+\indexsycldef{reduction} object is created
+from the target data and the reduction operator. 
+This is then passed to the \indexsyclshow{parallel_for}
+and its \indexsycldef{combine} method is called.
+
+\Level 0 {Memory access}
+
+Memory treatment in SYCL is a little complicated, because is (at the very least)
+host memory and device memory, which are not necessarily coherent.
+
+There are also three mechanisms:
+\begin{itemize}
+\item Unified Shared Memory, based on ordinary C/C++ `star'-pointers.
+\item Buffers, using the \indexsyclshow{buffer} class;
+  this needs the \indexsyclshow{accessor} class to access the data.
+\item Images.
+\end{itemize}
+
+\begin{table}[ht]
+  \caption{Memory types and treatments}
+  \label{tab:sycl-mem}  
+  \begin{tabular}{llll}
+    \toprule
+    Location&allocation&coherence&copy to/from device \\
+    \midrule
+    Host  &\n{malloc}                   &explicit transfer   &\indexsyclshow{queue::memcpy}\\
+          &\indexsyclshow{malloc_host}  &coherent host/device&\\
+    Device&\indexsyclshow{malloc_device}&explicit transfer   &\indexsyclshow{queue::memcpy}\\
+    Shared&\indexsyclshow{malloc_shared}&coherent host/device&\\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\Level 1 {Unified shared memory}
+
+Memory allocated with \indexsyclshow{malloc_host}
+is visible on the host:
+\cxxverbatimsnippet[code/dpcpp/cxx/outshared.cxx]{syclsharealloc}
+
+Device memory is allocated with \indexsyclshow{malloc_device},
+passing the queue as parameter:
+%
+\cxxverbatimsnippet{sycldevcalloc}
+%
+Note the corresponding \indexsyclshow{free} call
+that also has the queue as parameter.
+
+Note that you need to be in a parallel task. 
+The following gives a segmentation error:
+\begin{lstlisting}
+  [&](sycl::handler &cgh) {
+    shar_float[0] = host_float[0];
+  }
+\end{lstlisting}
+
+Ordinary memory, for instance from \indexsyclshow{malloc},
+has to be copied in a kernel:
+\cxxverbatimsnippet[code/dpcpp/cxx/outdevice.cxx]{sycldevcmemcpy}
+
+\Level 1 {Buffers and accessors}
+
+Arrays need to be declared in a way such that they can be
+access from any device.
+
+\cxxverbatimsnippet[code/dpcpp/cxx/forloop.cxx]{syclbufdef}
+
+Inside the kernel, the array is then unpacked from the buffer:
+
+\cxxverbatimsnippet[code/dpcpp/cxx/forloop.cxx]{syclbufuse}
+
+However, the \indexsyclshow{get_access} function results
+in a \lstinline+sycl::+\indexsyclshow{accessor}, not a pointer to a simple type.
+The precise type is templated and complicated, so this 
+is a good place to use \lstinline+auto+.
+
+Accessors can have a mode associated:
+\lstinline+sycl::access::mode::+\indexsyclshow{read}
+\lstinline+sycl::access::mode::+\indexsyclshow{write}
+
+\begin{dpcppnote}
+\begin{lstlisting}
+    array<floattype,1> leftsum{0.};
+#ifdef __INTEL_CLANG_COMPILER
+    sycl::buffer leftbuf(leftsum);
+#else
+    sycl::range<1> scalar{1};
+    sycl::buffer<floattype,1> leftbuf(leftsum.data(),scalar);
+\end{lstlisting}
+\end{dpcppnote}
+
+\begin{dpcppnote}
+there are modes
+\begin{lstlisting}
+// standard
+sycl::accessor acc = buffer.get_access<sycl::access::mode:write>(h);
+// dpcpp extension
+sycl::accessor acc( buffer,h,sycl::read_only );
+sycl::accessor acc( buffer,h,sycl::write_only );
+\end{lstlisting}
+\end{dpcppnote}
+
+\Level 1 {Querying}
+
+The function \indexsyclshow{get_range} can query the size of either a buffer
+or an accessor:
+\cxxverbatimsnippet[code/dpcpp/cxx/range2.cxx]{syclbufrange}
+\cxxverbatimsnippet[code/dpcpp/cxx/range2.cxx]{syclaccrange}
+
+\Level 0 {Parallel output}
+
+There is a \lstinline+sycl::+\indexsyclshow{cout} and \lstinline+sycl::+\indexsyclshow{endl}.
+
+\cxxverbatimsnippet[code/dpcpp/cxx/hello.cxx]{syclcout}
+
+Since the end of a queue does not flush stdout,
+it may be necessary to call
+\lstinline+sycl::queue::+\indexsyclshow{wait}
+\begin{lstlisting}
+myQueue.wait();  
+\end{lstlisting}
+
+\Level 0 {DPCPP extensions}
+
+Intel has made some extensions to SYCL:
+\begin{itemize}
+\item Unified Shared Memory,
+\item Ordered queues.
+\end{itemize}
+
+\Level 0 {Intel devcloud notes}
+
+\n{qsub -I} for interactive session.
+
+\n{gdb-oneapi} for debugging.
+
+\url{https://community.intel.com/t5/Intel-oneAPI-Toolkits/ct-p/oneapi}
+for support.
+
+\Level 0 {Examples}
+
+\Level 1 {Kernels in a loop}
+
+The following idiom works:
+%
+\cxxverbatimsnippet[code/dpcpp/cxx/jacobi1d.cxx]{syclkernelloop}
+
+\Level 1 {Stencil computations}
+
+The problem with stencil computations is that only interior points are updated.
+Translated to SYCL: we need to iterate over a subrange of the range over which
+the buffer is defined. First let us define these ranges:
+%
+\cxxverbatimsnippet[code/dpcpp/cxx/jacobi1d.cxx]{syclrangebc}
+%
+Note the boundary value~$1.$ on the right boundary.
+
+Restricting the iteration to the interior points is done through
+the \indexsyclshow{offset} parameter of the \indexsyclshow{parallel_for}:
+%
+\cxxverbatimsnippet[code/dpcpp/cxx/jacobi1d.cxx]{sycliteratebc}

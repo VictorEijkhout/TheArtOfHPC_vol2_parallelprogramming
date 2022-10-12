@@ -1,0 +1,6 @@
+// race.c
+#pragma omp parallel for shared(counter)
+  for (int i=0; i<count; i++)
+    counter++;
+  printf("Counter should be %d, is %d\n",
+	 count,counter);

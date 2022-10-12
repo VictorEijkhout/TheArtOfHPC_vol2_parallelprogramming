@@ -1,0 +1,174 @@
+% -*- latex
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This TeX file is part of the tutorial
+%%%% `Introduction to the PETSc library'
+%%%% Victor Eijkhout, eijkhout@tacc.utexas.edu
+%%%% copyright Victor Eijkhout 2012-2022
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\sectionframe{IS and VecScatter: irregular grids}
+
+\begin{numberedframe}{Irregular data movement}
+
+  Example: collect distributed boundary onto a single processor
+  (this happens in the matrix-vector product)
+
+  \includegraphics[scale=.07]{vecscatter}
+
+  Problem: figuring out communication is hard, actual communication is
+  cheap
+\end{numberedframe}
+
+\begin{numberedframe}{VecScatter}
+Preprocessing: determine mapping between input vector and output:
+\begin{verbatim}
+VecScatterCreate(Vec,IS,Vec,IS,VecScatter*) 
+// also Destroy
+\end{verbatim}
+Application to specific vectors:
+\begin{verbatim}
+VecScatterBegin(VecScatter,
+  Vec,Vec, InsertMode mode, ScatterMode direction)
+VecScatterEnd  (VecScatter,
+  Vec,Vec, InsertMode mode, ScatterMode direction)
+\end{verbatim}
+\end{numberedframe}
+
+\begin{numberedframe}{IS: index set}
+Index Set is a set of indices
+\begin{verbatim}
+ISCreateGeneral(comm,n,indices,PETSC_COPY_VALUES,&is);
+    /* indices can now be freed */
+ISCreateStride (comm,n,first,step,&is);
+ISCreateBlock  (comm,bs,n,indices,&is);
+
+ISDestroy(is);
+\end{verbatim}
+Use \lstinline{MPI_COMM_SELF} most of the time.
+
+Various manipulations: \lstinline{ISSum}, \lstinline{ISDifference}, \lstinline{ISInvertPermutations}
+et cetera.\\
+Also \lstinline{ISGetIndices} / \lstinline{ISRestoreIndices} / \lstinline{ISGetSize}
+\end{numberedframe}
+
+\begin{numberedframe}{Example: split odd and even}
+Input:
+\begin{multicols}{2}
+\tiny
+\begin{verbatim}
+Process [0]
+0.
+1.
+2.
+3.
+4.
+5.
+\end{verbatim}
+\begin{verbatim}
+Process [1]
+6.
+7.
+8.
+9.
+10.
+11.
+\end{verbatim}
+\end{multicols}
+Output:
+\begin{multicols}{2}
+\tiny
+\begin{verbatim}
+Process [0]
+0.
+2.
+4.
+6.
+8.
+10.
+\end{verbatim}
+\begin{verbatim}
+Process [1]
+1.
+3.
+5.
+7.
+9.
+11.
+\end{verbatim}
+\end{multicols}
+\end{numberedframe}
+
+\begin{numberedframe}{index sets for this example}
+\cverbatimsnippet{isoddeven}
+\end{numberedframe}
+
+\begin{numberedframe}{scatter for this example}
+\cverbatimsnippet{vsoddeven}
+\end{numberedframe}
+
+\begin{exerciseframe}[oddeven]
+Now alter the \lstinline{IS} objects so that the output becomes:
+
+\begin{multicols}{2}
+\tiny
+\begin{verbatim}
+Process [0]
+10.
+8.
+6.
+4.
+2.
+0.
+\end{verbatim}
+\begin{verbatim}
+Process [1]
+11.
+9.
+7.
+5.
+3.
+1.
+\end{verbatim}
+\end{multicols}
+\end{exerciseframe}
+
+\begin{numberedframe}{Example: simulate allgather}
+\small
+\begin{verbatim}
+/* create the distributed vector with one element per processor */
+ierr = VecCreate(MPI_COMM_WORLD,&global); 
+ierr = VecSetType(global,VECMPI); 
+ierr = VecSetSizes(global,1,PETSC_DECIDE); 
+
+/* create the local copy */
+ierr = VecCreate(MPI_COMM_SELF,&local); 
+ierr = VecSetType(local,VECSEQ); 
+ierr = VecSetSizes(local,ntids,ntids); 
+\end{verbatim}
+\end{numberedframe}
+
+\begin{numberedframe}
+\small
+\begin{verbatim}
+IS indices;
+ierr = ISCreateStride(MPI_COMM_SELF,ntids,0,1, &indices); 
+/* create a scatter from the source indices to target */
+ierr = VecScatterCreate
+  (global,indices,local,indices,&scatter); 
+/* index set is no longer needed */
+ierr = ISDestroy(&indices); 
+\end{verbatim}
+\end{numberedframe}
+
+\begin{numberedframe}{Example: even and odd indices}
+\small
+\cverbatimsnippet{isoddeven}
+\end{numberedframe}
+
+\begin{numberedframe}{scattering odd and even}
+\small
+\cverbatimsnippet{vsoddeven}
+\end{numberedframe}
+

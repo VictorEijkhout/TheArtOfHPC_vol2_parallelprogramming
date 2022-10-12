@@ -1,0 +1,2 @@
+// return.c
+MPI_Abort(MPI_COMM_WORLD,17);

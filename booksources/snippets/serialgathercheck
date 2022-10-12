@@ -1,0 +1,18 @@
+int *gather_buffer=NULL;
+if (mytid==0) {
+  gather_buffer = (int*) malloc(ntids*sizeof(int));
+  if (!gather_buffer) MPI_Abort(comm,1);
+}
+MPI_Gather(&other_number,1,MPI_INT,
+           gather_buffer,1,MPI_INT, 0,comm);
+if (mytid==0) {
+  int i,error=0;
+  for (i=0; i<ntids; i++) 
+    if (gather_buffer[i]!=i-1) {
+      printf("Processor %d was incorrect: %d should be %d\n",
+             i,gather_buffer[i],i-1);
+      error =1;
+    }
+  if (!error) printf("Success!\n");
+  free(gather_buffer);
+}

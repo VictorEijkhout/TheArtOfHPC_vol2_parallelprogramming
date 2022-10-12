@@ -1,0 +1,8 @@
+C:
+int MPI_Init_thread(int *argc, char ***argv, int required, int *provided)
+
+Fortran:
+MPI_Init_thread(required, provided, ierror)
+INTEGER, INTENT(IN) :: required
+INTEGER, INTENT(OUT) :: provided
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror

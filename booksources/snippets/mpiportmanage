@@ -1,0 +1,8 @@
+MPI_Comm intercomm;
+char myport[MPI_MAX_PORT_NAME];
+MPI_Open_port( MPI_INFO_NULL,myport );
+int portlen = strlen(myport);
+MPI_Send( myport,portlen+1,MPI_CHAR,1,0,comm_world );
+printf("Host sent port <<%s>>\n",myport);
+MPI_Comm_accept( myport,MPI_INFO_NULL,0,comm_self,&intercomm );
+printf("host accepted connection\n");

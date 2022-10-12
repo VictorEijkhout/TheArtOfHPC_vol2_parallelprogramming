@@ -1,0 +1,2 @@
+// cpuname.cxx
+sycl::queue myqueue( sycl::cpu_selector{} );

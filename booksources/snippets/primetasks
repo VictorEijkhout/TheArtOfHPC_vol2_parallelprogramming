@@ -1,0 +1,30 @@
+// primetasks.c
+void try_as_factor( int i ) {
+  if (the_factor>0) {
+    printf("screech ... %d\n",i);
+    return;
+  }
+
+  if (bignum%i==0) {
+#pragma omp critical
+    {
+      printf("found %d\n",i);	  
+      the_factor = i;
+    }
+  }
+  return;
+}
+
+int main() {
+
+#pragma omp parallel
+#pragma omp single
+  for (int i=2; i<bignum/*maxfactor*/; i++) {
+    if (the_factor>0) break;
+#pragma omp task
+    try_as_factor(i);
+  }
+#pragma omp taskwait
+
+  return 0;
+}

@@ -1,0 +1,31 @@
+Synopsis:
+MPI_WIN_FLUSH_LOCAL(rank, win)
+Input arguments:
+rank: rank of target window (non-negative integer)
+win : window object (handle)
+
+C:
+int MPI_Win_flush_local(int rank, MPI_Win win)
+
+Fortran:
+MPI_Win_flush_local(rank, win, ierror)
+INTEGER, INTENT(IN) :: rank
+TYPE(MPI_Win), INTENT(IN) :: win
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+MPI_WIN_FLUSH_LOCAL(RANK, WIN, IERROR)
+INTEGER RANK, WIN, IERROR
+
+Synopsis:
+MPI_WIN_FLUSH_LOCAL_ALL(win)
+Input arguments:
+win : window object (handle)
+
+C:
+int MPI_Win_flush_local_all(MPI_Win win)
+
+Fortran:
+MPI_Win_flush_local_all(win, ierror)
+TYPE(MPI_Win), INTENT(IN) :: win
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+MPI_WIN_FLUSH_LOCAL_ALL(WIN, IERROR)
+INTEGER WIN, IERROR

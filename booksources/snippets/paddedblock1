@@ -1,0 +1,16 @@
+// stridestretch.c
+MPI_Datatype oneblock;
+MPI_Type_vector(1,1,stride,MPI_DOUBLE,&oneblock);
+MPI_Type_commit(&oneblock);
+MPI_Aint block_lb,block_x;
+MPI_Type_get_extent(oneblock,&block_lb,&block_x);
+printf("One block has extent: %ld\n",block_x);
+
+MPI_Datatype paddedblock;
+MPI_Type_create_resized(oneblock,0,stride*sizeof(double),&paddedblock);
+MPI_Type_commit(&paddedblock);
+MPI_Type_get_extent(paddedblock,&block_lb,&block_x);
+printf("Padded block has extent: %ld\n",block_x);
+
+// now send a bunch of these padded blocks
+MPI_Send(source,count,paddedblock,the_other,0,comm);

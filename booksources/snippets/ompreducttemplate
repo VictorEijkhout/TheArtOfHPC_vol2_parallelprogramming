@@ -1,0 +1,12 @@
+template<typename T>
+T generic_reduction( vector<T> tdata ) {
+#pragma omp declare reduction					\
+  (rwzt:T:omp_out=reduce_without_zero<T>(omp_out,omp_in))	\
+  initializer(omp_priv=-1.f)
+
+  T tmin = -1;
+#pragma omp parallel for reduction(rwzt:tmin)
+  for (int id=0; id<tdata.size(); id++)
+    tmin = reduce_without_zero<T>(tmin,tdata[id]);
+  return tmin;
+};

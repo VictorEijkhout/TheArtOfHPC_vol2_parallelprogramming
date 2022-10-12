@@ -1,0 +1,86 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Computing'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% mpl_short_slides.tex : short include file for MPL
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}{Justification}
+  While the C API to MPI is usable from C++, it feels very unidiomatic
+  for that language.
+  \acf{MPL} is a modern C++11 interface to MPI.
+  It is both idiomatic and elegant, simplifying many calling sequences.
+  It is very low overhead.
+
+  \url{https://github.com/rabauke/mpl}
+
+\end{frame}
+
+\Level 0 {Basics}
+
+\begin{numberedframe}{Rank and size}
+  \input{mplnote-rank-and-size.cut}
+\end{numberedframe}
+%% \referenceframe{Comm_size}
+%% \referenceframe{Comm_rank}
+
+\begin{numberedframe}{Scalar buffers}
+  \input{mplnote-scalar-buffers.cut}
+\end{numberedframe}
+\begin{numberedframe}{Vector buffers}
+  \input{mplnote-vector-buffers.cut}
+\end{numberedframe}
+
+\Level 1 {Collectives}
+
+\begin{numberedframe}{Reduce on non-root processes}
+  \input{mplnote-reduce-on-non-root.cut}
+\end{numberedframe}
+\begin{numberedframe}{User defined operators}
+  \input{mplnote-user-defined-operators.cut}
+\end{numberedframe}
+\begin{numberedframe}{Lambda reduction operators}
+  \input{mplnote-lambda-operator.cut}
+\end{numberedframe}
+\begin{numberedframe}{Nonblocking collectives}
+  \input{mplnote-nonblocking-collectives.cut}
+\end{numberedframe}
+
+\Level 1 {Point-to-point communication}
+
+\begin{numberedframe}{Blocking send and receive}
+  \input{mplnote-blocking-send-and-receive.cut}
+\end{numberedframe}
+\begin{numberedframe}{Sending arrays}
+  \input{mplnote-sending-arrays.cut}
+\end{numberedframe}
+
+\begin{numberedframe}{Requests from nonblocking calls}
+  \input{mplnote-requests-from-nonblocking-calls.cut}
+\end{numberedframe}
+\begin{numberedframe}{Request pools}
+  \input{mplnote-request-pools.cut}
+\end{numberedframe}
+\begin{numberedframe}{Request handling}
+  \input{mplnote-request-handling.cut}
+\end{numberedframe}
+
+\Level 1 {Derived Datatypes}
+
+\begin{numberedframe}{Vector type}
+  \input{mplnote-vector-type.cut}
+\end{numberedframe}
+
+\Level 1 {Communicator manipulations}
+
+\begin{numberedframe}{Communicator splitting}
+  \input{mplnote-communicator-splitting.cut}
+\end{numberedframe}
+
+

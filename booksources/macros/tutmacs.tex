@@ -1,0 +1,42 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newenvironment{purpose}
+  {\begin{quotation}\noindent {\bf Purpose.}\ \ignorespaces}
+  {\end{quotation}\bigskip}
+\newcommand\practical[3]{%
+  \par \medskip
+    {\bf Exercise. }#1\par % do this
+  \smallskip
+  \def\next{#2}\def\empty{}
+  \ifx\next\empty\else
+    {\sl Expected outcome. }#2\par
+  \fi
+  \def\next{#3}\def\empty{}
+  \ifx\next\empty\else
+    \smallskip
+    {\sl Caveats. }#3\par
+  \fi
+  \medskip
+}
+
+
+\newcommand\dirdisplay[1]{\par
+  \vbox{\hrule
+        \hbox{\vrule\vbox{\hsize=.8\hsize \dirtree{#1}}}
+        \hrule
+       }
+  }
+

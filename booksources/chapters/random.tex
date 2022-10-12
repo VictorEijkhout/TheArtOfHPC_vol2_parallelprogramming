@@ -1,0 +1,40 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2016-9
+%%%%
+%%%% random.tex : appendix about random numbers
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Here is how you initialize the random number generator uniquely on each process:
+
+{\footnotesize
+\begin{verbatim}
+C:
+
+// Initialize the random number generator
+srand((int)(mytid*(double)RAND_MAX/ntids));
+// compute a random float between [0,1]
+randomfraction = (rand() / (double)RAND_MAX);
+// compute random integer between [0,N-1]
+randomfraction = rand() % N;
+\end{verbatim}
+\begin{verbatim}
+Fortran:
+
+  integer :: randsize
+  integer,allocatable,dimension(:) :: randseed
+  real :: random_value
+
+  call random_seed(size=randsize)
+  allocate(randseed(randsize))
+  randseed(:) = 1023*mytid
+  call random_seed(put=randseed)
+\end{verbatim}
+}
+

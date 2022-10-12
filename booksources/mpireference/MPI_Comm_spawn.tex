@@ -1,0 +1,43 @@
+Semantics:
+MPI_COMM_SPAWN(command, argv, maxprocs, info, root, comm,
+    intercomm,array_of_errcodes)
+
+IN command: name of program to be spawned
+    (string, significant only at root)
+IN argv: arguments to command
+    (array of strings, significant only at root)
+IN maxprocs: maximum number of processes to start
+    (integer, significant only at root)
+IN info: a set of key-value pairs telling the runtime system where and
+    how to start the processes (handle, significant only at root)
+IN root: rank of process in which previous arguments are examined
+    (integer)
+IN comm: intracommunicator containing group of spawning processes
+    (handle)
+OUT intercomm: intercommunicator between original group and the
+    newly spawned group (handle)
+OUT array_of_errcodes: one code per process (array of integer)
+
+C:
+int MPI_Comm_spawn(const char *command, char *argv[], int maxprocs,
+    MPI_Info info, int root, MPI_Comm comm,
+    MPI_Comm *intercomm, int array_of_errcodes[])
+
+Fortran:
+MPI_Comm_spawn(command, argv, maxprocs, info, root, comm, intercomm,
+array_of_errcodes, ierror)
+CHARACTER(LEN=*), INTENT(IN) :: command, argv(*)
+INTEGER, INTENT(IN) :: maxprocs, root
+TYPE(MPI_Info), INTENT(IN) :: info
+TYPE(MPI_Comm), INTENT(IN) :: comm
+TYPE(MPI_Comm), INTENT(OUT) :: intercomm
+INTEGER :: array_of_errcodes(*)
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+
+Python:
+
+MPI.Intracomm.Spawn(self,
+    command, args=None, int maxprocs=1, Info info=INFO_NULL,
+    int root=0, errcodes=None)
+returns an intracommunicator
+    

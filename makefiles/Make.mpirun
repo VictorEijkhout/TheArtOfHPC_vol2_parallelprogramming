@@ -1,0 +1,38 @@
+# -*- makefile -*-
+################################################################
+################################################################
+####
+#### This makefile is part of the source of 
+#### "Parallel Computing for Science and Engineering"
+#### by Victor Eijkhout, copyright 2013-2021
+####
+#### Make include file for mpi running
+####
+################################################################
+################################################################
+
+info ::
+	@echo "make RUN (where RUN in: ${RUNS})"
+	@echo "    [ MPIEXEC=.... (mpi runner, default=${MPIEXEC}) ]"
+	@echo "    [ NPSPEC=.... (alternative proc count specification, default=${NPSPEC}) ]"
+ifdef TACC_SYSTEM
+  MPIEXEC = ibrun
+  NPSPEC =
+else
+  MPIEXEC = mpiexec
+  NP = 4
+  NPSPEC = -n ${NP}
+endif
+
+.PHONY: allruns
+info ::
+	@echo "make allruns : all run_.... targets"
+runs :
+	@for r in ${RUNS} ; do \
+	    app=$${r##run_} \
+	     && make --no-print-directory $$app \
+	     && make --no-print-directory $$r \
+	        | tee $$app.runout \
+	    ; done
+clean ::
+	@rm -f *.runout

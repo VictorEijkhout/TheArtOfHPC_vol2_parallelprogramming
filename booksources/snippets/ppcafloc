@@ -1,0 +1,6 @@
+if (procid==1) &
+     number[procid+1] = number[procid]
+if (procid<=2) sync images( (/1,2/) )
+if (procid==2) &
+     number[procid-1] = 2*number[procid]
+if (procid<=2) sync images( (/2,1/) )

@@ -1,0 +1,13 @@
+MPI_Request send_request;
+MPI_Psend_init
+  (sendbuffer,nparts,SIZE,MPI_DOUBLE,tgt,0,
+   comm,MPI_INFO_NULL,&send_request);
+for (int it=0; it<ITERATIONS; it++) {
+  MPI_Start(&send_request);
+  for (int ip=0; ip<nparts; ip++) {
+    fill_buffer(sendbuffer,partitions[ip],partitions[ip+1],ip);
+    MPI_Pready(ip,send_request);
+	}
+  MPI_Wait(&send_request,MPI_STATUS_IGNORE);
+}
+MPI_Request_free(&send_request);

@@ -1,0 +1,53 @@
+\documentclass{beamer}
+
+%\usetheme[headernav]{TACC}
+\usetheme{TACC}
+
+\parskip=.5\baselineskip plus .5\baselineskip
+\event{SSC 335 - fall 2011}
+
+\usepackage{graphicx}
+\usepackage{comment}
+\usepackage{multicol}
+
+\usepackage{comment}
+\includecomment{gentleintroduction}
+\excludecomment{higher}
+% not for edit
+\includecomment{shortversion}
+\excludecomment{shortversion}
+\includecomment{details}
+\begin{gentleintroduction}
+\excludecomment{details}
+\excludecomment{higher}
+\end{gentleintroduction}
+%
+
+\def\n{\bgroup\catcode`\_=12 \catcode`\&=12 \catcode`\$=12 
+    \catcode`\<=12 \catcode`\>=12
+    \tt \let\next=}
+\def\inv{^{-1}}
+
+\begin{document}
+\title{Introduction to PETSc}
+\author{Victor Eijkhout\\ \texttt{eijkhout@tacc.utexas.edu}}
+\date{}
+\frame{\titlepage}
+
+\frame{ \frametitle{Outline}
+\tableofcontents
+\end{numberedframe}
+
+\input introduction
+\input basicexamplenoerr
+\input vector
+\input matrix
+\input iterative
+\begin{details}
+\input grid
+\input running
+\input profiling
+\end{details}
+
+\end{document}
+

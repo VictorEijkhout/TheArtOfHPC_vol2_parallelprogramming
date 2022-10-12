@@ -1,0 +1,63 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the lecture slides for
+%%%% `Parallel Computing'
+%%%% by Victor Eijkhout, copyright 2020-2022
+%%%%
+%%%% Partitioned-slides.tex : slides about partitioned sends
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{numberedframe}{Partitioned communication (MPI-4)}
+  Hybrid scenario:\\
+  multiple threads contribute to one large message
+
+  Partitioned send/recv:\\
+  the contributions can be declared/tested
+
+  Flexibility:\\
+  MPI can send big message or pipeline or send-on-demand
+\end{numberedframe}
+
+\begin{numberedframe}{Create partitions}
+  Buffer consists of equal sized partitions:
+  
+  \cverbatimsnippet{psendbufferpart}
+\end{numberedframe}
+
+\begin{numberedframe}{Init calls}
+  Similar to init calls for persistent sends,\\
+  but specify the number of partitions.
+\begin{lstlisting}
+MPI_Psend_init
+  (sendbuffer,nparts,SIZE,MPI_DOUBLE,tgt,0,
+   comm,MPI_INFO_NULL,&send_request);
+MPI_Precv_init
+  (recvbuffer,nparts,SIZE,MPI_DOUBLE,src,0,
+   comm,MPI_INFO_NULL,&recv_request);
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Partitioned send}
+
+  Sender-side scenario, multiple messages:
+  
+  \cverbatimsnippet{psendsend}
+\end{numberedframe}
+
+\begin{numberedframe}{Partitioned receive tests}
+Use 
+\begin{lstlisting}
+MPI_Parrived(recv_request,ipart,&flag);
+\end{lstlisting}
+to test for arrived partitions.
+\end{numberedframe}
+
+\begin{numberedframe}{Partitioned receive}
+  Receiver-side: handle partitions as they come in:
+
+  \cverbatimsnippet{psendrecv}
+\end{numberedframe}

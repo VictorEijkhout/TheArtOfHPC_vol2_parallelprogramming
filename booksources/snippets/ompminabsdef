@@ -1,0 +1,5 @@
+// reductexpr.c
+#pragma omp declare reduction\
+  (minabs : int :							\
+   omp_out = abs(omp_in) > omp_out ? omp_out : abs(omp_in) )		\
+  initializer (omp_priv=LARGENUM)

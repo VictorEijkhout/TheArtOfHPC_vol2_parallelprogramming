@@ -1,0 +1,15 @@
+C:
+PetscErrorCode VecCreate(MPI_Comm comm,Vec *v);
+
+F:
+VecCreate( comm,v,ierr )
+MPI_Comm :: comm
+Vec      :: v
+PetscErrorCode :: ierr
+
+Python:
+vec = PETSc.Vec()
+vec.create()
+# or:
+vec = PETSc.Vec().create()
+

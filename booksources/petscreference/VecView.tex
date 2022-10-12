@@ -1,0 +1,12 @@
+C:
+#include "petscvec.h"
+PetscErrorCode  VecView(Vec vec,PetscViewer viewer)
+
+for ascii output use:
+PETSC_VIEWER_STDOUT_WORLD
+
+Python:
+PETSc.Vec.view(self, Viewer viewer=None)
+
+ascii output is default or use:
+PETSc.Viewer.STDOUT(type cls, comm=None)

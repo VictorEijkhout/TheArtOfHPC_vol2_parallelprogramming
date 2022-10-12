@@ -1,0 +1,24 @@
+Synopsis:
+
+int MPI_Intercomm_create
+   (MPI_Comm local_comm, int local_leader,
+    MPI_Comm peer_comm,  int remote_leader,
+    int tag, MPI_Comm *newintercomm
+);
+
+Input parameters:
+
+local_comm : Local (intra)communicator
+local_leader : Rank in local_comm of leader (often 0)
+peer_comm : Communicator used to communicate between a designated process in
+    the other communicator. Significant only at the process in local_comm
+    with rank local_leader.
+remote_leader : Rank in peer_comm of remote leader (often 0)
+tag : Message tag to use in constructing intercommunicator; if multiple
+    MPI_Intercomm_creates are being made, they should use different tags
+    (more precisely, ensure that the local and remote leaders are using
+    different tags for each MPI_intercomm_create).
+
+Output Parameter:
+comm_out : Created intercommunicator
+

@@ -1,0 +1,141 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%% omp-gpu.tex : GPU offloading
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+This chapter explains the mechanisms for offloading work to a \acf{GPU}.
+
+The memory of a processor and that of an attached \ac{GPU} are not
+\emph{coherent}\index{coherent memory|see{memory, coherence}}:
+there are separate memory spaces and writing data in one
+is not automatically reflected in the other.
+
+OpenMP transfers data (or maps it) when you enter an \indexompclause{target}
+construct.
+\begin{lstlisting}
+#pragma omp target
+{
+  // do stuff on the GPU
+}
+\end{lstlisting}
+
+You can test whether the target region is indeed executed on a device
+with \indexompdef{omp_is_initial_device}:
+\begin{lstlisting}
+#pragma omp target
+  if (omp_is_initial_device()) printf("Offloading failed\n");
+\end{lstlisting}
+
+\Level 1 {Targets and tasks}
+
+The \indexompclause{target} clause causes OpenMP to create a
+\indextermsub{target}{task}.
+This is a task running on the host, dedicated to managing the
+offloaded region.
+
+The \indexompclause{target} region is executed
+by a new \indextermsub{initial}{task}.
+This is distinct from the initial task that executes the main program.
+
+The task that created the target task is called the
+\indextermsub{generating}{task}.
+
+By default, the generating task is blocked while the task on the device is running,
+but adding the \indexompclause{target}{nowait} clause makes it asynchronous.
+This requires a \indexompshow{taskwait} directive to synchronize host and device.
+
+\Level 0 {Data on the device}
+
+\begin{itemize}
+\item Scalars are treated as \indexompclause{firstprivate}, that is,
+  they are copied in but not out.
+\item Stack arrays \indexompclause{tofrom}.
+\item Heap arrays are not mapped by default.
+\end{itemize}
+
+For explicit mapping with \indexompclauseoption{target}{map}:
+\begin{lstlisting}
+#pragma omp target map(...)
+{
+  // do stuff on the GPU
+}
+\end{lstlisting}
+The following map options exist:
+\begin{itemize}
+\item \lstinline+map(to: x,y,z)+ copy from host to device
+  when entering the target region.
+\item \lstinline+map(from: x,y,z)+ copy from devince to host
+  when exiting the target region.
+\item \lstinline+map(tofrom: x,y,z)+ is equivalent to combining the previous two.
+\item \lstinline+map(allo: x,y,z)+ allocates data on the device.
+\end{itemize}
+
+\begin{fortrannote}{Array sizes in map clause}
+  If the compiler can deduce the array bounds and size,
+  it is not necessary to specify them in the `map' clause.
+\end{fortrannote}
+
+Data transfer to a device is probably slow,
+so mapping the data at the start of an offloaded section of code
+is probably not the best idea.
+Additionally, in many cases data will stay resident on the device
+throughout several iterations of, for instance, a time-stepping \ac{PDE} solver.
+For such reasons, it is possible to move data onto, and off from,
+the device explicitly,
+using the \indexompclauseoption{target}{enter data} and
+\indexompclauseoption{target}{exit data} directives.
+
+\begin{lstlisting}
+#pragma omp target enter data map(to: x,y)
+#pragma omp target
+{
+  // do something
+}
+#pragma omp target enter data map(from: x,y)
+\end{lstlisting}
+
+Also \indexompclauseoption{target}{update to}
+(synchronize data from host to device),
+\indexompclauseoption{target}{update from}
+(synchronize data to host from device).
+
+\Level 0 {Execution on the device}
+\label{sec:omp-team}
+
+For parallel execution of a loop on the device
+use the \indexompclause{teams} clause:
+\begin{lstlisting}
+#pragma omp target teams distribute parallel do
+\end{lstlisting}
+
+On GPU devices and the like, there is a structure to threads:
+\begin{itemize}
+\item threads are grouped in \indexompterm{team}s,
+  and they can be synchronized only within these teams;
+\item teams are groups in \indexompterm{league}s,
+  and no synchronization between leagues is possible
+  inside a \indexompshow{target} region.
+\end{itemize}
+
+The combination \n{teams distribute} splits the iteration space over teams.
+By default a static schedule is used,
+but the option \indexompclause{dist_schedule} can be used to specify a different one.
+However, this combination only gives the chunk of space to the master thread
+in each team.
+Next we need \n{parallel for} or \n{parallel do} to spread the chunk over the
+threads in the team.
+
+When creating teams, it's often useful to limit the number of threads in each
+with \indexclause{thread_limit}.
+This can also be set with the \indexompdef{OMP_THREAD_LIMIT}
+environment variable.
+The value can be queried with \indexompdef{omp_get_thread_limit}.
+

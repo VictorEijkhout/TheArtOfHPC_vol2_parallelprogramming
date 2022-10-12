@@ -1,0 +1,11 @@
+int name_len=256,desc_len=256;
+char var_name[256],description[256]; 
+MPI_T_source_order ordering;
+MPI_Count ticks_per_second,max_ticks;
+MPI_Info info;
+MPI_Datatype datatype; MPI_T_enum enumtype;
+for (int source=0; source<nsource; source++) {
+  name_len = 256; desc_len=256;
+  MPI_T_source_get_info(source,var_name,&name_len,
+			    description,&desc_len,
+			    &ordering,&ticks_per_second,&max_ticks,&info);

@@ -1,0 +1,20 @@
+Semantics
+
+int MPI_Iallgather(
+    const void *sendbuf, int sendcount, MPI_Datatype sendtype,
+    void *recvbuf, int recvcount, MPI_Datatype recvtype,
+    MPI_Comm comm, MPI_Request *request)
+
+Input Parameters
+
+sendbuf : starting address of send buffer (choice)
+sendcount : number of elements in send buffer (integer)
+sendtype : data type of send buffer elements (handle)
+recvcount : number of elements received from any process (integer)
+recvtype : data type of receive buffer elements (handle)
+comm : communicator (handle)
+
+Output Parameters
+
+recvbuf : address of receive buffer (choice)
+request : communication request (handle)

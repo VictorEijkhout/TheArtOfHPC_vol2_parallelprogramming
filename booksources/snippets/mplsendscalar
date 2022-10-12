@@ -1,0 +1,10 @@
+// sendscalar.cxx
+if (comm_world.rank()==0) {
+  double pi=3.14;
+  comm_world.send(pi, 1);  // send to rank 1
+  cout << "sent: " << pi << '\n';
+} else if (comm_world.rank()==1) {
+  double pi=0;
+  comm_world.recv(pi, 0);  // receive from rank 0
+  cout << "got : " << pi << '\n';
+}

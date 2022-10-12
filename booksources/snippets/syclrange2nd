@@ -1,0 +1,4 @@
+constexpr size_t B = 4;
+sycl::range<2> local_range(B, B);
+sycl::range<2> tile_range = local_range + sycl::range<2>(2, 2); // Includes boundary cells
+auto tile = local_accessor<float, 2>(tile_range, h); // see templated def'n above

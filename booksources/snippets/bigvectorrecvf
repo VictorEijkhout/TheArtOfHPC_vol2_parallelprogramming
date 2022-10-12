@@ -1,0 +1,2 @@
+else if (mytid==receiver) then
+  call MPI_Recv(target,nblocks,blocktype,sender,0,comm,recv_status)

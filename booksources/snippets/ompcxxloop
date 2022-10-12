@@ -1,0 +1,8 @@
+// speedup.cxx
+#pragma omp parallel for
+for ( auto& v : values ) {
+  for (int jp=0; jp<M; jp++) {
+    double f = sin( v );
+    v = f;
+  }
+}

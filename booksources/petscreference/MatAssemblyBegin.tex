@@ -1,0 +1,18 @@
+C:
+#include "petscmat.h"
+PetscErrorCode MatAssemblyBegin(Mat mat,MatAssemblyType type)
+PetscErrorCode MatAssemblyEnd(Mat mat,MatAssemblyType type)
+
+Input Parameters
+mat- the matrix
+type- type of assembly, either MAT_FLUSH_ASSEMBLY
+    or MAT_FINAL_ASSEMBLY
+
+Python:
+assemble(self, assembly=None)
+assemblyBegin(self, assembly=None)
+assemblyEnd(self, assembly=None)
+
+there is a class PETSc.Mat.AssemblyType:
+FINAL = FINAL_ASSEMBLY = 0
+FLUSH = FLUSH_ASSEMBLY = 1

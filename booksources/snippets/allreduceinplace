@@ -1,0 +1,6 @@
+// allreduceinplace.c
+for (int irand=0; irand<nrandoms; irand++)
+	myrandoms[irand] = (float) rand()/(float)RAND_MAX;
+// add all the random variables together
+MPI_Allreduce(MPI_IN_PLACE,myrandoms,
+		    nrandoms,MPI_FLOAT,MPI_SUM,comm);

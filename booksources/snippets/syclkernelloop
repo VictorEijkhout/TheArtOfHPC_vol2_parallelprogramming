@@ -1,0 +1,4 @@
+sycl::event last_event = queue.submit( [&] (sycl::handler &h) {
+for (int iteration=0; iteration<N; iteration++) {
+  last_event = queue.submit( [&] (sycl::handler &h) {
+      h.depends_on(last_event);

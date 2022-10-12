@@ -1,0 +1,4 @@
+## putfence.py
+intsize = np.dtype('int').itemsize
+window_data = np.zeros(2,dtype=int)
+win = MPI.Win.Create(window_data,intsize,comm=comm)

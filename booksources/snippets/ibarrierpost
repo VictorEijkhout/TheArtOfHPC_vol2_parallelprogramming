@@ -1,0 +1,15 @@
+// ibarrierprobe.c
+if (i_do_send) {
+  /*
+   * Pick a random process to send to, 
+   * not yourself.
+   */
+  int receiver = rand()%nprocs;
+  MPI_Ssend(&data,1,MPI_FLOAT,receiver,0,comm);
+}
+/*
+ * Everyone posts the non-blocking barrier
+ * and gets a request to test/wait for
+ */
+MPI_Request barrier_request;
+MPI_Ibarrier(comm,&barrier_request);

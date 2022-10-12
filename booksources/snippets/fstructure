@@ -1,0 +1,40 @@
+!! struct.F90
+  Type object 
+     character :: c
+     real*8,dimension(2) :: x
+     integer :: i
+  end type object
+  type(object) :: myobject
+  integer,parameter :: structlen = 3
+  type(MPI_Datatype) :: newstructuretype
+  integer,dimension(structlen) :: blocklengths
+  type(MPI_Datatype),dimension(structlen) :: types;
+  MPI_Aint,dimension(structlen) :: displacements
+  MPI_Aint :: base_displacement, next_displacement
+  if (procno==sender) then
+     myobject%c = 'x'
+     myobject%x(0) = 2.7; myobject%x(1) = 1.5
+     myobject%i = 37
+
+  !! component 1: one character
+  blocklengths(1) = 1; types(1) = MPI_CHAR
+  call MPI_Get_address(myobject,base_displacement)
+  call MPI_Get_address(myobject%c,next_displacement)
+  displacements(1) = next_displacement-base_displacement
+
+  !! component 2: two doubles
+  blocklengths(2) = 2; types(2) = MPI_DOUBLE
+  call MPI_Get_address(myobject%x,next_displacement)
+  displacements(2) = next_displacement-base_displacement
+
+  !! component 3: one int
+  blocklengths(3) = 1; types(3) = MPI_INT
+  call MPI_Get_address(myobject%i,next_displacement)
+  displacements(3) = next_displacement-base_displacement
+
+  if (procno==sender) then
+     call MPI_Send(myobject,1,newstructuretype,receiver,0,comm)
+  else if (procno==receiver) then
+     call MPI_Recv(myobject,1,newstructuretype,sender,0,comm,MPI_STATUS_IGNORE)
+  end if
+  call MPI_Type_free(newstructuretype)

@@ -1,0 +1,17 @@
+// C:
+int MPI_Get_count(MPI_Status *status,MPI_Datatype datatype,
+    int *count)
+
+! Fortran:
+MPI_Get_count(INTEGER status(MPI_STATUS_SIZE),INTEGER datatype,
+    INTEGER count,INTEGER ierror)
+
+Python:
+status.Get_count( Datatype datatype=BYTE )
+
+MPL:
+template<typename T>
+int mpl::status::get_count () const
+ 
+template<typename T>
+int mpl::status::get_count (const layout<T> &l) const

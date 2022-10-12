@@ -1,0 +1,479 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% petsc-design.tex : a tutorial section
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Level 0 {What is PETSc and why?}
+
+PETSc is a library with a great many uses, but for now let's say that
+it's primarily a library for dealing with the sort of linear algebra
+that comes from discretized \acp{PDE}. On a single processor, the
+basics of such computations 
+can be coded out by a grad student during a semester
+course in numerical analysis, but on large scale issues get much more
+complicated and a library becomes indispensible.
+
+PETSc's prime justification is then that it helps you realize
+scientific computations at large scales, meaning large problem sizes
+on large numbers of processors.
+
+There are two points to emphasize here:
+\begin{itemize}
+\item Linear algebra with dense matrices is relatively simple to
+  formulate. For sparse matrices the amount of logistics in dealing
+  with nonzero patterns increases greatly. PETSc does most of that for
+  you.
+\item Linear algebra on a single processor, even a multicore one, is
+  managable; distributed memory parallelism is much harder, and
+  distributed memory sparse linear algebra operations are doubly
+  so. Using PETSc will save you many, many, Many! hours of coding over
+  developing everything yourself from scratch.
+\end{itemize}
+
+\begin{remark}
+  The PETSc library has hundreds of routines. In this chapter and the
+  next few we will only touch on a basic subset of these. The full
+  list of man pages can be found at
+  \url{https://petsc.org/release/docs/manualpages/singleindex.html}.
+  Each man page comes with links to related routines, as well as (usually)
+  example codes for that routine.
+\end{remark}
+
+\Level 1 {What is in PETSc?}
+
+The routines in PETSc (of which there are hundreds) can roughly be
+divided in these classes:
+\begin{itemize}
+\item Basic linear algebra tools: dense and sparse matrices, both
+  sequential and parallel, their construction and simple operations.
+\item Solvers for linear systems, and to a lesser extent nonlinear
+  systems; also time-stepping methods.
+\item Profiling and tracing: after a successful run, timing for
+  various routines can be given. In case of failure, there are
+  traceback and memory tracing facilities.
+\end{itemize}
+
+\Level 1 {Programming model}
+
+PETSc, being based on MPI, uses the \ac{SPMD} programming model
+(section~\ref{sec:spmd}), where all processes execute the same
+executable. Even more than in regular MPI codes, this makes sense
+here, since most PETSc objects are collectively created on some
+communicator, often \indexmpishow{MPI_COMM_WORLD}. With the
+object-oriented design (section~\ref{sec:petsc-oop}) this means that a
+PETSc program almost looks like a sequential program.
+\begin{lstlisting}
+MatMult(A,x,y);      // y <- Ax
+VecCopy(y,res);      // r <- y
+VecAXPY(res,-1.,b);  // r <- r - b
+\end{lstlisting}
+This is
+sometimes called \indextermbus{sequential}{semantics}.
+
+\Level 1 {Design philosophy}
+\label{sec:petsc-oop}
+
+PETSc has an object-oriented design, even though it is written
+in~C. There are classes of objects, such \clstinline{Mat} for
+matrices and \clstinline{Vec} for Vectors, but there is also the
+\clstinline{KSP} (for "Krylov SPace solver") class of linear system solvers, and
+\clstinline{PetscViewer} for outputting matrices and vectors to screen or file.
+
+Part of the object-oriented design is the polymorphism of objects:
+after you have created a \clstinline{Mat} matrix as sparse or dense, all methods
+such as MatMult (for the matrix-vector product) take the same
+arguments: the matrix, and an input and output vector.
+
+This design where the programmer manipulates a `handle' also means
+that the internal of the object, the actual storage of the elements,
+is hidden from the programmer. This hiding goes so far that even
+filling in elements is not done directly but through function calls:
+\begin{lstlisting}
+VecSetValue(i,j,v,mode)
+MatSetValue(i,j,v,mode)
+MatSetValues(ni,is,nj,js,v,mode)
+\end{lstlisting}
+
+\Level 1 {Language support}
+
+\Level 2 {C/C++}
+
+PETSc is implemented in C, so there is a natural interface
+to~C. There is no separate C++ interface.
+
+\Level 2 {Fortran}
+
+A~\emph{Fortran90}\index{Fortran!Fortran9090!PETSc interface}
+interface exists. The \emph{Fortran77}\index{Fortran!Fortran77!PETSc interface}
+interface is only of
+interest for historical reasons.
+
+To use Fortran, include both a module and a cpp header file:
+\begin{verbatim}
+#include "petsc/finclude/petscXXX.h"
+use petscXXX
+\end{verbatim}
+(here \n{XXX} stands for one of the PETSc types, but including
+\flstinline{petsc.h} and using \flstinline{use petsc}
+gives inclusion of the whole library.)
+
+Variables can be declared with their type (\clstinline{Vec},
+\clstinline{Mat}, \clstinline{KSP} et cetera), but internally they are
+Fortran \clstinline{Type} objects so they can be declared as such.
+
+Example:
+\begin{lstlisting}
+#include "petsc/finclude/petscvec.h"
+use petscvec
+Vec b
+type(tVec) x
+\end{lstlisting}
+
+The output arguments of many query routines are optional in PETSc.
+While in C a generic \lstinline{NULL} can be passed,
+Fortran has type-specific nulls, such as
+\indexpetsctt{PETSC_NULL_INTEGER}, \indexpetsctt{PETSC_NULL_OBJECT}.
+
+\Level 2 {Python}
+\label{sec:py-interface}
+
+A \emph{python}\index{Python!PETSc interface} interface was written by
+\indextermsub{Lisandro}{Dalcin}.
+It can be added to to PETSc at installation time;
+section~\ref{sec:petsc-install}.
+
+This book discusses the Python interface
+in short remarks in the appropriate sections.
+
+\Level 1 {Documentation}
+
+PETSc comes with a manual in pdf form and web pages with the
+documentation for every routine. The starting point is the web page
+\url{https://petsc.org/release/documentation/}.
+
+There is also a mailing list with excellent support for questions and
+bug reports.
+\begin{taccnote}
+  For questions specific to using PETSc on TACC resources, submit
+  tickets to the \emph{TACC}\index{TACC!portal} or
+  \indextermbus{XSEDE}{portal}.
+\end{taccnote}
+
+\Level 0 {Basics of running a PETSc program}
+
+\Level 1 {Compilation}
+
+A PETSc compilation needs a number of include and library paths,
+probably too many to specify interactively. The easiest solution is to
+create a makefile and load the standard variables and compilation rules.
+(You can use \n{$PETSC_DIR/share/petsc/Makefile.user} for inspiration.)
+
+Throughout, we will assume that variables \indexpetscshow{PETSC_DIR} and
+\indexpetscshow{PETSC_ARCH} have been set.
+These depend on your local installation; see section~\ref{sec:petsc-install}.
+
+In the easiest setup, you leave the compilation to PETSc and
+your make rules only do the link step, using \indextermtt{CLINKER}
+or \indextermtt{FLINKER} for C/Fortran respectively:
+\begin{verbatim}
+include ${PETSC_DIR}/lib/petsc/conf/variables
+include ${PETSC_DIR}/lib/petsc/conf/rules
+program : program.o
+        ${CLINKER} -o $@ $^ ${PETSC_LIB}
+\end{verbatim}
+The two include lines provide the compilation rule and the library
+variable.
+
+You can use these rules:
+\begin{verbatim}
+% : %.F90
+        $(LINK.F) -o $@ $^ $(LDLIBS)
+%.o: %.F90
+        $(COMPILE.F) $(OUTPUT_OPTION) $<
+% : %.cxx
+        $(LINK.cc) -o $@ $^ $(LDLIBS)
+%.o: %.cxx
+        $(COMPILE.cc) $(OUTPUT_OPTION) $<
+
+## example link rule:
+# app : a.o b.o c.o
+#       $(LINK.F) -o $@ $^ $(LDLIBS)
+\end{verbatim}
+\begin{comment}
+include ${PETSC_DIR}/lib/petsc/conf/variables
+%.o : %.c
+        ${CC} -c $^ ${PETSC_CC_INCLUDES}
+program : program.o
+        ${CLINKER} -o $@ $^ ${PETSC_LIB}
+\end{comment}
+(The \indexpetscshow{PETSC_CC_INCLUDES} variable contains all paths for
+compilation of C~programs; correspondingly there is
+\indexpetscshow{PETSC_FC_INCLUDES} for Fortran source.)
+
+If don't want to include those configuration files, you can find out
+the include options by:
+\begin{verbatim}
+cd $PETSC_DIR
+make getincludedirs
+make getlinklibs
+\end{verbatim}
+and copying the results into your compilation script.
+
+There is an example makefile \verb+$PETSC_DIR/share/petsc/Makefile.user+
+you can take for inspiration. Invoked without arguments it prints out
+the relevant variables:
+\begin{verbatim}
+[c:246] make -f ! $PETSC_DIR/share/petsc/Makefile.user
+CC=/Users/eijkhout/Installation/petsc/petsc-3.13/macx-clang-debug/bin/mpicc
+CXX=/Users/eijkhout/Installation/petsc/petsc-3.13/macx-clang-debug/bin/mpicxx
+FC=/Users/eijkhout/Installation/petsc/petsc-3.13/macx-clang-debug/bin/mpif90
+CFLAGS=-Wall -Wwrite-strings -Wno-strict-aliasing -Wno-unknown-pragmas -fstack-protector -Qunused-arguments -fvisibility=hidden -g3
+CXXFLAGS=-Wall -Wwrite-strings -Wno-strict-aliasing -Wno-unknown-pragmas -fstack-protector -fvisibility=hidden -g
+FFLAGS=-m64 -g
+CPPFLAGS=-I/Users/eijkhout/Installation/petsc/petsc-3.13/macx-clang-debug/include -I/Users/eijkhout/Installation/petsc/petsc-3.13/include
+LDFLAGS=-L/Users/eijkhout/Installation/petsc/petsc-3.13/macx-clang-debug/lib -Wl,-rpath,/Users/eijkhout/Installation/petsc/petsc-3.13/macx-clang-debug/lib
+LDLIBS=-lpetsc -lm
+\end{verbatim}
+
+\begin{taccnote}
+  On TACC clusters, a petsc installation is loaded by commands such as
+\begin{verbatim}
+module load petsc/3.16
+\end{verbatim}
+Use \n{module avail petsc} to see what configurations exist. The basic
+versions are
+\begin{verbatim}
+# development
+module load petsc/3.11-debug
+# production
+module load petsc/3.11
+\end{verbatim}
+Other installations are real versus complex, or 64bit integers instead
+of the default 32. The command 
+\begin{verbatim}
+module spider petsc
+\end{verbatim}
+tells you all the
+available petsc versions. The listed modules have a naming convention
+such as \n{petsc/3.11-i64debug} where the 3.11 is the PETSc release (minor
+patches are not included in this version; TACC aims to install only
+the latest patch, but generally several versions are available), and
+\n{i64debug} describes the debug version of the installation with 64bit
+integers.
+\end{taccnote}
+
+\Level 1 {Running}
+
+PETSc programs use MPI for parallelism, so they are started like any other
+MPI program:
+\begin{verbatim}
+mpiexec -n 5 -machinefile mf \
+    your_petsc_program option1 option2 option3
+\end{verbatim}
+\begin{taccnote}
+  On TACC clusters, use \indextermtt{ibrun}.
+\end{taccnote}
+
+\Level 1 {Initialization and finalization}
+\label{sec:petscinit}
+
+PETSc has an call that initializes both PETSc and MPI, so normally you
+would replace \indexmpishow{MPI_Init} by
+\indexpetscref{PetscInitialize}.
+Unlike with MPI, you do not want to
+use a \n{NULL} value for the \n{argc,argv} arguments, since PETSc
+makes extensive use of commandline options; see
+section~\ref{sec:petsc-options}.
+
+\cverbatimsnippet[examples/petsc/c/init.c]{petscinit}
+
+There are two further arguments to \indexpetscshow{PetscInitialize}:
+\begin{enumerate}
+\item the name of an options database file; and
+\item a help string, that is displayed if you run your program with the \n{-h} option.
+\end{enumerate}
+
+\begin{fortrannote}{Petsc Initialization}
+  \begin{itemize}
+  \item
+    The Fortran version has no arguments for commandline options;
+    it also doesn't take a help string.
+  \item The first argument is the name of a database file of options;
+    if none is specified, give \indexpetsctt{PETSC_NULL_CHARACTER} as argument.
+  \item If your main program is in~C, but some of your PETSc calls are
+    in Fortran files, it is necessary to call
+    \indexpetscdef{PetscInitializeFortran} after
+    \indexpetscshow{PetscInitialize}.
+  \end{itemize}
+  \fverbatimsnippet[examples/petsc/f/init.F90]{petscinitf}
+\end{fortrannote}
+
+\begin{pythonnote}{Init, and with commandline options}
+  The following works if you don't need commandline options.
+\begin{verbatim}
+from petsc4py import PETSc
+\end{verbatim}
+To pass commandline arguments to PETSc, do:
+\begin{verbatim}
+import sys
+from petsc4py import init
+init(sys.argv)
+from petsc4py import PETSc
+\end{verbatim}
+\end{pythonnote}
+
+After initialization, you can use \indexmpishow{MPI_COMM_WORLD} or
+\indexpetscdef{PETSC_COMM_WORLD}
+(which is created by \indexmpishow{MPI_Comm_dup} and used internally by PETSc):
+
+\begin{lstlisting}
+MPI_Comm comm = PETSC_COMM_WORLD;
+MPI_Comm_rank(comm,&mytid);
+MPI_Comm_size(comm,&ntids);
+\end{lstlisting}
+
+\begin{pythonnote}{Communicator object}
+\begin{verbatim}
+comm = PETSc.COMM_WORLD
+nprocs = comm.getSize(self) 
+procno = comm.getRank(self)
+\end{verbatim}
+\end{pythonnote}
+
+The corresponding call to replace \indexmpishow{MPI_Finalize} is
+\indexpetscdef{PetscFinalize}.
+You can elegantly capture and return the error code by the idiom
+\begin{lstlisting}
+return PetscFinalize();
+\end{lstlisting}
+at the end of your main program.
+
+\Level 0 {PETSc installation}
+\label{sec:petsc-install}
+
+PETSc has a large number of installation options. These can roughly be
+divided into:
+\begin{enumerate}
+\item Options to describe the environment in which PETSc is being
+  installed, such as the names of the compilers or the location of the
+  MPI library;
+\item Options to specify the type of PETSc installation: real versus
+  complex, 32~versus 64-bit integers, et cetera;
+\item Options to specify additional packages to download.
+\end{enumerate}
+
+For an existing installation, you can find the options used,
+and other aspects of the build history,
+in the \indextermtt{configure.log}~/ \indextermtt{make.log}
+files\index{PETSc!log files}:
+\begin{verbatim}
+$PETSC_DIR/$PETSC_ARCH/lib/petsc/conf/configure.log
+$PETSC_DIR/$PETSC_ARCH/lib/petsc/conf/make.log
+\end{verbatim}
+
+\Level 1 {Debug}
+
+For any set of options, you will typically make two installations:
+one with \n{-with-debugging=yes} and once \n{no}.
+See section~\ref{sec:petsc-debug-mode} for more detail
+on the differences between debug and non-debug mode.
+
+\Level 1 {Environment options}
+
+Compilers, compiler options, MPI.
+
+While it is possible to specify \indexpetscoption{download_mpich},
+this should only be done on machines that you are certain do not
+already have an MPI library, such as your personal
+laptop. Supercomputer clusters are likely to have an optimized MPI
+library, and letting PETSc download its own will lead to degraded
+performance.
+
+\Level 1 {Variants}
+
+\begin{itemize}
+\item Scalars: the option \indexpetscoption{with-scalar-type} has values
+  \n{real}, \n{complex}; \indexpetscoption{with-precision} has values
+  \n{single}, \n{double}, \n{__float128}, \n{__fp16}.
+\end{itemize}
+
+\Level 0 {External packages}
+\label{sec:petsc-external}
+
+PETSc can extend its functionality through external packages such as
+\indexterm{mumps}, \indexterm{Hypre}, \indexterm{fftw}. These can be
+specified in two ways:
+\begin{enumerate}
+\item Referring to an installation already on your system:
+\begin{verbatim}
+--with-hdf5-include=${TACC_HDF5_INC}
+--with-hf5_lib=${TACC_HDF5_LIB}
+\end{verbatim}
+\item By letting petsc download and install them itself:
+\begin{verbatim}
+--with-parmetis=1 --download-parmetis=1
+\end{verbatim}
+\end{enumerate}
+
+\begin{pythonnote}{petsc4py interface}
+  The Python interface (section~\ref{sec:py-interface})
+  can be installed with the option
+\begin{verbatim}
+--download-petsc4py=<no,yes,filename,url>
+\end{verbatim}
+This is easiest if your python already includes \indextermtt{mpi4py};
+see section~\ref{sec:python-bind}.
+\end{pythonnote}
+
+\begin{remark}
+  There are two packages that PETSc is capable of downloading and install,
+  but that you may want to avoid:
+  \begin{itemize}
+  \item \n{fblaslapack}: this gives you BLAS/LAPACK through the
+    Fortran `reference implementation'. If you have an optimized
+    version, such as Intel's \indexterm{mkl} available, this will give
+    much higher performance.
+  \item \n{mpich}: this installs a MPI implementation, which may be
+    required for your laptop. However, supercomputer clusters will
+    already have an MPI implementation that uses the high-speed
+    network. PETSc's downloaded version does not do that. Again,
+    finding and using the already installed software may greatly
+    improve your performance.
+  \end{itemize}
+\end{remark}
+
+\Level 1 {Slepc}
+\label{sec:petsc-slepc}
+
+Most external packages add functionality to the lower layers of Petsc.
+For instance, the \indexterm{Hypre} package
+adds some preconditioners to Petsc's repertoire
+(section~\ref{sec:petsc-prec-list}),
+while \indexterm{Mumps}
+(section~\ref{sec:petsc-direct})
+makes it possible to use the LU
+preconditioner in parallel.
+
+On the other hand, there are packages
+that use Petsc as a lower level tool.
+In particular, the eigenvalue solver package \indextermdef{Slepc}~\cite{slepc-homepage}
+can be installed through the options
+\begin{verbatim}
+--download-slepc=<no,yes,filename,url>
+       Download and install slepc  current: no
+--download-slepc-commit=commitid
+       The commit id from a git repository to use for the build of slepc  current: 0
+--download-slepc-configure-arguments=string
+       Additional configure arguments for the build of SLEPc
+\end{verbatim}
+The slepc header files wind up in the same directory as the petsc headers,
+so no change to your compilation rules are needed.
+However, you need to add \n{-lslepc} to the link line.

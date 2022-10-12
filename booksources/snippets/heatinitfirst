@@ -1,0 +1,8 @@
+// heat.c
+#pragma omp parallel if (init>0)
+  {
+#pragma omp for
+    for (int i=0; i<N; i++)
+      y[i] = x[i] = 0.;
+    x[0] = 0; x[N-1] = 1.;
+  }

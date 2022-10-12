@@ -1,0 +1,103 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%% omp_course.tex : master file for an OpenMP course
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt,headernav]{beamer}
+
+\beamertemplatenavigationsymbolsempty
+\usetheme{Madrid}%{Montpellier}
+\usecolortheme{seahorse}
+\setcounter{tocdepth}{1}
+\AtBeginSection[]
+{
+  \begin{frame}
+    \frametitle{Table of Contents}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+%Global Background must be put in preamble
+%\usebackgroundtemplate{\includegraphics[width=\paperwidth,height=\paperheight]{newton.jpg}}
+
+\setbeamertemplate{footline}{\hskip1em Eijkhout: OMP intro\hfill
+  \hbox to 0in {\hss \includegraphics[scale=.1]{tacclogonew}}%
+  \hbox to 0in {\hss \arabic{page}\hskip 1in}}
+
+\input commonmacs
+\input slidemacs
+\input coursemacs
+\input listingmacs
+
+\newcounter{tacc}
+\specialcomment{tacc}{\stepcounter{tacc}\def\CommentCutFile{tacc\arabic{tacc}.cut}}{}
+
+\begin{document}
+\parskip=10pt plus 5pt minus 3pt
+
+\title{Tutorial on OpenMP programming}
+\author{Victor Eijkhout}
+\date{SSiASC 2016}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}{Justification}
+  OpenMP is a flexible tool for incrementally parallelizing a shared
+  memory-based code.
+  This course introduces the main concepts
+  through lecturing and exercises.
+\end{frame}
+
+\Level 0 {The Fork-Join model}
+\input Forkjoin-slides
+
+\Level 0 {Loop parallelism}
+\input ParLoop-slides
+
+\Level 0 {Workshare constructs}
+\input Workshare-slides
+
+\Level 0 {Thread data}
+\input OmpData-slides
+
+\Level 0 {Synchronization}
+\input Sync-slides
+
+\Level 0 {Tasks}
+\input Tasks-slides
+
+\Level 0 {Remaining topics}
+\input OmpOther-slides
+
+\end{document}
+
+\newenvironment
+    {theindex}
+    {\begin{itemize}\setlength\itemsep{0pt}\baselineskip=8pt}
+    {\end{itemize}}
+\let\indexspace\par
+\def\subitem{\par\indent}
+%
+\begin{frame}{Index}
+\small
+\begin{multicols}{2}
+\printindex  
+\end{multicols}
+\end{frame}
+
+\begin{frame}{Bibliography}
+  \bibliographystyle{plain}
+  \bibliography{vle}
+\end{frame}
+
+\end{document}

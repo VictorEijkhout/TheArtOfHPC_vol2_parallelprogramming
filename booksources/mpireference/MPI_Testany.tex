@@ -1,0 +1,14 @@
+C:
+int MPI_Testany(
+    int count, MPI_Request array_of_requests[],
+    int *index, int *flag, MPI_Status *status)
+
+Fortran:
+   
+MPI_Testany(count, array_of_requests, index, flag, status, ierror)
+INTEGER, INTENT(IN) :: count
+TYPE(MPI_Request), INTENT(INOUT) :: array_of_requests(count)
+INTEGER, INTENT(OUT) :: index
+LOGICAL, INTENT(OUT) :: flag
+TYPE(MPI_Status) :: status
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror

@@ -1,0 +1,30 @@
+Semantics:
+MPI_WIN_ALLOCATE_SHARED(size, disp_unit, info, comm, baseptr, win)
+
+Input parameters:
+size: size of local window in bytes (non-negative integer)
+disp_unit local unit size for displacements, in bytes (positive
+integer)
+info: info argument (handle)
+comm: intra-communicator (handle)
+
+Output parameters:
+baseptr: address of local allocated window segment (choice)
+win: window object returned by the call (handle)
+
+C:
+int MPI_Win_allocate_shared
+   (MPI_Aint size, int disp_unit, MPI_Info info,
+    MPI_Comm comm, void *baseptr, MPI_Win *win)
+
+Fortran:
+MPI_Win_allocate_shared
+   (size, disp_unit, info, comm, baseptr, win, ierror)
+USE, INTRINSIC :: ISO_C_BINDING, ONLY : C_PTR
+INTEGER(KIND=MPI_ADDRESS_KIND), INTENT(IN) :: size
+INTEGER, INTENT(IN) :: disp_unit
+TYPE(MPI_Info), INTENT(IN) :: info
+TYPE(MPI_Comm), INTENT(IN) :: comm
+TYPE(C_PTR), INTENT(OUT) :: baseptr
+TYPE(MPI_Win), INTENT(OUT) :: win
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror

@@ -1,0 +1,58 @@
+# -*- makefile -*-
+################################################################
+################################################################
+####
+#### This makefile is part of the source of 
+#### "Parallel Computing for Science and Engineering"
+#### by Victor Eijkhout, copyright 2013-2022
+####
+#### Make include file for clean rules
+####
+################################################################
+################################################################
+
+.PHONY: clean codeclean texclean local_clean localclean total_clean recursive_clean
+info ::
+	@echo
+	@echo "================ Cleaning:"
+	@echo "make clean, total_clean"
+clean :: local_clean
+codeclean :
+	@/bin/rm -rf \
+	    *.a *.o *~ *.gch *.inst.c *.pp.F90 *.mod *.optrpt events.* *.mod a.out *.pyc \
+	    ${APPS} ${EXERCISES} \
+	    *.dSYM MULTI__*  __pycache__ \
+	    core.[0-9]* idev[0-9]*.o[0-9]* ddt.o[0-9]* *.out[0-9]* jobtest.o* tautrace_* \
+	    *~ *.o *.pyc *.dSYM ddt.o* *.o[0-9]* *.dat *.log *.out *.out[0-9]* *.out_total \
+	    tautrace_* dcvserver.out
+texclean :
+	@/bin/rm -rf \
+	    *.{aux,blg,idx,ilg,ind,log,mod,mw,nav,out,snm,svn,toc,vrb,wrt} *.cut texput.*
+localclean local_clean :: codeclean texclean
+	@/bin/rm -rf \
+	    ddt.o[0-9]* jobtest.o* tautrace_* __pycache__ \
+	    dcvserver.out \
+	    ${APPS}
+INDENT =
+MAKEFILESDIR = makefiles
+MAKETRACESTRING = 
+recursive_clean  : localclean
+	@for d in * ; do \
+	  if [ -d $${d} ] ; then \
+	    echo "${MAKETRACESTRING} cleaning in $${d}" \
+	    && ( \
+	       cd $${d} \
+	       && if [ -f Makefile ] ; then \
+	             make --no-print-directory INDENT=".. ${INDENT}" \
+	                 MAKEFILESDIR="../${MAKEFILESDIR}" \
+	                 recursive_clean ; \
+	          else \
+	             make --no-print-directory INDENT=".. ${INDENT}" \
+	                 -f ../${MAKEFILESDIR}/Make.clean \
+	                 local_clean \
+                     ; \
+	          fi \
+	       ) ; \
+	  fi ; \
+	done
+total_clean :: clean 

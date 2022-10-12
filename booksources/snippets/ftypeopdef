@@ -1,0 +1,7 @@
+!! reducttype.F90
+  Type inttype
+     integer :: value = 0
+  end type inttype
+  Interface operator(+)
+     module procedure addints
+  end Interface operator(+)

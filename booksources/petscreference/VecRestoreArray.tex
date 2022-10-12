@@ -1,0 +1,18 @@
+C:
+#include "petscvec.h"
+PetscErrorCode VecRestoreArray(Vec x,PetscScalar **a)
+
+Logically Collective on Vec
+
+Input Parameters:
+x- the vector
+a- location of pointer to array obtained from VecGetArray()
+
+Fortran90:
+#include <petsc/finclude/petscvec.h>
+use petscvec
+VecRestoreArrayF90(Vec x,{Scalar, pointer :: xx_v(:)},integer ierr)
+
+Input Parameters:
+x- vector
+xx_v- the Fortran90 pointer to the array

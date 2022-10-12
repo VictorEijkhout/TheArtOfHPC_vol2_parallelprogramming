@@ -1,0 +1,13 @@
+void mpl::communicator::reduce
+    // root, in place
+    ( F  f,int  root_rank,T &  sendrecvdata ) const
+    ( F  f,int  root_rank,T *  sendrecvdata,const contiguous_layout< T > &  l ) const
+    // non-root
+    ( F  f,int  root_rank,const T &  senddata ) const
+    ( F  f,int  root_rank,
+            const T * senddata,const contiguous_layout< T > &  l ) const
+    // general
+    ( F  f,int  root_rank,const T &  senddata,T &  recvdata ) const
+    ( F  f,int  root_rank,
+            const T *  senddata,T *  recvdata,const contiguous_layout< T > &  l ) const
+                

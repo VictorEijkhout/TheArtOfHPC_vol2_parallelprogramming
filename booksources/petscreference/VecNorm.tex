@@ -1,0 +1,12 @@
+C:
+#include "petscvec.h"
+PetscErrorCode  VecNorm(Vec x,NormType type,PetscReal *val)
+where type is
+    NORM_1, NORM_2, NORM_FROBENIUS, NORM_INFINITY
+
+Python:
+PETSc.Vec.norm(self, norm_type=None)
+
+where norm is variable in PETSc.NormType:
+    NORM_1, NORM_2, NORM_FROBENIUS, NORM_INFINITY or
+    N1, N2, FRB, INF

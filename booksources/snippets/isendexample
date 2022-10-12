@@ -1,0 +1,9 @@
+// isendandirecv.c
+double send_data = 1.;
+MPI_Request request;
+MPI_Isend
+  ( /* send buffer/count/type: */ &send_data,1,MPI_DOUBLE,
+	/* to: */ receiver, /* tag: */ 0,
+	/* communicator: */ comm,
+	/* request: */ &request);
+MPI_Wait(&request,MPI_STATUS_IGNORE);

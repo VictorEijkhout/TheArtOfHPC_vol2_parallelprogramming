@@ -1,0 +1,84 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-8
+%%%%
+%%%% simgrid.tex : about grid-in-a-box simulation
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{SimGrid|(}
+
+Many readers of this book will have access to some sort of parallel
+machine so that they can run simulations, maybe even some realistic
+scaling studies. However, not many people will have access to more
+than one cluster type so that they can evaluate the influence of the
+\indexterm{interconnect}. Even then, for didactic purposes one would
+often wish for interconnect types (fully connected, linear processor
+array) that are unlikely to be available.
+
+In order to explore architectural issues pertaining to the network, we
+then resort to a simulation tool, \emph{SimGrid}.
+
+\heading{Installation}
+
+\heading{Compilation}
+
+You write plain MPI files, but compile them with the
+\indextermbus{SimGrid}{compiler} \indextermtt{smpicc}.
+
+\heading{Running}
+
+SimGrid has its own version of \n{mpirun}: \indextermtt{smpirun}. You
+need to supply this with options:
+\begin{itemize}
+\item \n{-np 123456} for the number of (virtual) processors;
+\item \n{-hostfile simgridhostfile} which lists the names of these
+  processors. You can basically make these up, but are defined in:
+\item \n{-platform arch.xml} which defines the connectivity between
+  the processors.
+\end{itemize}
+For instance, with a hostfile of 8 hosts, a linearly connected network
+would be defined as:
+\begin{verbatim}
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+
+<platform version="4">
+
+<zone id="first zone" routing="Floyd">
+  <!-- the resources -->
+  <host id="host1" speed="1Mf"/>
+  <host id="host2" speed="1Mf"/>
+  <host id="host3" speed="1Mf"/>
+  <host id="host4" speed="1Mf"/>
+  <host id="host5" speed="1Mf"/>
+  <host id="host6" speed="1Mf"/>
+  <host id="host7" speed="1Mf"/>
+  <host id="host8" speed="1Mf"/>
+  <link id="link1" bandwidth="125MBps" latency="100us"/>
+  <!-- the routing: specify how the hosts are interconnected -->
+  <route src="host1" dst="host2"><link_ctn id="link1"/></route>
+  <route src="host2" dst="host3"><link_ctn id="link1"/></route>
+  <route src="host3" dst="host4"><link_ctn id="link1"/></route>
+  <route src="host4" dst="host5"><link_ctn id="link1"/></route>
+  <route src="host5" dst="host6"><link_ctn id="link1"/></route>
+  <route src="host6" dst="host7"><link_ctn id="link1"/></route>
+  <route src="host7" dst="host8"><link_ctn id="link1"/></route>
+</zone>
+
+</platform>
+\end{verbatim}
+(such files can be generated with a short shell script).
+
+The \n{Floyd} designation of the routing means that any route using
+the transitive closure of the paths given can be used.
+It is also possible to use \n{routing="Full"} which requires full
+specification of all pairs that can communicate.
+
+
+\index{SimGrid|)}

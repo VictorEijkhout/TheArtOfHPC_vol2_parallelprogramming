@@ -1,0 +1,12 @@
+Synopsis
+#include <petscvec.h>
+PetscErrorCode VecSetValue
+   (Vec v,PetscInt row,PetscScalar value,InsertMode mode);
+
+Not Collective
+
+Input Parameters
+v- the vector
+row- the row location of the entry
+value- the value to insert
+mode- either INSERT_VALUES or ADD_VALUES

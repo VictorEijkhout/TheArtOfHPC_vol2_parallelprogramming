@@ -1,0 +1,42 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% This text file is part of the source of 
+%% `Parallel Computing'
+%% by Victor Eijkhout, copyright 2012-2022
+%%
+%% MPI API file for MPI_Dist_graph_create
+%%
+%% THIS FILE IS AUTO-GENERATED
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begingroup
+\ttfamily\bfseries
+\catcode`\_=12
+\begin{tabular}{
+l       % name
+l       % param name
+p{\mpiparmtextsize}  % explanation
+p{.7in} % ctype
+p{.9in} % ftype
+l       % inout
+}
+\toprule
+\mdseries\textrm{Name}&
+\mdseries\textrm{Param name}&
+\mdseries\textrm{Explanation}&
+\mdseries\textrm{C type}&
+\mdseries\textrm{F type}&
+\mdseries\textrm{inout}\\
+\midrule
+\hbox to 18pt{MPI_Dist_graph_create (\hss} \\
+ & comm_old & input communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\ & n & number of source nodes for which this process specifies edges & int & INTEGER  & IN \\ & sources & array containing the \mpiarg{n} source nodes for which this process specifies edges & const int[] & INTEGER\discretionary{}{\kern10pt}{}(n)  & IN \\ & degrees & array specifying the number of destinations for each source node in the source node array & const int[] & INTEGER\discretionary{}{\kern10pt}{}(n)  & IN \\ & destinations & destination nodes for the source nodes in the source node array & const int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  & IN \\ & weights & weights for source to destination edges & const int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  & IN \\ & info & hints on optimization and interpretation of weights & MPI_Info & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)  & IN \\ & reorder & the ranks may be reordered (\mpicode{true}) or not~(\mbox{\mpicode{false}}) & int & LOGICAL  & IN \\ & comm_dist_graph & communicator with distributed graph topology added & MPI_Comm* & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & OUT \\
+&)\\
+
+\bottomrule
+\end{tabular}
+\endgroup
+

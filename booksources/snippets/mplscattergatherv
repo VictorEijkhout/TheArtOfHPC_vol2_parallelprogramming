@@ -1,0 +1,4 @@
+vector<float> vrecv(2),vsend(2*nprocs);
+mpl::contiguous_layout<float> twonums(2);
+comm_world.scatter
+  (0, vsend.data(),twonums, vrecv.data(),twonums );

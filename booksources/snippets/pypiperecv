@@ -1,0 +1,10 @@
+def print_from_pipe(q):
+    ends = 0
+    while True:
+        v = q.recv()
+        print(f"Got: {v}")
+        if v=="END":
+            ends += 1
+        if ends==2:
+            break
+    print("pipe is empty")

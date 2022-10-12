@@ -1,0 +1,594 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% mpi-derived.tex : derived datatypes
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Level 0 {Derived datatypes}
+\label{sec:derived-types}
+\index{datatype!derived|(}
+
+MPI allows you to create your own data types, somewhat (but not completely\ldots)
+analogous to defining
+structures in a programming language. MPI data types are mostly of use
+if you want to send multiple items in one message.
+
+There are two problems with using only elementary datatypes
+as you have seen so far.
+\begin{itemize}
+\item MPI communication routines can only send multiples of a
+  single data type: it is not possible to send items of different
+  types, even if they are contiguous in memory. It would be possible
+  to use the \indexmpishow{MPI_BYTE} data type, but this is not advisable.
+\item It is also ordinarily not possible to send items of one type if they are
+  not contiguous in memory. You could of course send a contiguous memory area
+  that contains the items you want to send, but that is wasteful of
+  bandwidth.
+\end{itemize}
+With MPI data types you can solve these problems in several ways.
+\begin{itemize}
+\item You can create a new \indextermbus{contiguous}{data type}
+  consisting of an array of elements of another data type. There is no
+  essential difference between sending one element of such a type
+  and multiple elements of the
+  component type.
+\item You can create a \indextermbus{vector}{data type} consisting of
+  regularly spaced blocks of elements of a component type. This is a first
+  solution to the problem of sending noncontiguous data.
+\item For not regularly spaced data, there is the
+  \indextermbus{indexed}{data type}, where you specify an array of
+  index locations for blocks of elements of a component type.
+  The blocks can each be of a different size.
+\item The \indextermbus{struct}{data type} can accomodate multiple
+  data types.
+\end{itemize}
+And you can combine these mechanisms to get irregularly spaced
+heterogeneous data, et cetera.
+
+\Level 1 {Basic calls}
+\label{sec:data-commit}
+
+The typical sequence of calls for creating a new datatype is as follows:
+\begin{itemize}
+\item You need a variable for the datatype;
+\item There is a create call, followed by a `commit' call where MPI
+  performs internal bookkeeping and optimizations;
+\item The datatype is used, possibly multiple times;
+\item When the datatype is no longer needed, it must be freed to prevent memory leaks.
+\end{itemize}
+In code:
+\begin{lstlisting}
+MPI_Datatype newtype;
+MPI_Type_something( < oldtype specifications >, &newtype );
+MPI_Type_commit( &newtype );
+/* code that uses your new type */
+MPI_Type_free( &newtype );
+\end{lstlisting}
+
+In \fstandard{2008}:
+\lstset{language=Fortran}
+\begin{lstlisting}
+Type(MPI_Datatype) :: newvectortype
+call MPI_Type_something( <oldtype specification>, &
+          newvectortype)
+call MPI_Type_commit(newvectortype)
+!! code that uses your type
+call MPI_Type_free(newvectortype)
+\end{lstlisting}
+\lstset{language=C}
+
+\begin{pythonnote}{Derived type handling}
+  The various type creation routines are methods
+  of the datatype classes, after which commit and free are
+  methods on the new type.
+  %
+  \pverbatimsnippet[examples/mpi/p/vector.py]{vectorp}
+\end{pythonnote}
+
+\begin{mplnote}{Derived type handling}
+  \label{mpl:derived}
+  In \ac{MPL} type creation routines are in the main namespace,
+  templated over the datatypes.
+  %
+  \cxxverbatimsnippet[examples/mpi/mpl/vector.cxx]{mplstatuscreate}
+  %
+  The commit call is part of the type creation,
+  and freeing is done in the destructor.
+\end{mplnote}
+
+\Level 2 {Create calls}
+
+The \indexmpishow{MPI_Datatype} varriable gets its value by a call to
+one of the following routines:
+\begin{itemize}
+\item \indexmpishow{MPI_Type_contiguous} for contiguous blocks of
+  data; section~\ref{sec:data:contiguous};
+\item \indexmpishow{MPI_Type_vector} for regularly strided data;
+  section~\ref{sec:data:vector};
+\item \indexmpishow{MPI_Type_create_subarray} for subsets out higher
+  dimensional block; section~\ref{sec:type_subarray};
+\item \indexmpishow{MPI_Type_create_struct} for heterogeneous irregular data;
+  section~\ref{sec:data:struct};
+\item \indexmpishow{MPI_Type_indexed} and
+  \indexmpishow{MPI_Type_hindexed} for irregularly strided data;
+  section~\ref{sec:data:indexed}.
+\end{itemize}
+These calls take an existing type, whether elementary or also derived,
+and produce a new type.
+
+\Level 2 {Commit and free}
+
+It is necessary to call \indexmpiref{MPI_Type_commit} on a new data
+type, which makes MPI do the indexing calculations for the data type.
+
+When you no longer
+need the data type, you call \indexmpiref{MPI_Type_free}.
+(This is typically not needed in \ac{OO} \acp{API}.)
+This has the following effects:
+\begin{itemize}
+\item The definition of the datatype identifier will be changed to
+  \indexmpidef{MPI_DATATYPE_NULL}.
+\item Any communication using this data type, that was already
+  started, will be completed succesfully.
+\item Datatypes that are defined in terms of this data type will still
+  be usable.
+\end{itemize}
+
+\Level 1 {Contiguous type}
+\label{sec:data:contiguous}
+
+The simplest derived type is the `contiguous' type,
+constructed with \indexmpiref{MPI_Type_contiguous}.
+
+A~contigous type describes an array of items
+of an elementary or earlier defined type. There is no difference between sending
+one item of a contiguous type and multiple items of the constituent type.
+\begin{figure}[t]
+  \includegraphics[scale=.08]{data-contiguous}
+  \caption{A contiguous datatype is built up out of elements of a constituent type}
+  \label{fig:data-contiguous}
+\end{figure}
+This is illustrated in figure~\ref{fig:data-contiguous}.
+
+\cverbatimsnippet[examples/mpi/c/contiguous.c]{contiguous}
+
+\fverbatimsnippet[examples/mpi/f08/contiguous.F90]{contiguous-f08}
+
+\pverbatimsnippet[examples/mpi/p/contiguous.py]{contiguousp}
+
+\begin{mplnote}{Contiguous type}
+  The \ac{MPL} interface makes extensive use of
+  \indexmpldef{contiguous_layout},
+  as it is the main way to declare a nonscalar buffer;
+  see note~\ref{mpl:vec-buf}.
+\end{mplnote}
+
+\begin{mplnote}{Contiguous composing}
+  \label{mpl:cont_vector}
+  Contiguous layouts can only use elementary types or other contiguous layouts
+  as their `old' type.
+  To make a contiguous type for other layouts, use \indexmpidef{vector_layout}:
+  %
+  \cxxverbatimsnippet{mplcontvector}
+  %
+  (Contrast this with \indexmplshow{strided_vector_layout}; note~\ref{mpl:strided_vector}.)
+\end{mplnote}
+
+\Level 1 {Vector type}
+\label{sec:data:vector}
+
+The simplest noncontiguous datatype is the `vector' type, constructed with
+\indexmpiref{MPI_Type_vector}.
+
+A~vector type describes a series of blocks, all 
+of equal size, spaced with a constant stride.
+\begin{figure}[t]
+  \includegraphics[scale=.12]{data-vector}
+  \caption{A vector datatype is built up out of strided blocks of elements of a constituent type}
+  \label{fig:data-vector}
+\end{figure}
+This is illustrated in figure~\ref{fig:data-vector}.
+
+The vector datatype gives the first nontrivial illustration that
+datatypes can be \emph{different on the sender and
+  receiver}\index{datatype!different on sender and receiver}. If the
+sender sends \n{b}~blocks of length~\n{l} each, the receiver can
+%
+\begin{figure}[t]
+  \includegraphics[scale=.12]{data-vector-to-contiguous}
+  \caption{Sending a vector datatype and receiving it as elementary or
+    contiguous}
+  \label{fig:data-vector-to-contiguous}
+\end{figure}
+%
+receive them as \n{bl} contiguous elements, either as a contiguous
+datatype, or as a contiguous buffer of an elementary type; see
+figure~\ref{fig:data-vector-to-contiguous}. In this case, the receiver
+has no knowledge of the stride of the datatype on the sender.
+
+In this example a vector type is created only on the sender, in order to send
+a strided subset of an array; the receiver receives the data as a contiguous block.
+\cverbatimsnippet[examples/mpi/c/vector.c]{vector}
+
+We illustrate \fstandard{2008}:
+%
+\fverbatimsnippet[examples/mpi/f08/vector.F90]{vector-f08}
+
+In legacy mode \fstandard{90}, code stays the same except that the type is
+declared as \lstinline{Integer}:
+%
+\fverbatimsnippet[examples/mpi/f/vector.F90]{vector-f}
+
+\begin{pythonnote}{Vector type}
+  The vector creation routine is a method of the datatype class.
+  For the general discussion, see section~\ref{sec:data-commit}.
+\end{pythonnote}
+
+\pverbatimsnippet[examples/mpi/p/vector.py]{vectorp}
+
+\begin{mplnote}{Vector type}
+  \label{mpl:strided_vector}
+  MPL has the \indexmpldef{strided_vector_layout} class as equivalent
+  of the vector type:
+  %
+  \cxxverbatimsnippet[examples/mpi/mpl/vector.cxx]{vectormpl}
+
+  (See note~\ref{mpl:cont_vector} for nonstrided vectors.)
+\end{mplnote}
+
+\Level 2 {Two-dimensional arrays}
+
+Figure~\ref{fig:blasmatrix} indicates one source of irregular
+data:
+%
+\begin{figure}[t]
+  \includegraphics[scale=.1]{blasmatrix}
+  \caption{Memory layout of a row and column of a matrix in column-major storage}
+  \label{fig:blasmatrix}
+\end{figure}
+%
+with a matrix on \indexterm{column-major storage}, a column is
+stored in contiguous memory. However, a row of such a matrix
+is not contiguous; its elements being separated by a \indexterm{stride}
+equal to the column length.
+
+\begin{exercise}
+  \label{ex:submatrix}
+  How would you describe the memory layout of a submatrix,
+  if the whole matrix has size $M\times N$ and the submatrix $m\times n$?
+\end{exercise}
+
+As an example of this datatype, consider the example of transposing
+a matrix, for instance to convert between
+C and Fortran arrays (see section~\CARPref{sec:CFarrays}). Suppose that 
+a processor has a matrix stored in~C, row-major, layout, and it needs
+to send a column to another processor. If the matrix is declared as
+\begin{lstlisting}
+  int M,N; double mat[M][N]
+\end{lstlisting}
+then a column has $M$ blocks of one element, spaced $N$~locations apart.
+In other words:
+\begin{lstlisting}
+MPI_Datatype MPI_column;
+MPI_Type_vector( 
+    /* count= */ M, /* blocklength= */ 1, /* stride= */ N,
+    MPI_DOUBLE, &MPI_column );
+\end{lstlisting}
+Sending the first column is easy:
+\begin{lstlisting}
+MPI_Send( mat, 1,MPI_column, ... );
+\end{lstlisting}
+The second column is just a little trickier: you now need to pick out 
+elements with the same stride, but starting at \n{A[0][1]}.
+\begin{lstlisting}
+MPI_Send( &(mat[0][1]), 1,MPI_column, ... );
+\end{lstlisting}
+You can make this marginally more efficient (and harder to read)
+by replacing the index expression by \n{mat+1}.
+
+\begin{exercise}
+  Suppose you have a matrix of size $4N\times 4N$, and you want to
+  send the elements \n{A[4*i][4*j]} with $i,j=0,\ldots,N-1$. How would
+  you send these elements with a single transfer?
+\end{exercise}
+
+\begin{exercise}
+  \label{ex:col-to-row}
+  Allocate a matrix on processor zero, using Fortran column-major storage.
+  Using $P$ sendrecv calls, distribute the rows of this matrix among the
+  processors.
+\end{exercise}
+
+\begin{pythonnote}{Sending from the middle of a matrix}
+  In C and Fortran it's easy to apply a derived type
+  to data in the middle of an array,
+  for instance to extract an arbitrary column out of a C~matrix,
+  or row out of a Fortran matrix.
+  While Python has no trouble describing sections from an array,
+  usually it copies these instead of taking the address.
+  Therefore, it is necessary to convert the matrix
+  to a buffer and compute an explicit offset in bytes:
+  \verbatimsnippet{pmatcolsend}
+\end{pythonnote}
+
+\begin{figure}[t]
+  \includegraphics[scale=.5]{stridesend}
+  \caption{Send strided data from process zero to all others}
+  \label{fig:stridesend}
+\end{figure}
+
+\begin{exercise}
+  \label{ex:stridesend}
+  Let processor~0 have an array~$x$ of length $10P$, where $P$~is the number of processors.
+  Elements $0,P,2P,\ldots,9P$ should go to processor zero, $1,P+1,2P+1,\ldots$ to processor~1,
+  et cetera. Code this as a sequence of send/recv calls, using a vector datatype
+  for the send, and a contiguous buffer for the receive.
+
+  For simplicity, skip the send to/from zero. What is the most elegant
+  solution if you want to include that case?
+
+  For testing, define the array as $x[i]=i$.
+  \skeleton{stridesend}
+\end{exercise}
+
+\begin{exercise}
+  Write code to compare the time it takes to send a strided subset
+  from an array: copy the elements by hand to a smaller buffer, or use
+  a vector data type. What do you find? You may need to test on fairly
+  large arrays.
+\end{exercise}
+
+\Level 1 {Subarray type}
+\label{sec:type_subarray}
+
+The vector datatype can be used for blocks in an array of dimension
+more than~2 by using it recursively. However, this gets
+tedious. Instead, there is an explicit subarray type
+%
+\indexmpiref{MPI_Type_create_subarray}.
+%
+This describes the dimensionality and extent of the array, and
+the starting point (the `upper left corner') and extent of the
+subarray.
+
+\begin{mplnote}{Subarray layout}
+  The templated \indexmpldef{subarray_layout} class is constructed
+  from a vector of triplets of global size~/ subblock size~/ first coordinate.
+\begin{lstlisting}
+mpl::subarray_layout<int>( 
+ { {ny, ny_l, ny_0}, {nx, nx_l, nx_0} }
+);  
+\end{lstlisting}
+\end{mplnote}
+
+\begin{exercise}
+  \label{ex:cubegather}
+  Assume that your number of processors is $P=Q^3$, and that each
+  process has an array of identical size. Use
+  \indexmpishow{MPI_Type_create_subarray} to gather all data onto a root process.
+  Use a sequence of send and receive calls;
+  \indexmpishow{MPI_Gather} does not work here.
+
+  \skeleton{cubegather}
+
+\begin{tacc}
+If you haven't started \n{idev} with the right number of processes,
+use
+\begin{verbatim}
+ibrun -np 27 cubegather
+\end{verbatim}
+Normally you use \n{ibrun} without process count argument.
+\end{tacc}
+
+\end{exercise}
+
+\begin{fortrannote}{Subarrays}
+  Subarrays are naturally supported in Fortran through array sections.
+  %
+  \fverbatimsnippet[examples/mpi/f08/section.F90]{fsectionsend}
+  %
+  However, there is a subtlety with non-blocking operations:
+  for a non-contiguous buffer a temporary is created, which is released
+  after the MPI call. This is correct for blocking sends, but for non-blocking
+  the temporary has to stay around till the wait call.
+  %
+  \fverbatimsnippet[examples/mpi/f08/sectionisend.F90]{fsectionisend}
+  %
+  In \mpistandard{3} the variable \indexmpidef{MPI_SUBARRAYS_SUPPORTED}
+  indicates support for this mechanism:
+  %
+  \fverbatimsnippet[examples/mpi/f08/sectionisend.F90]{fsectiontest}
+\end{fortrannote}
+
+The possibilities for the \n{order} parameter are
+\indexmpidef{MPI_ORDER_C} and \indexmpidef{MPI_ORDER_FORTRAN}.
+However, this has nothing to do with the order of traversal of elements;
+it determines how the bounds of the subarray are interpreted.
+As an example, we fill a $4\times 4$ array in C~order with the numbers~$0\cdots15$,
+and send the $[0,1]\times [0\cdots4]$ slice two ways, 
+first C~order, then Fortran order:
+%
+\cverbatimsnippet[code/mpi/c/row2col.c]{row2colsub}
+
+The receiver receives the following, formatted to bring out
+where the numbers originate:
+\begin{verbatim}
+Received C order:
+ 0.000 1.000 2.000 3.000
+ 4.000 5.000 6.000 7.000
+Received F order:
+ 0.000 1.000
+ 4.000 5.000
+ 8.000 9.000
+ 12.000 13.000
+\end{verbatim}
+
+\Level 1 {Indexed type}
+\label{sec:data:indexed}
+
+The indexed datatype, constructed with \indexmpiref{MPI_Type_indexed}
+can send arbitrarily located elements from an array of a single datatype.
+You need to supply an array of index locations, plus an array of blocklengths
+with a separate blocklength for each index. The total number of elements sent
+is the sum of the blocklengths.
+
+\begin{figure}[t]
+  \includegraphics[scale=.11]{data-indexed}
+  \caption{The elements of an MPI Indexed datatype}
+  \label{fig:data-indexed}
+\end{figure}
+
+The following example picks items that are on prime number-indexed
+locations.
+\cverbatimsnippet[examples/mpi/c/indexed.c]{indexed}
+%
+For Fortran we show the legacy syntax for once:
+%
+\fverbatimsnippet[examples/mpi/f/indexed.F90]{indexed-f}
+%
+\pverbatimsnippet[examples/mpi/p/indexed.py]{indexp}
+
+\begin{mplnote}{Indexed type}
+  In \ac{MPL}, the \indexmpldef{indexed_layout} is based on a vector
+  of 2-tuples denoting block length~/ block location.
+  %
+  \cxxverbatimsnippet[examples/mpi/mpl/indexed.cxx]{indexedmpl}
+\end{mplnote}
+
+\begin{mplnote}{Layouts for gatherv}
+  The size/displacement arrays for \indexmpishow{MPI_Gatherv}~/
+  \indexmpishow{MPI_Alltoallv} are handled through a
+  \indexmpldef{layouts} object, which is basically a vector of
+  \indexmplshow{layout} objects.
+  %
+  \cxxverbatimsnippet{mpllayouts}
+\end{mplnote}
+
+\begin{mplnote}{Indexed block type}
+  For the case where all block lengths are the same,
+  use \indexmpldef{indexed_block_layout}:
+  %
+  \cxxverbatimsnippet[examples/mpi/mpl/indexedblock.cxx]{indexedbmpl}
+\end{mplnote}
+
+You can also \indexmpishow{MPI_Type_create_hindexed} which describes blocks
+of a single old type, but with index locations in bytes, rather than
+in multiples of the old type.
+\begin{lstlisting}
+int MPI_Type_create_hindexed
+ (int count, int blocklens[], MPI_Aint indices[],
+  MPI_Datatype old_type,MPI_Datatype *newtype)
+\end{lstlisting}
+A slightly simpler version,
+\indexmpiref{MPI_Type_create_hindexed_block}
+assumes constant block length.
+
+There is an important difference between the \n{hindexed} and the
+above \indexmpishow{MPI_Type_indexed}: that one described offsets from
+a base location; these routines describes absolute memory addresses.
+You can use this to send for instance the elements of a linked list.
+You would traverse the list, recording the addresses of the
+elements with \indexmpiref{MPI_Get_address}.
+(The routine \indexmpidepr{MPI_Address} is deprecated.)
+
+In C++ you can use this to
+send an \lstinline{std::<vector>}\index{C++!standard library!vector}, that
+is, a vector object from the \indextermbus{C++}{standard library}, if
+the component type is a pointer.
+
+\Level 1 {Struct type}
+\label{sec:data:struct}
+
+The structure type, created with \indexmpiref{MPI_Type_create_struct},
+can contain multiple data types. (The routine
+\indexmpishow{MPI_Type_struct} is deprecated with \mpistandard{3}.)
+%
+\begin{figure}[t]
+  \includegraphics[scale=.09]{data-struct}
+  \caption{The elements of an MPI Struct datatype}
+  \label{fig:data-struct}
+\end{figure}
+%
+The specification contains a `count' parameter that specifies how many blocks
+there are in a single structure. For instance,
+\begin{lstlisting}
+struct {
+ int i;
+ float x,y;
+} point;
+\end{lstlisting}
+has two blocks, one of a single integer, and one of two floats.
+This is illustrated in figure~\ref{fig:data-struct}.
+
+\begin{description}
+\item[\texttt{count}] The number of blocks in this
+  datatype. The \n{blocklengths}, \n{displacements}, \n{types}
+  arguments have to be at least of this length.
+\item[\texttt{blocklengths}] array containing the lengths of the blocks of each datatype.
+\item[\texttt{displacements}] array describing the relative location
+  of the blocks of each datatype.
+\item[\texttt{types}] array containing the datatypes; each block in
+  the new type is of a single datatype; there can be multiple
+  blocks consisting of the same type.
+\end{description}
+In this example, unlike the previous ones, both sender and receiver
+create the structure type. With structures it is no longer possible to
+send as a derived type and receive as a array of a simple type.
+(It would be possible to send as one structure type and receive as another, 
+as long as they have the same \indextermbus{datatype}{signature}.)
+
+\cverbatimsnippet[examples/mpi/c/struct.c]{structure}
+
+Note the \n{displacement} calculations in this example,
+which involve some not so elegant pointer arithmetic.
+The following Fortran code uses \indexmpishow{MPI_Get_address},
+which is more elegant, and in fact
+the only way address calculations can be done in Fortran.
+
+\fverbatimsnippet[examples/mpi/f/struct.F90]{fstructure}
+
+It would have been incorrect to write
+\begin{lstlisting}
+displacement[0] = 0;
+displacement[1] = displacement[0] + sizeof(char);
+\end{lstlisting}
+since you do not know the way the \indexterm{compiler} lays out the
+structure in memory\footnote{Homework question: what does the language
+  standard say about this?}.
+
+If you want to send more than one structure, you have to worry more
+about padding in the structure. You can solve this by adding an extra
+type \indexmpishow{MPI_UB} for the `upper bound' on the structure:
+\begin{lstlisting}
+displacements[3] = sizeof(myobject); types[3] = MPI_UB;
+MPI_Type_create_struct(struclen+1,.....);
+\end{lstlisting}
+
+\begin{mplnote}{Struct type scalar}
+  One could describe the MPI struct type as a collection of
+  displacements, to be applied to any set of items that conforms
+  to the specifications.
+  An \ac{MPL} \indexmplshow{heterogeneous_layout} on the other hand,
+  incorporates the actual data. Thus you could write
+  %
+  \cxxverbatimsnippet[examples/mpi/mpl/struct.cxx]{structuremplscalar}
+  %
+  Here, the \indexmplshow{absolute} indicates the lack of an implicit buffer:
+  the layout is absolute rather than a relative description.
+\end{mplnote}
+
+\begin{mplnote}{Struct type general}
+  More complicated data than scalars takes more work:
+  %
+  \cxxverbatimsnippet[examples/mpi/mpl/struct.cxx]{structurempl}
+  %
+  Note the \indexmplshow{make_absolute} in addition to
+  \indexmplshow{absolute} mentioned above.
+\end{mplnote}

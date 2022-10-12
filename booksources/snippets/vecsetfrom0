@@ -1,0 +1,8 @@
+if (myrank==0) then
+   do vecidx=0,globalsize-1
+      vecelt = vecidx
+      call VecSetValue(vector,vecidx,vecelt,INSERT_VALUES,ierr)
+   end do
+end if
+call VecAssemblyBegin(vector,ierr)
+call VecAssemblyEnd(vector,ierr)

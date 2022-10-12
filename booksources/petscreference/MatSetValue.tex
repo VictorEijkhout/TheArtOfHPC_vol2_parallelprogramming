@@ -1,0 +1,16 @@
+C:
+#include <petscmat.h>
+PetscErrorCode MatSetValue(
+    Mat m,PetscInt row,PetscInt col,PetscScalar value,InsertMode mode)
+
+Input Parameters
+m : the matrix
+row : the row location of the entry
+col : the column location of the entry
+value : the value to insert
+mode : either INSERT_VALUES or ADD_VALUES
+
+Python:
+PETSc.Mat.setValue(self, row, col, value, addv=None)
+also supported:
+A[row,col] = value

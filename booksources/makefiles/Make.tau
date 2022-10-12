@@ -1,0 +1,53 @@
+# -*- makefile -*-
+################################################################
+####
+#### This makefile is part of `Parallel Programming in MPI and OpenMP'
+#### Victor Eijkhout
+#### eijkhout@tacc.utexas.edu
+####
+#### copyright Victor Eijkhout 2018-2020
+####
+#### Makefile for TAU instrumentation
+####
+################################################################
+
+info ::
+	@echo && echo "%%%% TAU options %%%%" && echo
+
+info ::
+	@echo "make taurun PROGRAM=<any prog> OPTIONS=<whatever>"
+	@echo "    [ NP=.. (default: <<${NP}>>) ]"
+taurun :
+	@if [ -z "${PROGRAM}" ] ; then \
+	   echo "Usage: make taurun PROGRAM=yourprogram"; exit 1 ; fi
+	@export TAU_EXT="_${PROGRAM}" ; \
+	export TAU_DUMP_DIR=`pwd`/tautrace$$TAU_EXT \
+	&& rm -rf $${TAU_DUMP_DIR} \
+	&& mkdir -p $${TAU_DUMP_DIR} \
+	&& TAU_TRACE=1   TRACEDIR=$${TAU_DUMP_DIR} \
+	   TAU_PROFILE=1 PROFILEDIR=$${TAU_DUMP_DIR} \
+	   ibrun ${NP} ${PROGRAM} ${OPTIONS}
+info ::
+	@echo "make tau PROGRAM=... (this does the post-processing)"
+tau :
+	@export HOME=`pwd` ; \
+	export TAU_EXT=`if [ ! -z "${PROGRAM}" ] ; then echo "_" ; fi`${PROGRAM} ; \
+	export TAU_DUMP_DIR=`pwd`/tautrace$$TAU_EXT \
+	  && cd $$TAU_DUMP_DIR \
+	  && echo ".. analyzing files in <$$TAU_DUMP_DIR>" \
+	  && rm -f tau.trc tau.edf align.trc align.edf \
+	  && tau_treemerge.pl \
+	  && correct=` which tau_timecorrect >/dev/null && echo $$? ` \
+	  && echo "which correct: $$correct" \
+	  && if [ $$correct -eq 0 ] ; then \
+	         echo "correcting time stamps" \
+	         && tau_timecorrect tau.trc tau.edf align.trc align.edf \
+	         && tau2slog2 align.trc align.edf -o $$HOME/taulog$$TAU_EXT.slog2 \
+	         ; \
+	     else \
+	         tau2slog2 tau.trc tau.edf -o $$HOME/taulog$$TAU_EXT.slog2 \
+	         ; \
+	     fi
+
+clean ::
+	@/bin/rm -rf tautrace* taulog*

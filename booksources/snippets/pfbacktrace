@@ -1,0 +1,6 @@
+!! backtrace.F90
+  subroutine this_function_bombs()
+    PetscErrorCode :: code=1
+    character*80 :: msg="We can not go on like this"
+    SETERRQ(PETSC_COMM_SELF,code,msg)
+  end subroutine this_function_bombs

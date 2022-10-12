@@ -1,0 +1,15 @@
+Synopsis:
+int MPI_Intercomm_merge
+   (MPI_Comm intercomm, int high, 
+    MPI_Comm *newintracomm)
+
+Input Parameters:
+intercomm : Intercommunicator (handle)
+high : Used to order the groups within comm (logical) when creating the new
+    communicator. This is a boolean value; the group that sets high true
+    has its processes ordered after the group that sets this value to
+    false. If all processes in the intercommunicator provide the same
+    value, the choice of which group is ordered first is arbitrary.
+
+Output Parameters:
+newintracomm : Created intracommunicator (handle)

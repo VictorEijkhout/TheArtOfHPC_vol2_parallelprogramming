@@ -1,0 +1,3 @@
+rwz = MPI.Op.Create(reduceWithoutZero)
+positive_minimum = np.zeros(1,dtype=intc)
+comm.Allreduce(data[procid],positive_minimum,rwz);

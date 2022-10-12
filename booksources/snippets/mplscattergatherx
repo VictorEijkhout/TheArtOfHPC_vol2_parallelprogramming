@@ -1,0 +1,3 @@
+vector<float> v;
+float x;
+comm_world.scatter(0, v.data(), x);

@@ -1,0 +1,11 @@
+!! vecarray.F90
+  PetscScalar,dimension(:),Pointer :: &
+       in_array,out_array
+  call VecGetArrayReadF90( x,in_array,ierr )
+  call VecGetArrayF90( y,out_array,ierr )
+  call VecGetLocalSize( x,localsize,ierr )
+  do index=1,localsize
+     out_array(index) = 2*in_array(index)
+  end do
+  call VecRestoreArrayReadF90( x,in_array,ierr )
+  call VecRestoreArrayF90( y,out_array,ierr )

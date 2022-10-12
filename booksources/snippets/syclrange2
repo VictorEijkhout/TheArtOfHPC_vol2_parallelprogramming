@@ -1,0 +1,8 @@
+// stencil2d.cxx
+sycl::range<2> stencil_range(N, M);
+sycl::range<2> alloc_range(N + 2, M + 2);
+std::vector<float>
+  input(alloc_range.size()), 
+  output(alloc_range.size());
+  sycl::buffer<float, 2> input_buf(input.data(), alloc_range);
+  sycl::buffer<float, 2> output_buf(output.data(), alloc_range);

@@ -1,0 +1,7 @@
+sync all
+if (procid==1) &
+     number[procid+1] = number[procid]
+sync all
+if (procid==2) &
+     number[procid-1] = 2*number[procid]
+sync all

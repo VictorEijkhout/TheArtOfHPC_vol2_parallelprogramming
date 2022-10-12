@@ -1,0 +1,13 @@
+// pack.c
+for (int i=1; i<=4; i++) {
+  MPI_Pack_size(i,MPI_CHAR,comm,&s);
+  printf("%d chars: %d\n",i,s);
+}
+for (int i=1; i<=4; i++) {
+  MPI_Pack_size(i,MPI_UNSIGNED_SHORT,comm,&s);
+  printf("%d unsigned shorts: %d\n",i,s);
+}
+for (int i=1; i<=4; i++) {
+  MPI_Pack_size(i,MPI_INT,comm,&s);
+  printf("%d ints: %d\n",i,s);
+}

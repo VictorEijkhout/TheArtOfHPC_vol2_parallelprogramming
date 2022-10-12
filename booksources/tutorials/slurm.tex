@@ -1,0 +1,550 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% slurm.tex : about batch systems
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Supercomputer \indextermp{cluster} can have a large number of
+\indextermp{node}, but not enough to let all their users run
+simultaneously, and at the scale that they want.
+Therefore, users are asked to submit \indextermp{job},
+which may start executing immediately,
+or may have to wait
+until resources are available.
+
+The decision when to run a job,
+and what resources to give it,
+is not done by a human
+operator, but by software called a \indextermbus{batch}{system}.
+(The \indexterm{Stampede} cluster at \indexterm{TACC}
+ran close to 10 million jobs over its lifetime,
+which corresponds to starting a job every 20 seconds.)
+
+This tutorial will cover the basics of such systems, and in particular
+\acf{SLURM}.
+
+\Level 0 {Cluster structure}
+
+A supercomputer cluster usually has two types of nodes:
+\begin{itemize}
+\item \indextermbusp{login}{node}, and
+\item \indextermbusp{compute}{node}.
+\end{itemize}
+When you make an \indextermbus{ssh}{connection} to a cluster,
+you are connecting to a login node. The number of login nodes
+is small, typically less than half a dozen.
+
+\begin{exercise}
+  Connect to your favourite cluster. How many people are on that login node?
+  If you disconnect and reconnect, do you find yourself on the same login node?
+\end{exercise}
+
+Compute nodes are where your jobs are run.
+Different clusters have
+different structures here:
+\begin{itemize}
+\item Compute nodes can be shared between users, or they can be assigned exclusively.
+  \begin{itemize}
+  \item
+    Sharing makes sense if user jobs have less parallelisn than the core count of a node.
+  \item \ldots~on the other hand, it means that users sharing a node
+    can interfere with each other's jobs, with one job using up memory or bandwidth
+    that the other job needs.
+  \item With exclusive nodes, a~job has access to all the memory and
+    all the bandwidth of that node.
+  \end{itemize}
+\item Clusters can homogeneous, having the same processor type on each
+  compute node, or they can have more than one processor type. For
+  instance, the TACC \indexterm{Stampede2} cluster has
+  \indextermbus{Intel}{Knightslanding} and \indextermbus{Intel}{Skylake} nodes.
+\item Often, clusters have a number of `large memory'
+  nodes, on the order of a Terabyte of memory or more.
+  Because of the cost of such hardware, there is usually only
+  a small number of these nodes.
+\end{itemize}
+
+\Level 0 {Queues}
+
+Jobs often can not start immediately, because not enough
+resources are available, or because other jobs may have higher priority
+(see section~\ref{sec:slurm-schedule}).
+It is thus typical for a job to be
+put on a \indexterm{queue}, scheduled, and started,
+by a batch system such as \ac{SLURM}.
+
+Batch systems do not put all jobs in one big pool:
+jobs are submitted to any of a number of queues,
+that are all scheduled separately.
+
+Queues can differ in the following ways:
+\begin{itemize}
+\item If a cluster has different processor types, those are typically
+  in different queues. Also, there may be separate queues for the nodes that
+  have a \ac{GPU} attched. Having multiple queues means
+  you have to decide what processor type you
+  want your job to run on, even if your executable is binary compatible with
+  all of them.
+\item There can be `development' queues, which have restrictive limits on runtime and
+  node count, but where jobs typically start faster.
+\item Some clusters have `premium' queues, which have a higher charge rate, but
+  offer higher priority.
+\item `Large memory nodes' are typically also in a queue of their own.
+\item There can be further queues for jobs with large resource demands, such
+  as large core counts, or longer-than-normal runtimes.
+\end{itemize}
+
+For slurm, the \indextermtt{sinfo} command can tell you much about the queues.
+\begin{verbatim}
+# what queues are there?
+sinfo -o "%P"
+# what queues are there, and what is their status?
+sinfo -o "%20P %.5a"
+\end{verbatim}
+
+\begin{exercise}
+  Enter these commands. How many queues are there? Are they all
+  operational at the moment?
+\end{exercise}
+
+\Level 1 {Queue limits}
+
+Queues have limits on
+\begin{itemize}
+\item the runtime of a job;
+\item the node count of a job; or
+\item how many jobs a user can have in that queue.
+\end{itemize}
+
+\Level 0 {Job running}
+
+There are two main ways of starting a job on a cluster that is
+managed by slurm.
+You can start a program run synchronously with \indextermtt{srun},
+but this may hang until resources are available.
+In this section, therefore, we focus on asynchronously executing
+your program by submitting a job with \indextermtt{sbatch}. 
+
+\Level 1 {The job submission cycle}
+
+In order to run a \indextermbus{batch}{job},
+you need to write a \indexterm{job script},
+or \indextermbus{batch}{script}.
+This script describes what program you will run,
+where its inputs and outputs are located,
+how many processes it can use, and how long it will run.
+
+In its simplest form, you submit your script without further parameters:
+\begin{verbatim}
+sbatch yourscript
+\end{verbatim}
+All options regarding the job run are contained in the script file, as we
+will now discuss.
+
+As a result of your job submission you get a job id.
+After submission you can queury your job with \indextermunix{squeue}:
+\begin{verbatim}
+squeue -j 123456
+\end{verbatim}
+or queury all your jobs:
+\begin{verbatim}
+squeue -u yourname
+\end{verbatim}
+
+The \indextermunix{squeue} command reports various aspects of your job,
+such as its status (typically pending or running);
+and if it is running, the queue (or `partition') where it runs,
+its elapsed time, and the actual nodes where it runs.
+\begin{verbatim}
+squeue -j 5807991
+  JOBID   PARTITION     NAME     USER ST   TIME  NODES NODELIST(REASON)
+5807991 development packingt eijkhout  R   0:04      2 c456-[012,034]
+\end{verbatim}
+
+If you discover errors in your script after submitting it,
+including when it has started running,
+you can cancel your job with \indextermunix{scancel}:
+\begin{verbatim}
+scancel 1234567
+\end{verbatim}
+
+\Level 0 {The script file}
+
+A job script looks like an executable shell script:
+\begin{itemize}
+\item It has an `interpreter' line such as
+\begin{verbatim}
+#!/bin/bash
+\end{verbatim}
+at the top, and
+\item it contains ordinary unix commands, including
+\item the (parallel) startup of you program:
+\begin{verbatim}
+# sequential program:
+./yourprogram youroptions
+# parallel program, general:
+mpiexec -n 123 parallelprogram options
+# parallel program, TACC:
+ibrun parallelprogram options
+\end{verbatim}
+\item \ldots~and then it has many options specifying the parallel run.
+\end{itemize}
+
+\Level 1 {sbatch options}
+
+In addition to the regular unix commands and the interpreter line,
+your script has a number of SLURM directives,
+each starting with \verb+#SBATCH+. 
+(This makes them comments to the shell interpreter,
+so a batch script is actually a legal shell script.)
+
+Directives have the form
+\begin{verbatim}
+#SBATCH -option value
+\end{verbatim}
+Common options are:
+\begin{itemize}
+\item \n{-J}: the jobname. This will be displayed when you call \indextermtt{squeue}.
+\item \n{-o}: name of the output file. This will contain all the stdout output of the script.
+\item \n{-e}: name of the error file. This will contain all the stderr
+  output of the script, as well as slurm error messages.
+
+  It can be a good idea to make the output and error file unique per job.
+  To this purpose, the macro \verb+%j+ is available, which at execution time
+  expands to the job number. You will then get an output file with a
+  name such as \n{myjob.o2384737}.
+\item \n{-p}: the \indexterm{partition} or queue. See above.
+\item \n{-t hh:mm:ss}: the maximum running time.
+  If your job exceeds this, it will get
+  \index{job!cancel}\emph{cancelled}. Two considerations:
+  \begin{enumerate}
+  \item You can not specify a duration here that is longer than the queue limit.
+  \item The shorter your job, the more likely it is to get scheduled sooner
+    rather than later.
+  \end{enumerate}
+\item \n{-w c452-[101-104,111-112,115]} specific nodes to place the job.
+\item \n{-A}: the name of the account to which your job should be billed.
+\item \n{--mail-user=you@where} Slurm can notify you when a job starts or ends.
+  You may for instance want to connect to a job when it starts
+  (to run \indextermtt{top}),
+  or inspect the results when it's done, but not sit and stare at your terminal all day.
+  The action of which you want to be notified is specified with
+  (among others)
+  \n{--mail-type=begin/end/fail/all}
+\item \n{--dependency=after:123467} indicates that this job is to
+  start after jobs \n{1234567} finished. Use \n{afterok} to start only
+  if that job successfully finished. (See
+  \url{https://cvw.cac.cornell.edu/slurm/submission_depend} for more
+  options.)
+\item \n{--nodelist} allows you to specify specific nodes. This can be
+  good for getting reproducible timings, but it will probably increase
+  your wait time in the queue.
+\item \n{--array=0-30} is a specification for `array jobs': a task that needs
+  to be executed for a range of parameter values.
+  \begin{taccnote}
+  Arry jobs are not supported at TACC; use a launcher instead;
+  section~\ref{sec:slurm-sweep}.
+  \end{taccnote}
+\item \n{--mem=10000} specifies the desired amount of memory per node.
+  Default units are megabytes, but can be explicitly indicated
+  with~\n{K/M/G/T}.
+  \begin{taccnote}
+    This option can not be used to request arbitrary memory:
+    jobs always have access to all available physical memory,
+    and use of shared memory is not allowed.
+  \end{taccnote}
+\end{itemize}
+See \url{https://slurm.schedmd.com/sbatch.html} for a full list.
+
+\begin{exercise}
+  Write a script that executes the \indextermunix{date} command twice,
+  with a \indextermunix{sleep} in between.
+  Submit the script and investigate the output.
+\end{exercise}
+
+\Level 1 {Environment}
+
+Your job script acts like any other shell script when it is executed.
+In particular, it inherits the calling
+\emph{environment}\index{environment!of batch job}
+with all its environment variables.
+Additionally, slurm defines a number of environment variables,
+such as the job ID, the hostlist, and the node and process count.
+
+\Level 0 {Parallelism handling}
+
+We discuss parallelism options separately.
+
+\Level 1 {MPI jobs}
+
+On most clusters there is a structure with compute nodes,
+that contain one or more multi-core processors.
+Thus, you want to specify the node and core count.
+For this, there are options \n{-N} and~\n{-n} respectively.
+
+\begin{verbatim}
+#SBATCH -N 4              # Total number of nodes
+#SBATCH -n 4              # Total number of mpi tasks
+\end{verbatim}
+
+It would be possible to specify only the node count or the core count,
+but that takes away flexibility:
+\begin{itemize}
+\item If a node has 40 cores, but your program stops scaling at  10 MPI ranks,
+  you would use:
+\begin{verbatim}
+#SBATCH -N 1
+#SBATCH -n 10
+\end{verbatim}
+\item If your processes use a large amount of memory, you may want to leave some cores unused.
+  On a 40-core node you would either use
+\begin{verbatim}
+#SBATCH -N 2
+#SBATCH -n 40
+\end{verbatim}
+or 
+\begin{verbatim}
+#SBATCH -N 1
+#SBATCH -n 20
+\end{verbatim}
+\end{itemize}
+
+Rather than specifying a total core count, you can also specify the core count
+per node with \n{--ntasks-per-node}.
+
+\begin{exercise}
+  Go through the above examples and replace the \n{-n} option by an equivalent
+  \n{--ntasks-per-node} values.
+\end{exercise}
+
+\begin{pythonnote}{Python MPI programs}
+  Python programs using \indextermtt{mpi4py} should be treated like other
+  MPI programs, except that instead of an executable name you specify
+  the python executable and the script name:
+\begin{verbatim}
+ibrun python3 mympi4py.py
+\end{verbatim}
+\end{pythonnote}
+
+\Level 1 {Threaded jobs}
+
+The above discussion was mostly of relevance to MPI programs.
+Some other cases:
+\begin{itemize}
+\item For pure-OpenMP programs you need only one node, so the \n{-N} value is~1.
+  Maybe surprisingly, the \n{-n} value is also~1, since only one process needs
+  to be created: OpenMP uses thread-level parallelism, which is specified
+  through the \indextermtt{OMP_NUM_THREADS} environment variable.
+\item A similar story holds for the
+  \indextermbus{Matlab}{parallel computing toolbox}
+  (note: note the distributed computing toolbox),
+  and the \indextermbus{Python}{multiprocessing} module.
+\end{itemize}
+
+\begin{exercise}
+  What happens if you specify an~\n{-n} value greater than~1
+  for a pure-OpenMP program?
+\end{exercise}
+
+For \indextermbus{hybrid}{computing} MPI-OpenMP programs, you use a combination
+of slurm options and enviroment variables, such that, for instance,
+the product of the \n{--tasks-per-node} and \n{OMP_NUM_THREADS} is less than the
+core count of the node.
+
+\Level 1 {Parameter sweeps / ensembles / massively parallel}
+\label{sec:slurm-sweep}
+
+So far we have focused on jobs where a single parallel executable is scheduled.
+However, there are use cases where you want to run a sequential (or very modestly parallel)
+executable for a large number of inputs.
+This is called variously a \indextermdef{parameter sweep} or an \indexterm{ensemble}.
+
+Slurm can support this itself with \indextermsubp{array}{job},
+though there are more sophisticated \indextermunix{launcher} tools
+for such purposes.
+
+\begin{taccnote}
+  TACC clusters do not support array jobs.
+  Instead, use the \indextermunix{launcher} or \indextermunix{pylauncher} modules.
+\end{taccnote}
+
+\Level 0 {Job running}
+
+When your job is running, its status is reported as \n{R} by \indextermunix{squeue}.
+That command also reports which nodes are allocated to it.
+
+\begin{verbatim}
+squeue -j 5807991
+       JOBID   PARTITION     NAME     USER ST       TIME  NODES NODELIST(REASON)
+     5807991 development packingt eijkhout  R       0:04      2 c456-[012,034]
+\end{verbatim}
+
+You can then \indextermunix{ssh} into the compute nodes of your job; 
+normally, compute nodes are off-limits.
+This is useful if you want to run \indextermunix{top}
+to see how your processes are doing.
+
+\Level 0 {Scheduling strategies}
+\label{sec:slurm-schedule}
+
+Such a system looks at resource availability
+and the user's priority to determine when a job can be run.
+
+Of course, if a user is requesting a large number of nodes,
+it may never happen that that many become available simultaneously,
+so the batch system will force the availability.
+It does so by determining a time when that job is
+set to run, and then let nodes go \indexterm{idle}
+so that they are available at that time.
+
+An interesting side effect of this is that,
+right before the really large job starts,
+a~`fairly' large job can be run, if it only has a short running time.
+This is known as \indexterm{backfill}, and it may cause jobs to be
+run earlier than their priority would warrant.
+
+\Level 0 {File systems}
+
+File systems come in different types:
+\begin{itemize}
+\item They can be backed-up or not;
+\item they can be shared or not; and
+\item they can be permanent or purged.
+\end{itemize}
+
+On many clusters each node has as local disc, either spinning or a
+\indextermbus{RAM}{disc}. This is usually limited in size, and
+should only be used for temporary files during the job run.
+
+Most of the file system lives on discs that are part of
+\indextermbusp{RAID}{array}.
+These discs have a large amount of redundancy to make them
+fault-tolerant, and in aggregate they form a
+\emph{shared file system}\index{file!system!shared}:
+one unified file system that is accessible from any node
+and where files can take on any size, or at least
+much larger than any individual disc in the system.
+
+\begin{taccnote}
+  The \texttt{HOME} file system is limited in size, but
+  is both permanent and backed up. Here you put scripts and sources.
+
+  The \texttt{WORK} file system is permanent but not backed up.
+  Here you can store output of your simulations. However, currently
+  the work file system can not immediately sustain the output of
+  a large parallel job.
+
+  The \texttt{SCRATCH} file system is purged, but it has the most bandwidth
+  for accepting program output. This is where you would write your data.
+  After post-processing, you can then store on the work file system,
+  or write to tape.
+\end{taccnote}
+
+\begin{exercise}
+  If you install software with \indexterm{cmake}, you typically have
+  \begin{enumerate}
+  \item a script with all your cmake options;
+  \item the sources,
+  \item the installed header and binary files
+  \item temporary object files and such.
+  \end{enumerate}
+  How would you orgnize these entities over your available file systems?
+\end{exercise}
+
+\Level 0 {Examples}
+
+Very sketchy section.
+
+\Level 1 {Job dependencies}
+
+\begin{verbatim}
+JOB=`sbatch my_batchfile.sh | egrep -o -e "\b[0-9]+$"`
+
+#!/bin/sh
+
+# Launch first job
+JOB=`sbatch job.sh | egrep -o -e "\b[0-9]+$"`
+
+# Launch a job that should run if the first is successful
+sbatch --dependency=afterok:${JOB} after_success.sh
+
+# Launch a job that should run if the first job is unsuccessful
+sbatch --dependency=afternotok:${JOB} after_fail.sh
+\end{verbatim}
+
+\Level 1 {Multiple runs in one script}
+
+\begin{verbatim}
+ibrun stuff &
+sleep 10
+for h in hostlist ; do
+  ssh $h "top"
+done
+wait
+\end{verbatim}
+
+\Level 0 {Review questions}
+
+For all true/false questions,
+if you answer False, what is the right answer and why?
+
+\begin{exercise}
+  T/F?
+  When you submit a job, it starts running immediately once
+  sufficient resources are available.
+\end{exercise}
+
+\begin{exercise}
+  T/F? If you submit the following script:
+\begin{verbatim}
+#!/bin/bash
+#SBATCH -N 10
+#SBATCH -n 10
+echo "hello world"
+\end{verbatim}
+you get 10 lines of `hello world' in your output.
+\end{exercise}
+
+\begin{exercise}
+  T/F? If you submit the following script:
+\begin{verbatim}
+#!/bin/bash
+#SBATCH -N 10
+#SBATCH -n 10
+hostname
+\end{verbatim}
+you get the hostname of the login node from which your job was submitted.
+\end{exercise}
+
+\begin{exercise}
+  Which of these are shared with other users when your job is running:
+  \begin{itemize}
+  \item Memory;
+  \item CPU;
+  \item Disc space?
+  \end{itemize}
+\end{exercise}
+
+\begin{exercise}
+  What is the command for querying the status of your job?
+  \begin{itemize}
+  \item \n{sinfo}
+  \item \n{squeue}
+  \item \n{sacct}
+  \end{itemize}
+\end{exercise}
+
+\begin{exercise}
+  On 4 nodes with 40 cores each, what's the largest program run,
+  measured in
+  \begin{itemize}
+  \item MPI ranks;
+  \item OpenMP threads?
+  \end{itemize}
+\end{exercise}

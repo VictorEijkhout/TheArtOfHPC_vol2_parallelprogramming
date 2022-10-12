@@ -1,0 +1,104 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the lecture slides for
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-6
+%%%%
+%%%% OmpData-slides.tex : slides about OpenMP workshare constructs
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[containsverbatim]{Shared and private data}
+  You have already seen some of the basics:
+  \begin{itemize}
+  \item Data declared outside a parallel region is shared.
+  \item Data declared in the parallel region is private.\\
+    (Fortran does not have this block scope mechanism)
+\begin{verbatim}
+int i;
+#pragma omp parallel 
+{ double i; .... }
+\end{verbatim}
+  \item You can change all this with clauses:
+\begin{verbatim}
+int i;
+#pragma omp parallel private(i)
+\end{verbatim}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]{Variables in loops}
+\begin{verbatim}
+int i; double t;
+#pragma omp parallel for 
+  for (i=0; i<N; i++) {
+    t = sin(i*pi*h);
+    x[i] = t*t;
+  }
+\end{verbatim}
+  \begin{itemize}
+  \item The loop variable is automatically private.
+  \item The temporary \n{t} is shared, but conceptually private to
+    each iteration: needs to be declared private.\\
+    (What happens if you don't?)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]{Copying to/from private data}
+  \begin{itemize}
+  \item Private data is uninitialized
+\begin{verbatim}
+int i = 3;
+#pragma omp parallel private(i)
+  printf("%d\n",i); // undefined!
+\end{verbatim}
+  \item To import a value:
+\begin{verbatim}
+int i = 3;
+#pragma omp parallel firstprivate(i)
+  printf("%d\n",i); // undefined!
+\end{verbatim}
+  \item \indextermtt{lastprivate} to preserve value of last iteration.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]{Default behaviour}
+  \begin{itemize}
+  \item \indextermtt{default(shared)} or \indextermtt{default(private)}
+  \item useful for debugging: \indextermtt{default(none)}\\ because you have
+    to specify everything as shared/private
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]{Persistent thread data}
+  \begin{itemize}
+  \item Private data disappears after the parallel region.\\
+    What if you want data to persist?
+  \item Directive \indextermtt{threadprivate}
+\begin{verbatim}
+double seed;
+#pragma omp threadprivate(seed)
+\end{verbatim}
+\item Standard application: random number generation.
+\item Tricky: has to be global or static.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]{Arrays}
+  \begin{itemize}
+  \item Statically allocated arrays can be made private.
+  \item Dynamically allocated ones can not: the pointer becomes private.
+  \end{itemize}
+\end{frame}
+
+\endinput
+
+\begin{frame}[containsverbatim]{}
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\end{frame}
+

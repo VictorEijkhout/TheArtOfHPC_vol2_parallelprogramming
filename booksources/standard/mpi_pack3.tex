@@ -1,0 +1,42 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% This text file is part of the source of 
+%% `Parallel Computing'
+%% by Victor Eijkhout, copyright 2012-2022
+%%
+%% MPI API file for MPI_Pack
+%%
+%% THIS FILE IS AUTO-GENERATED
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begingroup
+\ttfamily\bfseries
+\catcode`\_=12
+\begin{tabular}{
+l       % name
+l       % param name
+p{\mpiparmtextsize}  % explanation
+p{.7in} % ctype
+p{.9in} % ftype
+l       % inout
+}
+\toprule
+\mdseries\textrm{Name}&
+\mdseries\textrm{Param name}&
+\mdseries\textrm{Explanation}&
+\mdseries\textrm{C type}&
+\mdseries\textrm{F type}&
+\mdseries\textrm{inout}\\
+\midrule
+\hbox to 18pt{MPI_Pack (\hss} \\
+ & inbuf & input buffer start & const void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & IN \\ & incount & number of input data items & int & INTEGER  & IN \\ & datatype & datatype of each input data item & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\ & outbuf & output buffer start & void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & OUT \\ & outsize & output buffer size, in bytes & int & INTEGER  & IN \\ & position & current position in buffer, in bytes & int* & INTEGER  & INOUT \\ & comm & communicator for packed message & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\
+&)\\
+
+\bottomrule
+\end{tabular}
+\endgroup
+

@@ -1,0 +1,6 @@
+!! waitnull.F90
+  Type(MPI_Request),dimension(:),allocatable :: requests
+  allocate(requests(ntids-1))
+        call MPI_Waitany(ntids-1,requests,index,MPI_STATUS_IGNORE)
+        if ( .not. requests(index)==MPI_REQUEST_NULL) then
+             print *,"This request should be null:",index

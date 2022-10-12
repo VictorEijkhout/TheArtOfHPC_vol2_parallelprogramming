@@ -1,0 +1,8 @@
+// split.c
+N = 100; n = PETSC_DECIDE;
+PetscSplitOwnership(comm,&n,&N);
+PetscPrintf(comm,"Global %d, local %d\n",N,n);
+
+N = PETSC_DECIDE; n = 10;
+PetscSplitOwnership(comm,&n,&N);
+PetscPrintf(comm,"Global %d, local %d\n",N,n);

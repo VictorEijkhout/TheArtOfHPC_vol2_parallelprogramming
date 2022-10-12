@@ -1,0 +1,6 @@
+dist_graph_communicator
+   (const communicator &old_comm,
+    const source_set &ss, const dest_set &ds, bool reorder=true)
+where:
+class dist_graph_communicator::source_set : private set< pair<int,int> >
+class dist_graph_communicator::dest_set   : private set< pair<int,int> >

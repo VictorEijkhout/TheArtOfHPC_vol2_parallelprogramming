@@ -1,0 +1,6 @@
+## hdf5.py
+file_name = "hdf5.dat"
+viewer = PETSc.Viewer().createHDF5(file_name, 'w', comm)
+x.view(viewer)
+viewer = PETSc.Viewer().createHDF5(file_name, 'r', comm)
+x.load(viewer)

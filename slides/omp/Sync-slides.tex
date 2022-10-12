@@ -1,0 +1,109 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the lecture slides for
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-6
+%%%%
+%%%% Sync-slides.tex : slides about OpenMP workshare constructs
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{frame}[containsverbatim]{Need for synchronization}
+  \begin{itemize}
+  \item The loop and sections directives do not specify an ordering,\\
+    sometimes you want to force an ordering.
+  \item Barriers: global synchronization.
+  \item Critical sections: only one process can execute a statement\\
+    this prevents race conditions.
+  \item Locks: protect data items from being accessed.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]{Barriers}
+\small
+  \begin{itemize}
+  \item Every workshare construct has an implicit barrier:
+\begin{verbatim}
+#pragma omp parallel
+{
+  #pragma omp for
+    for ( .. i .. )
+      x[i] = ...
+  #pragma omp for
+    for ( .. i .. )
+      y[i] = .. x[i] .. x[i+1] .. x[i-1] ...
+}
+\end{verbatim}
+First loop is completely finished before second.
+\item Explicit barrier:
+\begin{verbatim}
+#pragma omp parallel
+{
+  x = f();
+#pragma omp barrier
+  .... x ...
+}
+\end{verbatim}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]{Critical sections}
+\begin{itemize}
+  \item Critical section: One update at a time.
+\begin{verbatim}
+#pragma omp parallel
+{
+  double x = f();
+#pragma omp critical
+  global_update(x);
+}
+\end{verbatim}
+\item \indextermtt{atomic} : special case for simple operations, possible
+  hardware support
+\begin{verbatim}
+#pragma omp atomic
+  t += x;
+\end{verbatim}
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Warning}
+  \begin{itemize}
+  \item Critical sections are not cheap! The operating system takes
+    thousands of cycles to coordinate the threads.
+  \item Use only if minor amount of work.
+  \item Do not use if a reduction suffices.
+  \item Name your critical sections.
+  \item Explore locks if there may not be a data conflict.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[containsverbatim]{Locks}
+  \begin{itemize}
+  \item Critical sections are coarse:\\
+    they dictate exclusive acces to a \emph{statement}
+  \item     Suppose you update a big table\\
+    updates to non-conflicting locations should be allowed
+  \item Locks protect a single data item.
+  \end{itemize}
+\end{frame}
+
+\endinput
+
+\begin{frame}[containsverbatim]{}
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\end{frame}
+
+\endinput
+
+\begin{frame}[containsverbatim]{}
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\end{frame}
+

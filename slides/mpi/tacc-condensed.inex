@@ -1,0 +1,18 @@
+% -*- latex -*-
+%%
+%% include definitions for the one-day MPI course at TACC
+%%
+\excludecomment{full}
+\includecomment{condensed}
+\excludecomment{online}
+
+%\excludecomment{tacc}
+\specialcomment{tacc}{\stepcounter{tacc}\def\CommentCutFile{tacc\arabic{tacc}.cut}}{}
+\newcounter{tacc}
+
+\excludecomment{imperial}
+%\specialcomment{imperial}{\stepcounter{imperial}\def\CommentCutFile{imperial\arabic{imperial}.cut}}{}
+
+\includecomment{onesided}
+\includecomment{advanced}
+\includecomment{foundations}

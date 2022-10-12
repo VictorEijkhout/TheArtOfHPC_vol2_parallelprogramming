@@ -1,0 +1,6 @@
+!! tags.F90
+  logical :: flag
+  integer(KIND=MPI_ADDRESS_KIND) :: attr_v,tag_upperbound
+  call MPI_Comm_get_attr(comm,MPI_TAG_UB,attr_v,flag,ierr)
+  tag_upperbound = attr_v
+        print '("Determined tag upperbound: ",i9)', tag_upperbound

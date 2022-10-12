@@ -1,0 +1,12 @@
+!! pingpongbig.F90
+  integer :: power,countbytes
+  Integer(KIND=MPI_COUNT_KIND) :: length
+  call MPI_Sizeof(length,countbytes,ierr)
+  if (procno==0) &
+       print *,"Bytes in count:",countbytes
+        length = 10**power
+        allocate( senddata(length),recvdata(length) )
+           call MPI_Send(senddata,length,MPI_DOUBLE_PRECISION, &
+                processB,0, comm)
+           call MPI_Recv(recvdata,length,MPI_DOUBLE_PRECISION, &
+                processB,0, comm,MPI_STATUS_IGNORE)

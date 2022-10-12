@@ -1,0 +1,18 @@
+// binomial1p.c
+#pragma omp parallel
+  {
+#pragma omp single
+    {
+#pragma omp taskgroup
+      {
+	for (int row=1; row<=n; row++)
+	  for (int col=1; col<=row; col++)
+	    if (row==1 || col==1 || col==row)
+#pragma omp task depend(out:array[row][col])
+	      array[row][col] = 1;
+	    else 
+#pragma omp task depend(in:array[row-1][col-1],array[row-1][col]) depend(out:array[row][col])
+	      array[row][col] = array[row-1][col-1] + array[row-1][col];
+      } // end taskgroup
+    } // end single
+  } // end parallel

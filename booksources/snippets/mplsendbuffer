@@ -1,0 +1,5 @@
+// sendbuffer.cxx
+std::vector<double> v(8);
+mpl::contiguous_layout<double> v_layout(v.size());
+  comm_world.send(v.data(), v_layout, 1);  // send to rank 1
+  comm_world.recv(v.data(), v_layout, 0);  // receive from rank 0

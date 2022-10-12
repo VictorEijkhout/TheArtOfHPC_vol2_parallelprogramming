@@ -1,0 +1,16 @@
+// countdownacc.c
+MPI_Win_fence(0,the_window);
+int counter_value;
+MPI_Get( &counter_value,1,MPI_INT,
+         counter_process,0,1,MPI_INT,
+         the_window);
+MPI_Win_fence(0,the_window);
+if (i_am_available) {
+  int decrement = -1;
+  MPI_Accumulate
+    ( &decrement,       1,MPI_INT,
+      counter_process,0,1,MPI_INT,
+      MPI_SUM,
+      the_window);
+}
+MPI_Win_fence(0,the_window);

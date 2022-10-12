@@ -1,0 +1,14 @@
+Synopsis
+Get vector(s) compatible with the matrix, i.e. with the same parallel layout
+
+#include "petscmat.h" 
+PetscErrorCode MatCreateVecs(Mat mat,Vec *right,Vec *left)
+
+Collective on Mat
+
+Input Parameter
+mat - the matrix
+
+Output Parameter;
+right 	- (optional) vector that the matrix can be multiplied against
+left 	- (optional) vector that the matrix vector product can be stored in

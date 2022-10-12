@@ -1,0 +1,16 @@
+// passiveput.c
+int target = ntids-1;
+if (mytid<target) {
+  my_number = mytid;
+  for (int times=0; times<5; times++) {
+	MPI_Win_lock(MPI_LOCK_EXCLUSIVE,target,0,the_window);
+	MPI_Accumulate(&my_number,1,MPI_INT,target,0,1,MPI_INT,MPI_SUM,the_window);
+	MPI_Win_unlock(target,the_window);
+	my_number += ntids-1;
+  }
+}
+MPI_Barrier(comm);
+if (mytid==target)
+  printf("I got the following: %d, s/b %d\n",
+	     other_number,
+	     (5*(ntids-1)-1)*(5*(ntids-1))/2);

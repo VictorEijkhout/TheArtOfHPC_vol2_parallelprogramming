@@ -1,0 +1,9 @@
+// getx.c
+int gig = 1<<30;
+int nblocks = 8;
+size_t big1 = gig * nblocks * sizeof(double);
+size_t big2 = (size_t)1 * gig * nblocks * sizeof(double);
+size_t big3 = (size_t) gig * nblocks * sizeof(double);
+size_t big4 = gig * nblocks * (size_t) ( sizeof(double) );
+size_t big5 = sizeof(double) * gig * nblocks;
+;

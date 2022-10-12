@@ -1,0 +1,1 @@
+call MPI_Get_elements_x(recv_status,MPI_REAL4,recv_count)

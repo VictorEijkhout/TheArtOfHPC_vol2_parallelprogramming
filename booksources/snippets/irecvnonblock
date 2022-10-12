@@ -1,0 +1,7 @@
+// irecvnonblock.c
+MPI_Request request[2];
+MPI_Status status[2];
+other = nprocs-procno;
+MPI_Irecv(&recvbuf,1,MPI_INT,other,0,comm,&(request[0]));
+MPI_Isend(&sendbuf,1,MPI_INT,other,0,comm,&(request[1]));
+MPI_Waitall(2,request,status);

@@ -1,0 +1,675 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the lecture slides for
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%% ompreview.tex : OpenMP concepts review
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Level 0 {Concepts review}
+
+\begin{multicols}{2}
+\Level 1 {Basic concepts}
+
+\begin{itemize}
+\item
+process / thread / thread team
+\item
+threads / cores / tasks
+\item
+directives / library functions / environment variables
+\end{itemize}
+
+\Level 1 {Parallel regions}
+
+execution by a team
+
+\Level 1 {Work sharing}
+
+\begin{itemize}
+\item
+loop / sections / single / workshare
+\item
+implied barrier
+\item
+loop scheduling, reduction
+\item
+sections
+\item
+single vs master
+\item
+(F) workshare
+\end{itemize}
+
+\Level 1 {Data scope}
+
+\begin{itemize}
+\item
+shared vs private, C vs F
+\item
+loop variables and reduction variables
+\item
+default declaration
+\item
+firstprivate, lastprivate
+\end{itemize}
+
+\Level 1 {Synchronization}
+
+\begin{itemize}
+\item
+barriers, implied and explicit
+\item
+nowait
+\item
+critical sections
+\item
+locks, difference with critical
+\end{itemize}
+
+\Level 1 {Tasks}
+
+\begin{itemize}
+\item
+generation vs execution
+\item
+dependencies
+\end{itemize}
+
+
+\end{multicols}
+
+\pagebreak
+
+\Level 0 {Review questions}
+
+\Level 1 {Directives}
+
+What do the following program output?
+\lstset{frame=single} %pyskip
+
+\begin{multicols}{2}
+\small
+\begin{lstlisting}
+int main() {
+  printf("procs %d\n",
+    omp_get_num_procs());
+  printf("threads %d\n",
+    omp_get_num_threads());
+  printf("num %d\n",
+    omp_get_thread_num());
+  return 0;
+}
+\end{lstlisting}
+\columnbreak
+
+\begin{lstlisting}
+int main() {
+#pragma omp parallel
+  {
+  printf("procs %d\n",
+    omp_get_num_procs());
+  printf("threads %d\n",
+    omp_get_num_threads());
+  printf("num %d\n",
+    omp_get_thread_num());
+  }
+  return 0;
+}
+\end{lstlisting}
+\end{multicols}
+
+\lstset{language=Fortran} %pyskip
+\begin{multicols}{2}
+\small
+\begin{lstlisting}
+Program main
+  use omp_lib
+  print *,"Procs:",&
+    omp_get_num_procs()
+  print *,"Threads:",&
+    omp_get_num_threads()
+  print *,"Num:",&
+    omp_get_thread_num()
+End Program
+\end{lstlisting}
+\columnbreak
+
+\begin{lstlisting}
+Program main
+  use omp_lib
+!$OMP parallel
+  print *,"Procs:",&
+    omp_get_num_procs()
+  print *,"Threads:",&
+    omp_get_num_threads()
+  print *,"Num:",&
+    omp_get_thread_num()
+!$OMP end parallel
+End Program
+\end{lstlisting}
+\end{multicols}
+
+\lstset{language=C} %pyskip
+
+\vfill\pagebreak
+
+\Level 1 {Parallelism}
+
+Can the following loops be parallelized? If so, how?
+(Assume that all arrays are already filled in,
+and that there are no out-of-bounds errors.) 
+\begin{multicols}{2}
+\small
+\begin{lstlisting}
+// variant #1
+for (i=0; i<N; i++) {
+  x[i] = a[i]+b[i+1];
+  a[i] = 2*x[i] + c[i+1];
+}
+\end{lstlisting}
+
+\begin{lstlisting}
+// variant #2
+for (i=0; i<N; i++) {
+  x[i] = a[i]+b[i+1];
+  a[i] = 2*x[i+1] + c[i+1];
+}
+\end{lstlisting}
+\columnbreak
+
+\begin{lstlisting}
+// variant #3
+for (i=1; i<N; i++) {
+  x[i] = a[i]+b[i+1];
+  a[i] = 2*x[i-1] + c[i+1];
+}
+\end{lstlisting}
+
+\begin{lstlisting}
+// variant #4
+for (i=1; i<N; i++) {
+  x[i] = a[i]+b[i+1];
+  a[i+1] = 2*x[i-1] + c[i+1];
+}
+\end{lstlisting}
+\end{multicols}
+
+\lstset{language=Fortran} %pyskip
+\begin{multicols}{2}
+\small
+\begin{lstlisting}
+! variant #1
+do i=1,N
+  x(i) = a(i)+b(i+1)
+  a(i) = 2*x(i) + c(i+1)
+end do
+\end{lstlisting}
+
+\begin{lstlisting}
+! variant #2
+do i=1,N
+  x(i) = a(i)+b(i+1)
+  a(i) = 2*x(i+1) + c(i+1)
+end do
+\end{lstlisting}
+\columnbreak
+
+\begin{lstlisting}
+! variant #3
+do i=2,N
+  x(i) = a(i)+b(i+1)
+  a(i) = 2*x(i-1) + c(i+1)
+end do
+\end{lstlisting}
+
+\begin{lstlisting}
+! variant #3
+do i=2,N
+  x(i) = a(i)+b(i+1)
+  a(i+1) = 2*x(i-1) + c(i+1)
+end do
+\end{lstlisting}
+\end{multicols}
+
+\vfill\pagebreak
+
+\Level 1 {Data and synchronization}
+
+\Level 2 {}
+
+What is the output of the following fragments? Assume that there are four threads.
+
+\lstset{language=C} %pyskip
+\begin{multicols}{2}
+\small
+\begin{lstlisting}
+// variant #1
+int nt;
+#pragma omp parallel
+  {
+  nt = omp_get_thread_num();
+  printf("thread number: %d\n",nt);
+  }
+\end{lstlisting}
+
+\begin{lstlisting}
+// variant #2
+int nt;
+#pragma omp parallel private(nt)
+  {
+  nt = omp_get_thread_num();
+  printf("thread number: %d\n",nt);
+  }
+\end{lstlisting}
+
+\begin{lstlisting}
+// variant #3
+int nt;
+#pragma omp parallel
+  {
+#pragma omp single
+    {
+    nt = omp_get_thread_num();
+    printf("thread number: %d\n",nt);
+    }
+  }
+\end{lstlisting}
+\columnbreak
+
+\begin{lstlisting}
+// variant #4
+int nt;
+#pragma omp parallel
+  {
+#pragma omp master
+    {
+    nt = omp_get_thread_num();
+    printf("thread number: %d\n",nt);
+    }
+  }
+\end{lstlisting}
+
+\begin{lstlisting}
+// variant #5
+int nt;
+#pragma omp parallel
+  {
+#pragma omp critical
+    {
+    nt = omp_get_thread_num();
+    printf("thread number: %d\n",nt);
+    }
+  }
+\end{lstlisting}
+\end{multicols}
+
+\lstset{language=Fortran} %pyskip
+\begin{multicols}{2}
+\small
+\begin{lstlisting}
+! variant #1
+  integer nt
+!$OMP parallel
+  nt = omp_get_thread_num()
+  print *,"thread number:",nt
+!$OMP end parallel
+\end{lstlisting}
+
+\begin{lstlisting}
+! variant #2
+  integer nt
+!$OMP parallel private(nt)
+  nt = omp_get_thread_num()
+  print *,"thread number:",nt
+!$OMP end parallel
+\end{lstlisting}
+
+\begin{lstlisting}
+! variant #3
+  integer nt
+!$OMP parallel
+!$OMP single
+    nt = omp_get_thread_num()
+    print *,"thread number:",nt
+!$OMP end single
+!$OMP end parallel
+\end{lstlisting}
+\columnbreak
+
+\begin{lstlisting}
+! variant #4
+  integer nt
+!$OMP parallel
+!$OMP master
+    nt = omp_get_thread_num()
+    print *,"thread number:",nt
+!$OMP end master
+!$OMP end parallel
+\end{lstlisting}
+
+\begin{lstlisting}
+! variant #5
+  integer nt
+!$OMP parallel
+!$OMP critical
+    nt = omp_get_thread_num()
+    print *,"thread number:",nt
+!$OMP end critical
+!$OMP end parallel
+\end{lstlisting}
+\end{multicols}
+
+\Level 2 {}
+
+The following is an attempt to parallelize a serial code.
+Assume that all variables and arrays are defined.
+What errors and potential problems do you see in this code? How would you fix them?
+
+\begin{multicols}{2}
+\lstset{language=C} %pyskip
+\small
+\begin{lstlisting}
+#pragma omp parallel
+{
+  x = f();
+  #pragma omp for
+  for (i=0; i<N; i++)
+    y[i] = g(x,i);
+  z = h(y);
+}
+\end{lstlisting}
+\columnbreak
+
+\lstset{language=Fortran} %pyskip
+\begin{lstlisting}
+!$OMP parallel
+  x = f()
+!$OMP do
+  do i=1,N
+    y(i) = g(x,i)
+  end do
+!$OMP end do 
+  z = h(y)
+!$OMP end parallel
+\end{lstlisting}
+\end{multicols}
+
+
+\vfill\pagebreak
+
+\Level 2 {}
+
+Assume two threads. What does the following program output?
+
+\begin{lstlisting}
+int a;
+#pragma omp parallel private(a) {
+  ...
+  a = 0;
+  #pragma omp for
+  for (int i = 0; i < 10; i++)
+  {
+    #pragma omp atomic
+    a++; }
+  #pragma omp single
+    printf("a=%e\n",a);
+}
+\end{lstlisting}
+
+\Level 1 {Reductions}
+
+\Level 2 {}
+
+Is the following code correct? Is it efficient? If not, can you improve it?
+\begin{verbatim}
+#pragma omp parallel shared(r)
+{
+  int x;
+  x = f(omp_get_thread_num());
+#pragma omp critical
+  r += f(x);
+}
+\end{verbatim}
+
+\Level 2 {}
+
+Compare two fragments:
+\begin{multicols}{2}
+\lstset{language=C}
+\begin{lstlisting}
+// variant 1
+#pragma omp parallel reduction(+:s)
+#pragma omp for
+  for (i=0; i<N; i++)
+    s += f(i);
+\end{lstlisting}
+\columnbreak
+\begin{lstlisting}
+// variant 2
+#pragma omp parallel 
+#pragma omp for reduction(+:s)
+  for (i=0; i<N; i++)
+    s += f(i);
+\end{lstlisting}
+\end{multicols}
+
+\begin{multicols}{2}
+\lstset{language=Fortran}
+\begin{lstlisting}
+! variant 1
+!$OMP parallel reduction(+:s)
+!$OMP do
+  do i=1,N
+    s += f(i);
+  end do
+!$OMP end do
+!$OMP end parallel 
+\end{lstlisting}
+\columnbreak
+\begin{lstlisting}
+! variant 2
+!$OMP parallel 
+!$OMP do reduction(+:s)
+  do i=1,N
+    s += f(i);
+  end do
+!$OMP end do
+!$OMP end parallel 
+\end{lstlisting}
+\end{multicols}
+
+Do they compute the same thing?
+
+\vfill\pagebreak
+
+\Level 1 {Barriers}
+
+Are the following two code fragments well defined?
+\begin{multicols}{2}
+\lstset{language=C}
+\begin{lstlisting}
+#pragma omp parallel 
+{
+#pragma omp for
+for (mytid=0; mytid<nthreads; mytid++)
+  x[mytid] = some_calculation();
+#pragma omp for
+for (mytid=0; mytid<nthreads-1; mytid++)
+  y[mytid] = x[mytid]+x[mytid+1];
+}
+\end{lstlisting}
+\columnbreak
+\begin{lstlisting}
+#pragma omp parallel 
+{
+#pragma omp for
+for (mytid=0; mytid<nthreads; mytid++)
+  x[mytid] = some_calculation();
+#pragma omp for nowait
+for (mytid=0; mytid<nthreads-1; mytid++)
+  y[mytid] = x[mytid]+x[mytid+1];
+}
+\end{lstlisting}
+\end{multicols}
+
+\Level 1 {Data scope}
+
+The following program is supposed to initialize as many
+rows of the array as there are threads.
+
+\begin{multicols}{2}
+\small
+\lstset{language=C}
+\begin{lstlisting}
+int main() {
+  int i,icount,iarray[100][100];
+  icount = -1;
+#pragma omp parallel private(i)
+  {
+#pragma omp critical
+    { icount++; }
+    for (i=0; i<100; i++) 
+      iarray[icount][i] = 1;
+  }
+  return 0;
+}
+\end{lstlisting}
+\columnbreak
+\lstset{language=Fortran}
+\begin{lstlisting}
+Program main
+  integer :: i,icount,iarray(100,100)
+  icount = 0
+!$OMP parallel private(i)
+!$OMP critical
+    icount = icount + 1
+!$OMP end critical
+    do i=1,100
+      iarray(icount,i) = 1
+    end do
+!$OMP end parallel
+End program
+\end{lstlisting}
+\end{multicols}
+
+Describe the behavior of the program, with argumentation,
+\begin{itemize}
+\item as given;
+\item if you add a clause \indexompshow{private}\n{(icount)}
+  to the \indexompshow{parallel} directive;
+\item if you add a clause \indexompshow{firstprivate}\n{(icount)}.
+\end{itemize}
+
+What do you think of this solution:
+\begin{multicols}{2}
+\small
+\lstset{language=C}
+\begin{lstlisting}
+#pragma omp parallel private(i) shared(icount)
+  {
+#pragma omp critical
+    { icount++;
+      for (i=0; i<100; i++) 
+        iarray[icount][i] = 1;
+    }
+  }
+  return 0;
+}
+\end{lstlisting}
+\columnbreak
+
+\lstset{language=Fortran}
+\begin{lstlisting}
+!$OMP parallel private(i) shared(icount)
+!$OMP critical
+    icount = icount+1
+    do i=1,100
+      iarray(icount,i) = 1
+    end do
+!$OMP critical
+!$OMP end parallel
+\end{lstlisting}
+\end{multicols}
+
+\Level 1 {Tasks}
+
+Fix two things in the following example:
+\begin{multicols}{2}
+\small
+\lstset{language=C}
+\begin{lstlisting}
+#pragma omp parallel
+#pragma omp single
+{
+  int x,y,z;
+#pragma omp task
+  x = f();
+#pragma omp task
+  y = g();
+#pragma omp task
+  z = h();
+  printf("sum=%d\n",x+y+z);
+}
+\end{lstlisting}
+\columnbreak
+\lstset{language=Fortran}
+\begin{lstlisting}
+  integer :: x,y,z
+!$OMP parallel
+!$OMP single
+
+!$OMP task
+  x = f()
+!$OMP end task
+
+!$OMP task
+  y = g()
+!$OMP end task
+
+!$OMP task
+  z = h()
+!$OMP end task
+
+  print *,"sum=",x+y+z
+!$OMP end single
+!$OMP end parallel
+\end{lstlisting}
+\end{multicols}
+
+
+\Level 1 {Scheduling}
+
+Compare these two fragments. Do they compute the same result? What can you say about their efficiency?
+\begin{multicols}{2}
+\begin{lstlisting}
+#pragma omp parallel
+#pragma omp single
+  {
+    for (i=0; i<N; i++) {
+    #pragma omp task
+      x[i] = f(i)
+    }
+    #pragma omp taskwait
+  }
+\end{lstlisting}
+\columnbreak
+\begin{lstlisting}
+#pragma omp parallel
+#pragma omp for schedule(dynamic)
+  {
+    for (i=0; i<N; i++) {
+      x[i] = f(i)
+    }
+  }
+\end{lstlisting}
+\end{multicols}
+
+How would you make the second loop more efficient?
+Can you do something similar for the first loop?
+

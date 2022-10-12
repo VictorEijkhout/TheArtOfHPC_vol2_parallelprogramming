@@ -1,0 +1,5 @@
+// mvp2d.cxx
+row_number = nprocs % nprocs_i;
+col_number = nprocs / nprocs_j;
+MPI_Comm_split(global_comm,row_number,procno,&row_comm);
+MPI_Comm_split(global_comm,col_number,procno,&col_comm);

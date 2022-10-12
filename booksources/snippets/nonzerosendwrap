@@ -1,0 +1,7 @@
+// errorclass.c
+int MyPI_Send( void *buffer,int n,MPI_Datatype type, int target,int tag,MPI_Comm comm) {
+  if (n==0)
+    MPI_Comm_call_errhandler( comm,nonzero_code );
+   MPI_Ssend(buffer,n,type,target,tag,comm);
+  return MPI_SUCCESS;
+};

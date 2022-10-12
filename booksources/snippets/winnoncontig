@@ -1,0 +1,8 @@
+// numa.c
+MPI_Info window_info;
+MPI_Info_create(&window_info);
+  MPI_Info_set(window_info,"alloc_shared_noncontig","true");
+MPI_Win_allocate_shared( window_size,sizeof(double),window_info,
+                         nodecomm,
+                         &window_data,&node_window);
+MPI_Info_free(&window_info);

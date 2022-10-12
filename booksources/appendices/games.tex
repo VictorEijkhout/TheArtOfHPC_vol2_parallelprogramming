@@ -1,0 +1,29 @@
+\Level 0 {Parallel computer games}
+
+Summing numbers.
+Shouting out
+Everyone bring to accumulator: same addition time on the accumulator,
+but data movement extra time.
+
+Divide room in two: unevenly, so you see the effect of load unbalance:
+accumulator has to wait for slowest half.
+
+Two people bring data to accumulator: observe collisions, path length,
+routing.
+
+Recursive bisection: think this over....
+
+Broadcast through a row.....
+
+Send to the right: show deadlock with simple program (send; receive)
+show serialization under better program
+if me not end: send to right
+if me not start: receive from left
+
+solution: if me odd: send;receive, otherwise receive;send
+
+shared memory:
+one student 5 5 delay, other 7 7 (make sure it doesn't add up)
+both execute delay, read, update, delay, write
+one updates N + 2, other N += 3
+

@@ -1,0 +1,11 @@
+!! irecvsource.F90
+  if (mytid==ntids-1) then
+     do p=1,ntids-1
+        print *,"post"
+        call MPI_Irecv(recv_buffer(p),1,MPI_INTEGER,p-1,0,comm,&
+             requests(p),err)
+     end do
+     do p=1,ntids-1
+        call MPI_Waitany(ntids-1,requests,index,MPI_STATUS_IGNORE,err)
+        write(*,'("Message from",i3,":",i5)') index,recv_buffer(index)
+     end do

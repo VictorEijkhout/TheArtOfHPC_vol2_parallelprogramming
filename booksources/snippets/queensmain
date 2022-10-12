@@ -1,0 +1,5 @@
+placement initial; initial.fill(empty);
+optional<placement> eightqueens;
+#pragma omp parallel
+#pragma omp single
+eightqueens = place_queen(0,initial);

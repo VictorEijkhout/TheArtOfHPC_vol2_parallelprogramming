@@ -1,0 +1,223 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% mpi-rank.tex : comm size and rank and such
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Level 0 {Processor identification}
+\label{sec:rank-size}
+
+Since all processes in an MPI job are instantiations of the same executable,
+you'd think that they all execute the exact same instructions,
+which would not be terribly useful.
+You will now learn how to distinguish
+processes from each other, so that together they can start doing
+useful work.
+
+\Level 1 {Processor name}
+
+In the following exercise you will print out the hostname 
+of each MPI process
+%
+with
+\indexmpiref{MPI_Get_processor_name}
+%
+as a first way of distinguishing between processes.
+This routine has a character buffer argument, which
+needs to be allocated by you.
+The length of the buffer is also passed,
+and on return that parameter has the actually used length.
+The maximum needed length is \indexmpishow{MPI_MAX_PROCESSOR_NAME}.
+%
+\csnippetwithoutput{procname}{examples/mpi/c}{procname}
+%
+(Underallocating the buffer will not lead to a runtime error.)
+
+\begin{fortrannote}{Processor name}
+  Allocate a \lstinline{Character} variable with
+  the appropriate length.
+  The returned value of the length parameter can assist 
+  in printing the result:
+
+  \fsnippetwithoutput{procname}{examples/mpi/f08}{procnamef}
+\end{fortrannote}
+
+\begin{exercise}
+  \label{ex:procname}
+  Use the command \indexmpishow{MPI_Get_processor_name}.
+  Confirm that you are able to run a program that uses two different nodes.
+
+\begin{tacc}
+    TACC nodes have a hostname \n{cRRR-CNN}, where RRR is the rack number, C is the chassis
+    number in the rack, and NN is the node number within the chassis. Communication
+    is faster inside a rack than between racks!
+\end{tacc}
+\end{exercise}
+
+\begin{mplnote}{Processor name}
+  The \indexmplshow{processor_name} call is an environment method
+  returning a \lstinline{std::string}:
+\begin{lstlisting}
+std::string mpl::environment::processor_name ();
+\end{lstlisting}
+\end{mplnote}
+
+\Level 1 {Communicators}
+
+First we need to introduce the concept of
+\indextermdef{communicator}, which is an abstract description of a
+group of processes. For now you only need to know about the existence
+of the \indexmpishow{MPI_Comm} data type, and that there is a
+pre-defined communicator \indexmpishow{MPI_COMM_WORLD} which
+describes all the processes involved in your parallel run.
+
+
+In the procedural languages~C,
+a \emph{communicator}\index{communicator!variable} is a \emph{variable}
+that is passed to most routines:
+\begin{lstlisting}
+#include <mpi.h>
+MPI_Comm comm = MPI_COMM_WORLD;
+MPI_Send( /* stuff */ comm );
+\end{lstlisting}
+
+\begin{fortrannote}{Communicator type}
+  In Fortran, pre-2008 a communicator was an \indexterm{opaque handle},
+  stored in an \lstinline{Integer}. With \indextermbus{Fortran}{2008},
+  communicators are derived types:
+\begin{lstlisting}
+use mpi_f098
+Type(MPI_Comm} :: comm = MPI_COMM_WORLD
+call MPI_Send( ... comm )
+\end{lstlisting}
+\end{fortrannote}
+
+\begin{pythonnote}{Communicator objects}
+In object-oriented languages, a communicator is an
+\emph{object}\index{communicator!object},
+and rather than passing it to routines,
+the routines are often methods of the communicator object:
+\begin{lstlisting}
+from mpi4py import MPI
+comm = MPI.COMM_WORLD
+comm.Send( buffer, target )
+\end{lstlisting}
+\end{pythonnote}
+
+\begin{mplnote}{World communicator}
+  The naive way of declaring a communicator would be:
+  %
+  \cxxverbatimsnippet[examples/mpi/mpl/commrank.cxx]{mplcommcopy}
+  %
+  calling the predefined environment method \indexmplshow{comm_world}.
+
+  However, if the variable will always correspond to the world communicator,
+  it is better to make it \lstinline{const} and declare it to be a reference:
+  %
+  \cxxverbatimsnippet[examples/mpi/mpl/commrank.cxx]{mplcommref}
+\end{mplnote}
+
+\begin{mplnote}{Communicator copying}
+  The communicator class has its copy operator deleted;
+  however, copy initialization exists:
+  %
+  \cxxverbatimsnippet[examples/mpi/mpl/commcompare.cxx]{mplcompare}
+  %
+  (This outputs true/false/false respectively.)
+
+  \begin{mplimpl}
+    The copy initializer performs an \indexmpishow{MPI_Comm_dup}.
+  \end{mplimpl}
+\end{mplnote}
+
+\begin{mplnote}{Communicator passing}
+  Pass communicators by reference to avoid communicator duplication:
+  %
+  \cxxverbatimsnippet{mplcommpass}
+\end{mplnote}
+
+You will
+learn much more about communicators in chapter~\ref{ch:mpi-comm}.
+
+\Level 1 {Process and communicator properties: rank and size}
+
+To distinguish between processes in a communicator, MPI provides two calls
+\begin{enumerate}
+\item \indexmpiref{MPI_Comm_size} reports how many processes there are in all; and
+\item \indexmpiref{MPI_Comm_rank} states what the number of the
+  process is that calls this routine.
+\end{enumerate}
+
+If every process executes the \indexmpishow{MPI_Comm_size} call, they all get the
+same result, namely the total number of processes in your run.
+%
+On the
+other hand, if every process executes \indexmpishow{MPI_Comm_rank}, they all get
+a different result, namely their own unique number, an integer in the
+range from zero to the number of processes minus~1.
+See figure~\ref{fig:rank-parallel}.
+%
+\begin{figure}[ht]
+  \includegraphics[scale=.5]{rank-parallel}
+  \caption{Parallel program that prints process rank}
+  \label{fig:rank-parallel}
+\end{figure}
+%
+In other words, each process can find out `I~am process~5
+out of a total of~20'.
+
+%pyinput ex-rank.txt
+
+\begin{exercise}
+  \label{ex:hello3}
+  Write a program where each process prints out a message
+  reporting its number, and how many processes there are:
+\begin{verbatim}
+Hello from process 2 out of 5!
+\end{verbatim}
+
+  Write a second version of this program, where each process opens a
+  unique file and writes to it. \emph{On some clusters this may not be
+    advisable if you have large numbers of processors, since it can
+    overload the file system.}
+  \skeleton{commrank}
+\end{exercise}
+\begin{exercise}
+  \label{ex:hello4}
+  Write a program where only the process with number zero
+  reports on how many processes there are in total.
+\end{exercise}
+
+In object-oriented approaches to MPI,
+that is, \indextermtt{mpi4py} and \indexac{MPL},
+the \indexmpishow{MPI_Comm_rank} and \indexmpishow{MPI_Comm_size}
+routines are methods of the communicator class:
+
+\begin{pythonnote}{Communicator rank and size}
+  Rank and size are methods of the communicator object.
+  Note that their names are slightly different from the MPI standard names.
+\begin{lstlisting}
+comm = MPI.COMM_WORLD
+procid = comm.Get_rank()
+nprocs = comm.Get_size()
+\end{lstlisting}
+\end{pythonnote}
+
+\begin{mplnote}{Rank and size}
+  The rank of a process (by \lstinline+mpl::communicator::+\indexmpldef{rank}) and
+  the size of a communicator (by \lstinline+mpl::communicator::+\indexmpldef{size})
+  are both methods of the \indexmplshow{communicator} class:
+\begin{lstlisting}
+const mpl::communicator &comm_world =
+    mpl::environment::comm_world();
+int procid = comm_world.rank();
+int nprocs = comm_world.size();
+\end{lstlisting}
+\end{mplnote}

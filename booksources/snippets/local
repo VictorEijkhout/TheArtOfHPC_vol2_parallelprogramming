@@ -1,0 +1,8 @@
+// local.cxx
+int nlocalpoints = 10,
+  ntotal_points = nprocs*nlocalpoints,
+  my_global_start = procno*nlocalpoints;
+double stepsize = 1./(ntotal_points-1);
+array = new double[nlocalpoints];
+for (int i=0; i<nlocalpoints; i++)
+  array[i] = f( (i+my_global_start)*stepsize );    

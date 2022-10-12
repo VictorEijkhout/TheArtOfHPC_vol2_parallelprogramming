@@ -1,0 +1,43 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% This text file is part of the source of 
+%% `Parallel Computing'
+%% by Victor Eijkhout, copyright 2012-2022
+%%
+%% MPI API file for MPI_Win_shared_query
+%%
+%% THIS FILE IS AUTO-GENERATED
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begingroup
+\ttfamily\bfseries
+\catcode`\_=12
+\begin{tabular}{
+l       % name
+l       % param name
+p{\mpiparmtextsize}  % explanation
+p{.7in} % ctype
+p{.9in} % ftype
+l       % inout
+}
+\toprule
+\mdseries\textrm{Name}&
+\mdseries\textrm{Param name}&
+\mdseries\textrm{Explanation}&
+\mdseries\textrm{C type}&
+\mdseries\textrm{F type}&
+\mdseries\textrm{inout}\\
+\midrule
+\hbox to 18pt{MPI_Win_shared_query (\hss} \\
+\hbox to 18pt{MPI_Win_shared_query_c (\hss} \\
+ & win & shared memory window object & MPI_Win & TYPE\discretionary{}{\kern10pt}{}(MPI_Win)  & IN \\ & rank & rank in the group of window win or \const{MPI_PROC_NULL} & int & INTEGER  & IN \\ & size & size of the window segment & MPI_Aint* & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_ADDRESS_KIND)  & OUT \\ & disp_unit & local unit size for displacements, in bytes & $\left[ \begin{array}{ll}\mathtt{ int* }  \\ \mathtt{ MPI_Aint} \end{array} \right.$  & INTEGER  & OUT \\ [+3pt] & baseptr & address for load/store access to window segment & void* & TYPE\discretionary{}{\kern10pt}{}(C_PTR)  & OUT \\
+&)\\
+
+\bottomrule
+\end{tabular}
+\endgroup
+

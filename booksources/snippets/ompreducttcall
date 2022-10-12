@@ -1,0 +1,1 @@
+auto tmin = generic_reduction<float>(fdata);

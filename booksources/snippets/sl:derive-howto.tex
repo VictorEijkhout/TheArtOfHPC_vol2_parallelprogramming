@@ -1,0 +1,21 @@
+\begin{numberedframe}{How to use derived types}
+\label{sl:derive-howto}
+Create, commit, use, free:
+\lstset{language=C}
+\begin{lstlisting}
+MPI_Datatype newtype;
+MPI_Type_xxx( ... oldtype ... &newtype);
+MPI_Type_commit ( &newtype );
+
+// code using the new type
+
+MPI_Type_free ( &newtype );
+\end{lstlisting}
+\lstset{language=Fortran}
+\begin{lstlisting}
+Type(MPI_Datatype) :: newtype ! F2008
+Integer            :: newtype ! F90
+\end{lstlisting}
+The \lstinline{oldtype} can be elementary or derived.\\
+Recursively constructed types.
+\end{numberedframe}

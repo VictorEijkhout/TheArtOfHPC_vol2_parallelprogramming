@@ -1,0 +1,8 @@
+// scan.c
+partial_sum = 0;
+#pragma omp parallel for reduction(inscan,+:partial_sum)
+for (int i=0; i<length; i++) {
+  partial_sum += amounts[i];
+#   pragma omp scan inclusive(partial_sum)
+  partials[i] = partial_sum;
+}

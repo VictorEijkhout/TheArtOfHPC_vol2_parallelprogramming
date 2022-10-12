@@ -1,0 +1,7 @@
+auto duration = myclock::now()-start_time;
+auto microsec_duration = std::chrono::duration_cast<std::chrono::microseconds>(duration);
+int total_ping_count;
+MPI_Allreduce(&pingcount,&total_ping_count,1,MPI_INT,MPI_SUM,comm);
+long bytes = buffersize * sizeof(double) * total_ping_count;
+float fsec = microsec_duration.count() * 1.e-6,
+  halfbandwidth = bytes / fsec;

@@ -1,0 +1,12 @@
+// parfor.c
+#pragma omp parallel num_threads(2*ncores)
+  {
+    int nthreads = omp_get_num_threads(),
+      thread_num = omp_get_thread_num();
+    printf("Threads entering parallel region: %d\n",
+           nthreads);
+    #pragma omp for
+    for (int iteration=0; iteration<nthreads; iteration++)
+      printf("thread %d executing iteration %d\n",
+             thread_num,iteration);
+  }

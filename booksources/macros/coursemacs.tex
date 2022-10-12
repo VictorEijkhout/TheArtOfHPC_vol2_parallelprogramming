@@ -1,0 +1,169 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the lecture slides for
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%% coursemacs.tex : macros for the lecture slides
+%%%% THIS NEEDS TO BE MERGED INTO slidemacs AS MUCH AS POSSIBLE
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newdimen\unitindent \unitindent=20pt
+\usepackage[algo2e,noline,noend]{algorithm2e}
+\newenvironment{displayalgorithm}
+ {\par
+  \begin{algorithm2e}[H]\leftskip=\unitindent \parskip=0pt\relax
+  \DontPrintSemicolon
+  \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+ }
+ {\end{algorithm2e}\par}
+\newenvironment{displayprocedure}[2]
+ {\everymath{\strut}
+  \begin{procedure}[H]\leftskip=\unitindent\caption{#1(#2)}}
+ {\end{procedure}}
+\def\sublocal{_{\mathrm\scriptstyle local}}
+
+%%%%
+%%%% Comment environment
+%%%%
+\specialcomment{exercise}{
+  \def\CommentCutFile{exercise.cut}
+  \def\PrepareCutFile{%
+        \immediate\write\CommentStream{\noexpand\begin{frame}{Exercise}}}
+  \def\FinalizeCutFile{%
+        \immediate\write\CommentStream{\noexpand\end{frame}}}
+  }{}
+\excludecomment{pcse}
+\excludecomment{book}
+
+\newcommand\slackpoll[1]{\begingroup \par \tiny\texttt{/poll #1} \par \endgroup}
+\def\slackpollTF#1{\begingroup \def\terminator{#1}
+  \InnocentChars \catcode`\{=12 \catcode`\}=12
+  \edef\tmp{\def\noexpand\slackpollTFp####1\terminator
+    {\noexpand\par
+      \noexpand\tiny \noexpand\texttt{/poll "####1" "T" "F"}
+      \noexpand\par \endgroup}}\tmp
+  \slackpollTFp}
+
+\newcounter{excounter}
+\newcounter{revcounter}
+\newenvironment
+    {reviewframe}
+    {\begin{frame}[containsverbatim]
+        \frametitle{Review \arabic{revcounter}}
+        \refstepcounter{revcounter}}
+    {\end{frame}}
+\newenvironment
+    {exerciseframe}[1][]
+    {\def\optfile{#1}
+      \ifx\optfile\empty\else\message{VLE EXERCISE #1}%\index[programming]{#1}
+      \fi
+      \begin{frame}[containsverbatim]
+        \ifx\optfile\empty
+        \frametitle{Exercise \arabic{excounter}}
+        \else
+        \frametitle{Exercise \arabic{excounter} (\tt{#1})}
+        \fi
+        \refstepcounter{excounter}}
+    {\end{frame}}
+\newenvironment
+    {optexerciseframe}[1][]
+    {\begin{frame}[containsverbatim]
+        \def\optfile{#1}
+        \ifx\optfile\empty
+        \frametitle{Exercise (optional) \arabic{excounter}}
+        \else
+        \frametitle{Exercise (optional) \arabic{excounter} (\tt{#1})}
+        \fi
+        \refstepcounter{excounter}}
+    {\end{frame}}
+
+%\advance\textwidth by 1in
+%\advance\oddsidemargin by -.5in
+
+%%%%
+%%%% Beamer customization
+%%%%
+
+\setbeamertemplate{title page}{
+  \begin{picture}(0,0)
+    \put(-10,10){\includegraphics[scale=.45]{tacctitle}}
+    \put(50,-50){
+      \begin{minipage}{10cm}
+        \usebeamerfont{title}{\inserttitle\par\insertauthor\par\insertdate\par}
+      \end{minipage}
+    }
+  \end{picture}
+}
+
+%%%%
+%%%% Indexing, mostly disabled
+%%%%
+
+% the 
+% \usepackage{imakeidx}
+% line is in the master file
+%
+%% \makeindex
+%% \makeindex[name=programming,title=Programming exercises]
+
+\let\indexterm\emph
+\let\indextermtt\n
+\let\indextermfunction\indextermtt
+\newcommand{\indextermsub}[2]{\emph{#1 #2}}
+\newcommand{\indextermsubh}[2]{\emph{#1-#2}}
+\let\indexpetscdef\indextermtt
+
+\iffalse
+\newcommand{\indextermp}[1]{\emph{#1s}}
+\newcommand{\indextermsubp}[2]{\emph{#1 #2s}}
+\newcommand{\indextermbus}[2]{\emph{#1 #2}}
+\newcommand{\indextermstart}[1]{\emph{#1}}
+\newcommand{\indextermend}[1]{}
+\newcommand{\indexstart}[1]{}
+\newcommand{\indexend}[1]{}
+\makeatletter
+\newcommand\indexac[1]{\emph{\ac{#1}}}
+\newcommand\indexacp[1]{\emph{\ac{#1}}}
+\newcommand\indexacf[1]{\emph{\acf{#1}}}
+\newcommand\indexacstart[1]{}
+\newcommand\indexacend[1]{}
+\makeatother
+
+\let\indexmpishow\n
+\let\indexmpidef\n
+\let\indexmpiex\n
+\let\indexmpi\n
+\let\indexompshow\n
+\let\indexompdef\n
+\global\let\indexompshowdef\indexompdef
+\let\indexompex\n
+\let\indexomp\n
+\let\mpitoindex\n
+\let\mpitoindexbf\n
+\let\mpitoindexit\n
+\let\omptoindex\n
+\let\omptoindexbf\n
+\let\omptoindexit\n
+%\let\indextermlet#1{\emph{#1}\index{#1|textbf}}
+\let\indextermtt\n
+%\let\indextermttlet\indexmpilet
+\let\indexcommand\n
+\let\indexclause\n
+\let\indexclauselet\n
+\let\indexclauseoption\n
+
+\let\indexmpiref\indexmpishow
+\let\indexmpidef\indexmpishow
+\let\indexmpldef\indexmpishow
+\let\indexmplref\indexmpishow
+\let\indexmplshow\indexmpishow
+\let\indexompshow\indexmpishow
+\let\indexpetscshow\indexmpishow
+\fi
+
+

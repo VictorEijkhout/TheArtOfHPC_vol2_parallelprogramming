@@ -1,0 +1,5 @@
+## version.py
+print(MPI.Get_version())
+print(MPI.VERSION)
+print(MPI.SUBVERSION)
+

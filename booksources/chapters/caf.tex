@@ -1,0 +1,156 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2020
+%%%%
+%%%% caf.tex : Co-Array Fortran
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+This chapter explains the basic concepts of
+\ac{CAF}, and helps you get
+started on running your first program.
+
+\Level 0 {History and design}
+
+\url{https://en.wikipedia.org/wiki/Coarray_Fortran}
+
+\Level 0 {Compiling and running}
+
+\ac{CAF} is built on the same \ac{SPMD} design as MPI.
+Where MPI talks about processes or ranks, \ac{CAF}
+calls the running instances of your program \indextermdef{image}s.
+
+The Intel compiler uses the flag \n{-coarray=xxx}
+with values \n{single}, \n{shared}, \n{distributed} \n{gpu}.
+
+It is possible to bake the number of `images' into the executable,
+but by default this is not done, and it is determined at runtime
+by the variable \n{FOR_COARRAY_NUM_IMAGES}.
+
+\ac{CAF} can not be mixed with OpenMP.
+
+\Level 0 {Basics}
+
+Co-arrays are defined by giving them, in addition to the \lstinline{Dimension},
+a \indextermttdef{Codimension}
+
+\begin{lstlisting}
+Complex,codimension(*) :: number
+Integer,dimension(:,:,:),codimension[-1:1,*] :: grid  
+\end{lstlisting}
+
+This means we are respectively declaring
+an array with a single number on each image,
+or a three-dimensional grid spread over a two-dimensional processor grid.
+
+Traditional-like syntax can also be used:
+\begin{lstlisting}
+Complex :: number[*]
+Integer :: grid(10,20,30)[-1:1,*]
+\end{lstlisting}
+
+Unlike \ac{MPI}, which normally only supports a linear process numbering,
+\ac{CAF} allows for multi-dimensional process grids. The last dimension
+is always specified as~\n{*}, meaning it is determined at runtime.
+
+\Level 1 {Image identification}
+
+As in other models, in \ac{CAF} one can ask how many images/processes there are,
+and what the number of the current one is,
+with \indextermttdef{num_images} and \indextermttdef{this_image} respectively.
+
+\fverbatimsnippet[examples/caf/f08/hello.F90]{hellocaf}
+
+If you call \indextermtt{this_image} with a co-array as argument,
+it will return the image index, as a tuple of \indextermttdef{cosubscript}s,
+rather than a linear index.
+Given such a set of subscripts, \indextermttdef{image_index}
+will return the linear index.
+
+The functions \indextermttdef{lcobound} and \indextermttdef{ucobound}
+give the lower and upper bound on the image subscripts,
+as a linear index, or a tuple if called with a co-array variable.
+
+\Level 1 {Remote operations}
+
+The appeal of \ac{CAF} is that moving data between images
+looks (almost) like an ordinary copy operation:
+\begin{lstlisting}
+real :: x(2)[*]
+integer :: p
+p = this_image()
+x(1)[ p+1 ] = x(2)[ p ]
+\end{lstlisting}
+
+Exchanging grid boundaries is elegantly done with array syntax:
+\begin{lstlisting}
+Real,Dimension( 0:N+1,0:N+1 )[*] :: grid
+grid( N+1,: )[p] = grid( 0,: )[p+1]
+grid(   0,: )[p] = grid( N,: )[p-1]
+\end{lstlisting}
+
+\Level 1 {Synchronization}
+
+The fortran standard forbids
+\emph{race conditions}\index{race condition!in co-array Fortran}:
+\begin{quote}
+  If a variable is defined on an image in a segment, it shall not be
+  referenced, defined or become undefined in a segment on another
+  image unless the segments are ordered.
+\end{quote}
+That is, you should not cause them to happen. The language and runtime
+are certainly not going to help yu with that.
+
+Well, a little. After remote updates you can synchronize images
+with the \indextermttdef{sync} call.
+The easiest variant is a global synchronization:
+\begin{lstlisting}
+sync all
+\end{lstlisting}
+Compare this to a wait call after MPI nonblocking calls.
+
+More fine-grained, one can synchronize with specific images:
+\begin{lstlisting}
+sync images( (/ p-1,p,p+1 /) )
+\end{lstlisting}
+While remote operations in \ac{CAF} are nicely one-sided,
+synchronization is not:
+if image \n{p} issues a call
+\begin{lstlisting}
+sync(q)
+\end{lstlisting}
+then \n{q} also needs to issue a mirroring call to synchronize with~\n{p}.
+
+As an illustration, the following code is not a correct implementation of a 
+\indexterm{ping-pong}:
+%
+\fverbatimsnippet{ppwrongcaf}
+
+We can solve this with a global synchronization:
+%
+\fverbatimsnippet{ppcafglob}
+%
+or a local one:
+%
+\fverbatimsnippet{ppcafloc}
+%
+Note that the local sync call is done on both images involved.
+
+Example of how you would synchronize a collective:
+\begin{lstlisting}
+if ( this_image() .eq. 1 ) sync images( * )
+if ( this_image() .ne. 1 ) sync images( 1 )
+\end{lstlisting}
+Here image~1 synchronizes with all others, but the others don't
+synchronize with each other.
+
+\fverbatimsnippet[examples/caf/f08/rightcopy.F90]{cafsyncpp}
+
+\Level 1 {Collectives}
+
+Collectives are not part of \ac{CAF} as of the 2008 Fortran standard.

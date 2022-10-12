@@ -1,0 +1,10 @@
+for (int msgsize=1; msgsize>=0; msgsize--) {
+  double buffer;
+  if (procno==0) {
+    printf("Trying to send buffer of length %d\n",msgsize);
+    MyPI_Send(&buffer,msgsize,MPI_DOUBLE, 1,0,comm);
+    printf(".. success\n");
+  } else if (procno==1) {
+    MPI_Recv (&buffer,msgsize,MPI_DOUBLE, 0,0,comm,MPI_STATUS_IGNORE);
+  }
+}

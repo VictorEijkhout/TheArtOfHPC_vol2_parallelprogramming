@@ -1,0 +1,62 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%% mpi-competency.tex : goals of the MPI part
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+This section of the book teaches MPI (`Message Passing Interface'),
+the dominant model for distributed memory programming in science and engineering.
+It will instill the following competencies.
+
+Basic level:
+\begin{itemize}
+\item The student will understand the \acs{SPMD} model
+  and how it is realized in MPI (chapter~\ref{ch:mpi-functional}).
+\item The student will know the basic collective calls,
+  both with and without a root process,
+  and can use them in applications
+  (chapter~\ref{ch:mpi-collective}).
+\item The student knows the basic blocking and non-blocking
+  point-to-point calls,
+  and how to use them
+  (chapter~\ref{ch:mpi-ptp}).
+\end{itemize}
+
+Intermediate level:
+\begin{itemize}
+\item The students knows about derived datatypes and can use them
+  in communication routines
+  (chapter~\ref{ch:mpi-data}).
+\item The student knows about intra-communicators,
+  and some basic calls for creating subcommunicators
+  (chapter~\ref{ch:mpi-comm});
+  also Cartesian process topologies
+  (section~\ref{sec:cartesian}).
+\item The student understands the basic design of MPI I/O calls
+  and can use them in basic applications
+  (chapter~\ref{ch:mpi-io}).
+\item The student understands about graph process topologies
+  and neighborhood collectives
+  (section~\ref{sec:mpi-dist-graph}).
+\end{itemize}
+
+Advanced level:
+\begin{itemize}
+\item The student understands one-sided communication routines,
+  including window creation routines, and synchronization mechanisms
+  (chapter~\ref{ch:mpi-onesided}).
+\item The student understands MPI shared memory, its advantages,
+  and ow it is based on windows
+  (chapter~\ref{ch:mpi-shared}).
+\item The student understands MPI process spawning mechanisms
+  and inter-communicators
+  (chapter~\ref{ch:mpi-proc}).
+%\item  (chapter~\ref{ch:mpi-}).
+\end{itemize}

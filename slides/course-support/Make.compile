@@ -1,0 +1,332 @@
+# -*- makefile -*-
+################################################################
+####
+#### This makefile is part of `Parallel Programming in MPI and OpenMP'
+#### Victor Eijkhout
+#### eijkhout@tacc.utexas.edu
+####
+#### copyright Victor Eijkhout 2012-2022
+####
+#### Make include file with general compile rules
+####
+################################################################
+
+MAKEFLAGS += --no-builtin-rules
+
+info ::
+	@echo
+	@echo "================ Compilation"
+	@if [ -z "${MODE}" ] ; then \
+	    echo "Please set MODE variable" && echo \
+	 ; else \
+	    case ${MODE} in \
+	        ( mpi | mpl | omp | hybrid | petsc | slepc | 1api ) \
+	            echo "using mode=${MODE}" ;; \
+	        ( * ) echo && echo "Unknown MODE=${MODE}" && echo ;; \
+	    esac \
+	 ; fi 
+	@echo "make APP (in ${APPS} ${EXERCISES} ${PROGRAMS} )"
+	@echo "    [ OPTLEVEL=0/1/2, default:${OPTLEVEL} ]"
+	@echo "    [ EXTRA_OPTIONS=... ]"
+	@echo "    [ EXTRA_INCLUDES=... ]"
+	@echo "    [ EXTRA_LIBS=... ]"
+	@echo "    [ ECHO=0/1 : echo commandline ]"
+OPTLEVEL = 2
+
+EXT_c = c
+EXT_C = c
+EXT_F = F90
+EXT_f = F90
+EXT_cxx = cxx
+EXT_CXX = cxx
+EXT_mpl = cxx
+EXT = ${EXT_${LANGUAGE}}
+
+CFLAGS =
+CXXFLAGS =
+FFLAGS =
+
+C_STD_FLAGS = -std=c99
+CFLAGS   += ${C_STD_FLAGS}
+
+CPPSTANDARD = 17
+CSTANDARD = 99
+CXX_STD_FLAGS = -std=c++${CPPSTANDARD}
+CXXFLAGS += ${CXX_STD_FLAGS}
+
+OPTFLAGS = -O${OPTLEVEL} -g
+
+ifdef TACC_TAU_DIR
+  C_COMPILER = tau_cc.sh -optCompInst -optPreProcess
+  CXX_COMPILER = tau_cxx.sh -optCompInst -optPreProcess
+  F_COMPILER = tau_f90.sh -optCompInst -optPreProcess
+  MPI_C_COMPILER = tau_cc.sh  -optCompInst -optPreProcess
+  MPI_CXX_COMPILER = tau_cxx.sh -optCompInst -optPreProcess
+  MPI_F_COMPILER = tau_f90.sh -optCompInst -optPreProcess
+else
+
+    MPI_C_COMPILER = mpicc
+    MPI_CXX_COMPILER = mpicxx
+    MPI_F_COMPILER = mpif90
+
+    ifeq "${MODE}" "mpi"
+      C_COMPILER   = ${MPI_C_COMPILER}
+      CXX_COMPILER = ${MPI_CXX_COMPILER}
+      F_COMPILER   = ${MPI_F_COMPILER}
+    else ifeq "${MODE}" "hybrid"
+      C_COMPILER   = ${MPI_C_COMPILER}
+      CXX_COMPILER = ${MPI_CXX_COMPILER}
+      F_COMPILER   = ${MPI_F_COMPILER}
+    else ifeq "${MODE}" "mpl"
+      C_COMPILER   = ${MPI_C_COMPILER}
+      CXX_COMPILER = ${MPI_CXX_COMPILER}
+      F_COMPILER   = ${MPI_F_COMPILER}
+    else ifeq "${MODE}" "cuda"
+      C_COMPILER   = nvcc
+      CXX_COMPILER = nvcc
+      F_COMPILER   = /bin/false
+    else ifeq "${MODE}" "1api"
+      ifeq "${TACC_SYSTEM}" "frontera"
+        CXX_COMPILER = syclcc
+        CXXFLAGS += -I${TACC_BOOST_INC}
+        LINK_FLAGS += -L${TACC_BOOST_LIB}
+      else
+        CXX_COMPILER = dpcpp
+      endif
+    else ifeq "${MODE}" "petsc"
+      ##
+      ## annoyingly, there is only an mpicc/mpicxx/mpif90 script
+      ## in the petsc bin dir, if you have --download-mpich
+      ## this may have changed in 3.12.4
+      ##
+      C_COMPILER = mpicc
+      # ${PETSC_DIR}/${PETSC_ARCH}/bin/mpicc
+      CXX_COMPILER = mpicxx
+      #${PETSC_DIR}/${PETSC_ARCH}/bin/mpicxx
+      F_COMPILER = mpif90
+      #${PETSC_DIR}/${PETSC_ARCH}/bin/mpif90
+      MPI_C_COMPILER   = ${C_COMPILER}
+      MPI_CXX_COMPILER = ${CXX_COMPILER}
+      MPI_F_COMPILER   = ${F_COMPILER}
+
+      CFLAGS += ${PETSC_CC_INCLUDES} 
+      CXXFLAGS += ${PETSC_CXX_INCLUDES} 
+      FFLAGS += ${PETSC_FC_INCLUDES} 
+
+    else ifeq "${MODE}" "slepc"
+      ##
+      ## annoyingly, there is only an mpicc/mpicxx/mpif90 script
+      ## in the petsc bin dir, if you have --download-mpich
+      ## this may have changed in 3.12.4
+      ##
+      C_COMPILER = mpicc
+      # ${PETSC_DIR}/${PETSC_ARCH}/bin/mpicc
+      CXX_COMPILER = mpicxx
+      #${PETSC_DIR}/${PETSC_ARCH}/bin/mpicxx
+      F_COMPILER = mpif90
+      #${PETSC_DIR}/${PETSC_ARCH}/bin/mpif90
+      MPI_C_COMPILER   = ${C_COMPILER}
+      MPI_CXX_COMPILER = ${CXX_COMPILER}
+      MPI_F_COMPILER   = ${F_COMPILER}
+
+      CFLAGS += ${PETSC_CC_INCLUDES} 
+      CXXFLAGS += ${PETSC_CXX_INCLUDES} 
+      FFLAGS += ${PETSC_FC_INCLUDES} 
+
+    else # other modes use the regular compilers
+
+	ifeq "${TACC_FAMILY_COMPILER}" "intel"
+	  C_COMPILER   = icc
+	  CXX_COMPILER = icpc
+	  F_COMPILER   = ifort
+	else ifeq "${TACC_FAMILY_COMPILER}" "intelx"
+	  C_COMPILER   = icx
+	  CXX_COMPILER = icpx
+	  F_COMPILER   = ifx
+	else ifeq "${TACC_FAMILY_COMPILER}" "oneapi"
+	  C_COMPILER   = icc
+	  CXX_COMPILER = icpc
+	  F_COMPILER   = ifort
+	else ifeq "${TACC_FAMILY_COMPILER}" "gcc"
+	  C_COMPILER   = gcc
+	  CXX_COMPILER = g++
+	  F_COMPILER   = gfortran
+	else ifeq "${TACC_FAMILY_COMPILER}" "clang"
+	  C_COMPILER   = clang
+	  CXX_COMPILER = clang++
+	  F_COMPILER   = gfortran
+	else ifeq "${TACC_FAMILY_COMPILER}" "xl"
+	  C_COMPILER   = xlc
+	  CXX_COMPILER = xlc++
+	  F_COMPILER   = xlf
+	else ifeq "${TACC_FAMILY_COMPILER}" "devcloud"
+	  CXX_COMPILER = dpcpp
+	endif # end of non-mpi compiler setting
+
+    endif # end of mode choices
+
+OMPFLAGS_intel    = -qopenmp 
+OMPFLAGS_oneapi   = -qopenmp 
+OMPFLAGS_gcc      = -ggdb -fopenmp
+OMPFLAGS_clang    = -fopenmp
+OMPFLAGS_xl       = -qsmp=omp -qoffload
+OMPFLAGS = ${OMPFLAGS_${TACC_FAMILY_COMPILER}}
+
+ifeq "${MODE}" "omp"
+  CFLAGS   += ${OMPFLAGS}
+  CXXFLAGS += ${OMPFLAGS}
+  FFLAGS   += ${OMPFLAGS}
+else ifeq "${MODE}" "hybrid"
+  CFLAGS   += ${OMPFLAGS}
+  CXXFLAGS += ${OMPFLAGS}
+  FFLAGS   += ${OMPFLAGS}
+endif
+
+CFLAGS   += ${OPTFLAGS}
+CXXFLAGS += ${OPTFLAGS}
+FFLAGS   += ${OPTFLAGS}
+
+endif # end of TAU choices
+
+# we need extra options with all compilers
+CFLAGS   += ${EXTRA_OPTIONS}
+CXXFLAGS += ${EXTRA_OPTIONS}
+FFLAGS   += ${EXTRA_OPTIONS}
+
+%.o : %.c
+	@cmdline="${C_COMPILER} -g  ${EXTRA_INCLUDES} ${CFLAGS} \
+	    -c $<" \
+	 && if [ "${ECHO}" = "1" ] ; then \
+	        echo "Compiling: $$cmdline" \
+	         && echo "with ${C_COMPILER}=$$( which ${C_COMPILER} )" \
+	    ; fi \
+	 && eval $$cmdline
+%.o : %.cxx
+	@cmdline="${CXX_COMPILER} -g ${EXTRA_INCLUDES} ${CXXFLAGS} \
+	    -c $<" \
+	 && if [ "${ECHO}" = "1" ] ; then \
+	        echo "Compiling: $$cmdline" \
+	         && echo "with ${CXX_COMPILER}=$$( which ${CXX_COMPILER} )" \
+	    ; fi \
+	 && eval $$cmdline
+
+%.o : %.f
+	${F_COMPILER}   -c $< ${FFLAGS} ${EXTRA_INCLUDES} 
+%.o : %.F90
+	@cmdline="${F_COMPILER} -g ${FFLAGS} ${EXTRA_INCLUDES} \
+	    -c $<" \
+	 && if [ "${ECHO}" = "1" ] ; then \
+	        echo "Compiling: $$cmdline" \
+	         && echo "with ${F_COMPILER}=$$( which ${F_COMPILER} )" \
+	    ; fi \
+	 && eval $$cmdline
+%.o : %.f90
+	${F_COMPILER}   -c $< ${FFLAGS} ${EXTRA_INCLUDES} 
+
+ifeq "${MODE}" "mpi"
+C_LINKER   := ${MPI_C_COMPILER}
+CXX_LINKER := ${MPI_CXX_COMPILER}
+F_LINKER   := ${MPI_F_COMPILER}
+else ifeq "${MODE}" "hybrid"
+C_LINKER   := ${MPI_C_COMPILER}
+CXX_LINKER := ${MPI_CXX_COMPILER}
+F_LINKER   := ${MPI_F_COMPILER}
+else ifeq "${MODE}" "1api"
+C_LINKER   := ${C_COMPILER}
+CXX_LINKER := ${CXX_COMPILER}
+F_LINKER   := ${F_COMPILER}
+else 
+C_LINKER   := ${C_COMPILER}
+CXX_LINKER := ${CXX_COMPILER}
+F_LINKER   := ${F_COMPILER}
+endif
+LINKER     := ${${LANGUAGE}_LINKER}
+
+ifeq "${MODE}" "petsc"
+  LINK_FLAGS += ${PETSC_LIB}
+else ifeq "${MODE}" "slepc"
+  LINK_FLAGS += ${PETSC_LIB} -lslepc
+else ifeq "${MODE}" "hybrid"
+  LINK_FLAGS += ${OMPFLAGS}
+else ifeq "${MODE}" "omp"
+  LINK_FLAGS += ${OMPFLAGS}
+endif
+ifeq "${TACC_FAMILY_COMPILER}" "gcc"
+  LINK_FLAGS += -lm
+endif
+
+.SECONDEXPANSION:
+${APPS} ${EXERCISES} ${PROGRAMS} ${WRONGS} : $$@.o ${EXTRA_OBJS}
+	@if [ ! -z "${LINK_SETUP_COMMANDS}" ] ; then \
+	    if [ "${ECHO}" = "1" ] ; then echo ${LINK_SETUP_COMMANDS} ; fi \
+	     && eval ${LINK_SETUP_COMMANDS} \
+	    ; fi
+	@if [ -z "${LINKER}" ] ; then \
+	    echo "No linker defined for LANGUAGE=${LANGUAGE}" && exit 1 ; fi
+	@cmd="${LINKER} -o $@ $^ ${LINK_FLAGS} ${EXTRA_LIBS}" \
+	 && if [ "${ECHO}" = "1" ] ; then echo "Linking: $$cmd" ; fi \
+	 && eval $$cmd
+	@if [ "${ECHO}" = "1" -a ! -z "${LINK_EXTRA_COMMANDS}" ] ; then \
+	    echo ${LINK_EXTRA_COMMANDS} \
+	    ; fi \
+	 && eval ${LINK_EXTRA_COMMANDS}
+
+.PHONY: compile
+compile :
+	@make --no-print-directory ${PROGRAM}.o
+	${LINKER} -o ${PROGRAM} ${PROGRAM}.o ${EXTRA_OBJS} ${LINK_FLAGS} ${EXTRA_LIBS}
+
+info ::
+	@if [ ! -z "${APPS}${EXERCISES}" ] ; then \
+	    echo "make listsources : list all sources in this directory" \
+	    echo "make listapps : list all apps in this directory" \
+	    && echo "make apps : compile all applications in this directory" \
+	    && echo "make runapps : compile and run all applications in this directory" \
+	    ; \
+	fi
+.PHONY: apps listapps runapps listsources
+listsources :
+	@for a in ${APPS} ; do \
+	  if [ -e $$a.c ] ; then echo $$a.c ; fi ; \
+	  if [ -e $$a.cxx ] ; then echo $$a.cxx ; fi ; \
+	  if [ -e $$a.F90 ] ; then echo $$a.F90 ; fi ; \
+	done | awk 'BEGIN { v="" } {v = v " " $$0} END {print v}'
+	@echo tools.{c,h}
+apps :
+	@( \
+	for a in ${APPS} ${EXERCISES} ; do \
+	    echo "%%%%%%%%%%%%%%%%" && echo "Compiling: $${a}" \
+	    && make --no-print-directory $${a} || echo "failure" \
+	    ; \
+	done \
+	) 2>&1 | tee compile.log
+	@echo && echo "See compile.log for full output" && echo
+listapps :
+	@echo ${APPS} ${EXERCISES}
+	@for a in ${APPS} ${EXERCISES} ; do \
+	    if [ `ls $$a.{c,cxx,F,F90,f,f90,py} 2>/dev/null | wc -l` -eq 0 ] ; then \
+	        echo "Missing source for <<$$a>>" \
+	    ; fi \
+	; done
+runapps :
+	@( \
+	for a in ${APPS} ${EXERCISES} ; do \
+	    echo "%%%%%%%%%%%%%%%% Compile $${a}" \
+	     && make --no-print-directory $${a} ECHO=${ECHO} \
+	     && if [ ${MODE} = "mpi" -o ${MODE} = "petsc" -o ${MODE} = "slepc" ] ; then \
+	            echo "%%%%%%%%%%%%%%%% mpirun $${a}" \
+	             && make --no-print-directory mpirun \
+	                    PROGRAM=$$a ECHO=${ECHO} \
+	            ; \
+	        else \
+	            echo "%%%%%%%%%%%%%%%% run $${a}" \
+	             && ./$${a} \
+	            ; \
+	        fi \
+	    ; \
+	done \
+	) 2>&1 | tee run.log
+	@echo && echo "See run.log for all output" && echo 
+
+clean ::
+	@rm -f compile.log run.log

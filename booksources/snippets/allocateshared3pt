@@ -1,0 +1,2 @@
+// sharedshared.c
+MPI_Win_allocate_shared(3,sizeof(int),info,sharedcomm,&shared_baseptr,&shared_window);

@@ -1,0 +1,19 @@
+// queens0.cxx
+optional<placement> result = {};
+#pragma omp taskgroup
+for (int col=0; col<N; col++) {
+  placement next = current;
+  next.at(iqueen) = col;
+  #pragma omp task firstprivate(next) shared(result)
+  if (feasible(next)) {
+    if (iqueen==N-1) { 
+	result = next;
+    } else { // do next level
+	auto attempt = place_queen(iqueen+1,next);
+	if (attempt.has_value()) {
+	  result = attempt; 
+	}
+    } // end if(iqueen==N-1)
+  } // end if(feasible)
+}
+return result;

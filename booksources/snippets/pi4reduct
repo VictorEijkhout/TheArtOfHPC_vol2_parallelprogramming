@@ -1,0 +1,7 @@
+// pi.c
+#pragma omp parallel for reduction(+:pi4)
+  for (int isample=0; isample<N; isample++) {
+    float xsample = isample * h;
+    float y = sqrt(1-xsample*xsample);
+    pi4 += h*y;
+  }

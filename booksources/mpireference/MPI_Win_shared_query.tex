@@ -1,0 +1,28 @@
+Semantics:
+MPI_WIN_SHARED_QUERY(win, rank, size, disp_unit, baseptr)
+
+Input arguments:
+win:  shared memory window object (handle)
+rank: rank in the group of window win (non-negative integer)
+      or MPI_PROC_NULL
+
+Output arguments:
+size: size of the window segment (non-negative integer)
+disp_unit: local unit size for displacements, 
+           in bytes (positive integer)
+baseptr: address for load/store access to window segment (choice)
+
+C:
+int MPI_Win_shared_query
+   (MPI_Win win, int rank, MPI_Aint *size, int *disp_unit,
+    void *baseptr)
+
+Fortran:
+MPI_Win_shared_query(win, rank, size, disp_unit, baseptr, ierror)
+USE, INTRINSIC :: ISO_C_BINDING, ONLY : C_PTR
+TYPE(MPI_Win), INTENT(IN) :: win
+INTEGER, INTENT(IN) :: rank
+INTEGER(KIND=MPI_ADDRESS_KIND), INTENT(OUT) :: size
+INTEGER, INTENT(OUT) :: disp_unit
+TYPE(C_PTR), INTENT(OUT) :: baseptr
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror 

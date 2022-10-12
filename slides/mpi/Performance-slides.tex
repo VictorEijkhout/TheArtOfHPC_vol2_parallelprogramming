@@ -1,0 +1,228 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the lecture slides for
+%%%% `Parallel Computing'
+%%%% by Victor Eijkhout, copyright 2012-2020
+%%%%
+%%%% Performance-slides.tex: MPI Performance issues
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{numberedframe}{Overview}
+  We briefly touch on peripheral issues issues to MPI.
+\end{numberedframe}
+
+\sectionframe{Errors}
+
+\begin{numberedframe}{Built-in handlers}
+  \label{sl:errhandler}
+Default: global termination.
+\begin{lstlisting}
+MPI_Comm_set_errhandler(MPI_COMM_WORLD,MPI_ERRORS_ARE_FATAL);
+\end{lstlisting}
+
+\begin{mpifour}
+  Only terminate on communicator: \indexmpidef{MPI_ERRORS_ABORT}.
+\end{mpifour}
+  
+Local handling: \indexmpishow{MPI_ERRORS_RETURN}:
+\end{numberedframe}
+
+\begin{numberedframe}{Handlers on specific classes}
+Associate error handler with communicator:\\
+  \indexmpishow{MPI_Comm_set_errhandler} \indexmpishow{MPI_Comm_get_errhandler}
+
+  Other:
+\begin{itemize}
+\item  \indexmpishow{MPI_File_set_errhandler},
+  \indexmpishow{MPI_File_call_errhandler},
+\begin{mpifour}
+  \indexmpishow{MPI_Session_set_errhandler},
+  \indexmpishow{MPI_Session_call_errhandler},
+\end{mpifour}
+  \indexmpishow{MPI_Win_set_errhandler},
+  \indexmpishow{MPI_Win_call_errhandler}.
+\end{itemize}  
+\end{numberedframe}
+
+\begin{numberedframe}{Handling errors}
+\begin{lstlisting}
+char errtxt[MPI_MAX_ERROR_STRING];
+int err = status.MPI_ERROR;
+int len=MPI_MAX_ERROR_STRING;
+MPI_Error_string(err,errtxt,&len);
+printf("Waitall error: %d %s\n",err,errtxt);    
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Define new errors}
+\begin{lstlisting}
+int nonzero_code;
+MPI_Add_error_code(nonzero_class,&nonzero_code);
+MPI_Add_error_string(nonzero_code,"Attempting to send zero buffer");
+\end{lstlisting}
+\end{numberedframe}
+
+\sectionframe{Performance measurement}
+
+\begin{numberedframe}{Timers}
+  MPI has a \indexterm{wall clock} timer: \indexmpishow{MPI_Wtime}
+  which gives the number of seconds from a certain point in the past.
+
+  The timer has a resolution of \indexmpishow{MPI_Wtick}
+
+  Timers can be global
+\begin{lstlisting}
+int *v,flag;
+MPI_Attr_get( comm, MPI_WTIME_IS_GLOBAL, &v, &flag );
+if (mytid==0) printf("Time synchronized? %d->%d\n",flag,*v);
+\end{lstlisting}
+  but probably aren't.
+\end{numberedframe}
+
+\begin{numberedframe}{Example}
+    \cverbatimsnippet{pingpong}
+\end{numberedframe}
+
+\begin{numberedframe}{Global timing}
+  Processes don't start/end simultaneously. What does a timing result
+  mean overall? Take average or maximum?
+
+  Alternative:
+  \begin{lstlisting}
+    MPI_Barrier(comm)
+    t = MPI_Wtime();
+    // something happens here
+    MPI_Barrier(comm)
+    t = MPI_Wtime()-t;
+  \end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Profiling}
+  See other lecture: 
+  MPIP, TAU, et cetera.
+\end{numberedframe}
+
+\begin{numberedframe}{Your own profiling interface}
+  Every routine \lstinline{MPI_Something} calls a routine \lstinline{PMPI_Something} that 
+  does the actual work. You can now write your \n{MPI_...} routine
+  which calls \indexmpishow{PMPI_...}, and inserting your own profiling calls.
+
+  \includegraphics[scale=.7]{graphics/pmpi}
+\end{numberedframe}
+
+\sectionframe{Programming for performance}
+
+\begin{numberedframe}{Eager limit}
+  \begin{itemize}
+  \item Optimization for small messages: bypass rendez-vous protocol
+    (slide~\ref{sl:rendezvous})
+  \item Cross-over point: `Eager limit'.
+  \item Force efficient messages by increasing the eager limit.
+  \item Beware: decreasing payoff for large messages, and
+  \item Beware: buffers for eager send eat into your available memory.
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Eager limit setting}
+    \begin{itemize}
+    \item For Intel MPI: \n{I_MPI_EAGER_THRESHOLD}
+    \item mvapich2: \n{MV2_IBA_EAGER_THRESHOLD}
+    \item OpenMPI: \n{OpenMPI} the
+      \texttt{--mca} options \indextermtt{btl_openib_eager_limit} and
+      \indextermtt{btl_openib_rndv_eager_limit}.
+    \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Blocking versus non-blocking}
+  \begin{itemize}
+  \item Non-blocking sends \lstinline{MPI_Isend}~/ \lstinline{MPI_Irecv} can be more
+    efficient than blocking
+  \item Also: allow overlap computation/communication (latency hiding)
+  \item However: can usually not be considered a replacement.
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Progress}
+  MPI is not magically active in the background, so latency hiding is
+  not automatic. Same for passive target synchronization and
+  non-blocking barrier completion.
+  \begin{itemize}
+  \item Dedicated communications processor or thread.\\
+    This is implementation dependent; for instance,
+    Intel MPI: \n{I_MPI_ASYNC_PROGRESS_...} variables.
+  \item Force progress by occasional calls to a polling
+    routine such as \indexmpishow{MPI_Iprobe}.
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Persistent sends}
+  If a communication between the same pair of processes, involving the
+  same buffer, happens regularly, it is possible to set up a
+  \indextermsub{persistent}{communication}.
+
+  \begin{itemize}
+  \item \lstinline{MPI_Send_init}
+  \item \lstinline{MPI_Recv_init}
+  \item \lstinline{MPI_Start}
+  \end{itemize}
+
+\end{numberedframe}
+
+\begin{numberedframe}{Buffering}
+
+  \begin{itemize}
+  \item MPI has internal buffers: copying costs performance
+  \item Use your own buffer:
+    \begin{itemize}
+    \item \lstinline{MPI_Buffer_attach}
+    \item \lstinline{MPI_Bsend}
+    \end{itemize}
+  \item Copying is also a problem for derived datatypes.
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Graph topology and neighborhood collectives}
+  \begin{itemize}
+  \item Mapping problem to architecture sometimes not trivial
+  \item Load balancers: \indexterm{ParMetis}, \indexterm{Zoltan}
+  \item Graph topologies: \lstinline{MPI_Dist_graph_adjacent}:\\
+    allowed to reorder ranks for proximity
+  \item Neighborhood collectives allow MPI to schedule optimally.
+    \begin{itemize}
+    \item \lstinline{MPI_Neighbor_allgather} (and \lstinline{MPI_Neighbor_allgather_v})
+    \item \lstinline{MPI_Neighbor_alltoall}
+    \end{itemize}
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Network issues}
+  Network contention means that
+  \begin{itemize}
+  \item Your messages can collide with other jobs
+  \item messages within your job can collide
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Output routing}
+  \includegraphics[scale=.4]{oversubscription}
+\end{numberedframe}
+
+\begin{numberedframe}{Contention}
+  \includegraphics[scale=.4]{contention}
+\end{numberedframe}
+
+\begin{numberedframe}{Offloading and onloading}
+
+  \begin{itemize}
+  \item Network cards can offer assistance
+  \item Mellanox: off-loading\\
+    limited repertoire of scenarios where it helps
+  \item Intel disagrees: on-loading
+  \item Either way, investigate the capabilities of your network.
+  \end{itemize}
+\end{numberedframe}
+

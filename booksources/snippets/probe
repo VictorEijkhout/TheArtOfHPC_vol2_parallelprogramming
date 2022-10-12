@@ -1,0 +1,12 @@
+// probe.c
+if (procno==receiver) {
+  MPI_Status status;
+  MPI_Probe(sender,0,comm,&status);
+  int count;
+  MPI_Get_count(&status,MPI_FLOAT,&count);
+  float recv_buffer[count];
+  MPI_Recv(recv_buffer,count,MPI_FLOAT, sender,0,comm,MPI_STATUS_IGNORE);
+} else if (procno==sender) {
+  float buffer[buffer_size];
+  ierr = MPI_Send(buffer,buffer_size,MPI_FLOAT, receiver,0,comm); CHK(ierr);
+}

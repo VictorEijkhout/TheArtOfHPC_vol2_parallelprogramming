@@ -1,0 +1,7 @@
+for (int p=1; p<onnode_nprocs; p++) {
+  MPI_Aint window_sizep; int windowp_unit; double *winp_addr;
+  MPI_Win_shared_query( node_window,p,
+                        &window_sizep,&windowp_unit, &winp_addr );
+  distp = (size_t)winp_addr-(size_t)win0_addr;
+  if (procno==0)
+    printf("Distance %d to zero: %ld\n",p,(long)distp);

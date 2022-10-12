@@ -1,0 +1,36 @@
+Semantics:
+MPI_Type_get_extent(datatype,lb,extent)
+MPI_Type_get_extent_x(datatype,lb,extent)
+MPI_Type_get_true_extent(datatype,true_lb,true_extent)
+MPI_Type_get_true_extent_x(datatype,true_lb,true_extent)
+
+Input argument:
+datatype: Data type for which information is wanted (handle).
+
+Output arguments:
+lb / true_lb: (True) lower bound of data type (integer).
+extent / true_extent: (True) extent of data type (integer).
+
+C:
+int MPI_Type_get_extent(
+    MPI_Datatype datatype,
+    MPI_Aint *true_lb, MPI_Aint *true_extent)
+int MPI_Type_get_extent_x(
+    MPI_Datatype datatype,
+    MPI_Aint *true_lb, MPI_Aint *true_extent)
+int MPI_Type_get_true_extent(
+    MPI_Datatype datatype,
+    MPI_Aint *true_lb, MPI_Aint *true_extent)
+int MPI_Type_get_true_extent_x(
+    MPI_Datatype datatype,
+    MPI_Count *true_lb, MPI_Count *true_extent)
+
+Fortran
+MPI_TYPE_GET_TRUE_EXTENT(DATATYPE, TRUE_LB, TRUE_EXTENT, IERROR)
+    INTEGER    DATATYPE, IERROR
+    INTEGER(KIND=MPI_ADDRESS_KIND) TRUE_LB, TRUE_EXTENT
+MPI_TYPE_GET_TRUE_EXTENT_X(DATATYPE, TRUE_LB, TRUE_EXTENT, IERROR)
+    INTEGER    DATATYPE, IERROR
+    INTEGER(KIND=MPI_COUNT_KIND) TRUE_LB, TRUE_EXTENT
+
+

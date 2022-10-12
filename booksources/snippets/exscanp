@@ -1,0 +1,4 @@
+## exscan.py
+localsize = 10+random.randint(1,nprocs)
+myfirst = 0
+mypartial = comm.exscan(localsize,0)

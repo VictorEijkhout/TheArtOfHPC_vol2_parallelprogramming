@@ -1,0 +1,20 @@
+% -*- latex -*-
+%%
+%% include definitions for the foundations 1-day course
+%%
+\def\Location{TACC Parallel Institute, 2018}
+\def\TitleExtra{, Foundations}
+
+\excludecomment{online}
+
+%\excludecomment{tacc}
+\specialcomment{tacc}{\stepcounter{tacc}\def\CommentCutFile{tacc\arabic{tacc}.cut}}{}
+\newcounter{tacc}
+
+\excludecomment{imperial}
+%\specialcomment{imperial}{\stepcounter{imperial}\def\CommentCutFile{imperial\arabic{imperial}.cut}}{}
+
+\excludecomment{advanced}
+\includecomment{foundations}
+\excludecomment{full}
+\includecomment{onesided}

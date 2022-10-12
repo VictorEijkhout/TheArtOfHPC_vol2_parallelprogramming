@@ -1,0 +1,3 @@
+// sendlong.cxx
+mpl::contiguous_layout<long long> v_layout(v.size());
+  comm.send(v.data(), v_layout, 1); // send to rank 1

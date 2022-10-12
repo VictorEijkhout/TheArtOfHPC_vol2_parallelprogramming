@@ -1,0 +1,36 @@
+# -*- makefile -*-
+################################################################
+####
+#### This makefile is part of `Parallel Programming in MPI and OpenMP'
+#### Victor Eijkhout
+#### eijkhout@tacc.utexas.edu
+####
+#### Example make include file for compiler definitions
+####
+################################################################
+
+OMPFLAGS_intel    = -g -openmp 
+OMPFLAGS_gcc      = -ggdb -fopenmp
+OMPFLAGS = ${OMPFLAGS_${TACC_FAMILY_COMPILER}}
+
+info ::
+	@echo "    OPTLEVEL=0/1/2, default:${OPTLEVEL}"
+OPTLEVEL = 0
+C_COMPILER_intel = icc
+C_COMPILER_gcc   = gcc
+CFLAGS = ${OMPFLAGS} -O${OPTLEVEL} -std=c99
+C_COMPILER = ${C_COMPILER_${TACC_FAMILY_COMPILER}}
+MPI_C_COMPILER = mpicc
+
+CXX_COMPILER_intel = icpc
+CXX_COMPILER_gcc   = g++
+CXXFLAGS = ${CFLAGS}
+CXX_COMPILER = ${CXX_COMPILER_${TACC_FAMILY_COMPILER}}
+MPI_CXX_COMPILER = mpicxx
+
+F_COMPILER_intel = ifort
+F_COMPILER_gcc   = gfortran
+FFLAGS = ${OMPFLAGS} -O${OPTLEVEL}
+F_COMPILER = ${F_COMPILER_${TACC_FAMILY_COMPILER}}
+MPI_F_COMPILER = mpif90
+

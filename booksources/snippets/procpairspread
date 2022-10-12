@@ -1,0 +1,2 @@
+int sender = procid<halfprocs ? procid : procid-halfprocs,
+  receiver = sender + halfprocs;

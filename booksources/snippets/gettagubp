@@ -1,0 +1,4 @@
+## tags.py
+tag_upperbound = comm.Get_attr(MPI.TAG_UB)
+if procid==0:
+    print("Determined tag upperbound: {}".format(tag_upperbound))

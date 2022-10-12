@@ -1,0 +1,168 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-6
+%%%%
+%%%% omp-share.tex : work sharing
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+The declaration of a \indexterm{parallel region} establishes a team of
+threads. This offers the possibility of parallelism, but to actually
+get meaningful parallel activity you need something more.
+OpenMP uses the concept of a \indexterm{work sharing
+construct}: a way of dividing parallelizable work over a team of threads.
+
+\Level 0 {Work sharing constructs}
+\label{sec:work-sharing}
+
+The work sharing constructs are:
+\begin{itemize}
+\item \texttt{for} (for~C) or
+  \texttt{do} (for Fortran). The threads divide up the loop iterations among
+  themselves; see~\ref{sec:omp-for}.
+\item \texttt{sections} The threads divide a fixed number of sections
+  between themselves; see section~\ref{sec:omp-sections}.
+\item \texttt{single} The section is executed by a single thread;
+  section~\ref{sec:omp-single}.
+\item \texttt{task} See section~\ref{sec:omp:task}.
+\item \texttt{workshare} Can parallelize Fortran array syntax;
+  section~\ref{sec:fortran-workshare}.
+\end{itemize}
+
+\Level 0 {Sections}
+\label{sec:omp-sections}
+
+A parallel loop is an example of independent work units that are numbered.
+If you have a pre-determined number of independent work units, 
+the \indexpragma{sections} is more appropriate. In a \lstinline{sections} construct
+can be any number of \indexpragma{section} constructs. These need to be
+independent, and they can be execute by any available thread in the current team,
+including having multiple sections done by the same thread.
+\begin{lstlisting}
+#pragma omp sections
+{
+#pragma omp section
+  // one calculation
+#pragma omp section
+  // another calculation
+}
+\end{lstlisting}
+
+This construct can be used to divide large blocks of independent work.
+Suppose that in the following line, both \n{f(x)} and \n{g(x)}
+are big calculations:
+\begin{lstlisting}
+  y = f(x) + g(x)
+\end{lstlisting}
+You could then write
+\begin{lstlisting}
+double y1,y2;
+#pragma omp sections
+{
+#pragma omp section
+  y1 = f(x)
+#pragma omp section
+  y2 = g(x)
+}
+y = y1+y2;
+\end{lstlisting}
+Instead of using two temporaries, you could also use a critical
+section; see section~\ref{sec:critical}.  However, the best solution
+is have a \lstinline{reduction} clause on the \lstinline{parallel sections} directive.
+For the sum
+\begin{lstlisting}
+  y = f(x) + g(x)
+\end{lstlisting}
+You could then write
+\cverbatimsnippet{ompsectreduct}
+
+\Level 0 {Single/master}
+\label{sec:omp-single}
+
+The \indexpragmadef{single} and \indexpragmadef{master} pragma
+limit the execution of a block to a single thread. 
+This can for instance be used to print tracing information
+or doing \emph{I/O}\index{I/O!in OpenMP} operations.
+\begin{lstlisting}
+#pragma omp parallel
+{
+#pragma omp single
+  printf("We are starting this section!\n");
+  // parallel stuff
+}
+\end{lstlisting}
+Another use of \lstinline{single} is to perform initializations
+in a parallel region:
+\begin{lstlisting}
+int a;
+#pragma omp parallel
+{
+  #pragma omp single
+    a = f(); // some computation
+  #pragma omp sections
+    // various different computations using a
+}
+\end{lstlisting}
+
+The point of the single directive in this last example is that the
+computation needs to be done only once, because of the shared memory.
+Since it's a work sharing construct there is an \emph{implicit
+  barrier}\index[omp]{implicit barrier!after single directive} after it,
+which guarantees that all threads have the correct value in their
+local memory (see section~\ref{sec:omp:flush}.
+
+\begin{exercise}
+  \label{ex:omp-single-mpi}
+  What is the difference between this approach and how the same
+  computation would be parallelized in MPI?
+\end{exercise}
+
+The \indexpragma{master} directive, also enforces execution
+on a single thread, specifically the master thread of the team,
+but it does not have the synchronization through the implicit barrier.
+
+\begin{exercise}
+  Modify the above code to read:
+\begin{lstlisting}
+int a;
+#pragma omp parallel
+{
+  #pragma omp master
+    a = f(); // some computation
+  #pragma omp sections
+    // various different computations using a
+}
+\end{lstlisting}
+  This code is no longer correct. Explain.
+\end{exercise}
+
+Above we motivated the \lstinline{single} directive as a way of initializing
+shared variables. It is also possible to use \lstinline{single} to initialize
+private variables. In that case you add the \indexclausedef{copyprivate}
+clause. This is a good solution if setting the variable takes~I/O.
+
+\begin{exercise}
+  Give two other ways to initialize a private variable, with all
+  threads receiving the same value. Can you give scenarios where each
+  of the three strategies would be preferable?
+\end{exercise}
+
+\Level 0 {Fortran array syntax parallelization}
+\label{sec:fortran-workshare}
+
+The \lstinline{parallel do} directive is used to parallelize loops,
+and this applies to both C and Fortran. However, Fortran also
+has implied loops in its \emph{array syntax}\index{Fortran!array syntax}.
+To parallelize array syntax you can use the \indexpragma{workshare}
+directive.
+
+The \indexpragma{workshare} directive exists only in Fortran.
+It can be used to parallelize
+the implied loops in \emph{array syntax}\index{Fortran!array syntax},
+as well as  \emph{forall}\index{Fortran!forall loops} loops.
+

@@ -1,0 +1,17 @@
+// weak1.c
+int a=0,b=0,r1,r2;
+#pragma omp parallel sections shared(a, b, r1, r2)
+{
+#pragma omp section
+  {
+	a = 1;
+	r1 = b;
+	tasks++;
+  }
+#pragma omp section
+  {
+	b = 1;
+	r2 = a;
+	tasks++;
+  }
+}

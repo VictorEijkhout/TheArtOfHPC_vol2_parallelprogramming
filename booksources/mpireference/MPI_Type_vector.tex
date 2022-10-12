@@ -1,0 +1,22 @@
+Semantics:
+MPI_TYPE_VECTOR(count, blocklength, stride, oldtype, newtype)
+IN count: number of blocks (non-negative integer)
+IN blocklength: number of elements in each block (non-negative integer)
+IN stride: number of elements between start of each block (integer)
+IN oldtype: old datatype (handle)
+OUT newtype: new datatype (handle)
+
+C:
+int MPI_Type_vector
+   (int count, int blocklength, int stride,
+    MPI_Datatype oldtype, MPI_Datatype *newtype)
+
+Fortran:
+MPI_Type_vector(count, blocklength, stride, oldtype, newtype, ierror)
+INTEGER, INTENT(IN) :: count, blocklength, stride
+TYPE(MPI_Datatype), INTENT(IN) :: oldtype
+TYPE(MPI_Datatype), INTENT(OUT) :: newtype
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+
+Python:
+MPI.Datatype.Create_vector(self, int count, int blocklength, int stride)

@@ -1,0 +1,5 @@
+template<typename T >
+irequest mpl::communicator::isend
+   ( const T & data, int dest, tag t = tag(0) ) const;
+   ( const T * data, const layout< T > &  l, int  dest, tag  t = tag(0) ) const;
+   ( iterT  begin, iterT  end, int  dest, tag  t = tag(0) ) const;

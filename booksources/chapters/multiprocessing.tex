@@ -1,0 +1,135 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% multiprocessing.tex : python multiprocessing module
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\lstset{language=Python}
+
+Python has a \indexterm{multiprocessing} toolbox.
+This is a parallel processing library that relies on subprocesses,
+rather than threads.
+
+\Level 0 {Software and hardware}
+
+The \n{multiprocessing} toolbox does its own hardware detection;
+it uses a single node, and however many cores the system tells it
+there are.
+
+\pverbatimsnippet{pycpycount}
+
+\Level 0 {Process}
+
+A process is an object that will execute a python function:
+\pverbatimsnippet[code/multiprocessing/p/hello.py]{pyproccreate}
+
+Creating a process does not start it:
+for that use the \lstinline{start} function.
+Execution of the process is not guaranteed until you call the \lstinline{join}
+function on it:
+\pverbatimsnippet[code/multiprocessing/p/hello.py]{pyprocstartjoin}
+
+By making the start and join calls less regular than
+in a loop like this,
+arbitrarily complicated code can be produced.
+
+\Level 1 {Arguments}
+
+Arguments can be passed to the function of the process
+with the \lstinline{args} keyword.
+This accepts a list (or tuple) of arguments,
+leading to a somewhat strange syntax for a single argument:
+\begin{lstlisting}
+proc = Process(target=print_func, args=(name,))
+\end{lstlisting}
+
+\Level 1 {Process details}
+
+Note the test on \n{__main__}:
+the processes started read the current file in order to execute
+the function specified.
+Without this clause, the import would first execute more process start calls,
+before getting to the function execution.
+
+Processes have a name that you can retrieve as
+\lstinline+current_process().name+.
+The default is \n{Process-5} and such,
+but you can specify custom names:
+\begin{lstlisting}
+Process(name="Your name here")
+\end{lstlisting}
+The target function of a process can get hold of that process
+with the  \lstinline+current_process+ function.
+
+Of course you can also query \lstinline+os.getpid()+
+but that does not offer any further possibilities.
+
+\pverbatimsnippet[code/multiprocessing/p/hello.py]{pyprocpid}
+
+\Level 0 {Pools and mapping}
+
+Often you want a number of processes to do apply to a number of arguments,
+for instance in a \indexterm{parameter sweep}.
+For this, create a \lstinline{Pool} object,
+and apply the \lstinline{map} method to it:
+%
+\pverbatimsnippet[code/multiprocessing/p/pool.py]{pymulpoolmap}
+
+Note that this is also the easiest way to get return values from a process,
+which is not directly possible with a \lstinline{Process} object.
+Other approaches are using a shared object,
+or an object in a \lstinline{Queue} or \lstinline{Pipe} object; see below.
+
+\Level 0 {Shared data}
+
+The best way to deal with shared data is to create
+a \lstinline{Value} or \lstinline{Array} object,
+which come equipped with a lock for safe updating.
+
+\pverbatimsnippet{pypivalue}
+
+For instance, one could stochastically calculate~$\pi$
+by 
+\begin{enumerate}
+\item generating random points in~$[0,1)^2$, and
+\item recording how many fall in the unit circle, after which
+\item $\pi$ is $4\times$ the ratio between points in the circle
+  and the total number of points.
+\end{enumerate}
+
+\pverbatimsnippet{pypicompute}
+
+\begin{exercise}
+  Do you see a way to improve the speed of this calculation?
+\end{exercise}
+
+\Level 1 {Pipes}
+
+A \indexterm{pipe}, object type \lstinline{Pipe},
+corresponds to what used to be called a \indexterm{channel}
+in older parallel programming systems:
+a~\ac{FIFO} object into which one process can place items,
+and from which another process can take them.
+However, a pipe is not associated with any particular pair:
+creating the pipe gives the entrace and exit from the pipe
+
+\pverbatimsnippet{pypipecreate}
+
+And they can be passed to any process
+
+\pverbatimsnippet{pypipepass}
+
+which can then can put and get items,
+using the \lstinline{send} and \lstinline{recv} commands.
+
+\pverbatimsnippet{pypipesend}
+\pverbatimsnippet{pypiperecv}
+
+\Level 1 {Queues}

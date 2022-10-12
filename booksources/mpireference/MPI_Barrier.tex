@@ -1,0 +1,17 @@
+C:
+int MPI_Barrier( MPI_Comm comm )
+
+Fortran2008:
+MPI_BARRIER(COMM, IERROR)
+Type(MPI_Comm),intent(int) :: COMM
+INTEGER,intent(out) :: IERROR
+
+Fortran 95:
+MPI_BARRIER(COMM, IERROR)
+INTEGER :: COMM, IERROR
+
+Input parameter:
+comm : Communicator (handle)
+
+Output parameter:
+Ierror : Error status (integer), Fortran only

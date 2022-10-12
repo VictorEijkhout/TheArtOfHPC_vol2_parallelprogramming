@@ -1,0 +1,16 @@
+C:
+int MPI_Ibcast(
+    void* buffer, int count, MPI_Datatype datatype,
+    int root, MPI_Comm comm,
+    MPI_Request *request
+    )
+
+Fortran:
+MPI_Ibcast(buffer, count, datatype, root, comm, ierror)
+TYPE(*), DIMENSION(..) :: buffer
+INTEGER, INTENT(IN) :: count, root
+TYPE(MPI_Datatype), INTENT(IN) :: datatype
+TYPE(MPI_Comm), INTENT(IN) :: comm
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+TYPE(MPI_Request),intent(out) :: request
+

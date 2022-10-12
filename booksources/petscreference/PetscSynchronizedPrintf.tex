@@ -1,0 +1,13 @@
+C:
+PetscErrorCode  PetscSynchronizedPrintf(
+    MPI_Comm comm,const char format[],...)
+
+Fortran:
+PetscSynchronizedPrintf(MPI_Comm, character(*), PetscErrorCode ierr)
+
+python:
+PETSc.Sys.syncPrint(type cls, *args, **kargs)
+kwargs:
+comm : communicator object
+flush : if True, do synchronizedFlush
+other keyword args as for python3 print function

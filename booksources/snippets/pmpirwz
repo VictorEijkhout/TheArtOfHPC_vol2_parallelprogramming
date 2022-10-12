@@ -1,0 +1,19 @@
+## reductpositive.py
+def reduceWithoutZero(in_buf, inout_buf, datatype):
+    typecode = MPI._typecode(datatype)
+    assert typecode is not None ## check MPI datatype is built-in
+    dtype = np.dtype(typecode)
+
+    in_array = np.frombuffer(in_buf, dtype)
+    inout_array = np.frombuffer(inout_buf, dtype)
+
+    n = in_array[0]; r = inout_array[0]
+    if n==0:
+        m = r
+    elif r==0:
+        m = n
+    elif n<r:
+        m = n
+    else:
+        m = r
+    inout_array[0] = m

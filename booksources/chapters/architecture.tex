@@ -1,0 +1,42 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-9
+%%%%
+%%%% architecture.tex : about computer architecture
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+There is much that can be said about computer architecture. However,
+in the context of parallel programming we are mostly concerned with
+the following:
+\begin{itemize}
+\item How many networked nodes are there, and does the network have a
+  structure that we need to pay attention to?
+\item On a compute node, how many sockets (or other \ac{NUMA} domains)
+  are there?
+\item For each socket, how many cores and hyperthreads are there? Are
+  caches shared?
+\end{itemize}
+
+\Level 0 {Tools for discovery}
+
+An easy way for discovering the structure of your parallel machine is
+to use tools that are written especially for this purpose.
+
+\Level 1 {Intel cpuinfo}
+
+The \indextermbus{Intel}{compiler suite} comes with a tool
+\indextermdef{cpuinfo} that reports on the structure of the node
+you are running on. It reports on the number of \indexterm{package}s,
+that is: sockets, cores, and threads.
+
+\Level 1 {hwloc}
+
+The open source package \indextermtt{hwloc} does similar reporting to
+cpuinfo, but it has been ported to many platforms. Additionally, it
+can generate ascii and pdf graphic renderings of the architecture.

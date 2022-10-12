@@ -1,0 +1,18 @@
+// quintic1.c
+PetscErrorCode FormFunction( SNES solver,Vec x,Vec fx,void *ctx) {
+  PetscScalar *fv;
+  const PetscScalar *xv;
+  PetscErrorCode ierr;
+  PetscFunctionBegin;
+  ierr = VecGetArrayRead(x,&xv); 
+  ierr = VecGetArray(fx,&fv); 
+  {
+    PetscScalar x = xv[0], y;
+    y = x*x*x*x*x - x -3;
+    printf("f( x=%e ) = %e\n",x,y);
+    fv[0] = y;
+  }
+  ierr = VecRestoreArrayRead(x,&xv); 
+  ierr = VecRestoreArray(fx,&fv); 
+  PetscFunctionReturn(0);
+}

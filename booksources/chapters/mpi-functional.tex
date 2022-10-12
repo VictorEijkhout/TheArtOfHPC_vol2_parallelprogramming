@@ -1,0 +1,275 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%% mpi-functional.tex : about functional parallelism
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Level 0 {The SPMD model}
+\label{sec:spmd}
+
+MPI programs conform largely
+to the \acf{SPMD} model, where each processor runs the same executable.
+This running executable we call a \indexterm{process}.
+
+When MPI was first written, 20 years ago, it was clear what a processor
+was: it was what was in a computer on someone's desk, or in a rack.
+If this computer was part of a networked cluster, you called it a \indextermdef{node}.
+So if you ran an MPI program, each node would have one MPI process;
+%
+\begin{figure}[ht]
+  \includegraphics[scale=.11]{mpi-node1}
+  \caption{Cluster structure as of the mid 1990s}
+  \label{fig:oldmpi}
+\end{figure}
+%
+figure~\ref{fig:oldmpi}.
+%
+You could of course run more than one
+process, using the \indexterm{time slicing} of the \ac{OS}, but that
+would give you no extra performance.
+
+These days the situation is more complicated.
+You can still talk about a node in a cluster, but now a node can contain
+more than one processor chip (sometimes called a \indextermdef{socket}),
+and each processor chip probably has multiple
+\emph{cores}\index{core}.
+%
+\begin{figure}[ht]
+  \includegraphics[scale=.11]{mpi-node3}
+  \caption{Hybrid cluster structure}
+  \label{fig:hybridmpi}
+\end{figure}
+%
+Figure~\ref{fig:hybridmpi} shows how you could explore this using a mix
+of MPI between the nodes, and a shared memory programming system on the nodes.
+
+However, since each core can act like an independent processor,
+you can also have multiple MPI processes per node. To MPI, the cores look
+like the old completely separate processors. This is the `pure MPI'
+model of figure~\ref{fig:purempi}, which we will use in most of this part
+of the book. (Hybrid computing will be discussed in chapter~\ref{ch:hybrid}.)
+%
+\begin{figure}[ht]
+  \includegraphics[scale=.11]{mpi-node2}
+  \caption{MPI-only cluster structure}
+  \label{fig:purempi}
+\end{figure}
+%
+
+This is somewhat confusing: the old processors needed MPI programming, because
+they were physically separated. The cores on a modern processor, on the other hand,
+share the same memory, and even some caches. In its basic mode MPI
+seems to ignore all
+of this: each core receives an MPI process and the programmer writes the same send/receive call no matter
+where the other process is located. In fact, you can't immediately see
+whether two cores are on the same node or different nodes. Of course,
+on the implementation level MPI uses a different communication
+mechanism depending on whether  cores are on the same socket or on
+different nodes, so you don't have to worry about lack of efficiency.
+
+\begin{remark}
+  In some rare cases you may want to run in an \indexac{MPMD} mode, rather
+  than \ac{SPMD}. This can be achieved either on the \ac{OS} level
+  (see section~\ref{sec:mpmd-start}),
+  using options of the \indextermtt{mpiexec} mechanism, or you can use
+  MPI's built-in process management; chapter~\ref{ch:mpi-proc}. Like
+  I~said, this concerns only rare cases.
+\end{remark}
+
+%% \Level 0 {Starting and running MPI processes}
+\input chapters/mpi-running
+
+%% \Level 0 {Processor identification}
+\input chapters/mpi-rank
+
+\Level 0 {Functional parallelism}
+
+Now that processes can distinguish themselves from each other,
+they can decide to engage in different activities.
+In an extreme case you could have a code that looks like
+\begin{lstlisting}
+// climate simulation:
+if (procid==0)
+  earth_model();
+else if (procid=1)
+  sea_model();
+else
+  air_model();
+\end{lstlisting}
+Practice is a little more complicated than this. But we will start
+exploring this notion of processes deciding on their activity
+based on their process number.
+
+Being able to tell processes apart is already enough to write some
+applications, without knowing any other MPI.
+We will look at a simple parallel search algorithm:
+based on its rank, a processor can find its section of
+a search space.  For instance, in \indexterm{Monte Carlo codes} a
+large number of random samples is generated and some computation
+performed on each. (This particular example requires each MPI process
+to run an independent random number generator, which is not entirely
+trivial.)
+
+\begin{exercise}
+  \label{ex:primetest}
+  Is the number $N=2,000,000,111$ prime?  Let each process test a
+  disjoint set of integers, and print out any factor they find.  You don't
+  have to test all integers~$<N$: any factor is at
+  most~$\sqrt N\approx 45,200$.
+
+  (Hint: \verb+i%0+ probably gives a runtime error.)
+
+  Can you find more than one solution?
+  \skeleton{prime}
+\end{exercise}
+
+\begin{remark}
+  Normally, we expect parallel algorithms to be faster than sequential.
+  Now consider the above exercise. Suppose the number we are testing
+  is divisible by some small prime number, but every process has a
+  large block of numbers to test. In that case the sequential algorithm would
+  have been faster than the parallel one. Food for thought.
+\end{remark}
+
+As another example, in \indexterm{Boolean satisfiability} problems
+a number of points in a search space needs to be evaluated. Knowing
+a process's rank is enough to let it generate its own portion of the
+search space. The computation of the \indexterm{Mandelbrot set} can
+also be considered as a case of functional parallelism. However, the
+image that is constructed is data that needs to be kept on one
+processor, which breaks the symmetry of the parallel run.
+
+Of course, at the end of a functionally parallel run you need to
+summarize the results, for instance printing out some total.
+The mechanisms for that you will learn next.
+
+\Level 0 {Distributed computing and distributed data}
+\label{sec:distributed-array}
+
+One reason for using MPI is that sometimes you need to work on
+a single object,
+say a vector or a matrix,
+with a  data size larger than can fit in the memory of a single processor.
+With distributed memory, each processor then gets a part
+of the whole data structure and only works on that.
+
+So let's say we have a large array, and we want to
+distribute the data over the processors.
+That means that, with \n{p} processes and \n{n}~elements
+per processor, we have a total of $\mathtt{n}\cdot\mathtt{p}$
+elements.
+
+\begin{figure}[ht]
+  \includegraphics[scale=.1]{mpi-array}
+  \caption{Local parts of a distributed array}
+  \label{fig:mpi-array}
+\end{figure}
+
+We sometimes say that \n{data} is the local part
+of a \indexterm{distributed array} with a total size of
+$\mathtt{n}\cdot\mathtt{p}$
+elements.
+However, this array only exists
+conceptually: each processor has an array with lowest index zero,
+and you have to translate that yourself to an index in the global
+array.
+In other words, you have to write your code in such a way that
+it acts like you're working with a large array that is distributed
+over the processors, while
+actually manipulating only the local arrays on the processors.
+
+Your typical code then looks like
+
+\begin{lstlisting}
+int myfirst = .....;
+for (int ilocal=0; ilocal<nlocal; ilocal++) {
+   int iglobal = myfirst+ilocal;
+   array[ilocal] = f(iglobal);
+}
+\end{lstlisting}
+
+\begin{exercise}
+  \label{ex:array-ints}
+  Allocate on each process an array:
+\begin{lstlisting}
+int my_ints[10];    
+\end{lstlisting}
+and fill it so that process~0 has the integers $0\cdots 9$, process~1 has $10\cdots 19$,
+et cetera.
+
+It may be hard to print the output in a non-messy way.
+\end{exercise}
+
+If the array size is not perfectly divisible by the number of processors,
+we have to come up with a division that is uneven, but not too much.
+You could for instance, write
+
+\begin{lstlisting}
+int Nglobal, // is something large
+    Nlocal = Nglobal/ntids,
+    excess = Nglobal%ntids;
+if (mytid==ntids-1) 
+  Nlocal += excess;
+\end{lstlisting}
+
+\begin{exercise}
+  Argue that this strategy is not optimal. Can you come up with a
+  better distribution?
+  Load balancing is further discussed in~\HPSCref{sec:load}.
+\end{exercise}
+
+\begin{comment}
+  \begin{exercise}
+    \label{ex:inproduct}
+    Implement an inner product routine: let $x$ be a
+    distributed vector of size~$N$ with elements $x[i]=i$,
+    and compute~$x^tx$.
+    As before, the right value is $(2N^3+3N^2+N)/6$.
+
+    Use the inner product value to scale to vector so that it has
+    norm~1.
+    Check that your computation is correct.
+  \end{exercise}
+\end{comment}
+
+\Level 0 {Review questions}
+
+For all true/false questions, if you answer that a statement is false,
+give a one-line explanation.
+
+\begin{exercise}
+  \label{ex:m1}
+  True or false: \n{mpicc} is a compiler.
+\end{exercise}
+
+\begin{exercise}
+  \label{ex:mpi01rank}
+  T/F?
+  \begin{enumerate}
+  \item In C, the result of \lstinline{MPI_Comm_rank} is a number
+    from zero to number-of-processes-minus-one, inclusive.
+  \item In Fortran, the result of \lstinline{MPI_Comm_rank} is a number
+    from one to number-of-processes, inclusive.
+  \end{enumerate}
+\end{exercise}
+
+\begin{exercise}
+  What is the function of a hostfile?
+\end{exercise}
+
+\begin{pcse}
+\begin{exercise}
+    An architecture is called `symmetric' or `uniform' if the
+    relation between any pair of processes is essentially the same.
+    In what way are MPI processes run on stampede symmetric; in what way
+    not?
+\end{exercise}
+\end{pcse}
+

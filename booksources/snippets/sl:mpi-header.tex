@@ -1,0 +1,47 @@
+\begin{numberedframe}{MPI definitions}
+\label{sl:mpi-header}
+You need an include file:
+\begin{verbatim}
+#include "mpi.h" // for C
+
+use mpi_f08   ! for Fortran2008
+use mpi       ! for legacy Fortran90
+
+from mpi4py import MPI
+
+#include <mpl/mpl.hpp>
+\end{verbatim}
+\begin{itemize}
+\item There are no real C++ bindings, but see MPL.
+\item True Fortran bindings as of the 2008 standard.
+\begin{tacc}
+Provided in Intel compiler:
+\begin{verbatim}
+module load intel/18.0.2
+\end{verbatim}
+or newer. Not in gcc7.
+\end{tacc}
+(Legacy bindings are far inferior)
+\end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{MPI Init / Finalize}
+Then put these calls around your code:
+\lstset{language=C}
+\begin{lstlisting}
+MPI_Init(&argc,&argv); // zeros allowed
+// your code
+MPI_Finalize();
+\end{lstlisting}
+and for Fortran:
+\lstset{language=Fortran}
+\begin{lstlisting}
+call MPI_Init()     ! F08 style
+! your code
+call MPI_Finalize()
+
+call MPI_Init(ierr) ! F90 style
+! your code
+call MPI_Finalize(ierr)
+\end{lstlisting}
+\end{numberedframe}

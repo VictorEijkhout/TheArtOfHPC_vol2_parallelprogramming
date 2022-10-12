@@ -1,0 +1,19 @@
+// indexed.c
+displacements = (int*) malloc(count*sizeof(int));
+blocklengths = (int*) malloc(count*sizeof(int));
+source = (int*) malloc(totalcount*sizeof(int));
+target = (int*) malloc(targetbuffersize*sizeof(int));
+MPI_Datatype newvectortype;
+if (procno==sender) {
+  MPI_Type_indexed(count,blocklengths,displacements,MPI_INT,&newvectortype);
+  MPI_Type_commit(&newvectortype);
+  MPI_Send(source,1,newvectortype,the_other,0,comm);
+  MPI_Type_free(&newvectortype);
+} else if (procno==receiver) {
+  MPI_Status recv_status;
+  int recv_count;
+  MPI_Recv(target,targetbuffersize,MPI_INT,the_other,0,comm,
+    &recv_status);
+  MPI_Get_count(&recv_status,MPI_INT,&recv_count);
+  ASSERT(recv_count==count);
+}

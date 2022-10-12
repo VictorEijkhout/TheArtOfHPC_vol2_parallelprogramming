@@ -1,0 +1,6 @@
+// publishapp.c
+MPI_Comm intercomm;
+char myport[MPI_MAX_PORT_NAME];
+MPI_Open_port( MPI_INFO_NULL,myport );
+MPI_Publish_name( service_name, MPI_INFO_NULL, myport );
+MPI_Comm_accept( myport,MPI_INFO_NULL,0,comm_self,&intercomm );

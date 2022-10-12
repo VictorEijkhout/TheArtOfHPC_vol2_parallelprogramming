@@ -1,0 +1,12 @@
+C:
+int MPI_Get_processor_name(char *name, int *resultlen)
+name : buffer char[MPI_MAX_PROCESSOR_NAME]
+
+Fortran:
+MPI_Get_processor_name(name, resultlen, ierror)
+CHARACTER(LEN=MPI_MAX_PROCESSOR_NAME), INTENT(OUT) :: name
+INTEGER, INTENT(OUT) :: resultlen
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror 
+
+Python:
+MPI.Get_processor_name()

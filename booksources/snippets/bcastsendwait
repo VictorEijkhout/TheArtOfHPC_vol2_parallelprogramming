@@ -1,0 +1,12 @@
+// hangwait.c
+if (procno==sender) {
+  for (int p=0; p<nprocs-1; p++) {
+    double send = 1.;
+    MPI_Send( &send,1,MPI_DOUBLE,p,0,comm);
+  }
+} else {
+  double recv=0.;
+  MPI_Request request;
+  MPI_Irecv( &recv,1,MPI_DOUBLE,sender,0,comm,&request);
+  MPI_Wait(&request,MPI_STATUS_IGNORE);
+}

@@ -1,0 +1,8 @@
+!! pingpong.F90
+  sync all
+  if (procid==1) then
+     number[procid+1] = number[procid]
+  else if (procid==2) then
+     number[procid-1] = 2*number[procid]
+  end if
+  sync all

@@ -1,0 +1,17 @@
+int MPI_Mrecv(void *buf, int count, MPI_Datatype type,
+    MPI_Message *message, MPI_Status *status)
+
+Input Parameters:
+count    - Number of elements to receive (nonnegative integer).
+datatype - Datatype of each send buffer element (handle).
+message  - Message (handle).
+
+Output Parameters:
+buf    - Initial address of receive buffer (choice).
+status - Status object (status).
+IERROR - Fortran only: Error status (integer).
+
+MPI_MRECV(BUF, COUNT, DATATYPE, MESSAGE, STATUS, IERROR)
+    <type>    BUF(*)
+INTEGER    COUNT, DATATYPE, MESSAGE
+INTEGER    STATUS(MPI_STATUS_SIZE), IERROR

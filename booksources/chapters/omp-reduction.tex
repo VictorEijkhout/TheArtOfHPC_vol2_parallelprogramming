@@ -1,0 +1,428 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% omp-reduction.tex : reduction loops
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{omp!reduction|(}
+\label{sec:reduction}
+
+\Level 0 {Reductions: why, what, how?}
+
+Parallel tasks often produce some quantity that needs to be summed
+or otherwise combined.
+If you write:
+\begin{lstlisting}
+  int sum=0;
+  #pragma omp parallel for
+  for (int i=0; i<N; i++)
+    sum += f(i);
+\end{lstlisting}
+you will find that the \lstinline{sum} value depends on the number of threads,
+and is likely not the same as when you execute the code sequentially.
+The problem here is the \indexterm{race condition} involving the \n{sum}
+variable, since this variable is shared between all threads.
+
+We will discuss several strategies of dealing with this.
+
+\Level 1 {Reduction clause}
+
+The easiest way to effect a reduction is of course to use the \indexclause{reduction}
+clause.
+Adding this to an \n{omp parallel} region
+has the following effect:
+\begin{itemize}
+\item OpenMP will make a copy of the reduction variable per thread,
+  initialized to the identity of the reduction operator, for instance
+  $1$~for multiplication.
+\item Each thread will then reduce into its local variable;
+\item At the end of the parallel region, the local results are combined, again
+  using the reduction operator, into the global variable.
+\end{itemize}
+
+The simplest case is a reduction over a parallel loop.
+Here we compute $\pi/4$ as a \indextermbus{Riemann}{sum}:
+
+\cverbatimsnippet[examples/omp/c/reductpar.c]{pi4reduct}
+
+You can also reduce over \indexompshow{sections}:
+%
+\cverbatimsnippet{ompsectreduct}
+
+Another reduction, this time over a parallel region,
+without any work sharing:
+%
+\cverbatimsnippet[examples/omp/c/reductpar.c]{reductpar}
+
+If you want to reduce multiple variables with the same operator, use
+\begin{lstlisting}
+reduction(+:x,y,z)
+\end{lstlisting}
+For multiple reduction with different operators, use more than one clause.
+
+A reduction is one of those cases where the parallel execution can have a slightly different
+value from the one that is computed sequentially, because floating point operations
+are not associative. See~\HPSCref{sec:roundoff-parallel} for more explanation.
+
+\Level 1 {Code your own solution}
+
+The most immediate way is to eliminate the race condition
+by declaring a \indexterm{critical section}:
+\begin{lstlisting}
+double result = 0;
+#pragma omp parallel
+{
+  double local_result;
+  int num = omp_get_thread_num();
+  if (num==0)      local_result = f(x);
+  else if (num==1) local_result = g(x);
+  else if (num==2) local_result = h(x);
+#pragma omp critical
+  result += local_result;
+}
+\end{lstlisting}
+
+This is a good solution if the amount of serialization in the critical section
+is small compared to computing the functions~$f,g,h$. On the other hand, you
+may not want to do that in a loop:
+\begin{lstlisting}
+double result = 0;
+#pragma omp parallel
+{
+  double local_result;
+#pragma omp for
+  for (i=0; i<N; i++) {
+    local_result = f(x,i);
+#pragma omp critical
+    result += local_result;
+  } // end of for loop
+}
+\end{lstlisting}
+\begin{exercise}
+  Can you think of a small modification of this code, that still uses a critical section,
+  that is more efficient? Time both codes.
+\end{exercise}
+
+\Level 2 {False sharing}
+
+If your code can not be easily structured as a reduction, you can 
+realize the above scheme by hand by
+`duplicating' the global variable and gather the contributions later.
+This example presumes three threads, and gives each a location of their
+own to store the result computed on that thread:
+\begin{lstlisting}
+double result,local_results[3];
+#pragma omp parallel
+{
+  int num = omp_get_thread_num();
+  if (num==0)      local_results[num] = f(x)
+  else if (num==1) local_results[num] = g(x)
+  else if (num==2) local_results[num] = h(x)
+}
+result = local_results[0]+local_results[1]+local_results[2]
+\end{lstlisting}
+While this code is correct, it may be inefficient because of a
+phenomemon called \indexterm{false sharing}. Even though the threads write
+to separate variables, those variables are likely to be on the same 
+\indexterm{cacheline} (see \HPSCref{sec:falseshare} for an explanation).
+This means that the cores will be wasting a lot of time and bandwidth updating
+each other's copy of this cacheline.
+
+False sharing can be prevent by giving each thread its own cacheline:
+\begin{lstlisting}
+double result,local_results[3][8];
+#pragma omp parallel
+{
+  int num = omp_get_thread_num();
+  if (num==0)      local_results[num][1] = f(x)
+// et cetera
+}
+\end{lstlisting}
+A more elegant solution gives each thread a true local variable,
+and uses a critical section to sum these, at the very end:
+\begin{lstlisting}
+double result = 0;
+#pragma omp parallel
+{
+  double local_result;
+  local_result = .....
+#pragam omp critical
+  result += local_result;
+}
+\end{lstlisting}
+
+\Level 0 {Built-in reduction}
+
+\Level 1 {Operators}
+
+Arithmetic reductions: \lstinline{+,*,-,max,min}.
+
+Logical operator reductions in C: \n{& && | || ^}
+
+Logical operator reductions in Fortran:
+\n{.and. .or. .eqv. .neqv. .iand. .ior. .ieor.}
+
+\begin{exercise}
+  The maximum and minimum reductions were not added to OpenMP until
+  \ompstandard{3.1}.
+  Write a parallel loop that computes the maximum and
+  minimum values in an array without using the \indexompshow{reduction} directive.
+  Discuss the various options. Do timings
+  to evaluate the speedup that is attained and to find the best option.
+\end{exercise}
+
+\Level 1 {Reduction on arrays}
+\label{sec:omp-array-reduct}
+
+Starting with the \ompstandard{4.5} standard, you can reduce
+on statically allocated arrays:
+\begin{lstlisting}
+int ar[N];
+#pragma omp parallel for reduction(+:ar[:N])
+\end{lstlisting}
+
+
+\Level 1 {Types}
+
+Reduction can be applied to any type for which the operator is defined.
+The types to which \lstinline{max/min} are applicable are limited.
+
+\Level 0 {Initial value for reductions}
+
+The treatment of initial values in reductions is slightly involved.
+\begin{lstlisting}
+  x = init_x
+#pragma omp parallel for reduction(min:x)
+  for (int i=0; i<N; i++)
+    x = min(x,data[i]);
+\end{lstlisting}
+Each thread does a partial reduction, but its initial value is not the
+user-supplied \n{init_x} value, but a value dependent on the
+operator. In the end, the partial results will then be combined with
+the user initial value.
+The initialization values are mostly self-evident, such as zero for
+addition and one for multiplication. For min and max they are
+respectively the maximal and minimal representable value of the result type.
+
+\begin{figure}[ht]
+  \includegraphics[scale=.1]{omp-reduct}
+  \caption{Reduction of four items on two threads, taking into account
+    initial values.}
+  \label{fig:omp-reduct}  
+\end{figure}
+%
+Figure~\ref{fig:omp-reduct} illustrates this, where \n{1,2,3,4} are
+four data items, \n{i}~is the OpenMP initialization, and \n{u}~is the
+user initialization; each \n{p}~stands for a partial reduction value.
+The figure is based on execution using two threads.
+
+\begin{exercise}
+  Write a program to test the fact that the partial results
+  are initialized to the unit of the reduction operator.
+\end{exercise}
+
+\Level 0 {User-defined reductions}
+\index{omp!reduction!user-defined|(textbf}
+
+In a loop that performs a reduction,
+most of the element-by-element reduction as done in user code.
+However, in a parallel version of that loop,
+OpenMP needs to perform that same reduction on the partial results
+from the threads.
+Thus, if you want to perform your own reduction,
+you need to declare this reduction to OpenMP.
+
+With \emph{user-defined reductions}, the programmer specifies the
+function that does the elementwise comparison.
+We discuss two strategies:
+\begin{enumerate}
+\item In non-\ac{OO} languages you can define a function,
+  and declare that to be a reduction operator with the
+  \indexpragma{declare}~\indexclause{reduction} construct.
+\item In \ac{OO} languages (C++ and \fstandard{2003})
+  you can overload ordinary operators for a class.
+\end{enumerate}
+
+\Level 1 {Reduction functions}
+
+This takes two steps.
+\begin{enumerate}
+\item You need a function of two arguments that returns the result of
+  the comparison. You can do this yourself, but, especially with the
+  C++ standard library, you can use functions such as \n{std::vector::insert}.
+\item Specifying how this function operates on two variables
+  \indexompshow{omp_out} and \indexompshow{omp_in}, corresponding to the
+  partially reduced result and the new operand respectively. The new
+  partial result should be left in \n{omp_out}.
+\item Optionally, you can specify the value to which the reduction
+  should be initialized.
+\end{enumerate}
+
+This is the syntax of the definition of the reduction, which can then
+be used in multiple \indexclause{reduction} clauses.
+\begin{lstlisting}
+#pragma omp declare reduction 
+    ( identifier : typelist : combiner )
+    [initializer(initializer-expression)]
+\end{lstlisting}
+where:
+\begin{description}
+  \item[\texttt{identifier}] is a name; this can be overloaded for
+    different types, and redefined in inner scopes.
+  \item[\texttt{typelist}] is a list of types.
+  \item[\texttt{combiner}] is an expression that updates the internal
+    variable \indexompshow{omp_out} as function of itself and \indexompshow{omp_in}.
+  \item[\texttt{initializer}] sets \indexompshow{omp_priv} to the
+    identity of the reduction; this
+    can be an expression or a brace initializer.
+\end{description}
+
+\Level 2 {Explicit expressions}
+
+For very simple cases:
+%
+\cverbatimsnippet{ompminabsloop}
+%
+you can declare the reduction through an expression:
+%
+\cverbatimsnippet{ompminabsdef}
+%
+and use that in the \indexclause{reduction} clause:
+%
+\cverbatimsnippet{ompminabsclause}
+
+\Level 2 {Reduction functions}
+
+For instance, recreating the maximum reduction would look like this:
+%
+\cverbatimsnippet[examples/omp/c/ireduct.c]{ompmymax}
+
+\begin{exercise}
+  Write a reduction routine that operates on an array of nonnegative
+  integers, finding the smallest nonzero one. If the array has size
+  zero, or entirely consists of zeros, return~\n{-1}.
+\end{exercise}
+
+\begin{cppnote}{Reduction over iterators}
+  Support for
+  \emph{C++ iterators}\index{C++ iterators!in OMP reduction}
+\begin{lstlisting}
+#pragma omp declare reduction (merge : std::vector<int>
+    : omp_out.insert(omp_out.end(), omp_in.begin(), omp_in.end())) 
+\end{lstlisting}
+\end{cppnote}
+
+\begin{cppnote}{Templated reductions}
+  You can reduce with a templated function
+  if you put both the declaration and the reduction
+  in the same templated function:
+  %
+  \cxxverbatimsnippet{ompreducttemplate}
+  %
+  which is then called with specific data:
+  %
+  \cxxverbatimsnippet{ompreducttcall}
+\end{cppnote}
+
+\begin{cppnote}{Example: reduction over a map}
+  You can do a reduction over a \lstinline{std::map}
+  by merging thread-local maps:
+  \begin{multicols}{2}
+    \cxxverbatimsnippet{ompbincounter}
+    \columnbreak
+    \cxxverbatimsnippet{ompbinreduce}
+  \end{multicols}
+\end{cppnote}
+
+\Level 1 {Overloaded operators}
+
+\begin{fortrannote}{Reductions on derived types}
+  Reduction can be applied to any derived type that has the
+  reduction operator defined.
+  \begin{multicols}{2}
+    \fverbatimsnippet{ftypeopdef}
+    \columnbreak
+    \fverbatimsnippet{ftypeopuse}
+  \end{multicols}
+  
+\end{fortrannote}
+
+\begin{cppnote}{Reduction on class objects}
+  Reduction can be applied to any class for which the
+  reduction operator is defined as \lstinline{operator+}
+  or whichever operator the case may be.
+  \begin{multicols}{2}
+    \cxxverbatimsnippet{ompclassop}
+    \columnbreak
+    \cxxverbatimsnippet{ompreductop}
+  \end{multicols}
+  A default constructor is required for the
+  internally used init value;
+  see figure~\ref{fig:omp-reduct}.
+\end{cppnote}
+
+\index{omp!reduction!user-defined|)}
+
+\Level 0 {Scan / prefix operations}
+
+A `scan' or \indextermbus{prefix}{operation}
+is like a reduction, except that you're interested
+in the partial results.
+For this OpenMP, as of \ompstandard{5.0}, has the \indexompdef{scan} directive.
+This needs the following:
+\begin{itemize}
+\item The reduction clause gets a modifier \indexompclause{inscan}:
+\begin{lstlisting}
+#pragma omp parallel for reduction(inscan,+:sumvar)
+\end{lstlisting}
+\item In the body of the parallel loop there is a \indexompshow{scan} directive
+  that allows you to store the partial results:
+\begin{lstlisting}
+#pragma omp scan inclusive(sumvar)
+  partials[i] = sumvar
+\end{lstlisting}
+\end{itemize}
+
+\csnippetwithoutput{scaninc}{example/mpi/c}{scan}
+
+\Level 0 {Reductions and floating-point math}
+
+The mechanisms that OpenMP uses to make a reduction parallel go
+against the strict rules for floating point expression evaluation in~C;
+see~\HPSCref{sec:round-compile}. OpenMP ignores this issue: it is the
+programmer's job to ensure proper rounding behavior.
+
+\index{omp!reduction|)}
+
+\endinput
+
+\begin{verbatim}
+================ #threads = 1 ================
+               Sequential: 1.761771e+01; total force: 7.552465e+08
+       Full loop Parallel: 3.251586e+00; total force: 7.552465e+08, speedup= 5.42
+ Triangular update atomic: 1.787765e+01; total force: 7.552465e+08, speedup= 0.99
+         Full loop atomic: 2.001587e+01; total force: 7.552465e+08, speedup= 0.88
+================ #threads = 18 ================
+               Sequential: 1.764474e+01; total force: 7.426427e+08
+       Full loop Parallel: 1.820593e+00; total force: 7.426427e+08, speedup= 9.69
+ Triangular update atomic: 2.513533e+00; total force: 7.426427e+08, speedup= 7.02
+         Full loop atomic: 1.117391e+00; total force: 7.426427e+08, speedup=15.79
+================ #threads = 37 ================
+               Sequential: 1.764488e+01; total force: 7.383082e+08
+       Full loop Parallel: 4.445617e+00; total force: 7.383082e+08, speedup= 3.97
+ Triangular update atomic: 1.560774e+00; total force: 7.383082e+08, speedup=11.31
+         Full loop atomic: 5.465267e-01; total force: 7.383082e+08, speedup=32.29
+================ #threads = 56 ================
+               Sequential: 1.764368e+01; total force: 7.420574e+08
+       Full loop Parallel: 8.536602e+00; total force: 7.420574e+08, speedup= 2.07
+ Triangular update atomic: 1.221944e+00; total force: 7.420574e+08, speedup=14.44
+         Full loop atomic: 3.623484e-01; total force: 7.420574e+08, speedup=48.69
+\end{verbatim}
+

@@ -1,0 +1,10 @@
+#!/bin/bash
+################################################################
+####
+#### script to clean up code snippets for inclusion in the book
+####
+################################################################
+
+cat ../$1 \
+    | awk 'BEGIN {p=0} p==1 && !/snippet/ {print} /^ *$/ {p=1}' \
+    > input.cut

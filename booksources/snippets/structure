@@ -1,0 +1,36 @@
+// struct.c
+struct object {
+  char c;
+  double x[2];
+  int i;
+};
+MPI_Datatype newstructuretype;
+int structlen = 3;
+int blocklengths[structlen]; MPI_Datatype types[structlen];
+MPI_Aint displacements[structlen];
+
+/*
+ * where are the components relative to the structure?
+ */
+MPI_Aint current_displacement=0;
+
+// one character
+blocklengths[0] = 1; types[0] = MPI_CHAR;
+displacements[0] = (size_t)&(myobject.c) - (size_t)&myobject;
+
+// two doubles
+blocklengths[1] = 2; types[1] = MPI_DOUBLE;
+displacements[1] = (size_t)&(myobject.x) - (size_t)&myobject;
+
+// one int
+blocklengths[2] = 1; types[2] = MPI_INT;
+displacements[2] = (size_t)&(myobject.i) - (size_t)&myobject;
+
+MPI_Type_create_struct(structlen,blocklengths,displacements,types,&newstructuretype);
+MPI_Type_commit(&newstructuretype);
+if (procno==sender) {
+  MPI_Send(&myobject,1,newstructuretype,the_other,0,comm);
+} else if (procno==receiver) {
+  MPI_Recv(&myobject,1,newstructuretype,the_other,0,comm,MPI_STATUS_IGNORE);
+}
+MPI_Type_free(&newstructuretype);

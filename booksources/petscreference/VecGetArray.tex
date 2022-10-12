@@ -1,0 +1,28 @@
+C:
+#include "petscvec.h"
+PetscErrorCode VecGetArray(Vec x,PetscScalar **a)
+PetscErrorCode VecGetArrayRead(Vec x,const PetscScalar **a)
+
+Input Parameter
+x : the vector
+
+Output Parameter
+a : location to put pointer to the array
+
+PetscErrorCode VecRestoreArray(Vec x,PetscScalar **a)
+PetscErrorCode VecRestoreArrayRead(Vec x,const PetscScalar **a)
+
+Input Parameters
+x : the vector
+a : location of pointer to array obtained from VecGetArray()
+
+Fortran90:
+#include <petsc/finclude/petscvec.h>
+use petscvec
+VecGetArrayF90(Vec x,{Scalar, pointer :: xx_v(:)},integer ierr)
+(there is a Fortran77 version)
+VecRestoreArrayF90(Vec x,{Scalar, pointer :: xx_v(:)},integer ierr)
+
+Python:
+PETSc.Vec.getArray(self, readonly=False)
+?? PETSc.Vec.resetArray(self, force=False)

@@ -1,0 +1,230 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% mpi-shared.tex : about shared memory in MPI
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\index{shared memory|see{memory, shared}}
+
+Some programmers are under the impression that MPI would not be efficient on
+shared memory, since all operations are done through what looks like network calls.
+This is not correct: many MPI
+implementations have optimizations that detect shared memory and can
+exploit it, so that data is copied, rather than going through a communication layer.
+(Conversely, programming systems for shared memory such as \indexterm{OpenMP}
+can actually have inefficiencies associated with thread handling.)
+The main inefficiency associated with using MPI on shared memory is then
+that processes can not actually share data.
+
+The one-sided MPI calls (chapter~\ref{ch:mpi-onesided}) can also be used to
+emulate shared memory, in the sense that an origin process can access data
+from a target process without the target's active involvement.
+However, these calls do not distinguish between actually shared memory
+and one-sided access across the network.
+
+In this chapter we will look at the ways MPI
+can interact with the presence of actual shared memory. 
+(This functionality was added in the \mpistandard{3} standard.)
+This relies on the \indexmpishow{MPI_Win} windows concept, but
+otherwise uses direct access of other processes' memory.
+
+\Level 0 {Recognizing shared memory}
+\label{mpi-comm-split-type}
+
+MPI's one-sided routines take a very symmetric view of processes:
+each process can access the window of every other process (within a communicator).
+Of course, in practice there will be a difference in performance
+depending on whether the origin and target are actually
+on the same shared memory, or whether they can only communicate through the network.
+For this reason MPI makes it easy to group processes by shared memory domains
+using \indexmpiref{MPI_Comm_split_type}.
+
+Here the \n{split_type} parameter has to be from the following (short) list:
+\begin{itemize}
+\item \indexmpishow{MPI_COMM_TYPE_SHARED}: split the communicator into subcommunicators
+  of processes sharing a memory area.
+\begin{mpifournote}{Split by guided types}
+  \item \indexmpishow{MPI_COMM_TYPE_HW_GUIDED} (\mpistandard{4}):
+    split using an \n{info} value from \indexmpidef{MPI_Get_hw_resource_types}.
+    % https://github.com/mpi-forum/mpi-issues/issues/132
+  \item \indexmpishow{MPI_COMM_TYPE_HW_UNGUIDED} (\mpistandard{4}):
+    similar to \indexmpishow{MPI_COMM_TYPE_HW_GUIDED}, but the resulting communicators
+    should be a strict subset of the original communicator.
+    On processes where this condition can not be fullfilled,
+    \indexmpishow{MPI_COMM_NULL} will be returned.
+\end{mpifournote}
+\end{itemize}
+
+Splitting by shared memory:
+%
+\begingroup
+\def\snippetcodefraction{.45}
+\def\snippettextfraction{.5}
+\csnippetwithoutput{commsplittype}{examples/mpi/c}{commsplittype}
+\endgroup
+
+\begin{exercise}
+  \label{ex:mpi-node-proc-split}
+  Write a program that uses \indexmpishow{MPI_Comm_split_type}
+  to  analyze for a run
+  \begin{enumerate}
+  \item How many nodes there are;
+  \item How many processes there are on each node.
+  \end{enumerate}
+  If you run this program on an unequal distribution,
+  say 10~processes on 3~nodes, what distribution do you find?
+  \lstinputlisting{code/mpi/c/nodecount.runout}
+\end{exercise}
+
+\begin{remark}
+  The \indexterm{OpenMPI} implementation of MPI has a number of
+  non-standard split types, such as \indexmpishow{OMPI_COMM_TYPE_SOCKET};
+  see \url{https://www.open-mpi.org/doc/v4.1/man3/MPI_Comm_split_type.3.php}
+\end{remark}
+
+\begin{mplnote}{Split by shared memory}
+  Similar to ordinary communicator splitting~\ref{mpl::split}:
+  \lstinline+communicator::+\indexmpldef{split_shared}.
+\end{mplnote}
+
+\Level 0 {Shared memory for windows}
+
+Processes that exist on the same physical shared memory should be able
+to move data by copying, rather than through MPI send/receive calls
+--~which of course will do a copy operation under the hood.
+In order to do such user-level copying:
+\begin{enumerate}
+\item We need to create a shared memory area with
+  \indexmpishow{MPI_Win_allocate_shared}.
+  This creates a window with the
+  \emph{unified memory model}\index{window!memory!model!unified};
+  and
+\item We need to get pointers to where a process' area is in this
+  shared space; this is done with \indexmpishow{MPI_Win_shared_query}.
+\end{enumerate}
+
+\Level 1 {Pointers to a shared window}
+
+The first step is to create a window (in the sense of one-sided MPI;
+section~\ref{sec:windows}) on the processes on one node.
+Using the \indexmpiref{MPI_Win_allocate_shared} call presumably will
+put the memory close to the 
+\indexterm{socket} on which the process runs.
+
+\cverbatimsnippet[examples/mpi/c/sharedbulk.c]{mpisharedwindow}
+
+The memory allocated by \indexmpishow{MPI_Win_allocate_shared} is
+contiguous between the processes. This makes it possible to do address
+calculation. However, if a cluster node has a \ac{NUMA} structure, for
+instance if two sockets have memory directly attached to each, this
+would increase latency for some processes. To prevent this, the key
+\indexmpishow{alloc_shared_noncontig} can be set to \n{true} in the
+\indexmpishow{MPI_Info} object.
+\begin{mpifournote}{Window memory alignment}
+  In the contiguous case, the \indexmpishow{mpi_minimum_memory_alignment}
+  info argument
+  (section~\ref{sec:win-alloc})
+  applies only to the memory on the first process;
+  in the noncontiguous case it applies to all.
+\end{mpifournote}
+
+\cverbatimsnippet[examples/mpi/c/numa.c]{winnoncontig}
+
+Let's explore this.
+We create a shared window where each process stores exactly one double,
+that is, 8~bytes.
+The following code fragment queries the window locations,
+and prints the distance in bytes to the window on process~0.
+%
+\cverbatimsnippet[examples/mpi/c/numa.c]{wincontigquery}
+
+With the default strategy, these windows are contiguous,
+and so the distances are multiples of~8 bytes.
+Not so for the the non-contiguous allocation:
+%
+\begin{multicols}{2}
+Strategy: default behavior of shared window allocation
+\begin{verbatim}
+Distance 1 to zero: 8
+Distance 2 to zero: 16
+Distance 3 to zero: 24
+Distance 4 to zero: 32
+Distance 5 to zero: 40
+Distance 6 to zero: 48
+Distance 7 to zero: 56
+Distance 8 to zero: 64
+Distance 9 to zero: 72
+\end{verbatim}
+\columnbreak
+Strategy: allow non-contiguous shared window allocation
+\begin{verbatim}
+Distance 1 to zero: 4096
+Distance 2 to zero: 8192
+Distance 3 to zero: 12288
+Distance 4 to zero: 16384
+Distance 5 to zero: 20480
+Distance 6 to zero: 24576
+Distance 7 to zero: 28672
+Distance 8 to zero: 32768
+Distance 9 to zero: 36864
+\end{verbatim}
+\end{multicols}
+
+The explanation here is that each window is placed 
+on its own \indextermsub{small}{page},
+which on this particular system has a size of~4K.
+
+\begin{remark}
+  The ampersand operator in~C is not a
+  \indextermsub{physical}{address}, but a
+  \indextermsub{virtual}{address}.
+  The translation of where pages are placed in physical memory
+  is determined by the \indextermbus{page}{table}.
+\end{remark}
+
+\Level 1 {Querying the shared structure}
+
+Even though the window created above is shared, that doesn't mean it's
+contiguous. Hence it is necessary to retrieve the pointer to the area
+of each process that you want to communicate with:
+\indexmpiref{MPI_Win_shared_query}.
+
+\cverbatimsnippet[code/mpi/shared.c]{mpisharedpointer}
+
+\Level 1 {Heat equation example}
+
+As an example, which consider the 1D heat equation. On each process we
+create a local area of three point:
+%
+\cverbatimsnippet[examples/mpi/c/sharedshared.c]{allocateshared3pt}
+
+\Level 1 {Shared bulk data}
+
+In applications such as \indexterm{ray tracing}, there is a read-only
+large data object (the objects in the scene to be rendered) that is
+needed by all processes. In traditional MPI, this would need to be
+stored redundantly on each process, which leads to large memory
+demands. With MPI shared memory we can store the data object once per
+node. Using as above \indexmpishow{MPI_Comm_split_type} to find a
+communicator per \ac{NUMA} domain, we store the object on process zero
+of this node communicator.
+
+\begin{exercise}
+  \label{ex:shareddata}
+  Let the `shared' data originate on process zero in
+  \indexmpishow{MPI_COMM_WORLD}. Then:
+  \begin{itemize}
+  \item create a communicator per shared memory domain;
+  \item create a communicator for all the processes with number zero on their
+    node;
+  \item broadcast the shared data to the processes zero on each node.
+  \end{itemize}
+  \skeleton{shareddata}
+\end{exercise}

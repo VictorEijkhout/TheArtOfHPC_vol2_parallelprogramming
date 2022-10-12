@@ -1,0 +1,14 @@
+# -*- makefile -*-
+BOOKNAME = EijkhoutParallelProgramming
+
+DROPBOX = ${HOME}/Dropbox/Scicomp/PCSE
+
+PUBLICDIR = ${HOME}/Current/istc/pdf/pcse
+
+PUBLICREPO = 
+
+##
+## base directory, not the lectures directory
+## DO NoT escape any spaces!
+##
+STUDENTREPO = # ${HOME}/Current/SSC/STC/2020 Fall/sds335repo

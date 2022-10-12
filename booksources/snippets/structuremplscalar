@@ -1,0 +1,9 @@
+// structscalar.cxx
+char c; double x; int i;
+if (procno==sender) {
+  c = 'x'; x = 2.4; i = 37; }
+mpl::heterogeneous_layout object( c,x,i );
+if (procno==sender)
+  comm_world.send( mpl::absolute,object,receiver );
+else if (procno==receiver)
+  comm_world.recv( mpl::absolute,object,sender );

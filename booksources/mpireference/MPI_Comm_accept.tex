@@ -1,0 +1,14 @@
+Synopsis:
+int MPI_Comm_accept
+   (const char *port_name, MPI_Info info, int root,
+    MPI_Comm comm, MPI_Comm *newcomm)
+
+Input parameters:
+port_name : Port name (string, used only on root).
+info : Options given by root for the accept (handle, used only on
+    root). No options currently supported.
+root : Rank in comm of root node (integer).
+comm : Intracommunicator over which call is collective (handle).
+
+Output parameters:
+newcomm : Intercommunicator with client as remote group (handle)

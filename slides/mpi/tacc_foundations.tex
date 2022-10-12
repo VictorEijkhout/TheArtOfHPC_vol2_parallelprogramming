@@ -1,0 +1,153 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Computing'
+%%%% by Victor Eijkhout, copyright 2012-9
+%%%%
+%%%% mpi_course.tex : master file for an MPI course
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt,headernav]{beamer}
+
+\beamertemplatenavigationsymbolsempty
+\usetheme{Madrid}%{Montpellier}
+\usecolortheme{seahorse}
+\setcounter{tocdepth}{1}
+\AtBeginSection[]
+{
+  \begin{frame}
+    \frametitle{Table of Contents}
+    \tableofcontents[currentsection]
+  \end{frame}
+}
+
+\setbeamertemplate{footline}{\hskip1em Eijkhout: MPI intro\hfill
+  \hbox to 0in {\hss \includegraphics[scale=.1]{tacclogonew}}%
+  \hbox to 0in {\hss \arabic{page}\hskip 1in}}
+
+\usepackage{multicol,multirow}
+% custom arrays and tables
+\usepackage{array} %,multirow,multicol}
+\newcolumntype{R}{>{\hbox to 1.2em\bgroup\hss}{r}<{\egroup}}
+\newcolumntype{T}{>{\hbox to 8em\bgroup}{c}<{\hss\egroup}}
+
+\input slidemacs
+\input coursemacs
+\input listingmacs
+
+%%
+%% include definitions for the foundations 1-day course
+%%
+\def\Location{TACC/XSEDE Training, 2019}
+\def\TitleExtra{, Foundations}
+
+\excludecomment{online}
+
+%\excludecomment{tacc}
+\specialcomment{tacc}{\stepcounter{tacc}\def\CommentCutFile{tacc\arabic{tacc}.cut}}{}
+\newcounter{tacc}
+
+\excludecomment{imperial}
+%\specialcomment{imperial}{\stepcounter{imperial}\def\CommentCutFile{imperial\arabic{imperial}.cut}}{}
+
+\excludecomment{advanced}
+\includecomment{foundations}
+\excludecomment{full}
+\includecomment{onesided}
+
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%% Document
+%%%%%%%%%%%%%%%%
+
+\begin{document}
+\parskip=10pt plus 5pt minus 3pt
+
+\title{Tutorial on MPI programming\TitleExtra}
+\author{Victor Eijkhout {\tt eijkhout@tacc.utexas.edu}}
+\date{\Location}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{frame}\frametitle{Code of Conduct}
+  \scriptsize
+  XSEDE has an external code of conduct for XSEDE sponsored events
+  which represents XSEDE's commitment to providing an inclusive and
+  harassment-free environment in all interactions regardless of
+  gender, sexual orientation, disability, physical appearance, race,
+  or religion. The code of conduct extends to all XSEDE-sponsored
+  events, services, and interactions.
+
+  Code of Conduct: \url{https://www.xsede.org/codeofconduct}
+
+  Contact:
+  \begin{itemize}
+  \item Teacher: Victor Eijkhout \texttt{eijkhout@tacc.utexas.edu}\\
+  \item  Event organizer: Jason Allison  \texttt{jasona@tacc.utexas.edu}
+  \end{itemize}
+  XSEDE ombudspersons:
+  \begin{itemize}
+  \item
+    Linda Akli, Southeastern Universities Research Association
+    \texttt{akli@sura.org}
+  \item 
+    Lizanne Destefano, Georgia Tech
+    \texttt{lizanne.destefano@ceismc.gatech.edu}
+  \item 
+    Ken Hackworth, Pittsburgh Supercomputing Center \texttt{hackworth@psc.edu}
+  \item 
+    Bryan Snead, Texas Advanced Computing Center
+    \texttt{jbsnead@tacc.utexas.edu}
+  \end{itemize}
+\end{frame}
+
+  \begin{frame}{Justification}
+    The MPI library is the main tool
+    for parallel programming on a large scale.
+    This course introduces the main concepts
+    through lecturing and exercises.
+  \end{frame}
+
+  \Level 0 {The SPMD model}
+  \input SPMD-slides
+
+  \Level 0 {Collectives}
+  \input Collective-slides
+
+  \Level 0 {Point-to-point communication}
+  \input PTP-slides
+
+  \Level 0 {One-sided communication}
+  \input Onesided-slides 
+
+  \Level 0 {Derived Datatypes}
+  \input Data-slides
+
+  \Level 0 {Communicator manipulations}
+  \input Subcomm-slides
+
+  \Level 0 {MPI File I/O}
+  \input MPIO-slides
+
+  \Level 0 {Advanced collectives}
+  \input Highercollective-slides
+
+  \Level 0 {Process management}
+  \input Spawn-slides
+
+  \Level 0 {Process topologies}
+  \input Graph-slides
+
+  \Level 0 {Beginner exercise}
+
+  \begin{exerciseframe}
+    \input ex:serialsend
+  \end{exerciseframe}
+
+\end{document}
+

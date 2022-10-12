@@ -1,0 +1,28 @@
+C:
+int MPI_Exscan(const void *sendbuf, void *recvbuf, int count,
+    MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+int MPI_Iexscan(const void *sendbuf, void *recvbuf, int count,
+    MPI_Datatype datatype, MPI_Op op, MPI_Comm comm,
+    MPI_Request *request)
+
+Fortran:
+
+MPI_EXSCAN(SENDBUF, RECVBUF, COUNT, DATATYPE, OP, COMM, IERROR)
+    <type>    SENDBUF(*), RECVBUF(*)
+    INTEGER    COUNT, DATATYPE, OP, COMM, IERROR
+MPI_IEXSCAN(SENDBUF, RECVBUF, COUNT, DATATYPE, OP, COMM, REQUEST, IERROR)
+    <type>    SENDBUF(*), RECVBUF(*)
+    INTEGER    COUNT, DATATYPE, OP, COMM, REQUEST, IERROR
+
+Input Parameters
+
+sendbuf: Send buffer (choice).
+count: Number of elements in input buffer (integer).
+datatype: Data type of elements of input buffer (handle).
+op: Operation (handle).
+comm: Communicator (handle).
+
+Output Parameters
+
+recvbuf: Receive buffer (choice).
+request: Request (handle, non-blocking only).

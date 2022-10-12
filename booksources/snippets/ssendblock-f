@@ -1,0 +1,4 @@
+!! ssendblock.F90
+  call MPI_Ssend(sendbuf,size,MPI_INTEGER,other,0,comm,err)
+  call MPI_Recv(recvbuf,size,MPI_INTEGER,other,0,comm,status,err)
+  print *,"This statement is not reached"

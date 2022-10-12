@@ -1,0 +1,4 @@
+## allreduce.py
+random_number = random.randint(1,random_bound)
+# native mode send
+max_random = comm.allreduce(random_number,op=MPI.MAX)

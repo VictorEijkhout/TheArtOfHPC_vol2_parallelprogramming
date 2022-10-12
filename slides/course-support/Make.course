@@ -1,0 +1,121 @@
+# -*- makefile -*-
+################################################################
+####
+#### This makefile is part of `Parallel Programming in MPI and OpenMP'
+#### by Victor Eijkhout, copyright 2013-2022
+#### eijkhout@tacc.utexas.edu
+####
+#### include Makefile for course slides MPI/OpenMP/hybrid
+####
+#### also for lab sessions; maybe to be split?
+#### this is invoked from the slides-{mpi,omp,ddt,hybrid} directories
+####
+################################################################
+
+ENGINE =  xelatex -shell-escape
+# pdflatex
+
+info::
+	@echo "make course COURSE=... (in: ${COURSES})"
+	@echo "make courses : all courses;"
+	@if [ ! -z "${LANGUAGES}" ] ; then \
+	    echo "    also languages: ${LANGUAGES}" \
+	 ; fi
+.PHONY: course courses course_prep
+courses ::
+	@if [ ! -z "${COURSES}" ] ; then \
+	    cp ../course-support/lang_all.tex lang.tex \
+	     && for c in ${COURSES} ; do \
+	            make --no-print-directory course COURSE=$$c \
+	        ; done \
+	    ; \
+	 fi
+	@if [ ! -z "${LANGUAGES}" ] ; then \
+	    for l in ${LANGUAGES} ; do \
+	        cp ${COURSE}_course.tex ${COURSE}_$${l}_course.tex \
+	         && make course COURSE=${COURSE}_$${l} LANGUAGE=${LANGUAGE} \
+	         && rm -f ${COURSE}_$${l}_course.tex \
+	     ; done \
+	 ; fi
+
+course ::
+	@if [ -z "${COURSE}" ] ; then \
+	    echo "Error: no COURSE variable defined" && exit 1 ; fi 
+	@if [ ! -z "${LANGUAGE}" ] ; then \
+	    cp ../course-support/lang_${LANGUAGE}.tex ./lang.tex \
+	 ; fi
+	@make --no-print-directory pdf FILE=${COURSE}_course
+	@make --no-print-directory diagnostics FILE=${COURSE}_course
+	@cp ../course-support/lang_all.tex ./lang.tex
+no_acro_rule :
+	@acro=`cat ${COURSE}_course.log | grep "Acronym.*not defined" | wc -l` \
+	 && if [ $$acro -gt 0 ] ; then \
+	      echo "Resolving $$acro undefined acronyms" \
+	      && make --no-print-directory pdf FILE=${COURSE}_course \
+	    ; fi
+
+.PHONY: onepass pdf
+info ::
+	@echo "make onepass COURSE=... / FILE=..."
+TEXROOTDIR = ../../booksources
+onepass ::
+	@if [ ! -z "${FILE}" ] ; then \
+	    export file=${FILE} \
+	; elif [ ! -z "${COURSE}" ] ; then \
+	    export file=${COURSE}_course \
+	; else \
+	    echo "Please set FILE or COURSE" && exit 1 \
+	; fi \
+	 && TEXINPUTS=.:..:${TEXROOTDIR}:../taccstyle:../taccstyle/figures:${TEXROOTDIR}/chapters:${TEXROOTDIR}/exercises:${TEXROOTDIR}/graphics//:${TEXROOTDIR}/plots//:${TEXROOTDIR}/macros:${TEXROOTDIR}/hwloc:${TEXROOTDIR}/mpireference:${TEXROOTDIR}/snippets:../course-support:${TEXINPUTS}${EXTRATEXINPUTS} ${ENGINE} $$file
+pdf :: 
+	@\
+	file=${FILE} \
+	 && make --no-print-directory onepass FILE=$${file} \
+	 && if [ -z "${BIB}" ] ; then \
+	        bib=0 ; else bib=1 ; fi \
+	 && if [ $${bib} -eq 1 ] ; then \
+	        ( bibtex          $${file} || echo true ) \
+	    ; fi \
+	 && if [ -z "${INDEX}" ] ; then \
+	        index=0 ; else index=1 ; fi \
+	 && if [ $${index} -eq 1 ] ; then \
+	        ( makeindex       $${file} || echo true ) \
+	    ; fi \
+	 && if [ $$( cat ${FILE}.log | grep "Rerun to get cross-references right" | wc -l ) -eq 0 ] ; then \
+	    ref=0; else ref=1 ; fi \
+	 && if [ $${index} -eq 1 -o $${bib} -eq 1 -o $${ref} -eq 1 ] ; then \
+	        make onepass FILE=$${file} \
+	    ; fi
+
+include ../../makefiles/Make.tex
+
+.PHONY: listextra extrafiles
+listextra :
+	@echo ${EXTRAFILES}
+extrafiles :
+	@for f in `make --no-print-directory listextra` ; do \
+	    make --no-print-directory onepass FILE=$${f%%.pdf} \
+	    ; done
+
+info ::
+	@echo "make preview"
+.PHONY: preview
+preview:
+	xpdf -g 770x477 ${FILE}.pdf &
+
+##
+## cut files renaming
+## for the textbook
+##
+.PHONY: extract
+info ::
+	@echo "make extract : rename cut files to something more meaningful"
+extract :
+	@echo "Extracting cut files" \
+	&& for e in *.cut ; do \
+	  if [ `cat $$e | grep label | wc -l` -eq 1 ] ; then \
+	    export nam=`cat $$e | grep label | sed -e s/^.*label.// -e s/\}//` ; \
+	    cp $$e ../../snippets/$$nam.tex ; \
+	  fi ; \
+	done
+

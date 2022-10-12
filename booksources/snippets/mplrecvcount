@@ -1,0 +1,5 @@
+// recvstatus.cxx
+double pi=0;
+auto s = comm_world.recv(pi, 0);  // receive from rank 0
+int c = s.get_count<double>();
+std::cout << "got : " << c << " scalar(s): " << pi << '\n';

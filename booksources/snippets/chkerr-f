@@ -1,0 +1,7 @@
+!! globalinit.F90
+#define CHK(x) 
+!#define CHK(x) if (x) {				         \
+!     char errtxt[200]; int len=200;				 \
+!   MPI_Error_string(x,errtxt,&len);				 \
+!   printf("p=%d, line=%d, err=%d, %s\n",mytid,__LINE__,x,errtxt); \
+!   return x;}

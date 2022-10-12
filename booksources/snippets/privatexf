@@ -1,0 +1,8 @@
+!! private.F90
+  x=5
+!$omp parallel private(x,t) num_threads(4)
+  t = omp_get_thread_num()
+  x = t+1
+  print '("Thread ",i2," sets x to ",i2)',t,x
+!$omp end parallel
+  print '("Outer x is still ",i2)',x

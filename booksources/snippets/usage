@@ -1,0 +1,11 @@
+// init.c
+if (procno==0) {
+  if ( argc==1 || // the program is called without parameter
+       ( argc>1 && !strcmp(argv[1],"-h") ) // user asked for help
+       ) {
+    printf("\nUsage: init [0-9]+\n");
+    MPI_Abort(comm,1);
+  }
+  input_argument = atoi(argv[1]);
+}
+MPI_Bcast(&input_argument,1,MPI_INT,0,comm);

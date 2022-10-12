@@ -1,0 +1,8 @@
+#pragma omp parallel for schedule(guided,4)
+      for (int ip=0; ip<N; ip++) {
+        for (int jp=ip+1; jp<N; jp++) {
+          struct force f = force_calc(points[ip],points[jp]);
+          add_force( forces+ip,f );
+          sub_force( forces+jp,f );
+        }
+      }   

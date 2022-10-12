@@ -1,0 +1,535 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% omp-task.tex : openmp tasking
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\label{sec:omp:task}
+\index{OpenMP!tasks|(}
+
+Tasks are a mechanism that OpenMP uses behind the scenes:
+if you specify something as being a task, OpenMP will create
+a `block of work': a~section of code plus the data environment
+in which it occurred. This block is set aside for execution at some later point.
+Thus, task-based code usually looks something like this:
+\begin{lstlisting}
+#pragma omp parallel
+{
+  // generate a bunch of tasks
+# pragma omp taskwait
+  // the result from the tasks is now available  
+}
+\end{lstlisting}
+For instance, a parallel loop was always implicitly translated to something like:
+\begin{multicols}{2}
+Sequential loop:
+\begin{lstlisting}
+for (int i=0; i<N; i++)
+  f(i);
+\end{lstlisting}
+\columnbreak
+Parallel loop:
+\begin{lstlisting}
+for (int ib=0; ib<nblocks; ib++) {
+  int first=... last=... ;
+# pragma omp task
+  for (int i=first; i<last; i++)
+    f(i)
+}
+#pragma omp taskwait
+// the results from the loop are available
+\end{lstlisting}
+\end{multicols}
+
+If we stick with this example of implementing a parallel loop
+through tasks, the next question is: precisely who generates the tasks?
+The following code has a serious problem:
+\begin{lstlisting}
+// WRONG. DO NOT WRITE THIS
+#pragma omp parallel
+for (int ib=0; ib<nblocks; ib++) {
+  int first=... last=... ;
+# pragma omp task
+  for (int i=first; i<last; i++)
+    f(i)
+}
+\end{lstlisting}
+because the parallel region creates a team, and each thread in the team
+executes the task-generating code.
+Instead, we use the following idiom:
+\begin{lstlisting}
+#pragma omp parallel
+#pragma omp single
+for (int ib=0; ib<nblocks; ib++) {
+  // setup stuff
+# pragma omp task
+  // task stuff
+}
+\end{lstlisting}
+\begin{enumerate}
+\item A parallel region creates a team of threads;
+\item a single thread then creates the tasks, adding them to a queue
+  that belongs to the team,
+\item and all the threads in that team (possibly including the one
+  that generated the tasks) 
+\end{enumerate}
+
+Btw, the actual task queue is not visible to the programmer.
+Another aspect that is out of the programmer's control is
+the exact timing of the execution of the task:
+this is up to a \indextermbus{task}{scheduler},
+which operates invisible to the programmer.
+
+The task mechanism allows you to do things that are hard or impossible
+with the loop and section constructs. For instance, a \indexterm{while
+  loop} traversing a \indexterm{linked list} can be implemented with tasks:
+\begin{quotation}
+  \begin{tabular}{ll}
+    \toprule
+    Code&Execution\\
+    \midrule
+    \n{p = head_of_list();}& one thread traverses the list\\
+    \n{while (!end_of_list(p)) \{}\\
+    \n{#pragma omp task}& a task is created,\\
+    \n{\ process( p );}& one for each element\\
+    \n{\ p = next_element(p);}& the generating thread goes on without waiting\\
+    \n{\}}&the tasks are executed while \\
+          &more are being generated.\\
+    \bottomrule
+  \end{tabular}
+\end{quotation}
+
+Another concept that was hard to parallelize earlier is the `while
+loop'. This does not fit the requirement for OpenMP parallel loops
+that the loop bound needs to be known before the loop executes.
+
+\begin{exercise}
+  \label{ex:taskfactor}
+  Use tasks to find the smallest factor of a large
+  number (using $2999\cdot 3001$ as test case): generate a task for each
+  trial factor. Start with this code:
+\begin{lstlisting}
+  int factor=0;
+#pragma omp parallel
+#pragma omp single
+  for (int f=2; f<4000; f++) {
+    { // see if `f' is a factor
+      if (N%f==0) { // found factor!
+        factor = f;
+      }
+    }
+    if (factor>0)
+      break;
+  }
+  if (factor>0)
+    printf("Found a factor: %d\n",factor);
+\end{lstlisting}
+  \begin{itemize}
+  \item Turn the factor finding block into a task.
+  \item Run your program a number of times:
+\begin{verbatim}
+for i in `seq 1 1000` ; do ./taskfactor ; done | grep -v 2999
+\end{verbatim}
+    Does it find the wrong factor? Why? Try to fix this.
+\item Once a factor has been found, you should stop generating
+    tasks.
+    Let tasks that should not have been generated, meaning that they
+    test a candidate larger than the factor found, print out a message.
+  \end{itemize}
+\end{exercise}
+
+
+\Level 0 {Task data}
+\index{OpenMP!tasks!data|(}
+
+Treatment of data in a task is somewhat subtle. The basic problem is
+that a task gets created at one time, and executed at some later time.
+Thus,
+if shared data is accessed, does the task see the value at creation
+time or at execution time? In fact, both possibilities make sense
+depending on the application, so we need to discuss the rules when
+which possibility applies.
+
+The first rule is that shared data is shared in the task, but private
+data becomes \indexclause{firstprivate}. To see the distinction, consider two
+code fragments.
+
+\begin{multicols}{2}
+\begin{lstlisting}
+int count = 100;
+#pragma omp parallel
+#pragma omp single
+{
+  while (count>0) {
+#   pragma omp task
+    {
+      int countcopy = count;
+      if (count==50) {
+        sleep(1);
+        printf("%d,%d\n",
+            count,countcopy);
+      } // end if
+    }   // end task
+    count--;
+  }     // end while
+}       // end single
+\end{lstlisting}
+
+\columnbreak
+
+\begin{lstlisting}
+#pragma omp parallel
+#pragma omp single
+{
+  int count = 100;
+  while (count>0) {
+#   pragma omp task
+    {
+      int countcopy = count;
+      if (count==50) {
+        sleep(1);
+        printf("%d,%d\n",
+            count,countcopy);
+      } // end if
+    }   // end task
+    count--;
+  }     // end while
+}       // end single
+\end{lstlisting}
+
+\end{multicols}
+
+In the first example,
+the variable \n{count} is declared outside the
+parallel region and is therefore shared. When the print statement is
+executed, all tasks will have been generated, and so \n{count} will be
+zero. Thus, the output will likely be \n{0,50}.
+
+In the second example,
+the \n{count} variable is private to the thread creating the tasks,
+and so it will be \indexpragma{firstprivate} in the task, preserving the value
+that was current when the task was created.
+
+\index{OpenMP!tasks!data|)}
+
+\Level 0 {Task synchronization}
+\index{OpenMP!tasks!synchronization|(}
+
+Even though the above segment looks like a linear set of statements,
+it is impossible to say when
+the code after the \indexpragma{task} directive will be executed.
+This means that the following code is incorrect:
+\begin{lstlisting}
+  x = f();
+#pragma omp task
+  { y = g(x); }
+  z = h(y);  
+\end{lstlisting}
+Explanation: when the statement computing \n{z} is executed, the task
+computing~\n{y} has only been scheduled;
+it has not necessarily been executed yet.
+
+In order to have a guarantee that a task is finished,
+you need the \indexpragma{taskwait} directive.
+The following creates two tasks, which can be executed
+in parallel, and then waits for the results:
+\begin{quotation}
+  \begin{tabular}{ll}
+    \toprule
+    Code&Execution\\
+    \midrule
+    \n{\ x = f();}& the variable \n{x} gets a value\\
+    \n{#pragma omp task}&\multirow{4}{*}{two tasks are created with the current value of \texttt{x}}\\
+    \n{\ \{ y1 = g1(x); \}}&\\
+    \n{#pragma omp task}&\\
+    \n{\ \{ y2 = g2(x); \}}&\\
+    \n{#pragma omp taskwait}& the thread waits until the tasks are finished\\
+    \n{\ z = h(y1)+h(y2);}& the variable \n{z} is computed using the task results\\
+    \bottomrule
+  \end{tabular}
+\end{quotation}
+
+The \indexpragma{task} pragma is followed by a structured block.
+Each time the structured block is encountered, a new task is generated.
+On the other hand \indexpragma{taskwait} is a standalone directive; 
+the code that follows is just code, it is not a structured block belonging
+to the directive.
+
+Another aspect of the distinction between generating tasks and executing them:
+usually the tasks are generated by one thread, but executed by many threads.
+Thus, the typical idiom is:
+\begin{lstlisting}
+#pragma omp parallel
+#pragma omp single
+{
+  // code that generates tasks
+}  
+\end{lstlisting}
+
+This makes it possible to execute loops in parallel
+that do not have the right kind of iteration structure
+for a \n{omp parallel for}. As an example, you
+could traverse and process a linked list:
+\begin{lstlisting}
+#pragma omp parallel
+#pragma omp single
+{
+  while (!tail(p)) {
+    p = p->next();
+#pragma omp task
+    process(p)
+  }
+#pragma omp taskwait
+}
+\end{lstlisting}
+One task traverses the linked list creating an independent
+task for each element in the list. These tasks are then
+executed in parallel; their assignment to threads
+is done by the task scheduler.
+
+You can indicate task dependencies in several ways:
+\begin{enumerate}
+\item Using the `task wait' directive you can explicitly indicate
+  the \emph{join}\index{fork/join model} of the
+  \emph{forked} tasks. The instruction after the wait directive
+  will therefore be dependent on the spawned tasks.
+\item The \indexpragma{taskgroup} directive, followed
+  by a structured block, ensures completion of all tasks
+  created in the block, even if recursively created.
+\item Each OpenMP task can have a \indexclause{depend}
+  clause, indicating what \indexterm{data dependency} of the task;
+  section~\ref{sec:omp-task-depend}.
+  By indicating what data is produced or absorbed by the tasks,
+  the scheduler can construct the dependency graph for you.
+\end{enumerate}
+
+Another mechanism for dealing with tasks is the
+\indexpragma{taskgroup}: a task group is a code block that can
+contain \indexpragma{task} directives; all these tasks need to be
+finished before any statement after the block is executed.
+
+A task group is somewhat similar to having a \indexpragma{taskwait}
+directive after the block. The big difference is that that
+\indexpragma{taskwait} directive does not wait for tasks that are recursively
+generated, while a \indexpragma{taskgroup} does.
+
+\index{OpenMP!tasks!synchronization|)}
+
+\Level 0 {Task dependencies}
+\label{sec:omp-task-depend}
+\index{OpenMP!tasks!dependencies|(}
+
+It is possible to put a partial ordering on
+tasks through use of the \indexclause{depend} clause. For example, in
+\begin{lstlisting}
+#pragma omp task
+  x = f()
+#pragma omp task
+  y = g(x)
+\end{lstlisting}
+it is conceivable that the second task is executed before the first,
+possibly leading to an incorrect result. This is remedied by specifying:
+\begin{lstlisting}
+#pragma omp task depend(out:x)
+  x = f()
+#pragma omp task depend(in:x)
+  y = g(x)
+\end{lstlisting}
+
+\begin{itemize}
+\item
+  These dependencies only hold between sibling tasks.
+\item The depdending data items of the various tasks
+  are either identical or disjoint.
+  In particular, dependencies on different sections of an array
+  are not allowed, though a compiler may not always catch this.
+\end{itemize}
+
+\begin{exercise}
+Consider the following code:
+\begin{lstlisting}
+for i in [1:N]:
+    x[0,i] = some_function_of(i)
+    x[i,0] = some_function_of(i)
+
+for i in [1:N]:
+    for j in [1:N]:
+        x[i,j] = x[i-1,j]+x[i,j-1]
+\end{lstlisting}
+\begin{itemize}
+\item Observe that the second loop nest is not amenable to OpenMP loop
+  parallelism.
+\item Can you think of a way to realize the computation with OpenMP
+  loop parallelism? Hint: you need to rewrite the code so that the
+  same operations are done in a different order.
+\item Use tasks with dependencies to make this code parallel without
+  any rewriting: the only change is to add OpenMP directives.
+\end{itemize}
+\end{exercise}
+
+Tasks dependencies are used to indicated how two uses of one data item
+relate to each other. Since either use can be a read or a write,
+there are four types of dependencies.
+
+\begin{description}
+\item[RaW (Read after Write)] The second task reads an item that the
+  first task writes. The second task has to be executed after the
+  first:
+\begin{lstlisting}
+... omp task depend(OUT:x)
+  foo(x)
+... omp task depend( IN:x)
+  foo(x)
+\end{lstlisting}
+\item[WaR (Write after Read)] The first task reads and item, and the
+  second task overwrites it. The second task has to be executed second
+  to prevent overwriting the initial value:
+\begin{lstlisting}
+... omp task depend( IN:x)
+  foo(x)
+... omp task depend(OUT:x)
+  foo(x)
+\end{lstlisting}
+\item[WaW (Write after Write)] Both tasks set the same variable. Since
+  the variable can be used by an intermediate task, the two writes
+  have to be executed in this order.
+\begin{lstlisting}
+... omp task depend(OUT:x)
+  foo(x)
+... omp task depend(OUT:x)
+  foo(x)
+\end{lstlisting}
+\item[RaR (Read after Read)] Both tasks read a variable. Since neither
+  tasks has an `out' declaration, they can run in either order.
+\begin{lstlisting}
+... omp task depend(IN:x)
+  foo(x)
+... omp task depend(IN:x)
+  foo(x)
+\end{lstlisting}
+\end{description}
+\index{OpenMP!tasks!dependencies|)}
+
+\Level 0 {Task reduction}
+
+The \indexclause{reduction} only pertains to ordinary parallel loops,
+not to \indexpragma{taskgroup} loops of tasks.
+To do a reduction over computations in tasks you need the
+\indexclausedef{task_reduction} clause
+(a~\ompstandard{5.0} feature):
+\begin{lstlisting}
+#pragma omp taskgroup task_reduction(+:sum)
+\end{lstlisting}
+The task group can contain both task that contribute to the reduction,
+and ones that don't. The former type needs a clause \indexclausedef{in_reduction}:
+\begin{lstlisting}
+#pragma omp task in_reduction(+:sum)
+\end{lstlisting}
+
+As an example, here the sum $\sum_{i=1}^{100} i$ is computed with tasks:
+%
+\cverbatimsnippet{omptaskreduct}
+
+\Level 0 {More}
+
+\Level 1 {Scheduling points}
+
+Normally, a task stays tied to the thread that first executes it.
+However, at a \indextermbus{task}{scheduling point} the thread may
+switch to the execution of another task created by the same team.
+\begin{itemize}
+\item There is a scheduling point after explicit task creation. This
+  means that, in the above examples, the thread creating the tasks can
+  also participate in executing them.
+\item There is a scheduling point at \indexpragma{taskwait} and \indexpragma{taskyield}.
+\end{itemize}
+
+On the other hand a task created with them \indexclause{untied} clause
+on the task pragma is never tied to one thread. This means that after
+suspension at a scheduling point any thread can resume execution of
+the task.
+If you do this, beware
+that the value of a thread-id does not stay fixed. Also locks become a problem.
+
+Example: if a thread is waiting for a lock, with a scheduling point it
+can suspend the task and work on another task.
+\begin{lstlisting}
+while (!omp_test_lock(lock))
+#pragma omp taskyield
+  ;
+\end{lstlisting}
+
+\Level 1 {Hints for performance improvement}
+\label{sec:omp-task-hint}
+
+If a task involves only a small amount of work,
+the scheduling overhead may negate any performance gain.
+There are two ways of executing the task code directly:
+\begin{itemize}
+\item The \indexompshow{if} clause will only create a task
+  if the test is true:
+\begin{lstlisting}
+#pragma omp task if (n>100)
+  f(n)
+\end{lstlisting}
+\item The \indexompshow{if} clause may still lead to recursively
+  generated tasks. On the other hand, \indexompshow{final}
+  will execute the code, and will also skip any recursively created tasks:
+\begin{lstlisting}
+#pragma omp task final(level<3)
+\end{lstlisting}
+\end{itemize}
+
+If you want to indicate that certain tasks are more important
+than others, use the \indexompshow{priority} clause:
+\begin{lstlisting}
+#pragma omp task priority(5)
+\end{lstlisting}
+where the priority is any non-negative scalar
+less than \indexompdef{OMP_MAX_TASK_PRIORITY}.
+
+\Level 1 {Task cancelling}
+
+It is possible (in \ompstandard{4.0}) to cancel
+tasks. This is useful when tasks are used to perform a search: the
+task that finds the result first can cancel any outstanding search
+tasks.
+See section~\ref{sec:omp-cancel} for details.
+
+\begin{exercise}
+  Modify the prime finding example to use \indexompshow{cancel}.
+\end{exercise}
+
+\Level 0 {Examples}
+
+\Level 1 {Fibonacci}
+
+As an example of the use of tasks, consider computing an array of Fibonacci values:
+%
+\cverbatimsnippet[examples/omp/c/taskgroup0.c]{fiboarray}
+%
+If you simply turn each calculation into a task, results will be
+unpredictable (confirm this!) since tasks can be executed in any sequence.
+To solve this, we put dependencies on the tasks:
+%
+\cverbatimsnippet[examples/omp/c/taskgroup2.c]{fibotaskdepend}
+
+\Level 1 {Binomial coefficients}
+
+\begin{exercise}
+  An array of binomial coefficients can be computed as follows:
+  %
+  \cverbatimsnippet[code/omp/c/binomial1.c]{binomialarray}
+  %
+  Putting a single task group around the double loop, and use
+  \indexclause{depend} clauses to make the execution satisfy the proper dependencies.
+\end{exercise}
+
+\index{OpenMP!tasks|)}

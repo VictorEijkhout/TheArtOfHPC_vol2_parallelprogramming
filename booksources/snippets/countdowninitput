@@ -1,0 +1,7 @@
+// countdownop.c
+MPI_Win_fence(0,the_window);
+if (procno==counter_process)
+  MPI_Put(&counter_init,1,MPI_INT,
+          counter_process,0,1,MPI_INT,
+          the_window);
+MPI_Win_fence(0,the_window);

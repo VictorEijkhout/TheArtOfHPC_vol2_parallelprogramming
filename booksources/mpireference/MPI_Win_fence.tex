@@ -1,0 +1,16 @@
+Semantics:
+MPI_WIN_FENCE(assert, win)
+IN assert: program assertion (integer)
+IN win: window object (handle)
+
+C:
+int MPI_Win_fence(int assert, MPI_Win win)
+
+F:
+MPI_Win_fence(assert, win, ierror)
+INTEGER, INTENT(IN) :: assert
+TYPE(MPI_Win), INTENT(IN) :: win
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+
+Python:
+win.Fence(self, int assertion=0)

@@ -1,0 +1,439 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% mpi-proc.tex : about point-to-point communication
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+In this course we have up to now only considered the \ac{SPMD} model
+of running MPI programs.  In some rare cases you may want to run in an
+\ac{MPMD} mode, rather than \ac{SPMD}. This can be achieved either on
+the \ac{OS} level, using options of the \indextermtt{mpiexec} mechanism,
+or you can use MPI's built-in process management. Read on if you're
+interested in the latter.
+
+\Level 0 {Process spawning}
+\label{sec:mpi-dynamic}
+
+The first version of MPI did not contain any process management
+routines, even though the earlier \indexterm{PVM} project did have
+that functionality. Process management was later added with \mpistandard{2}.
+
+Unlike what you might think, newly added processes do not become part
+of \indexmpishow{MPI_COMM_WORLD}; rather, they get their own communicator, and an
+\indextermsubh{inter}{communicator} (section~\ref{sec:mpi-intercomm})
+is established between this new group
+and the existing one. The first routine is
+\indexmpiref{MPI_Comm_spawn}, which tries to fire up multiple copies
+of a single named executable.
+Errors in starting up these codes are returned in an array of integers, or
+if you're feeling sure of yourself, specify \indexmpidef{MPI_ERRCODES_IGNORE}.
+
+It is not immediately clear whether there is opportunity for spawning
+new executables; after all, \indexmpishow{MPI_COMM_WORLD} contains all
+your available processors. You can probably tell your job starter to
+reserve space for a few extra processes, but that is
+installation-dependent (see below). However, there is a standard
+mechanism for querying whether such space has been reserved.  The
+attribute \indexmpidef{MPI_UNIVERSE_SIZE}, retrieved with
+\indexmpishow{MPI_Comm_get_attr} (section~\ref{sec:mpi_attr}), will tell
+you to the total number of hosts available.
+
+If this option is not supported, you can determine yourself how many
+processes you want to spawn. If you exceed the hardware resources,
+your multi-tasking operating system (which is some variant of Unix for
+almost everyone) will use \indexterm{time-slicing} to start the
+spawned processes, but you will not gain any performance.
+
+Here is an example of a work manager.
+%
+First we query how much space we have for new processes:
+%
+\cverbatimsnippet[examples/mpi/c/spawnmanager.c]{spawnmanagerq}
+
+(See section~\ref{sec:mpi_attr} for that dereference behavior.)
+
+Use the flag to see if this option is supported:
+\cverbatimsnippet[examples/mpi/c/spawnmanager.c]{uverse}
+
+Then we actually spawn the processes:
+%
+\cverbatimsnippet[examples/mpi/c/spawnmanager.c]{spawnmanager}
+%
+\pverbatimsnippet[examples/mpi/p/spawnmanager.py]{spawnmanagerp}
+%
+A process can detect whether it was a spawning or a spawned process
+by using \indexmpishow{MPI_Comm_get_parent}:
+the resulting intercommunicator is \indexmpishow{MPI_COMM_NULL}
+on the parent processes.
+\cverbatimsnippet[examples/mpi/c/spawnapp.c]{commparentdetect}
+
+The spawned program looks very much like a regular MPI program, with
+its own initialization and finalize calls.
+
+\cverbatimsnippet[examples/mpi/c/spawnworker.c]{spawnworker}
+%
+\pverbatimsnippet[examples/mpi/p/spawnworker.py]{spawnworkerp}
+
+Spawned processes wind up with a value of \indexmpishow{MPI_COMM_WORLD} of their
+own, but managers and workers can find each other regardless.
+The spawn routine returns the intercommunicator to the parent; the children
+can find it through \indexmpishow{MPI_Comm_get_parent} (section~\ref{sec:mpi-inter-query}).
+The number of spawning processes can be found through
+\indexmpishow{MPI_Comm_remote_size} on the parent communicator.
+
+\begin{verbatim}
+Running spawnapp with usize=12, wsize=4
+%%
+%% manager output
+%%
+A universe of size 12 leaves room for 8 workers
+.. spawning from c209-026.frontera.tacc.utexas.edu
+%%
+%% worker output
+%%
+Worker deduces 8 workers and 4 parents
+I detect I am worker 0/8 running on c209-027.frontera.tacc.utexas.edu
+I detect I am worker 1/8 running on c209-027.frontera.tacc.utexas.edu
+I detect I am worker 2/8 running on c209-027.frontera.tacc.utexas.edu
+I detect I am worker 3/8 running on c209-027.frontera.tacc.utexas.edu
+I detect I am worker 4/8 running on c209-028.frontera.tacc.utexas.edu
+I detect I am worker 5/8 running on c209-028.frontera.tacc.utexas.edu
+I detect I am worker 6/8 running on c209-028.frontera.tacc.utexas.edu
+I detect I am worker 7/8 running on c209-028.frontera.tacc.utexas.edu
+\end{verbatim}
+
+\Level 1 {MPI startup with universe}
+
+You could start up a single copy of this program with 
+\begin{verbatim}
+mpiexec -n 1 spawnmanager
+\end{verbatim}
+but with a hostfile that has more than one host.
+
+\begin{taccnote}
+\indextermbus{Intel}{MPI} requires you to pass an option \n{-usize} to
+\indextermtt{mpiexec} indicating the size of the comm universe. With the TACC
+jobs starter \indextermtt{ibrun} do the following:
+\begin{verbatim}
+export FI_MLX_ENABLE_SPAWN=yes
+# specific
+MY_MPIRUN_OPTIONS="-usize 8" ibrun -np 4 spawnmanager
+# more generic
+MY_MPIRUN_OPTIONS="-usize ${SLURM_NPROCS}" ibrun -np 4 spawnmanager
+# using mpiexec:
+mpiexec -np 2 -usize ${SLURM_NPROCS} spawnmanager
+\end{verbatim}
+\end{taccnote}
+
+\Level 1 {MPMD}
+
+Instead of spawning a single executable, you can spawn multiple with
+\indexmpidef{MPI_Comm_spawn_multiple}.
+In that case a process can retrieve with
+the attribute
+\indexmpidef{MPI_APPNUM}
+which of the executables it is;
+section~\ref{sec:mpi_attr}.
+
+\Level 0 {Socket-style communications}
+
+It is possible to establish connections with running MPI programs that
+have their own world communicator.
+\begin{itemize}
+\item The \indexterm{server} process establishes a port with 
+  \indexmpishow{MPI_Open_port}, and calls \indexmpishow{MPI_Comm_accept} to accept
+  connections to its port.
+\item The \indexterm{client} process specifies that port 
+  in an \indexmpishow{MPI_Comm_connect} call. This establishes the connection.
+\end{itemize}
+
+\Level 1 {Server calls}
+
+The server calls \indexmpiref{MPI_Open_port}, yielding a port name.
+Port names are generated by the system and copied into a character
+buffer of length at most \indexmpidef{MPI_MAX_PORT_NAME}.
+
+The server then needs to call 
+\indexmpiref{MPI_Comm_accept} prior to the client doing a connect call.
+This is collective over the calling communicator.
+It returns an intercommunicator (section~\ref{sec:mpi-intercomm})
+that allows communication with the client.
+
+\cxxverbatimsnippet[examples/mpi/c/portapp.c]{mpiportmanage}
+
+The port can be closed with 
+\indexmpidef{MPI_Close_port}.
+
+\Level 1 {Client calls}
+
+After the server has generated a port name, the client 
+needs to connect to it with
+\indexmpiref{MPI_Comm_connect}, again specifying the port through a character buffer.
+The connect call is collective over its communicator.
+
+\cxxverbatimsnippet[examples/mpi/c/portapp.c]{mpiportwork}
+
+If the named port does not exist (or has been closed),
+\indexmpishow{MPI_Comm_connect} raises an error of class \indexmpishow{MPI_ERR_PORT}.
+
+The client can sever the connection with
+\indexmpishow{MPI_Comm_disconnect}.
+
+Running the above code on 5 processes gives:
+\begin{small}
+\begin{verbatim}
+# exchange port name:
+Host sent port <<tag#0$OFA#000010e1:0001cde9:0001cdee$rdma_port#1024$rdma_host#10:16:225:0:1:205:199:254:128:0:0:0:0:0:0$>>
+Worker received port <<tag#0$OFA#000010e1:0001cde9:0001cdee$rdma_port#1024$rdma_host#10:16:225:0:1:205:199:254:128:0:0:0:0:0:0$>>
+
+# Comm accept/connect
+host accepted connection
+4 workers connected to 1 managers
+
+# Send/recv over the intercommunicator
+Manager sent 4 items over intercomm
+Worker zero received data  
+\end{verbatim}
+\end{small}
+
+\Level 1 {Published service names}
+\label{sec:mpi-publish}
+
+More elegantly than the port mechanism above,
+it is possible to publish a named service, 
+with \indexmpiref{MPI_Publish_name},
+which can then be discovered by other processes.
+
+\cverbatimsnippet[examples/mpi/c/publishapp.c]{publishmanager}
+
+Worker processes connect to the intercommunicator by
+
+\cverbatimsnippet[examples/mpi/c/publishapp.c]{publishworker}
+
+For this it is necessary to have a \indexterm{name server} running.
+
+\begin{intelnote}
+Start the \indexterm{hydra} name server and use the corresponding mpi starter:
+\begin{verbatim}
+hydra_nameserver &
+MPIEXEC=mpiexec.hydra
+\end{verbatim}
+There is an environment variable, but that doesn't seem to be needed.
+\begin{verbatim}
+export I_MPI_HYDRA_NAMESERVER=`hostname`:8008
+\end{verbatim}
+It is also possible to specify the name server as an argument to the job starter.
+\end{intelnote}
+
+At the end of a run, the service should be unpublished with
+\indexmpiref{MPI_Unpublish_name}.
+Unpublishing a nonexisting or already unpublished service gives an
+error code of \indexmpidef{MPI_ERR_SERVICE}.
+
+MPI provides no guarantee of fairness in servicing connection
+attempts. That is, connection attempts are not necessarily satisfied
+in the order in which they were initiated, and competition from other
+connection attempts may prevent a particular connection attempt from
+being satisfied.
+
+\Level 1 {Unix sockets}
+
+It is also possible to create an
+\emph{intercommunicator} from a Unix
+\indexterm{socket}\index{communicator!inter!from socket}
+with
+\indexmpiref{MPI_Comm_join}.
+
+\Level 0 {Sessions}
+\label{sec:session}
+
+The most common way of initializing MPI,
+with \indexmpishow{MPI_Init} (or \indexmpishow{MPI_Init_thread}) and \indexmpishow{MPI_Finalize},
+is known as the \indexterm{world model}.
+This model suffers from some disadvantages:
+\begin{enumerate}
+\item There is no error handling during \indexmpishow{MPI_Init}.
+\item If multiple libraries are active, they can not initialize
+  or finalize MPI, but have to base themselves on subcommunicators;
+  section~\ref{sec:mpi-comm-dup-lib}.
+\item A library can't even 
+\begin{lstlisting}
+MPI_Initialized(&flag);
+if (!flag) MPI_Init(0,0);
+\end{lstlisting}
+if it is running in a multi-threaded environment.
+\end{enumerate}
+
+\begin{mpifournote}{Session model}
+
+In addition to the world,
+where all MPI is bracketed by \indexmpishow{MPI_Init}
+(or \indexmpishow{MPI_Init_thread}) and \indexmpishow{MPI_Finalize},
+there is the \indexterm{session model},
+where entities such as libraries can start/end their MPI session
+independently.
+
+The two models can be used in the same program, but there are limitations
+on how they can mix.
+
+\Level 1 {World model versus sessions model}
+
+The \indextermdef{world model} of using MPI can be described as:
+\begin{enumerate}
+\item There is a single call to \indexmpishow{MPI_Init} or \indexmpishow{MPI_Init_thread};
+\item There is a single call to \indexmpishow{MPI_Finalize};
+\item With very few exceptions, all MPI calls appear in between the initialize and finalize calls.
+\end{enumerate}
+
+This has some problems:
+\begin{itemize}
+\item MPI can not be finalized and restarted;
+\item there is no threadsafe way of initializing MPI.
+\end{itemize}
+
+In the \indextermdef{session model},
+the world model has become a separate way of starting MPI.
+You can create a communicator using the world model
+in addition to starting multiple sessions,
+each on
+their own set of processes, possibly identical or overlapping.
+You can also create sessions without have an \indexmpishow{MPI_COMM_WORLD}
+created by the world model.
+
+You can not mix in a single call objects
+from different sessions,
+from a session and from the world model,
+or from a session and from \indexmpishow{MPI_Comm_get_parent}
+or \indexmpishow{MPI_Comm_join}.
+
+\Level 1 {Session creation}
+
+An MPI \indextermdef{session} is initialized and finalized
+with \indexmpidef{MPI_Session_init} and \indexmpidef{MPI_Session_finalize},
+somewhat similar to \indexmpishow{MPI_Init} and \indexmpishow{MPI_Finalize}.
+
+\cverbatimsnippet{sessioninit}
+
+This call is thread-safe, in view of the above reasoning.
+
+\Level 2 {Session info}
+
+The \indexmpishow{MPI_Info} object can be null, or
+it can be used to request a threading level:
+%
+\cverbatimsnippet{sessionreq}
+%
+Other info keys can be implementation-dependent,
+but the key \indexmpishow{thread_support} is pre-defined.
+
+Info keys can be retrieved again with \indexmpidef{MPI_Session_get_info}:
+%
+\cverbatimsnippet{sessioninfohave}
+
+\Level 2 {Session error handler}
+
+The error handler argument accepts a pre-defined error handler
+(section~\ref{sec:mpi-error})
+or one create by \indexmpidef{MPI_Session_create_errhandler}.
+
+\Level 1 {Process sets and communicators}
+
+A session has a number of \indextermbus{process}{set}s.
+Process sets are indicated with a \acf{URI},
+where the \acp{URI} \indexmpishow{mpi://WORLD} and \indexmpishow{mpi://SELF}
+are always defined.
+
+You query the `psets' with \indexmpidef{MPI_Session_get_num_psets}
+and \indexmpidef{MPI_Session_get_nth_pset}:
+%
+\cverbatimsnippet{sessionpsetq}
+
+The following partial code creates a communicator equivalent to \indexmpishow{MPI_COMM_WORLD}
+in the session model:
+%
+\cverbatimsnippet{sessioncommworld}
+
+However, comparing communicators (with \indexmpishow{MPI_Comm_compare})
+from the session and world model,
+or from different sessions,
+is undefined behavior.
+
+\begin{comment}
+  The resulting communicator compares as \indexmpishow{MPI_CONGRUENT}
+  under \indexmpishow{MPI_Comm_compare}:
+  %
+  \csnippetwithoutput{sessionmix}{examples/mpi/c}{sessionmix}
+\end{comment}
+
+Get the info object (section~\ref{sec:mpi-info}) from a process set:
+\indexmpishow{MPI_Session_get_pset_info}.
+This info object always has the key \indexmpishow{mpi_size}.
+
+\Level 1 {Example}
+
+As an example of the use of sessions, we declare a library class,
+where each library object starts and ends its own session:
+%
+\cverbatimsnippet{sessionlibdef}
+
+Now we create a main program, using the world model,
+which activates two libraries,
+passing data to them by parameter:
+%
+\cverbatimsnippet{sessionlibuse}
+%
+Note that no mpi calls will go between main program and either
+of the libraries,
+or between the two libraries,
+but this seems to make sense in this scenario.
+
+\begin{comment}
+7.2.4 When using the Sessions Model (Section 11.3) for initialization of MPI
+re- sources, MPI_COMM_WORLD and MPI_COMM_SELF are not valid for use as
+a communica- tor.
+
+11.3 MPI objects derived from the Sessions Model shall not be
+intermixed in a single MPI procedure call with MPI objects derived
+from the World Model.
+
+Are those two at odds? The first one seems to imply that in the second
+statement objects from the world model can't even exist.
+\end{comment}
+
+\end{mpifournote}
+
+\Level 0 {Functionality available outside init/finalize}
+
+\begin{raggedlist}
+\indexmpishow{MPI_Initialized}
+\indexmpishow{MPI_Finalized}
+\indexmpishow{MPI_Get_version}
+\indexmpishow{MPI_Get_library_version}
+\indexmpishow{MPI_Info_create}
+\indexmpishow{MPI_Info_create_env}
+\indexmpishow{MPI_Info_set}
+\indexmpishow{MPI_Info_delete}
+\indexmpishow{MPI_Info_get}
+\indexmpishow{MPI_Info_get_valuelen}
+\indexmpishow{MPI_Info_get_nkeys}
+\indexmpishow{MPI_Info_get_nthkey}
+\indexmpishow{MPI_Info_dup}
+\indexmpishow{MPI_Info_free}
+\indexmpishow{MPI_Info_f2c}
+\indexmpishow{MPI_Info_c2f}
+\indexmpishow{MPI_Session_create_errhandler}
+\indexmpishow{MPI_Session_call_errhandler}
+\indexmpishow{MPI_Errhandler_free}
+\indexmpishow{MPI_Errhandler_f2c}
+\indexmpishow{MPI_Errhandler_c2f}
+\indexmpishow{MPI_Error_string}
+\indexmpishow{MPI_Error_class}
+\end{raggedlist}
+Also all routines starting with \indexmpishow{MPI_Txxx}.

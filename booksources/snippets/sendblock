@@ -1,0 +1,19 @@
+// sendblock.c
+other = 1-procno;
+/* loop over increasingly large messages */
+for (int size=1; size<2000000000; size*=10) {
+  sendbuf = (int*) malloc(size*sizeof(int));
+  recvbuf = (int*) malloc(size*sizeof(int));
+  if (!sendbuf || !recvbuf) {
+    printf("Out of memory\n"); MPI_Abort(comm,1);
+  }
+  MPI_Send(sendbuf,size,MPI_INT,other,0,comm);
+  MPI_Recv(recvbuf,size,MPI_INT,other,0,comm,&status);
+  /* If control reaches this point, the send call
+     did not block. If the send call blocks,
+     we do not reach this point, and the program will hang.
+  */
+  if (procno==0)
+    printf("Send did not block for size %d\n",size);
+  free(sendbuf); free(recvbuf);
+}

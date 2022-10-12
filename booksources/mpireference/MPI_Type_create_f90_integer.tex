@@ -1,0 +1,12 @@
+C:
+int MPI_Type_create_f90_integer(int r, MPI_Datatype *newtype);
+
+Input Parameter
+r : Precision, in decimal digits (integer).
+
+Output Parameters
+newtype : New data type (handle).
+IERROR : Fortran only: Error status (integer).
+Fortran:
+MPI_TYPE_CREATE_F90_INTEGER( R, NEWTYPE, IERROR)
+Integer :: R,Newtype,ierror

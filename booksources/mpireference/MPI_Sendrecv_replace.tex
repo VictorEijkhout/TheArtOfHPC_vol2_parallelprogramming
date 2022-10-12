@@ -1,0 +1,32 @@
+C:
+int MPI_Sendrecv_replace(
+    void *buf, int count, MPI_Datatype datatype,
+    int dest, int sendtag, int source, int recvtag, 
+    MPI_Comm comm, MPI_Status *status)
+
+Fortran:
+MPI_SENDRECV_REPLACE(
+    BUF, COUNT, DATATYPE,
+    DEST, SENDTAG, SOURCE,RECVTAG,
+    COMM, STATUS, IERROR)
+<type>    BUF(*)
+INTEGER :: COUNT, DATATYPE, DEST, SENDTAG
+INTEGER :: SOURCE, RECVTAG, COMM
+INTEGER    STATUS(MPI_STATUS_SIZE), IERROR
+
+Input/output parameter:
+buf : Initial address of send and receive buffer (choice).
+
+Input parameters:
+count : Number of elements in send and receive buffer (integer).
+datatype : Type of elements to send and receive (handle).
+dest : Rank of destination (integer).
+sendtag : Send message tag (integer).
+source : Rank of source (integer).
+recvtag : Receive message tag (integer).
+comm : Communicator (handle).
+
+Output parameters:
+
+status : Status object (status).
+IERROR : Fortran only: Error status (integer).

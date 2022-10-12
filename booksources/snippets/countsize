@@ -1,0 +1,2 @@
+// reducecount.c
+printf("MPI_count: %ld, size_t: %ld\n",sizeof(MPI_Count),sizeof(size_t));

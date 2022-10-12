@@ -1,0 +1,18 @@
+Synopsis:
+
+#include "petscmat.h"
+PetscErrorCode MatGetRow
+   (Mat mat,PetscInt row,
+    PetscInt *ncols,const PetscInt *cols[],const PetscScalar *vals[])
+PetscErrorCode MatRestoreRow
+   (Mat mat,PetscInt row,
+    PetscInt *ncols,const PetscInt *cols[],const PetscScalar *vals[])
+
+Input Parameters:
+mat - the matrix
+row - the row to get
+
+Output Parameters
+ncols - if not NULL, the number of nonzeros in the row
+cols - if not NULL, the column numbers
+vals - if not NULL, the values

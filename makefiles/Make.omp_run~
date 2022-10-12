@@ -1,0 +1,24 @@
+.PHONY: omp_scaling
+omp_scaling :
+	@if [ ! -z ${NP} ] ; then \
+	        export np=${NP} \
+	    ; elif [ ! -z ${SLURM_NPROCS} ] ; then \
+	        export np=${SLURM_NPROCS} \
+	    ; else \
+	        echo "Specify number of processors with NP=..." \
+	         && export np=1 \
+	    ; fi \
+	 && if [ -z "${PROGRAM}" ] ; then \
+	        echo "Set PROGRAM variable" && exit 1 \
+	    ; fi \
+	 && if [ ! -z "${NDIV}" ] ; then \
+	        ndiv=${NDIV} \
+	    ; else \
+	        ndiv=3 \
+	    ; fi \
+	 && div=`seq 1 $$ndiv` \
+	 && frac=`for d in $$div ; do echo "$$(( $$d * $$np / $$ndiv ))" ; done` \
+	 && for t in 1 $$frac ; do \
+	        OMP_NUM_THREADS=$$t ./${PROGRAM} \
+	    ; done
+

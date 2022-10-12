@@ -1,0 +1,17 @@
+!! putfence.F90
+  integer :: the_window,window_elt_size
+  integer(kind=MPI_ADDRESS_KIND) :: window_size,target_displacement
+  call MPI_Sizeof(window_data,window_elt_size,err)
+  window_size = 2*window_elt_size
+  call MPI_Win_create(window_data,&
+       window_size,window_elt_size,          & ! window size, unit size
+       MPI_INFO_NULL,comm,the_window,err)
+  call MPI_Win_fence(0,the_window,err)
+  if (mytid.eq.0) then
+     call MPI_Put( my_number, 1,MPI_INTEGER, & ! data
+          other,target_displacement,         & ! location
+          1,MPI_INTEGER, &
+          the_window,err)
+ endif
+ call MPI_Win_fence(0,the_window,err)
+   call MPI_Win_free(the_window,err)

@@ -1,0 +1,15 @@
+C:
+PetscErrorCode KSPGetConvergedReason
+   (KSP ksp,KSPConvergedReason *reason)
+Not Collective
+
+Input Parameter
+ksp -the KSP context
+
+Output Parameter
+reason -negative value indicates diverged, positive value converged,
+see KSPConvergedReason 
+
+Python:
+r = KSP.getConvergedReason(self)
+where r in PETSc.KSP.ConvergedReason

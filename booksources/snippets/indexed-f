@@ -1,0 +1,18 @@
+!! indexed.F90
+  integer :: newvectortype;
+  ALLOCATE(indices(count))
+  ALLOCATE(blocklengths(count))
+  ALLOCATE(source(totalcount))
+  ALLOCATE(targt(count))
+  if (mytid==sender) then
+     call MPI_Type_indexed(count,blocklengths,indices,MPI_INT,&
+          newvectortype,err)
+     call MPI_Type_commit(newvectortype,err)
+     call MPI_Send(source,1,newvectortype,receiver,0,comm,err)
+     call MPI_Type_free(newvectortype,err)
+  else if (mytid==receiver) then
+    call MPI_Recv(targt,count,MPI_INT,sender,0,comm,&
+         recv_status,err)
+    call MPI_Get_count(recv_status,MPI_INT,recv_count,err)
+    !    ASSERT(recv_count==count);
+ end if

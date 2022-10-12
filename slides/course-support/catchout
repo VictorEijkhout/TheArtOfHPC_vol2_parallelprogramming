@@ -1,0 +1,38 @@
+#!/bin/bash
+
+################################################################
+####
+#### This script is part of `Parallel Programming in MPI and OpenMP'
+#### by Victor Eijkhout, copyright 2013-2020
+#### eijkhout@tacc.utexas.edu
+####
+#### catchout : auxiliary file for catching the output of one MPI rank
+####
+################################################################
+
+if [ $# -lt 1 ] ; then
+  echo "Usage: $0 [-p runner] program"
+  exit 1;
+fi
+
+VALGRIND=0
+PYTHON=0
+RUNNER=""
+
+if [ $1 == "-p" ] ; then
+    shift
+    PYTHON=1
+    RUNNER=$1
+    shift
+elif [ $1 == "-v" ] ; then
+    VALGRIND=1
+    shift
+fi
+if [ $# -lt 1 ] ; then
+  echo "Usage: $0 [-p runner] [ -v ] program"
+  exit 1;
+fi
+PROGRAM=$1
+PROGRAMROOT=${PROGRAM%%.py}
+
+$RUNNER ./${PROGRAM} > ${PROGRAMROOT}.out${PMI_RANK} 2>&1

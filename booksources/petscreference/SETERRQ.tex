@@ -1,0 +1,12 @@
+#include <petscsys.h>
+PetscErrorCode SETERRQ (MPI_Comm comm,PetscErrorCode ierr,char *message)
+PetscErrorCode SETERRQ1(MPI_Comm comm,PetscErrorCode ierr,char *formatmessage,arg1)
+PetscErrorCode SETERRQ2(MPI_Comm comm,PetscErrorCode ierr,char *formatmessage,arg1,arg2)
+PetscErrorCode SETERRQ3(MPI_Comm comm,PetscErrorCode ierr,char *formatmessage,arg1,arg2,arg3)
+
+Input Parameters:
+comm - A communicator, so that the error can be collective
+ierr - nonzero error code, see the list of standard error codes in include/petscerror.h
+message - error message in the printf format
+arg1,arg2,arg3 - argument (for example an integer, string or double)
+

@@ -1,0 +1,538 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% mpi-ptp.tex : about point-to-point communication
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% \Level 0 {Blocking point-to-point operations}
+\input chapters/mpi-blocksend
+
+%% \Level 0 {Nonblocking point-to-point operations}
+\input chapters/mpi-nonblock
+
+\Level 0 {More about point-to-point communication}
+
+\Level 1 {Message probing}
+\label{sec:mpi-probe}
+
+MPI receive calls specify a receive buffer, and its size has to be
+enough for any data sent. In case you really have no idea how much data
+is being sent, and you don't want to overallocate the receive buffer,
+you can use a `probe' call.
+
+The routines \indexmpiref{MPI_Probe} and \indexmpiref{MPI_Iprobe}
+(for which see also section~\ref{sec:progress})
+accept a message but do not copy the data.
+Instead, when probing tells you that there is a
+message, you can use \indexmpishow{MPI_Get_count}
+(section~\ref{sec:mpi-status-count})
+to determine its size,
+allocate a large enough receive buffer, and do a regular receive to
+have the data copied.
+
+\cverbatimsnippet[examples/mpi/c/probe.c]{probe}
+
+There is a problem with the \indexmpishow{MPI_Probe} call in a
+multithreaded environment: the following scenario can happen.
+\begin{enumerate}
+\item A thread determines by probing that a certain message has come
+  in.
+\item It issues a blocking receive call for that message\dots
+\item But in between the probe and the receive call another thread
+  has already received the message.
+\item \dots~Leaving the first thread in a blocked state with not
+  message to receive.
+\end{enumerate}
+This is solved by \indexmpiref{MPI_Mprobe}, which after a successful
+probe removes the message from the \indexterm{matching queue}: the
+list of messages that can be matched by a receive call. The thread
+that matched the probe now issues an \indexmpiref{MPI_Mrecv} call on
+that message through an object of type \indexmpidef{MPI_Message}.
+
+\Level 1 {The Status object and wildcards}
+\label{sec:mpi-wildcard}
+\label{sec:mpi-status}
+\index{message!status|(textbf}
+
+In section~\ref{sec:mpi-send-recv}
+you saw that \indexmpishow{MPI_Recv} has a `status' argument
+of type \indexmpishow{MPI_Status} that \indexmpishow{MPI_Send} lacks.
+(The various \indexmpishow{MPI_Wait...}  routines also have a status
+argument; see section~\ref{sec:nonblocking}.)
+Often you specify \indexmpishow{MPI_STATUS_IGNORE}
+for this argument: commonly you know
+what data is coming in and where it is coming from.
+
+However, in some circumstances the recipient may not know all details of a
+message when you make the receive call, so MPI has a way of querying
+the \emph{status}\index{status!of received message} of the message:
+\begin{itemize}
+\item If you are expecting multiple incoming messages, it may be most
+  efficient to deal with them in the order in which they arrive. So,
+  instead of waiting for specific message, you would specify
+  \indexmpishow{MPI_ANY_SOURCE} or \indexmpishow{MPI_ANY_TAG} in
+  the description of the receive message. 
+  Now you have to be able to ask `who did this message come from,
+  and what is in it'.
+\item Maybe you know the sender of a message, but the amount of data
+  is unknown. In that case you can overallocate your receive buffer,
+  and after the message is received ask how big it was, or you can
+  `probe' an incoming message and allocate enough data when you find
+  out how much data is being sent.
+\end{itemize}
+
+To do this, the receive call has a \indexmpidef{MPI_Status} parameter.
+The \indexmpishow{MPI_Status} object
+is a structure (in~C a \lstinline{struct}, in~F90 an array, in~F2008 a derived type)
+with freely accessible members:
+\begin{itemize}
+\item \indexmpishow{MPI_ERROR} gives the error status of the receive call;
+  see section~\ref{sec:mpi-status-error}.
+\item \indexmpishow{MPI_SOURCE} gives the source of the message;
+  see section~\ref{sec:mpi-source}.
+\item \indexmpishow{MPI_TAG} gives the tag with which the message was received;
+  see section~\ref{sec:mpi-tag}.
+\item The number if items in the message can be deduced from the status object,
+  but through a function call to \indexmpishow{MPI_Get_count},
+  not as a structure member;
+  see section~\ref{sec:mpi-status-count}.
+\end{itemize}
+
+\begin{fortrannote}{Status object in f08}
+  \label{f:status-object}
+  The \indextermtt{mpi_f08} module turns many handles
+  (such as communicators)
+  from Fortran \lstinline{Integer}s into \lstinline{Type}s.
+  Retrieving the integer from the type is usually done
+  through the \lstinline+%val+ member,
+  but for the status object this is more difficult.
+  The routines \indexmpidef{MPI_Status_f2f08} and \indexmpidef{MPI_Status_f082f}
+  convert between these.
+  (Remarkably, these routines are even available in~C,
+  where they operate on \indexmpishow{MPI_Fint}, \indexmpishow{MPI_F08_status} arguments.)
+\end{fortrannote}
+
+\begin{pythonnote}{Status object}
+  The status object is explicitly created before being passed
+  to the receive routine. It has the usual query methods:
+  %
+  \pverbatimsnippet{statuscountp}
+
+  (The count function without argument returns a result in bytes.)
+\end{pythonnote}
+
+\begin{mplnote}{Status object}
+  The \lstinline+mpl::status_t+ object is created by the receive
+  (or wait) call:
+  %
+  \cxxverbatimsnippet[examples/mpi/mpl/vector.cxx]{mplstatuscreate}
+\end{mplnote}
+
+\Level 2 {Source}
+\label{sec:mpi-source}
+
+In some applications it makes sense that a message can come from 
+one of a number of processes. In this case, it is possible to specify
+\indexmpishow{MPI_ANY_SOURCE} as the source.
+%
+To find out the \emph{source}\index{message!status!source}
+where the message actually came from,
+you would use the \indexmpidef{MPI_SOURCE} field of the status object
+that is delivered by \indexmpishow{MPI_Recv}
+or the \indexmpishow{MPI_Wait...} call after an \indexmpishow{MPI_Irecv}.
+\begin{lstlisting}
+MPI_Recv(recv_buffer+p,1,MPI_INT, MPI_ANY_SOURCE,0,comm,
+         &status);
+sender = status.MPI_SOURCE;
+\end{lstlisting}
+
+There are various scenarios where receiving from `any source' makes sense.
+One is that of the \indexterm{manager-worker} model. The manager task would first send
+data to the worker tasks, then issues a blocking wait for the data of whichever process
+finishes first.
+
+This code snippet is a simple model for this: all workers processes wait
+a random amount of time. For efficiency, the manager process accepts message from any source.
+
+\cverbatimsnippet[examples/mpi/c/anysource.c]{anysource}
+
+In \fstandard{2003} style, the source is a member of the \flstinline{Status} type.
+
+\fverbatimsnippet[examples/mpi/f08/anysource.F90]{anysource-f08}
+
+In \fstandard{90} style, the source is an index in the \flstinline{Status} array.
+
+\fverbatimsnippet[examples/mpi/f/anysource.F90]{anysource-f}
+
+\begin{mplnote}{Status source querying}
+The \indexmplshow{status} object can be queried:
+\begin{lstlisting}
+int source = recv_status.source();
+\end{lstlisting}
+\end{mplnote}
+
+\Level 2 {Tag}
+\label{sec:mpi-tag}
+
+If a processor is expecting more than one messsage from a single other processor,
+message tags are used to distinguish between them. In that case,
+a value of \indexmpishow{MPI_ANY_TAG} can be used, and the actual
+\emph{tag}\index{message!status!tag}
+of a message can be retrieved as the
+%
+\indexmpidef{MPI_TAG}
+%
+member in the status structure.
+See section~\ref{sec:mpi-source} about \clstinline+MPI_SOURCE+
+for how to use this.
+
+\begin{mplnote}{Message tag}
+  \ac{MPL} differs from other \acp{API} in its treatment of tags:
+  a~tag is not directly an integer, but an object of class \indexmplshow{tag}.
+  %
+  \cxxverbatimsnippet{mplsendrecv} % in an exercise
+  %
+  The \indexmplshow{tag} class has a couple of methods such as
+  \lstinline+mpl::+\indexmplshow{tag::any}\lstinline+()+
+  (for the \indexmpishow{MPI_ANY_TAG} wildcard in receive calls)
+  and
+  \lstinline+mpl::+\indexmplshow{tag::up}\lstinline+()+
+  (maximal tag, found from the \indexmpishow{MPI_TAG_UB} attribute).
+\end{mplnote}
+
+\Level 2 {Error}
+\label{sec:mpi-status-error}
+
+Any \emph{errors}\index{message!status!error}
+during the receive operation can be found as the
+\indexmpidef{MPI_ERROR}
+member of the status structure.
+This field is only set by functions that return multiple statuses,
+such as \indexmpishow{MPI_Waitall}.
+For functions that return a single status, any error is returned
+as the function result.
+For a function returning multiple statuses, the presence of any error
+is indicated by a result of \indexmpishow{MPI_ERR_IN_STATUS};
+section~\ref{sec:mpi-wait-status}.
+
+\Level 2 {Count}
+\label{sec:mpi-status-count}
+
+If the amount of data received is not known a~priori, the
+\emph{count}\index{message!count} of elements received
+can be found by 
+\indexmpiref{MPI_Get_count}:
+%
+\cverbatimsnippet[examples/mpi/c/count.c]{mpigetcount}
+%
+\fsnippetwithoutput{mpigetcountf08}{examples/mpi/f08}{count}
+% [/count.F90]
+
+This may be necessary since the \n{count} argument to \indexmpishow{MPI_Recv} is 
+the buffer size, not an indication of the actually received number of
+data items.
+
+Remarks.
+\begin{itemize}
+\item Unlike the source and tag, the message count is not directly a member of the status
+  structure.
+\item The `count' returned is the number of elements of the specified
+  datatype. If this is a derived type
+  (section~\ref{sec:derived-types}) this is not the same as the number
+  of elementary datatype elements. For that, use
+  \indexmpiref{MPI_Get_elements} or
+  \indexmpishow{MPI_Get_elements_x}
+  which returns the number of basic elements.
+\end{itemize}
+
+\begin{mplnote}{Receive count}
+  The \lstinline+get_count+ function is a method of the status object.
+  The argument type is handled through templating:
+  %
+  \cxxverbatimsnippet[examples/mpi/mpl/recvstatus.cxx]{mplrecvcount}
+\end{mplnote}
+
+\Level 2 {Example: receiving from any source}
+
+Consider an example where the last process receives from every other process.
+We could implement this as a loop
+\begin{lstlisting}
+for (int p=0; p<nprocs-1; p++)
+  MPI_Recv( /* from source= */ p );
+\end{lstlisting}
+but this may incur idle time if the messages arrive out of order.
+
+Instead, we use the  \indexmpishow{MPI_ANY_SOURCE} specifier to give a wildcard
+behavior to the receive call: using this value for the `source' value
+means that we accept mesages from any source within the communicator,
+and messages are only matched by tag value.
+(Note that size and type of the receive buffer are not used for message matching!)
+
+We then retrieve the
+actual source from the \indexmpishow{MPI_Status} object through the
+\indexmpishow{MPI_SOURCE} field.
+%
+\cverbatimsnippet[examples/mpi/c/anysource.c]{anysource}
+%
+\pverbatimsnippet[examples/mpi/p/anysource.py]{anysourcep}
+
+In sections and~\ref{sec:mpi-test} we explained
+the \indexterm{manager-worker} model
+(and in chapter~\ref{prj:mandelbrot} you can do programming project with it).
+This design patterns offers an opportunity for inspecting the
+\indexmpishow{MPI_SOURCE} field of the \indexmpishow{MPI_Status}
+object describing the data that was received.
+
+\index{message!status|)}
+
+\Level 1 {Errors}
+
+MPI routines return \indexmpishow{MPI_SUCCESS} upon succesful completion.
+The following error codes can be returned
+(see section~\ref{sec:mpi-err-codes} for details)
+for completion with error by both send and receive operations:
+  \indexmpishow{MPI_ERR_COMM},
+  \indexmpishow{MPI_ERR_COUNT},
+  \indexmpishow{MPI_ERR_TYPE},
+  \indexmpishow{MPI_ERR_TAG},
+  \indexmpishow{MPI_ERR_RANK}.
+
+
+\Level 1 {Message envelope}
+\label{sec:mpi-envelope}
+\index{message!envelope|(}
+\index{envelope|see{message, envelope}}
+
+Apart from its bare data, each message has a \emph{message envelope}.
+This has enough information to distinguish messages from each other:
+the source, destination, tag, communicator.
+
+\index{message!envelope|)}
+
+\Level 0 {Review questions}
+
+For all true/false questions, if you answer that a statement is false,
+give a one-line explanation.
+
+\begin{review}
+  Describe a deadlock scenario involving three processors.
+\end{review}
+
+\begin{review}
+  True or false: a message sent with \lstinline{MPI_Isend} from one processor can be
+  received with an \lstinline{MPI_Recv} call on another processor.
+\end{review}
+
+\begin{review}
+  True or false: a message sent with \lstinline{MPI_Send} from one processor can be
+  received with an \lstinline{MPI_Irecv} on another processor.
+\end{review}
+
+\begin{review}
+  Why does the \lstinline{MPI_Irecv} call not have an \lstinline{MPI_Status} argument?
+\end{review}
+
+\begin{review}
+  Suppose you are testing ping-pong timings.
+  Why is it generally not a good idea to use processes 0 and~1 for the
+  source and target processor?  Can you come up with a better guess?
+\end{review}
+
+%% one-sided
+\begin{review}
+  What is the relation between the concepts of `origin', `target', `fence',
+  and `window' in one-sided communication.
+\end{review}
+
+\begin{review}
+  What are the three routines for one-sided data transfer?
+\end{review}
+
+\lstset{
+  style=reviewcode,
+  language=C,
+}
+
+\begin{review}
+  In the following fragments % in figures~\ref{fig:qblockc},\ref{fig:qblockf},
+  assume that all buffers have been
+  allocated with sufficient size. For each fragment note whether it
+  deadlocks or not. Discuss performance issues.
+\end{review}
+
+    \lstset{language=C,basicstyle=\footnotesize\ttfamily}
+    %% \lstinputlisting{qblock1}
+\begin{lstlisting}
+for (int p=0; p<nprocs; p++)
+  if (p!=procid)
+    MPI_Send(sbuffer,buflen,MPI_INT,p,0,comm);
+for (int p=0; p<nprocs; p++)
+  if (p!=procid)
+    MPI_Recv(rbuffer,buflen,MPI_INT,p,0,comm,MPI_STATUS_IGNORE);
+\end{lstlisting}
+˜    %% \lstinputlisting{qblock2}
+\begin{lstlisting}
+for (int p=0; p<nprocs; p++)
+  if (p!=procid)
+    MPI_Recv(rbuffer,buflen,MPI_INT,p,0,comm,MPI_STATUS_IGNORE);
+for (int p=0; p<nprocs; p++)
+  if (p!=procid)
+    MPI_Send(sbuffer,buflen,MPI_INT,p,0,comm);
+\end{lstlisting}
+    %% \lstinputlisting{qblock3}
+\begin{lstlisting}
+int ireq = 0;
+for (int p=0; p<nprocs; p++)
+  if (p!=procid)
+    MPI_Isend(sbuffers[p],buflen,MPI_INT,p,0,comm,&(requests[ireq++]));
+for (int p=0; p<nprocs; p++)
+  if (p!=procid)
+    MPI_Recv(rbuffer,buflen,MPI_INT,p,0,comm,MPI_STATUS_IGNORE);
+MPI_Waitall(nprocs-1,requests,MPI_STATUSES_IGNORE);
+\end{lstlisting}
+    %% \lstinputlisting{qblock4}
+\begin{lstlisting}
+int ireq = 0;
+for (int p=0; p<nprocs; p++)
+  if (p!=procid)
+    MPI_Irecv(rbuffers[p],buflen,MPI_INT,p,0,comm,&(requests[ireq++]));
+for (int p=0; p<nprocs; p++)
+  if (p!=procid)
+    MPI_Send(sbuffer,buflen,MPI_INT,p,0,comm);
+MPI_Waitall(nprocs-1,requests,MPI_STATUSES_IGNORE);
+\end{lstlisting}
+    %% \lstinputlisting{qblock5}
+\begin{lstlisting}
+int ireq = 0;
+for (int p=0; p<nprocs; p++)
+  if (p!=procid)
+    MPI_Irecv(rbuffers[p],buflen,MPI_INT,p,0,comm,&(requests[ireq++]));
+MPI_Waitall(nprocs-1,requests,MPI_STATUSES_IGNORE);
+for (int p=0; p<nprocs; p++)
+  if (p!=procid)
+    MPI_Send(sbuffer,buflen,MPI_INT,p,0,comm);
+\end{lstlisting}
+
+    \pagebreak
+    Fortran codes:
+    
+    \lstset{style=reviewcode,language=Fortran}
+
+  \lstset{language=Fortran,basicstyle=\footnotesize\ttfamily}
+  %% \lstinputlisting{qblock1f}
+\begin{lstlisting}
+do p=0,nprocs-1
+   if (p/=procid) then
+      call MPI_Send(sbuffer,buflen,MPI_INT,p,0,comm,ierr)
+   end if
+end do
+do p=0,nprocs-1
+   if (p/=procid) then
+      call MPI_Recv(rbuffer,buflen,MPI_INT,p,0,comm,MPI_STATUS_IGNORE,ierr)
+   end if
+end do
+\end{lstlisting}
+  %% \lstinputlisting{qblock2f}
+\begin{lstlisting}
+do p=0,nprocs-1
+   if (p/=procid) then
+      call MPI_Recv(rbuffer,buflen,MPI_INT,p,0,comm,MPI_STATUS_IGNORE,ierr)
+   end if
+end do
+do p=0,nprocs-1
+   if (p/=procid) then
+      call MPI_Send(sbuffer,buflen,MPI_INT,p,0,comm,ierr)
+   end if
+end do
+\end{lstlisting}
+  %% \lstinputlisting{qblock3f}
+\begin{lstlisting}
+ireq = 0
+do p=0,nprocs-1
+   if (p/=procid) then
+      call MPI_Isend(sbuffers(1,p+1),buflen,MPI_INT,p,0,comm,&
+           requests(ireq+1),ierr)
+      ireq = ireq+1
+   end if
+end do
+do p=0,nprocs-1
+   if (p/=procid) then
+      call MPI_Recv(rbuffer,buflen,MPI_INT,p,0,comm,MPI_STATUS_IGNORE,ierr)
+   end if
+end do
+call MPI_Waitall(nprocs-1,requests,MPI_STATUSES_IGNORE,ierr)
+\end{lstlisting}
+  %% \lstinputlisting{qblock4f}
+\begin{lstlisting}
+ireq = 0
+do p=0,nprocs-1
+   if (p/=procid) then
+      call MPI_Irecv(rbuffers(1,p+1),buflen,MPI_INT,p,0,comm,&
+           requests(ireq+1),ierr)
+      ireq = ireq+1
+   end if
+end do
+do p=0,nprocs-1
+   if (p/=procid) then
+      call MPI_Send(sbuffer,buflen,MPI_INT,p,0,comm,ierr)
+   end if
+end do
+call MPI_Waitall(nprocs-1,requests,MPI_STATUSES_IGNORE,ierr)
+\end{lstlisting}
+  %% \lstinputlisting{qblock5f}
+\begin{lstlisting}
+// block5.F90
+ireq = 0
+do p=0,nprocs-1
+   if (p/=procid) then
+      call MPI_Irecv(rbuffers(1,p+1),buflen,MPI_INT,p,0,comm,&
+           requests(ireq+1),ierr)
+      ireq = ireq+1
+   end if
+end do
+call MPI_Waitall(nprocs-1,requests,MPI_STATUSES_IGNORE,ierr)
+do p=0,nprocs-1
+   if (p/=procid) then
+      call MPI_Send(sbuffer,buflen,MPI_INT,p,0,comm,ierr)
+   end if
+end do
+\end{lstlisting}
+
+\begin{review}
+  Consider a ring-wise communication where
+  \begin{lstlisting}
+    int
+    next = (mytid+1) % ntids,
+    prev = (mytid+ntids-1) % ntids;
+  \end{lstlisting}
+  and each process sends to \lstinline{next}, and receives from \lstinline{prev}.
+
+  The normal solution for preventing deadlock is to use both
+  \indexmpishow{MPI_Isend} and \indexmpishow{MPI_Irecv}. The send and
+  receive complete at the wait call. But does it matter in what
+  sequence you do the wait calls?
+\end{review}
+
+\begin{multicols}{2}
+    \cverbatimsnippet{ring3}
+    \columnbreak
+    \cverbatimsnippet{ring4}
+  \end{multicols}
+
+  Can we have one nonblocking and one blocking call?
+  Do these scenarios block?
+  \begin{multicols}{2}
+    \cverbatimsnippet{ring1}
+    \columnbreak
+    \cverbatimsnippet{ring2}
+  \end{multicols}
+
+
+\index{communication!two-sided|)}

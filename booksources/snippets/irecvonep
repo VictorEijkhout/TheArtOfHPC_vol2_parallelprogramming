@@ -1,0 +1,12 @@
+## irecvsingle.py
+sendbuffer = np.empty( nprocs, dtype=int )
+recvbuffer = np.empty( nprocs, dtype=int )
+
+left_p = (procid-1) % nprocs
+right_p = (procid+1) % nprocs
+send_request = comm.Isend\
+    ( sendbuffer[procid:procid+1],dest=left_p)
+recv_request = comm.Irecv\
+    ( sendbuffer[procid:procid+1],source=right_p)
+MPI.Request.Wait(send_request)
+MPI.Request.Wait(recv_request)

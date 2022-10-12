@@ -1,0 +1,13 @@
+int library::communication_start() {
+  int sdata=6,rdata;
+  MPI_Isend(&sdata,1,MPI_INT,other,2,comm,&(request[0]));
+  MPI_Irecv(&rdata,1,MPI_INT,other,MPI_ANY_TAG,
+	    comm,&(request[1]));
+  return 0;
+}
+
+int library::communication_end() {
+  MPI_Status status[2];
+  MPI_Waitall(2,request,status);
+  return 0;
+}

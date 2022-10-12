@@ -1,0 +1,10 @@
+// sectionreduct.c
+float y=0;
+#pragma omp parallel reduction(+:y)
+#pragma omp sections
+{
+#pragma omp section
+  y += f();
+#pragma omp section
+  y += g();
+}

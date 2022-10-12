@@ -1,0 +1,17 @@
+Semantics:
+MPI_Win_attach(win, base, size)
+
+Input Parameters:
+win : window object (handle)
+base : initial address of memory to be attached
+size : size of memory to be attached in bytes
+
+C:
+int MPI_Win_attach(MPI_Win win, void *base, MPI_Aint size)
+
+Fortran:
+MPI_Win_attach(win, base, size, ierror)
+TYPE(MPI_Win), INTENT(IN) :: win
+TYPE(*), DIMENSION(..), ASYNCHRONOUS :: base
+INTEGER(KIND=MPI_ADDRESS_KIND), INTENT(IN) :: size
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror

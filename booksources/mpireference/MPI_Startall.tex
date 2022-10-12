@@ -1,0 +1,17 @@
+C:
+int MPI_Startall(int count, MPI_Request array_of_requests[])
+
+Fortran:
+MPI_Startall(count, array_of_requests, ierror)
+INTEGER, INTENT(IN) :: count
+TYPE(MPI_Request), INTENT(INOUT) :: array_of_requests(count)
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+MPI_STARTALL(COUNT, ARRAY_OF_REQUESTS, IERROR)
+INTEGER COUNT, ARRAY_OF_REQUESTS(*), IERROR
+
+Python:
+MPI.Prequest.Startall(type cls, requests)
+
+Semantics:
+IN countlist length (non-negative integer)
+INOUT array_of_requestsarray of requests (array of handle)

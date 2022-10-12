@@ -1,0 +1,13 @@
+// row2col.c
+#define SIZE 4
+  int
+    sizes[2], subsizes[2], starts[2];
+  sizes[0] = SIZE; sizes[1] = SIZE;
+  subsizes[0] = SIZE/2;  subsizes[1] = SIZE;
+  starts[0] = starts[1] = 0;
+    MPI_Type_create_subarray
+      (2,sizes,subsizes,starts,
+       MPI_ORDER_C,MPI_DOUBLE,&rowtype);
+    MPI_Type_create_subarray
+      (2,sizes,subsizes,starts,
+       MPI_ORDER_FORTRAN,MPI_DOUBLE,&coltype);

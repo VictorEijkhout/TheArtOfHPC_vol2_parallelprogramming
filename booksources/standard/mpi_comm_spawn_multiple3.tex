@@ -1,0 +1,42 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% This text file is part of the source of 
+%% `Parallel Computing'
+%% by Victor Eijkhout, copyright 2012-2022
+%%
+%% MPI API file for MPI_Comm_spawn_multiple
+%%
+%% THIS FILE IS AUTO-GENERATED
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begingroup
+\ttfamily\bfseries
+\catcode`\_=12
+\begin{tabular}{
+l       % name
+l       % param name
+p{\mpiparmtextsize}  % explanation
+p{.7in} % ctype
+p{.9in} % ftype
+l       % inout
+}
+\toprule
+\mdseries\textrm{Name}&
+\mdseries\textrm{Param name}&
+\mdseries\textrm{Explanation}&
+\mdseries\textrm{C type}&
+\mdseries\textrm{F type}&
+\mdseries\textrm{inout}\\
+\midrule
+\hbox to 18pt{MPI_Comm_spawn_multiple (\hss} \\
+ & count & number of commands & int & INTEGER  \\ & array_of_commands & programs to be executed & char*[] & CHARACTER\discretionary{}{\kern10pt}{}(*)  \\ & array_of_argv & arguments for \mpiarg{commands} & char**[] & CHARACTER\discretionary{}{\kern10pt}{}(count, *)  \\ & array_of_maxprocs & maximum number of processes to start for each command & const int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  \\ & array_of_info & info objects telling the runtime system where and how to start processes & const MPI_Info[] & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)\discretionary{}{\kern10pt}{}(*)  \\ & root & rank of process in which previous arguments are examined & int & INTEGER  \\ & comm & intra-communicator containing group of spawning processes & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\ & intercomm & inter-communicator between original group and the newly spawned group & MPI_Comm* & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\ & array_of_errcodes & one error code per process & int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  \\
+&)\\
+
+\bottomrule
+\end{tabular}
+\endgroup
+

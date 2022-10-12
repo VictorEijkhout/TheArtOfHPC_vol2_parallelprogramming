@@ -1,0 +1,42 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% This text file is part of the source of 
+%% `Parallel Computing'
+%% by Victor Eijkhout, copyright 2012-2022
+%%
+%% MPI API file for MPI_Cart_create
+%%
+%% THIS FILE IS AUTO-GENERATED
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begingroup
+\ttfamily\bfseries
+\catcode`\_=12
+\begin{tabular}{
+l       % name
+l       % param name
+p{\mpiparmtextsize}  % explanation
+p{.7in} % ctype
+p{.9in} % ftype
+l       % inout
+}
+\toprule
+\mdseries\textrm{Name}&
+\mdseries\textrm{Param name}&
+\mdseries\textrm{Explanation}&
+\mdseries\textrm{C type}&
+\mdseries\textrm{F type}&
+\mdseries\textrm{inout}\\
+\midrule
+\hbox to 18pt{MPI_Cart_create (\hss} \\
+ & comm_old & input communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\ & ndims & number of dimensions of Cartesian grid & int & INTEGER  \\ & dims & integer array of size \mpiarg{ndims} specifying the number of processes in each dimension & const int[] & INTEGER\discretionary{}{\kern10pt}{}(ndims)  \\ & periods & logical array of size \mpiarg{ndims} specifying whether the grid is periodic (\mpicode{true}) or not (\mpicode{false}) in each dimension & const int[] & LOGICAL\discretionary{}{\kern10pt}{}(ndims)  \\ & reorder & ranking may be reordered (\mpicode{true}) or not (\mpicode{false}) & int & LOGICAL  \\ & comm_cart & communicator with new Cartesian topology & MPI_Comm* & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\
+&)\\
+
+\bottomrule
+\end{tabular}
+\endgroup
+

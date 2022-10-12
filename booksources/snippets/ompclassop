@@ -1,0 +1,11 @@
+// reductcomplex.cxx
+class Thing {
+private:
+  float x;
+public:
+  Thing() : Thing( 0.f ) {};
+  Thing( float x ) : x(x) {};
+  Thing operator+( const Thing& other ) {
+    return Thing( x + other.x );
+  };
+};

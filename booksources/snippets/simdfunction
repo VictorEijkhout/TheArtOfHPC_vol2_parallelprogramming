@@ -1,0 +1,17 @@
+// simdfunctions.c
+#pragma omp declare simd
+double cs(double x1,double x2,double y1,double y2) {
+  double
+    inprod = x1*x2+y1*y2,
+    xnorm = sqrt(x1*x1 + x2*x2),
+    ynorm = sqrt(y1*y1 + y2*y2);
+  return inprod / (xnorm*ynorm);
+}
+#pragma omp declare simd uniform(x1,x2,y1,y2) linear(i)
+double csa(double *x1,double *x2,double *y1,double *y2, int i) {
+  double
+    inprod = x1[i]*x2[i]+y1[i]*y2[i],
+    xnorm = sqrt(x1[i]*x1[i] + x2[i]*x2[i]),
+    ynorm = sqrt(y1[i]*y1[i] + y2[i]*y2[i]);
+  return inprod / (xnorm*ynorm);
+}

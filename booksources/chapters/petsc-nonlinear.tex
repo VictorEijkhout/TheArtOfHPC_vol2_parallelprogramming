@@ -1,0 +1,126 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%% petsc-nonlinear.tex : petsc nonlinear and time-dependent solvers
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Level 0 {Nonlinear systems}
+
+Nonlinear system solving means finding the zero of a general nonlinear function,
+that is:
+\[ \mathop{?}_x\colon f(x)=0 \]
+with $f\colon \bbR^n-\bbR^n$.
+In the special case of a linear function,
+\[ f(x) = Ax-b, \]
+we solve this by any of the methods in chapter~\ref{ch:petsc-solver}.
+
+The general case can be solved by a number of methods,
+foremost \indextermdef{Newton's method},
+which iterates
+\[ x_{n+1} = x_n - F(x_n)\inv f(x_n) \]
+where $F$ is the \indexterm{Hessian} $F_{ij}=\partial f_i/\partial x_j$.
+
+You see that you need to specify two functions
+that are dependent on your specific problem:
+the objective function itself, and its Hessian.
+
+\Level 1 {Basic setup}
+
+The PETSc nonlinear solver object is of type \indexpetscdef{SNES}:
+`simple nonlinear equation solver'.
+As with linear solvers, we create this solver on a communicator,
+set its type, incorporate options,
+and call the solution routine \indexpetscref{SNESSolve}:
+
+\begin{lstlisting}
+Vec value_vector,solution_vector;
+/* vector creation code missing */
+SNES solver;
+SNESCreate( comm,&solver );
+SNESSetFunction( solver,value_vector,formfunction, NULL );
+SNESSetFromOptions( solver );
+SNESSolve( solver,NULL,solution_vector );
+\end{lstlisting}
+
+The function has the type
+\begin{lstlisting}
+PetscErrorCode formfunction(SNES,Vec,Vec,void*)
+\end{lstlisting}
+where the parameters are:
+\begin{itemize}
+\item the solver object, so that you can access to its internal parameters
+\item the $x$ value at which to evaluate the function
+\item the result vector $f(x)$ for the given input
+\item a context pointer for further application-specific information.
+\end{itemize}
+
+Example:
+\begin{lstlisting}
+PetscErrorCode evaluation_function( SNES solver,Vec x,Vec fx, void *ctx ) {
+  const PetscReal *x_array;
+  PetscReal *fx_array;
+  VecGetArrayRead(fx,&fx_array);
+  VecGetArray(x,&x_array);
+  for (int i=0; i<localsize; i++)
+    fx_array[i] = pointfunction( x_array[i] );
+  VecRestoreArrayRead(fx,&fx_array);
+  VecRestoreArray(x,&x_array);
+};
+\end{lstlisting}
+
+Comparing the above to the introductory description you see that
+the Hessian is not specified here.
+An analytic Hessian can be dispensed with if you instruct
+PETSc to approximate it by finite differences:
+\[ H(x)y \approx \frac{f(x+hy)-f(x)}{h} \]
+with $h$ some finite diference.
+The commandline option \indexpetscoption{snes_fd} forces
+the use of this finite difference approximation.
+However, it may lead to a large number of function evaluations.
+The option \indexpetscoption{snes_fd_color} applies a coloring
+to the variables, leading to a drastic reduction in the number
+of function evaluations.
+
+If you can form the analytic Jacobian~/ Hessian, you can specify it with
+\indexpetscref{SNESSetJacobian},
+where the Jacobian is a function of type
+\indexpetscref{SNESJacobianFunction}.
+
+Specifying the Jacobian:
+\begin{lstlisting}
+Mat J;
+ierr = MatCreate(comm,&J); CHKERRQ(ierr);
+ierr = MatSetType(J,MATSEQDENSE); CHKERRQ(ierr);
+ierr = MatSetSizes(J,n,n,N,N); CHKERRQ(ierr);
+ierr = MatSetUp(J); CHKERRQ(ierr);
+ierr = SNESSetJacobian(solver,J,J,&Jacobian,NULL); CHKERRQ(ierr);
+\end{lstlisting}
+
+\Level 0 {Time-stepping}
+
+For cases
+\[ u_t = G(t,u) \]
+call \indexpetscdef{TSSetRHSFunction}.
+\begin{lstlisting}
+#include "petscts.h"  
+PetscErrorCode TSSetRHSFunction
+   (TS ts,Vec r,
+    PetscErrorCode (*f)(TS,PetscReal,Vec,Vec,void*),
+    void *ctx);
+\end{lstlisting}
+
+For implicit cases
+\[ F( t,u,u_t ) = 0 \]
+call \indexpetscdef{TSSetIFunction}
+\begin{lstlisting}
+#include "petscts.h"  
+PetscErrorCode TSSetIFunction
+   (TS ts,Vec r,TSIFunction f,void *ctx)
+\end{lstlisting}

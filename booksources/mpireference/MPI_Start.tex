@@ -1,0 +1,16 @@
+C:
+int MPI_Start(MPI_Request request)
+
+Fortran:
+MPI_Start(request, ierror)
+TYPE(MPI_Request), INTENT(INOUT) :: request
+INTEGER, OPTIONAL, INTENT(OUT) :: ierror
+
+MPI_START(REQUEST, IERROR)
+INTEGER REQUESTS, IERROR
+
+Python:
+MPI.Prequest.Start(type cls, request)
+
+Semantics:
+INOUT request : request (handle)

@@ -1,0 +1,3 @@
+// sendobject.cxx
+mpl::iterator_layout<int> in_ten( ten.begin(), ten.end() );
+comm_world.send( ten.begin(),ten.end(),1 );  // send to rank 1

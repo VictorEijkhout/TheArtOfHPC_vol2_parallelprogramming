@@ -1,0 +1,7 @@
+// binomial1.c
+for (int row=1; row<=n; row++)
+  for (int col=1; col<=row; col++)
+    if (row==1 || col==1 || col==row)
+	array[row][col] = 1;
+    else
+	array[row][col] = array[row-1][col-1] + array[row-1][col];

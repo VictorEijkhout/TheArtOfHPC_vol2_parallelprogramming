@@ -1,0 +1,23 @@
+Semantics:
+MPI_REDUCE_LOCAL( inbuf, inoutbuf, count, datatype, op)
+
+Input parameters:
+inbuf: input buffer (choice)
+count: number of elements in inbuf and inoutbuf buffers
+    (non-negative integer)
+datatype: data type of elements of inbuf and inoutbuf buffers
+    (handle)
+op: operation (handle)
+
+Input/output parameters:
+inoutbuf: combined input and output buffer (choice)
+
+C:
+int MPI_Reduce_local
+   (void* inbuf, void* inoutbuf, int count,
+    MPI_Datatype datatype, MPI_Op op)
+
+Fortran:
+MPI_REDUCE_LOCAL(INBUF, INOUBUF, COUNT, DATATYPE, OP, IERROR)
+<type> INBUF(*), INOUTBUF(*)
+INTEGER :: COUNT, DATATYPE, OP, IERROR 

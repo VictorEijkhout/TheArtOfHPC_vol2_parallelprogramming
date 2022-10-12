@@ -1,0 +1,13 @@
+Synopsis
+int MPI_Comm_connect
+   (const char *port_name, MPI_Info info, int root,
+    MPI_Comm comm, MPI_Comm * newcomm)
+
+Input Parameters
+port_name : network address (string, used only on root)
+info : implementation-dependent information (handle, used only on root)
+root : rank in comm of root node (integer)
+comm : intracommunicator over which call is collective (handle)
+
+Output Parameters
+newcomm : intercommunicator with server as remote group (handle)

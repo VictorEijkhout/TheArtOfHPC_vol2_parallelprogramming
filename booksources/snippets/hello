@@ -1,0 +1,6 @@
+// helloworld.c
+MPI_Init(&argc,&argv);
+MPI_Comm_size(MPI_COMM_WORLD,&ntids);
+MPI_Comm_rank(MPI_COMM_WORLD,&mytid);
+printf("Hello, this is processor %d out of %d\n",mytid,ntids);
+MPI_Finalize();

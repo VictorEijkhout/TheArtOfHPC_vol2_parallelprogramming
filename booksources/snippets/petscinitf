@@ -1,0 +1,7 @@
+!! init.F90
+  call PetscInitialize(PETSC_NULL_CHARACTER,ierr)
+  CHKERRA(ierr)
+  call MPI_Initialized(flag,ierr)
+  CHKERRA(ierr)
+  if (flag) then
+     print *,"MPI was initialized by PETSc"

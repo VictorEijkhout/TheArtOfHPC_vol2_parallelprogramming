@@ -1,0 +1,42 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%
+%% This text file is part of the source of 
+%% `Parallel Computing'
+%% by Victor Eijkhout, copyright 2012-2022
+%%
+%% MPI API file for MPI_Dist_graph_neighbors
+%%
+%% THIS FILE IS AUTO-GENERATED
+%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begingroup
+\ttfamily\bfseries
+\catcode`\_=12
+\begin{tabular}{
+l       % name
+l       % param name
+p{\mpiparmtextsize}  % explanation
+p{.7in} % ctype
+p{.9in} % ftype
+l       % inout
+}
+\toprule
+\mdseries\textrm{Name}&
+\mdseries\textrm{Param name}&
+\mdseries\textrm{Explanation}&
+\mdseries\textrm{C type}&
+\mdseries\textrm{F type}&
+\mdseries\textrm{inout}\\
+\midrule
+\hbox to 18pt{MPI_Dist_graph_neighbors (\hss} \\
+ & comm & communicator with distributed graph topology & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\ & maxindegree & size of sources and sourceweights arrays & int & INTEGER  \\ & sources & processes for which the calling process is a destination & int[] & INTEGER\discretionary{}{\kern10pt}{}(maxindegree)  \\ & sourceweights & weights of the edges into the calling process & int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  \\ & maxoutdegree & size of destinations and destweights arrays & int & INTEGER  \\ & destinations & processes for which the calling process is a source & int[] & INTEGER\discretionary{}{\kern10pt}{}(maxoutdegree)  \\ & destweights & weights of the edges out of the calling process & int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  \\
+&)\\
+
+\bottomrule
+\end{tabular}
+\endgroup
+

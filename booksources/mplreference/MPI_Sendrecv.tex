@@ -1,0 +1,11 @@
+template<typename T >
+status mpl::communicator::sendrecv
+   ( const T & senddata, int dest,   tag sendtag,
+           T & recvdata, int source, tag recvtag 
+   ) const
+   ( const T * senddata, const layout< T > & sendl, int dest,   tag sendtag,
+           T * recvdata, const layout< T > & recvl, int source, tag recvtag 
+   ) const
+   ( iterT1 begin1, iterT1 end1, int dest,   tag sendtag,
+     iterT2 begin2, iterT2 end2, int source, tag recvtag 
+   ) const

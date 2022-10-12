@@ -1,0 +1,3 @@
+## pool.py
+nprocs = mp.cpu_count()
+print(f"I detect {nprocs} cores")

@@ -1,0 +1,12 @@
+C:
+int MPI_Bsend
+   (const void *buf, int count, MPI_Datatype datatype, 
+    int dest, int tag,MPI_Comm comm)
+
+Input Parameters
+buf : initial address of send buffer (choice)
+count : number of elements in send buffer (nonnegative integer)
+datatype : datatype of each send buffer element (handle)
+dest : rank of destination (integer)
+tag : message tag (integer)
+comm : communicator (handle)

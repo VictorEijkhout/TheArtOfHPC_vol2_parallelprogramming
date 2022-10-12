@@ -1,0 +1,8 @@
+!! oddeven.F90
+  if (procid==0) then
+     call ISCreateStride(comm,Nglobal/2,0,2,oddeven,ierr)
+     CHKERRA(ierr);
+  else
+     call ISCreateStride(comm,Nglobal/2,1,2,oddeven,ierr)
+     CHKERRA(ierr);
+  end if

@@ -1,0 +1,55 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2021
+%%%%
+%%%% omp-competency.tex : goals of the OpenMP part
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+This section of the book teaches OpenMP (`Open Multi Processing'),
+the dominant model for shared memory programming in science and engineering.
+It will instill the following competencies.
+
+Basic level:
+\begin{itemize}
+\item Threading model: the student will understand the threading model of OpenMP,
+  and the relation between threads and cores (chapter~\ref{ch:omp-basics});
+  the concept of a parallel region and private versus shared data
+  (chapter~~\ref{ch:omp-parallel}).
+\item Loop parallelism: the student will be able to parallelize loops,
+  and understand the impediments to parallelization, and
+  iteration scheduling (chapter~\ref{ch:omp-loop};
+  reductions (chapter~\ref{ch:omp-reduction}).
+\item The student will understand the concept of worksharing constructs,
+  and its implications for synchronization (chapter~\ref{ch:omp-share}).
+\end{itemize}
+
+Intermediate level:
+\begin{itemize}
+\item The student will understand the abstract notion of synchronization,
+  its implementations in OpenMP, and implications for performabnce
+  (chapter~\ref{ch:omp-sync}).
+\item The student will understand the task model as underlying the thread model,
+  be able to write code that spawns tasks, and be able to distinguish
+  when tasks are needed versus simpler worksharing constructs
+  (chapter~\ref{ch:omp-task}).
+\item The student will understand thread/code affinity, how to control it,
+  and possible implications for performance (chapter~\ref{ch:omp-affinity}).
+\end{itemize}
+
+Advanced level:
+\begin{itemize}
+\item The student will understand the OpenMP memory model,
+  and sequential consistency (chapter~\ref{ch:omp-memory}).
+\item The student will understand \acs{SIMD} processing, the extent to which
+  compilers do this outside of OpenMP,
+  and how OpenMP can specify further opportunities for SIMD-ization
+  (chapter~\ref{ch:omp-simd}).
+\item The student will understand offloading to \acp{GPU},
+  and the OpenMP directives for effecting this (chapter~\ref{ch:omp-gpu}).
+\end{itemize}

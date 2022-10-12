@@ -1,0 +1,12 @@
+#include "petscsnes.h"
+PetscErrorCode SNESJacobianFunction(SNES snes,Vec x,Mat Amat,Mat Pmat,void *ctx);
+
+Collective on snes
+
+Input Parameters
+x   - input vector, the Jacobian is to be computed at this value
+ctx - [optional] user-defined Jacobian context
+
+Output Parameters
+Amat - the matrix that defines the (approximate) Jacobian
+Pmat - the matrix to be used in constructing the preconditioner, usually the same as Amat. 

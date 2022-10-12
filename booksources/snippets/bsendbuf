@@ -1,0 +1,14 @@
+// bufring.c
+int bsize = BUFLEN*sizeof(float);
+float
+  *sbuf = (float*) malloc( bsize ),
+  *rbuf = (float*) malloc( bsize );
+MPI_Pack_size( BUFLEN,MPI_FLOAT,comm,&bsize);
+bsize += MPI_BSEND_OVERHEAD;
+float
+  *buffer = (float*) malloc( bsize );
+
+MPI_Buffer_attach( buffer,bsize );
+err = MPI_Bsend(sbuf,BUFLEN,MPI_FLOAT,next,0,comm);
+MPI_Recv (rbuf,BUFLEN,MPI_FLOAT,prev,0,comm,MPI_STATUS_IGNORE);
+MPI_Buffer_detach( &buffer,&bsize );

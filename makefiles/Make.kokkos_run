@@ -1,0 +1,118 @@
+# -*- makefile -*-
+################################################################
+####
+#### This makefile is part of `Parallel Programming in MPI and OpenMP'
+#### by Victor Eijkhout, copyright 2013-2022
+#### eijkhout@tacc.utexas.edu
+####
+#### Make include file for omp test runs
+####
+################################################################
+
+info ::
+	@echo "================ OMP running"
+	@echo "make run_xxx in: ${RUNS}"
+
+ifeq "${TACC_SYSTEM}" "frontera"
+  OMPTHREADS = 1 2 4 8 12 26 38 56 
+else
+  OMPTHREADS = 1 2 4 8 12
+endif
+OMPSCHEDULE = static
+
+info ::
+	@echo "make kokkos_run [ NP=... ] PROGRAM=program"
+	@echo "make kokkos_scaling [ NP=... ] [ NDIV=... ] [ PROGRAM=... ]"
+	@echo "    [ RUNOUTID= .... (extra id, default blank) ]"
+	@echo "    OMPTHREADS= core range (default=${OMPTHREADS})"
+	@echo "    OMPSCHEDULE= core range (default=${OMPSCHEDULE})"
+	@echo "    NEST=true/false (default=${NEST})"
+	@echo "    BIND=true/false/cores/... (OMP_PROC_BIND, default=${BIND})"
+	@echo "    ACTIVE=... (default=${ACTIVE}) for OMP_MAX_ACTIVE_LEVELS"
+
+BIND = true
+NEST = false
+ACTIVE = 1
+ECHO = 0
+.PHONY: kokkos_run kokkos_scaling
+kokkos_run :
+	@command="./${PROGRAM}" \
+	 && np=`make --no-print-directory num_cores NP=${NP}` \
+	 && command="$$command --kokkos-threads $$np " \
+	 && command="OMP_PROC_BIND=${BIND} $$command" \
+	 && if [ ! -z "${EXTRA_OPTIONS}" ] ; then \
+	        command="$$command ${EXTRA_OPTIONS}" ; fi \
+	 && if [ ${ECHO} = 1 ] ; then echo "executing: $$command" ; fi \
+	 && eval $$command
+kokkos_scaling :
+	@export np=$$( make --no-print-directory num_cores ) \
+	 && export ompthreads="$$( make --no-print-directory omp_threads )" \
+	 && if [ -z "${PROGRAM}" ] ; then \
+	        echo "Set PROGRAM variable" && exit 1 \
+	    ; fi \
+	 && if [ ! -z "${RUNOUTID}" ] ; then \
+	        results=${PROGRAM}-scaling-${RUNOUTID}.out \
+	    ; else results=${PROGRAM}-scaling.out ; fi \
+	 && ( \
+	    for t in $$ompthreads ; do \
+	        make --no-print-directory kokkos_run NP=$$t PROGRAM=${PROGRAM} \
+	                ECHO=${ECHO} NEST=${NEST} \
+	                EXTRA_OPTIONS="${EXTRA_OPTIONS}" \
+	         && echo \
+	    ; done \
+	    ) | tee $$results \
+	 && cat $$results | awk '/threads/ { t = $$4 } /speedup=/ { print t " " $$6 }' \
+	 && echo " scaling results in: $$results"
+
+#
+# Utility targets
+#
+.PHONY: num_cores
+num_cores :
+	@if [ ! -z ${NP} ] ; then \
+	        echo ${NP} \
+	    ; elif [ ! -z ${SLURM_TASKS_PER_NODE} ] ; then \
+	        echo ${SLURM_TASKS_PER_NODE} \
+	    ; else \
+	        echo "Specify number of processors with NP=..." \
+	         && exit 1 \
+	    ; fi
+.PHONY: kokkos_threads
+kokkos_threads :
+	@if [ ! -z "${OMPTHREADS}" ] ; then \
+	    echo "${OMPTHREADS}" \
+	    ; \
+	else \
+	    if [ ! -z "${NDIV}" ] ; then \
+	        ndiv=${NDIV} \
+	    ; else \
+	        ndiv=3 \
+	    ; fi \
+	     && div=`seq 1 $$ndiv` \
+	     && frac=`for d in $$div ; do echo "$$(( $$d * $$np / $$ndiv ))" ; done` \
+	     && echo "1 $$frac" \
+	    ; \
+	fi
+
+info ::
+	@echo "make runs : compile and run everything and generate output file"
+	@echo "    using RUNS=${RUNS}"
+
+.PHONY: runs
+runs :
+	@for r in ${RUNS} ; do \
+	    echo "---------------- Test run: $$r ----------------" \
+	     && runname=$${r##run_} \
+	     && if [ ! -z "${RUNOUTID}" ] ; then \
+	            runout=$${runname}-${RUNOUTID}.runout \
+	        ; else runout=$${runname}.runout ; fi \
+	     && make --no-print-directory $$r OPTLEVEL=${OPTLEVEL} \
+	                NEST=${NEST} ACTIVE=${ACTIVE} OMPTHREADS="${OMPTHREADS}" \
+	            2>&1 | tee $${runout} \
+	     && git add $${runout} \
+	 ; done \
+	 && echo "runout in:  $${runout}"
+
+total_clean ::
+	@rm -f *.runout
+

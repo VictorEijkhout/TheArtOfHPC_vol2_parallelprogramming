@@ -1,0 +1,276 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2022
+%%%%
+%%%% kokkos.tex : intro stuff about Kokkos
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Much of this material is based on the 
+Kokkos Tutorial
+that 
+Jeff Miles and Christian Trott
+gave
+April 21-24, 2020.
+
+Include file:
+\cxxverbatimsnippet[code/kokkos/cxx/hello.cxx]{kokkoscore}
+
+\Level 0 {Data-parallel constructs}
+
+Parallel constructs,
+what you use directives for in OpenMP,
+are explicitly called.
+\begin{lstlisting}
+Kokkos::parallel_for
+Kokkos::parallel_reduce
+Kokkos::parallel_scan
+\end{lstlisting}
+
+\Level 1 {1D loop}
+
+Hello world:
+\cxxverbatimsnippet[code/kokkos/cxx/hello.cxx]{kkhello}
+
+\begin{itemize}
+\item How many iterations,
+\item Function of the iteration number.
+  You can use a function pointer here, but often we will use lambda expressions.
+  If you're iterating over an array, it needs to be captured in the lambda expression.
+\end{itemize}
+
+\Level 1 {Reduction}
+
+Reductions add a parameter to the construct: the reduction variable.
+\cxxverbatimsnippet[code/kokkos/cxx/pi.cxx]{kkpi}
+
+\begin{itemize}
+\item The parallel construct has an optional name.
+  This is useful for profiling and debugging.
+\item Instead of an explicit lambda capture, we use
+  \lstinline+KOKKOS_LAMBDA+ which does a \lstinline+[=]+ capture,
+  and adds clauses for \ac{GPU} execution, if needed.
+\item The lambda expression now takes two parameters: the iteration number,
+  and the reduction variable. This is the thread-private variable, not the final one.
+\item The final argument is the global reduction variable.
+\end{itemize}
+
+For reductions other than summing, a \indexkokkosshow{reducer} is needed.
+%
+\cxxverbatimsnippet{kreduxmax}
+
+\Level 1 {Multi-D loops}
+
+You can of course parallelize over the outer loop, and do the inner loops
+in the functor.
+This code computes $r\leftarrow y^tAx$:
+%
+\begin{lstlisting}
+Kokkos::parallel_reduce( "yAx", N,
+  KOKKOS_LAMBDA ( int j, double &update ) {
+    double temp2 = 0;
+
+    for ( int i = 0; i < M; ++i ) {
+      temp2 += A[ j * M + i ] * x[ i ];
+    }
+
+    update += y[ j ] * temp2;
+  },
+  result
+);  
+\end{lstlisting}
+
+You can also leave all the loops to Kokkos, with an
+\indexkokkos{RangePolicy} or \indexkokkos{MDRangePolicy}.
+Here you indicate the rank (as in: number of dimensions) of the object,
+as well as arrays of first/last values.
+In the above examples
+\begin{lstlisting}
+Kokkos::parallel_reduce( N, ... );
+// equivalent: 
+Kokkos::parallel_reduce( Kokkos:RangePolicy<>(0,N), ... );  
+\end{lstlisting}
+
+An example with a higher rank than~one:
+%
+\cxxverbatimsnippet[code/kokkos/css/matyax.cxx]{kokkos2dspan}
+
+Note the multi-D indexing in this example: this parenthesis notation
+gets translated to the correct row/column-major depending on whether the
+code runs on a CPU or GPU; see section~\ref{sec:omp-row-col-major}.
+
+\Level 0 {Data}
+
+One of the problems Kokkos addresses is the coherence of data between
+main processor and attached devicees such \acp{GPU}.
+This is handled through the \lstinline+Kokkos::View+ mechanism.
+
+\cxxverbatimsnippet[code/kokkos/cxx/matsum.cxx]{kkviewmat}
+
+These act like C++ \lstinline+shared_ptr+, so capturing them by value
+gives you the data by reference anyway.
+Storage is automatically freed, RAII-style,
+when they go out of scope.
+
+Indexing is best done with a Fortran-style notation:
+\begin{lstlisting}
+matrix(i,j)
+\end{lstlisting}
+which makes indexing in your algorithm independent
+of the actual layout.
+
+Compile-time dimensions can be accomodated:
+\begin{lstlisting}
+View<double*[2]>  tallskinny("tallthin",100);
+View<double*[2][3]>  tallthin(100);
+\end{lstlisting}
+with the compile-time dimensions trailing. Naming is optional.
+
+Methods:
+\begin{itemize}
+\item \lstinline{extent(int)} gives the extent in a certain dimensions;
+\item \lstinline{data} gives a raw pointer to the data.
+\end{itemize}
+
+\Level 1 {Data layout}
+
+The view declaration has an optional template argument for the data layout.
+\begin{lstlisting}
+View<double***, Layout, Space> name(...);
+\end{lstlisting}
+Values are 
+\begin{itemize}
+\item \indexkokkos{LayoutLeft} where, Fortran-style, the leftmost index is stride~1;
+  this is the default for \indexkokkos{CudaSpace}.
+\item \indexkokkos{LayoutRight} where, C-style, the leftmost index is stride~1;
+  this is the default for \indexkokkos{HostSpace}.
+\item \indexkokkos{LayoutStride}, \indexkokkos{LayoutTiled} and others.
+\item User-defined.
+\end{itemize}
+
+Practically speaking, the traversal of a two-dimensional array is now a function of 
+\begin{itemize}
+\item the layout, possible determined by the memory space, and
+\item the indexing in in the functor:
+\begin{lstlisting}
+Kokkos:parallel_whatever(
+  N,
+  KOKKOS_LAMBDA ( size_t i ) {
+    matrix(i,j) or matrix(j,i); }
+);
+\end{lstlisting}
+\end{itemize}
+It is probably best to stick with this Rule of Thumb:
+\begin{quotation}
+  With a layout determined by the memory space,\\
+  let the iterator index be first,\\
+  and let loops inside the functor range over subsequent indexes.
+\end{quotation}
+
+\Level 0 {Execution and memory spaces}
+
+The body of the functor can be executed on the CPU or on a GPU.
+Those are the \indexterm{execution space}s.
+Kokkos needs to be installed with support for such spaces.
+
+To indicate that a function or lambda expression can be executed
+on more than one possible execution space:
+\begin{itemize}
+\item use \indexkokkos{KOKKOS_LAMBDA} as the capture for lambda expressions, or
+\item prefix explicitly defined functions with \indexkokkos{KOKKOS_INLINE_FUNCTION}.
+\end{itemize}
+Execution spaces can be explicitly indicated using the \indexkokkos{RangePolicy}
+keyword:
+\begin{lstlisting}
+Kokkos::parallel_for
+  ( Kokkos::RangePolicy<>( 0,10 ), # default execution space
+    [] (int i) {} );
+Kokkos::parallel_for
+  ( Kokkos::RangePolicy<SomeExecutionSpace>( 0,10 ), 
+    [] (int i) {} );
+\end{lstlisting}
+The default
+\begin{lstlisting}
+Kokkos::parallel_for( N, ...
+\end{lstlisting}
+is equivalent to 
+\begin{lstlisting}
+Kokkos::parallel_for( RangePolicy<>(N), ...
+\end{lstlisting}
+
+\Level 1 {Memory spaces}
+
+Where data is stored is an independent story.
+Each execution space has a \indexterm{memory space}.
+When creating a \indexkokkos{View},
+you can optionally indicate a memory space argument:
+\begin{lstlisting}
+View<double***,MemorySpace> data(...);
+\end{lstlisting}
+Available memory spaces include:
+\indexkokkos{HostSpace}, \indexkokkos{CudaSpace}, \indexkokkos{CudaUVMSpace}.
+Leaving out the memory space argument is equivalent to
+\begin{lstlisting}
+View<double**,DefaultExecutionSpace::memory_space> x(1,2);
+\end{lstlisting}
+
+Examples:
+\begin{lstlisting}
+View<double*,HostSpace> hostarray(5);
+View<double*,CudaSpace> cudaarray(5);
+\end{lstlisting}
+
+\Level 1 {Space coherence}
+
+Kokkos never makes implicit deep copies,
+so you can not immediately run a functor in the Cuda execution space
+on a view in Host space.
+
+You can create a mirror of CUDA data on the host:
+\begin{lstlisting}using CuMatrix = Kokkos::View<double**,CudaSpace>;
+CuMatrix matrix(m,n);
+CuMatrix::HostMirror hostmatrix =
+    Kokkos::create_mirror_view(matrix);
+// populate matrix on the host
+for (i) for (j) hostmatrix(i,j) = ....;
+// deep copy to GPU
+Kokkos::deep_copy(matrix,hostmatrix);
+// do something on the GPU
+Kokkos:parallel_whatever(
+    RangePolicy<CudaSpace>( 0,n ),
+    some lambda );
+// if needed, deep copy back.
+\end{lstlisting}
+
+\Level 0 {Stuff}
+
+There are init/finalize calls, which are not always needed.
+\cxxverbatimsnippet[code/kokkos/cxx/pi.cxx]{kkinitfinal}
+
+\Level 1 {OpenMP integration}
+\index{Kokkos!and OpenMP|(}
+
+Cmake flag to enable OpenMP: \n{-D Kokkos_ENABLE_OPENMP=ON}
+
+After that, all the usual OpenMP environment variables work.
+
+Alternatively:
+\begin{lstlisting}
+int nthreads = Kokkos::OpenMP::concurrency();
+Kokkos::initialize(Kokkos::InitializationSettings().set_num_threads(nthreads))
+\end{lstlisting}
+
+\index{Kokkos!and OpenMP|)}
+
+Parallelism control:
+\begin{verbatim}
+--kokkos-threads=123 # threads
+--kokkos-numa=45     # numa regions
+--kokkos-device=6    * GPU id to use
+\end{verbatim}
+

@@ -1,0 +1,2 @@
+// linear-serial.c
+int my_number = mytid, other_number=-1.;

@@ -1,0 +1,11 @@
+// link.c
+#pragma omp parallel shared(p)
+  {
+    int n;
+    while (p<1000) {
+#pragma omp critical
+      p++;
+      n = omp_get_thread_num();
+      printf("%d %d\n",n,p);
+    }
+  }

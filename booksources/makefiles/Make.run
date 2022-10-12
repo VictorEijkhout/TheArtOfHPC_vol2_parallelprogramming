@@ -1,0 +1,33 @@
+# -*- makefile -*-
+################################################################
+################################################################
+####
+#### This makefile is part of the source of 
+#### "Parallel Computing for Science and Engineering"
+#### by Victor Eijkhout, copyright 2013-2021
+####
+#### Make include file for run output rules
+####
+################################################################
+################################################################
+
+info ::
+	@echo "make runs : compile and run everything and generate output file"
+	@echo "    using RUNS=${RUNS}"
+
+.PHONY: runs
+MPIRUN  = mpiexec
+NP = 3
+runs :
+	@for r in ${RUNS} ; do \
+	    echo "---------------- Test run: $$r ----------------" \
+	     && runname=$${r##run_} \
+	     && make $$r \
+	           EXTRALIBS=${EXTRALIBS} OPTIONS=${OPTIONS} OPTLEVEL=${OPTLEVEL} \
+	           NP=${NP} \
+	        2>&1 | tee $$runname.runout \
+	 ; done
+clean ::
+	@rm -f *.out[0-9]*
+total_clean ::
+	@rm -f *.runout

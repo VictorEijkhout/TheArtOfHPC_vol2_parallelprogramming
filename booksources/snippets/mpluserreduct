@@ -1,0 +1,11 @@
+// reduceuser.cxx
+template<typename T>
+class lcm {
+public:
+  T operator()(T a, T b) {
+    T zero=T();
+    T t((a/gcd(a, b))*b);
+    if (t<zero)
+      return -t;
+    return t;
+  }

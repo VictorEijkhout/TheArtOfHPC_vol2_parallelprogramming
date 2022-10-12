@@ -1,0 +1,35 @@
+\Level 1 {TAU profiling and tracing}
+
+TAU~\url{http://www.cs.uoregon.edu/Research/tau/home.php} is a utility
+for profiling and tracing your parallel programs. Profiling is the
+gathering and displaying of bulk statistics, for instance showing you
+which routines take the most time, or whether communication takes a
+large portion of your runtime. When you get concerned about
+performance, a good profiling tool is indispensible.
+
+Tracing is the construction and displaying of time-dependent
+information on  your program run, for instance showing you if one
+process lags behind others. For understanding a program's behaviour,
+and the reasons behind profiling statistics, a tracing tool can be
+very insightful.
+
+TAU works by adding \indexterm{instrumentation} to your code: in
+effect it is a source-to-source translator that takes your code and
+turns it into one that generates run-time statistics. Doing this
+instrumentation is fortunately simple: start by having this code
+fragment in your makefile:
+\begin{verbatim}
+ifdef TACC_TAU_DIR
+  CC = tau_cc.sh
+else
+  CC = mpicc
+endif
+
+% : %.c
+	${CC} -o $@ $^
+\end{verbatim}
+
+\begin{istc}
+To use TAU, do \n{module load tau}. You have to set the environment
+variable \n{TAU_TRACE} to~1, and optionally set \n{TRACEDIR}.
+\end{istc}

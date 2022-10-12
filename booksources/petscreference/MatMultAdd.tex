@@ -1,0 +1,15 @@
+Synopsis
+#include "petscmat.h" 
+PetscErrorCode MatMultAdd(Mat mat,Vec x,Vec y,Vec z)
+
+Neighbor-wise Collective on Mat
+
+Input Parameters
+mat 	- the matrix
+x, y 	- the vectors
+
+Output Parameters
+z -the result
+
+Notes
+The vectors x and z cannot be the same.

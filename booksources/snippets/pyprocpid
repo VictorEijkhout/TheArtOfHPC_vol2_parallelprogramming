@@ -1,0 +1,5 @@
+def say_name(iproc):
+    print(f"Process {os.getpid()} has name: {mp.current_process().name}")
+if __name__ == '__main__':
+    processes = [ mp.Process(target=say_name,name=f"proc{iproc}",args=[iproc])
+                  for iproc in range(6) ]
