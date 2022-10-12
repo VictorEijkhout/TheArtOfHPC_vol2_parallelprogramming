@@ -30,7 +30,7 @@ info ::
 	@echo "make jordan.pdf"
 .PHONY: jordan.pdf
 jordan.pdf :
-	@TEXINPUTS=../graphics:${TEXINPUTS} ${ENGINE} jordan.tex
+	@TEXINPUTS=../../graphics:${TEXINPUTS} ${ENGINE} jordan.tex
 clean ::
 	@rm -f jordan/*~
 

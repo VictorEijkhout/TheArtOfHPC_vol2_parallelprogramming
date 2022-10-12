@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-6
+%%%% by Victor Eijkhout, copyright 2012-2022
 %%%%
 %%%% jordan.tex : animation of Gauss-Jordan elimination
 %%%%
@@ -31,7 +31,22 @@
 
 \usepackage{array}
 \newcolumntype{R}{>{\hbox to 1.2em\bgroup\hss}{r}<{\egroup}}
-\newcolumntype{T}{>{\hbox to 8em\bgroup}{c}<{\hss\egroup}}
+\newcolumntype{L}{>{\hbox to 40pt \bgroup$}{l}<{$\hss\egroup}}
+\newcolumntype{T}{>{\hbox to 90pt \bgroup}{c}<{\hss\egroup}}
+
+\newenvironment{jordan}
+{
+  \begin{equation*}
+    \begin{array}{|RRR|r|R|T|L|}
+      \hline
+      \multicolumn{3}{|c|}{\hbox{matrix}}&\hbox{sol}&rhs&action&scaling\\
+      \hline
+}
+{
+      \hline
+    \end{array}
+  \end{equation*}
+}
 
 \begin{document}
 \parskip=10pt plus 5pt minus 3pt
@@ -56,7 +71,7 @@
 \input jordan/jordan5
 \end{frame}
 
-\begin{frame}{}
+\begin{frame}{} %% remove
 \input jordan/jordan6
 \end{frame}
 
@@ -80,7 +95,7 @@
 \input jordan/jordan11
 \end{frame}
 
-\begin{frame}{}
+\begin{frame}{} %% remove
 \input jordan/jordan12
 \end{frame}
 
@@ -104,7 +119,7 @@
 \input jordan/jordan17
 \end{frame}
 
-\begin{frame}{}
+\begin{frame}{} %% remove
 \input jordan/jordan18
 \end{frame}
 
