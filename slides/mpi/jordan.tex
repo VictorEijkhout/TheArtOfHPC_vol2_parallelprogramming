@@ -29,24 +29,11 @@
   \hbox to 0in {\hss \includegraphics[scale=.1]{tacclogonew}}%
   \hbox to 0in {\hss \arabic{page}\hskip 1in}}
 
-\usepackage{array}
+\input commonmacs
+%% \usepackage{array}
 \newcolumntype{R}{>{\hbox to 1.2em\bgroup\hss}{r}<{\egroup}}
-\newcolumntype{L}{>{\hbox to 40pt \bgroup$}{l}<{$\hss\egroup}}
-\newcolumntype{T}{>{\hbox to 90pt \bgroup}{c}<{\hss\egroup}}
-
-\newenvironment{jordan}
-{
-  \begin{equation*}
-    \begin{array}{|RRR|r|R|T|L|}
-      \hline
-      \multicolumn{3}{|c|}{\hbox{matrix}}&\hbox{sol}&rhs&action&scaling\\
-      \hline
-}
-{
-      \hline
-    \end{array}
-  \end{equation*}
-}
+%% \newcolumntype{L}{>{\hbox to 40pt \bgroup$}{l}<{$\hss\egroup}}
+%% \newcolumntype{T}{>{\hbox to 90pt \bgroup}{c}<{\hss\egroup}}
 
 \begin{document}
 \parskip=10pt plus 5pt minus 3pt

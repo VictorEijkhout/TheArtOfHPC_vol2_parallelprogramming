@@ -62,6 +62,7 @@ call MPI_Finalize()
 \end{numberedframe}
 
 \begin{numberedframe}{Communicators}
+Communicators are now derived types:
 \begin{lstlisting}
 !! Fortran 2008 interface
 use mpi_f08
@@ -69,8 +70,8 @@ Type(MPI_Comm) :: comm = MPI_COMM_WORLD
 \end{lstlisting}
 \begin{lstlisting}
 !! Fortran legacy interface
-#include <mpif.h>
-! or: use mpi
+use mpi
+!! deprecated: #include <mpif.h>
 Integer :: comm = MPI_COMM_WORLD
 \end{lstlisting}
 \end{numberedframe}
@@ -86,6 +87,7 @@ Integer :: comm = MPI_COMM_WORLD
 \end{numberedframe}
 
 \begin{numberedframe}{More}
+  More handles that are now derived types:
 \begin{lstlisting}
 Type(MPI_Datatype) :: newtype ! F2008
 Integer            :: newtype ! F90
