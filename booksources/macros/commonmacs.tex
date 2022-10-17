@@ -62,3 +62,23 @@
 \newcommand\mpistandard[1]{MPI-#1\index{MPI!MPI-#1}}
 \newcommand\mpistandardsub[2]{MPI-#1\index{MPI!MPI-#1!#2}}
 \newcommand\ompstandard[1]{OpenMP-#1\index{OpenMP!OpenMP-#1}}
+
+%%%%
+%%%% jordan stuff
+%%%%
+\newenvironment{jordan}
+{
+  \begin{equation*}
+    \begin{array}{|RRR|r|R|T|L|}
+      \hline
+      \multicolumn{3}{|c|}{\hbox{matrix}}&\hbox{sol}&rhs&action&scaling\\
+      \hline
+}
+{
+      \hline
+    \end{array}
+  \end{equation*}
+}
+
+\newcolumntype{L}{>{\hbox to 40pt \bgroup$}{l}<{$\hss\egroup}}
+\newcolumntype{T}{>{\hbox to 90pt \bgroup}{c}<{\hss\egroup}}
