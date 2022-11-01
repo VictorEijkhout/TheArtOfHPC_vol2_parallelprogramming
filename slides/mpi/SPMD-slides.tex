@@ -87,14 +87,21 @@
   These are not separate compilers,
   but scripts around the regular C/Fortran compiler. You can use all
   the usual flags.
+\begin{verbatim}
+$ mpicc -show
+icc -I/intel/include/stuff -L/intel/lib/stuff -Wwarnings # et cetera
+\end{verbatim}
 
-  Running your program:
 \begin{tacc}
-  At TACC:\\
-  \verb+ibrun yourprog+\\
+  Running your program at TACC:
+\begin{verbatim}
+#SBATCH -N 4
+#SBATCH -n 200
+ibrun yourprog
+\end{verbatim}
   the number of processes is determined by SLURM.
 \end{tacc}
-general case:
+General case of running code
 \begin{verbatim}
 mpiexec -n 4 hostfile ... yourprogram arguments
 mpirun -np 4 hostfile ... yourprogram arguments
@@ -166,6 +173,7 @@ mpirun -np 4 hostfile ... yourprogram arguments
   \item If a slide has a \n{(exercisename)} over it, there will be a
     template program \n{exercisename.c} (or \n{F90} or \n{py}).
   \item Type \n{make exercisename} to compile it
+  \item Run with \n{ibrun} or \n{mpiexec} (see above)
   \item Python: setup once per session
 \begin{verbatim}
 module load python3
@@ -213,9 +221,9 @@ Provided in Intel compiler:
 \begin{verbatim}
 module load intel/18.0.2
 \end{verbatim}
-or newer. Not in gcc7.
+or newer.
 \end{tacc}
-(Legacy bindings are far inferior)
+\item \n{mpif.h} will be deprecated.
 \end{itemize}
 \end{numberedframe}
 \end{fortran}
@@ -230,19 +238,23 @@ from mpi4py import MPI
 \end{numberedframe}
 \end{python}
 
-\begin{numberedframe}{MPI headers: C++}
-\label{sl:mpi-header-cpp}
-You need an include file:
-\begin{itemize}
-\item There are no real C++ bindings, but see MPL.
-\end{itemize}
-\begin{verbatim}
-module load mpl
-
-mpicc yourprogram.cpp -I${TACC_MPL_INC}
-
-#include <mpl/mpl.hpp>
-\end{verbatim}
+\begin{numberedframe}{C++ bindings}
+  MPI-1 had C++ bindings, by MPI-2 they were deprecated, in MPI-3 they have been removed.
+  \begin{itemize}
+  \item Easy solution: use the C~bindings unaltered.
+    \begin{itemize}
+    \item This is done in the \n{cxx} exercise directory.
+    \item Ugly: very un-OO.
+    \end{itemize}
+  \item There are C++ bindings in Boost. No longer developed?
+  \item Try MPL: \url{https://github.com/rabauke/mpl}
+    \begin{itemize}
+    \item Very modern OO.
+    \item Exercises in \n{mpl} directory.
+    \item Caution: not a full MPI implementation\\
+      (I/O and one-sided mostly missing)
+    \end{itemize}
+  \end{itemize}
 \end{numberedframe}
 
 \begin{numberedframe}{MPI Init / Finalize}
@@ -290,48 +302,7 @@ MPI_Init(0,0);
   \end{itemize}
   There's actually not a lot you can do with an error code:\\
   very hard to recover from errors in parallel.\\
-  By default code bombs with (hoperfully informative) message.
-\end{numberedframe}
-
-\begin{python}
-\begin{numberedframe}{Python bindings}
-\begin{verbatim}
-module load python3
-\end{verbatim}
-\begin{verbatim}
-from mpi4py import MPI
-\end{verbatim}
-Run:
-\begin{tacc}
-\begin{verbatim}
-ibrun python3 yourprogram.py
-\end{verbatim}
-\end{tacc}
-Your local installation:
-\begin{verbatim}
-mpiexec -n 15 python yourprogram.py
-\end{verbatim}
-No initialization needed.
-\end{numberedframe}
-\end{python}
-
-\begin{numberedframe}{C++ bindings}
-  MPI-1 had C++ bindings, by MPI-2 they were deprecated, in MPI-3 they have been removed.
-  \begin{itemize}
-  \item Easy solution: use the C~bindings unaltered.
-    \begin{itemize}
-    \item This is done in the \n{cxx} exercise directory.
-    \item Ugly: very un-OO.
-    \end{itemize}
-  \item There are C++ bindings in Boost. No longer developed?
-  \item Try MPL: \url{https://github.com/rabauke/mpl}
-    \begin{itemize}
-    \item Very modern OO.
-    \item Exercises in \n{mpl} directory.
-    \item Caution: not a full MPI implementation\\
-      (I/O and one-sided mostly missing)
-    \end{itemize}
-  \end{itemize}
+  By default code bombs with (hopefully informative) message.
 \end{numberedframe}
 
 \begin{exerciseframe}[hello]
