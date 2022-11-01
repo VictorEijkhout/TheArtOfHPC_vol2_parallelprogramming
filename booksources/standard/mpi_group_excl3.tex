@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,11 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Group_excl (\hss} \\
- & group & group & MPI_Group & TYPE\discretionary{}{\kern10pt}{}(MPI_Group)  \\ & n & number of elements in array \mpiarg{ranks} & int & INTEGER  \\ & ranks & array of integer ranks of processes in \mpiarg{group} not to appear in \mpiarg{newgroup} & const int[] & INTEGER\discretionary{}{\kern10pt}{}(n)  \\ & newgroup & new group derived from above, preserving the order defined by \mpiarg{group} & MPI_Group* & TYPE\discretionary{}{\kern10pt}{}(MPI_Group)  \\
+ & group & group & MPI_Group & TYPE\discretionary{}{\kern10pt}{}(MPI_Group)  \\
+ & n & number of elements in array \mpiarg{ranks} & int & INTEGER  \\
+ & ranks & array of integer ranks of processes in \mpiarg{group} not to appear in \mpiarg{newgroup} & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(n)  \\
+ & newgroup & new group derived from above, preserving the order defined by \mpiarg{group} & MPI_Group* & TYPE\discretionary{}{\kern10pt}{}(MPI_Group)  \\
+
 &)\\
 
 \bottomrule

@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,10 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Graphdims_get (\hss} \\
- & comm & communicator for group with graph structure & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\ & nnodes & number of nodes in graph (same as number of processes in the group) & int* & INTEGER  & OUT \\ & nedges & number of edges in graph & int* & INTEGER  & OUT \\
+ & comm & communicator for group with graph structure & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\
+ & nnodes & number of nodes in graph (same as number of processes in the group) & int* & INTEGER  & OUT \\
+ & nedges & number of edges in graph & int* & INTEGER  & OUT \\
+
 &)\\
 
 \bottomrule

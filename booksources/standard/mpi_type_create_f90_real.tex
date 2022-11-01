@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,10 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Type_create_f90_real (\hss} \\
- & p & precision, in decimal digits & int & INTEGER  & IN \\ & r & decimal exponent range & int & INTEGER  & IN \\ & newtype & the requested \MPI/ datatype & MPI_Datatype* & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & OUT \\
+ & p & precision, in decimal digits & int & INTEGER  & IN \\
+ & r & decimal exponent range & int & INTEGER  & IN \\
+ & newtype & the requested \MPI/ datatype & MPI_Datatype* & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & OUT \\
+
 &)\\
 
 \bottomrule

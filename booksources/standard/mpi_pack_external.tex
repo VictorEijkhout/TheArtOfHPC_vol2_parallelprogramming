@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -34,7 +34,14 @@ l       % inout
 \midrule
 \hbox to 18pt{MPI_Pack_external (\hss} \\
 \hbox to 18pt{MPI_Pack_external_c (\hss} \\
- & datarep & data representation & const char[] & CHARACTER  & IN \\ & inbuf & input buffer start & const void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & IN \\ & incount & number of input data items & $\left[ \begin{array}{ll}\mathtt{ int }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & IN \\ [+3pt] & datatype & datatype of each input data item & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\ & outbuf & output buffer start & void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & OUT \\ & outsize & output buffer size, in bytes & $\left[ \begin{array}{ll}\mathtt{ MPI_Aint }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_ADDRESS_KIND)  & IN \\ [+3pt] & position & current position in buffer, in bytes & $\left[ \begin{array}{ll}\mathtt{ MPI_Aint* }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_ADDRESS_KIND)  & INOUT \\ [+3pt]
+ & datarep & data representation & const\ char[] & CHARACTER  & IN \\
+ & inbuf & input buffer start & const\ void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & IN \\
+ & incount & number of input data items & $\left[ \begin{array}{ll}\mathtt{ int }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & IN \\ [+3pt]
+ & datatype & datatype of each input data item & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\
+ & outbuf & output buffer start & void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & OUT \\
+ & outsize & output buffer size, in bytes & $\left[ \begin{array}{ll}\mathtt{ MPI_Aint }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_ADDRESS_KIND)  & IN \\ [+3pt]
+ & position & current position in buffer, in bytes & $\left[ \begin{array}{ll}\mathtt{ MPI_Aint* }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_ADDRESS_KIND)  & INOUT \\ [+3pt]
+
 &)\\
 
 \bottomrule

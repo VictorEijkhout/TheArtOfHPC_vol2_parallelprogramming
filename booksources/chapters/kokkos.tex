@@ -225,6 +225,9 @@ View<double*,HostSpace> hostarray(5);
 View<double*,CudaSpace> cudaarray(5);
 \end{lstlisting}
 
+The \indexkokkos{CudaSpace} is only available
+if Kokkos has been configured with \ac{CUDA}
+
 \Level 1 {Space coherence}
 
 Kokkos never makes implicit deep copies,
@@ -246,6 +249,25 @@ Kokkos:parallel_whatever(
     some lambda );
 // if needed, deep copy back.
 \end{lstlisting}
+
+\Level 0 {Configuration}
+
+An accelerator-free installation with OpenMP:
+\begin{verbatim}
+cmake \
+    -D Kokkos_ENABLE_SERIAL=ON -D Kokkos_ENABLE_OPENMP=ON
+\end{verbatim}
+
+Threading is not compatible with OpenMP:
+\begin{verbatim}
+-D Kokkos_ENABLE_THREADS=ON  
+\end{verbatim}
+
+Cuda installation:
+\begin{verbatim}
+cmake \
+    -D Kokkos_ENABLE_CUDA=ON -D Kokkos_ARCH_TURING75=ON -D Kokkos_ENABLE_CUDA_LAMBDA=ON
+\end{verbatim}
 
 \Level 0 {Stuff}
 

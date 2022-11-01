@@ -1,4 +1,4 @@
-% -*- latex -*-
+ -*- latex -*-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
@@ -22,12 +22,12 @@ see the example in section~\ref{sec:first-touch}.
 
 Thread placement can be controlled with two environment variables:
 \begin{itemize}
-\item the environment variable \indexompdef{OMP_PROC_BIND}
+\item the environment variable \indextermtt{OMP_PROC_BIND}
   describes how threads are bound to \indextermbus{OpenMP}{places}; while
-\item the variable \indexompshow{OMP_PLACES} describes these places
+\item the variable \indextermtt{OMP_PLACES} describes these places
   in terms of the available hardware.
 \item When you're experimenting with these variables it is a good idea
-  to set \indexompdef{OMP_DISPLAY_ENV} to true, so that OpenMP will
+  to set \indextermtt{OMP_DISPLAY_ENV} to true, so that OpenMP will
   print out at runtime how it has interpreted your specification.
   The examples in the following sections will display this output.
 \end{itemize}
@@ -195,7 +195,7 @@ OMP_PLACES="{0:4:8}:4:1"
 
 \Level 1 {Binding possibilities}
 
-Values for \indexompshow{OMP_PROC_BIND} are: \n{false, true, master, close, spread}.
+Values for \indextermtt{OMP_PROC_BIND} are: \n{false, true, master, close, spread}.
 \begin{itemize}
 \item false: set no binding \item true: lock threads to a core \item
   master: collocate threads with the master thread \item close: place

@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -34,7 +34,11 @@ l       % inout
 \midrule
 \hbox to 18pt{MPI_Pack_external_size (\hss} \\
 \hbox to 18pt{MPI_Pack_external_size_c (\hss} \\
- & datarep & data representation & const char[] & CHARACTER  & IN \\ & incount & number of input data items & $\left[ \begin{array}{ll}\mathtt{ int }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & IN \\ [+3pt] & datatype & datatype of each input data item & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\ & size & output buffer size, in bytes & $\left[ \begin{array}{ll}\mathtt{ MPI_Aint* }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_ADDRESS_KIND)  & OUT \\ [+3pt]
+ & datarep & data representation & const\ char[] & CHARACTER  & IN \\
+ & incount & number of input data items & $\left[ \begin{array}{ll}\mathtt{ int }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & IN \\ [+3pt]
+ & datatype & datatype of each input data item & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\
+ & size & output buffer size, in bytes & $\left[ \begin{array}{ll}\mathtt{ MPI_Aint* }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_ADDRESS_KIND)  & OUT \\ [+3pt]
+
 &)\\
 
 \bottomrule

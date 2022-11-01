@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,11 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Pack_size (\hss} \\
- & incount & count argument to packing call & int & INTEGER  & IN \\ & datatype & datatype argument to packing call & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\ & comm & communicator argument to packing call & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\ & size & upper bound on size of packed message, in bytes & int* & INTEGER  & OUT \\
+ & incount & count argument to packing call & int & INTEGER  & IN \\
+ & datatype & datatype argument to packing call & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\
+ & comm & communicator argument to packing call & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\
+ & size & upper bound on size of packed message, in bytes & int* & INTEGER  & OUT \\
+
 &)\\
 
 \bottomrule

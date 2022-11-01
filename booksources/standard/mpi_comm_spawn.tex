@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,15 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Comm_spawn (\hss} \\
- & command & name of program to be spawned & const char* & CHARACTER  & IN \\ & argv & arguments to \mpiarg{command} & char*[] & CHARACTER\discretionary{}{\kern10pt}{}(*)  & IN \\ & maxprocs & maximum number of processes to start & int & INTEGER  & IN \\ & info & a set of key-value pairs telling the runtime system where and how to start the processes & MPI_Info & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)  & IN \\ & root & rank of process in which previous arguments are examined & int & INTEGER  & IN \\ & comm & intra-communicator containing group of spawning processes & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\ & intercomm & inter-communicator between original group and the newly spawned group & MPI_Comm* & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & OUT \\ & array_of_errcodes & one code per process & int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  & OUT \\
+ & command & name of program to be spawned & const\ char* & CHARACTER  & IN \\
+ & argv & arguments to \mpiarg{command} & char*[] & CHARACTER\discretionary{}{\kern10pt}{}(*)  & IN \\
+ & maxprocs & maximum number of processes to start & int & INTEGER  & IN \\
+ & info & a set of key-value pairs telling the runtime system where and how to start the processes & MPI_Info & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)  & IN \\
+ & root & rank of process in which previous arguments are examined & int & INTEGER  & IN \\
+ & comm & intra-communicator containing group of spawning processes & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\
+ & intercomm & inter-communicator between original group and the newly spawned group & MPI_Comm* & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & OUT \\
+ & array_of_errcodes & one code per process & int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  & OUT \\
+
 &)\\
 
 \bottomrule

@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,10 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Get_elements (\hss} \\
- & status & return status of receive operation & const MPI_Status* & TYPE\discretionary{}{\kern10pt}{}(MPI_Status)  & IN \\ & datatype & datatype used by receive operation & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\ & count & number of received basic elements & int* & INTEGER  & OUT \\
+ & status & return status of receive operation & const\ MPI_Status* & TYPE\discretionary{}{\kern10pt}{}(MPI_Status)  & IN \\
+ & datatype & datatype used by receive operation & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\
+ & count & number of received basic elements & int* & INTEGER  & OUT \\
+
 &)\\
 
 \bottomrule

@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -34,7 +34,12 @@ l       % inout
 \midrule
 \hbox to 18pt{MPI_Reduce_local (\hss} \\
 \hbox to 18pt{MPI_Reduce_local_c (\hss} \\
- & inbuf & input buffer & const void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & IN \\ & inoutbuf & combined input and output buffer & void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & INOUT \\ & count & number of elements in \mpiarg{inbuf} and \mpiarg{inoutbuf} buffers & $\left[ \begin{array}{ll}\mathtt{ int }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & IN \\ [+3pt] & datatype & datatype of elements of \mpiarg{inbuf} and \mpiarg{inoutbuf} buffers & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\ & op & operation & MPI_Op & TYPE\discretionary{}{\kern10pt}{}(MPI_Op)  & IN \\
+ & inbuf & input buffer & const\ void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & IN \\
+ & inoutbuf & combined input and output buffer & void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & INOUT \\
+ & count & number of elements in \mpiarg{inbuf} and \mpiarg{inoutbuf} buffers & $\left[ \begin{array}{ll}\mathtt{ int }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & IN \\ [+3pt]
+ & datatype & datatype of elements of \mpiarg{inbuf} and \mpiarg{inoutbuf} buffers & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\
+ & op & operation & MPI_Op & TYPE\discretionary{}{\kern10pt}{}(MPI_Op)  & IN \\
+
 &)\\
 
 \bottomrule

@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,13 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_File_set_view (\hss} \\
- & fh & file handle & MPI_File & TYPE\discretionary{}{\kern10pt}{}(MPI_File)  \\ & disp & displacement & MPI_Offset & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_OFFSET_KIND)  \\ & etype & elementary datatype & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  \\ & filetype & filetype & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  \\ & datarep & data representation & const char* & CHARACTER  \\ & info & info object & MPI_Info & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)  \\
+ & fh & file handle & MPI_File & TYPE\discretionary{}{\kern10pt}{}(MPI_File)  \\
+ & disp & displacement & MPI_Offset & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_OFFSET_KIND)  \\
+ & etype & elementary datatype & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  \\
+ & filetype & filetype & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  \\
+ & datarep & data representation & const\ char* & CHARACTER  \\
+ & info & info object & MPI_Info & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)  \\
+
 &)\\
 
 \bottomrule

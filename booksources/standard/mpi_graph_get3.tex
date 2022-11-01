@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,12 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Graph_get (\hss} \\
- & comm & communicator with graph structure & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\ & maxindex & length of vector \mpiarg{index} in the calling program & int & INTEGER  \\ & maxedges & length of vector \mpiarg{edges} in the calling program & int & INTEGER  \\ & index & array of integers containing the graph structure (for details see the definition of \mpifunc{MPI_GRAPH_CREATE}) & int[] & INTEGER\discretionary{}{\kern10pt}{}(maxindex)  \\ & edges & array of integers containing the graph structure & int[] & INTEGER\discretionary{}{\kern10pt}{}(maxedges)  \\
+ & comm & communicator with graph structure & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\
+ & maxindex & length of vector \mpiarg{index} in the calling program & int & INTEGER  \\
+ & maxedges & length of vector \mpiarg{edges} in the calling program & int & INTEGER  \\
+ & index & array of integers containing the graph structure (for details see the definition of \mpifunc{MPI_GRAPH_CREATE}) & int[] & INTEGER\discretionary{}{\kern10pt}{}(maxindex)  \\
+ & edges & array of integers containing the graph structure & int[] & INTEGER\discretionary{}{\kern10pt}{}(maxedges)  \\
+
 &)\\
 
 \bottomrule

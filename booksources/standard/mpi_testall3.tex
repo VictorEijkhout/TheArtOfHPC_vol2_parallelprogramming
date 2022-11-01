@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,11 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Testall (\hss} \\
- & count & list length & int & INTEGER  \\ & array_of_requests & array of requests & MPI_Request[] & TYPE\discretionary{}{\kern10pt}{}(MPI_Request)\discretionary{}{\kern10pt}{}(count)  \\ & flag & \mpicode{true} if all of the operations are complete & int* & LOGICAL  \\ & array_of_statuses & array of status objects & MPI_Status[] & TYPE\discretionary{}{\kern10pt}{}(MPI_Status)\discretionary{}{\kern10pt}{}(*)  \\
+ & count & list length & int & INTEGER  \\
+ & array_of_requests & array of requests & MPI_Request[] & TYPE\discretionary{}{\kern10pt}{}(MPI_Request)\discretionary{}{\kern10pt}{}(count)  \\
+ & flag & \mpicode{true} if all of the operations are complete & int* & LOGICAL  \\
+ & array_of_statuses & array of status objects & MPI_Status[] & TYPE\discretionary{}{\kern10pt}{}(MPI_Status)\discretionary{}{\kern10pt}{}(*)  \\
+
 &)\\
 
 \bottomrule

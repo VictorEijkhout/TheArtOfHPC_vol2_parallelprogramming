@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,11 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Cart_coords (\hss} \\
- & comm & communicator with Cartesian structure & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\ & rank & rank of a process within group of \mpiarg{comm} & int & INTEGER  \\ & maxdims & length of vector  \mpiarg{coords} in the calling program & int & INTEGER  \\ & coords & integer array (of size \mpiarg{maxdims}) containing the Cartesian coordinates of specified process & int[] & INTEGER\discretionary{}{\kern10pt}{}(maxdims)  \\
+ & comm & communicator with Cartesian structure & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\
+ & rank & rank of a process within group of \mpiarg{comm} & int & INTEGER  \\
+ & maxdims & length of vector  \mpiarg{coords} in the calling program & int & INTEGER  \\
+ & coords & integer array (of size \mpiarg{maxdims}) containing the Cartesian coordinates of specified process & int[] & INTEGER\discretionary{}{\kern10pt}{}(maxdims)  \\
+
 &)\\
 
 \bottomrule

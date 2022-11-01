@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,12 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Mprobe (\hss} \\
- & source & rank of source or \const{MPI_ANY_SOURCE} & int & INTEGER  \\ & tag & message tag or \const{MPI_ANY_TAG} & int & INTEGER  \\ & comm & communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\ & message & returned message & MPI_Message* & TYPE\discretionary{}{\kern10pt}{}(MPI_Message)  \\ & status & status object & MPI_Status* & TYPE\discretionary{}{\kern10pt}{}(MPI_Status)  \\
+ & source & rank of source or \const{MPI_ANY_SOURCE} & int & INTEGER  \\
+ & tag & message tag or \const{MPI_ANY_TAG} & int & INTEGER  \\
+ & comm & communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\
+ & message & returned message & MPI_Message* & TYPE\discretionary{}{\kern10pt}{}(MPI_Message)  \\
+ & status & status object & MPI_Status* & TYPE\discretionary{}{\kern10pt}{}(MPI_Status)  \\
+
 &)\\
 
 \bottomrule

@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,11 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Dist_graph_neighbors_count (\hss} \\
- & comm & communicator with distributed graph topology & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\ & indegree & number of edges into this process & int* & INTEGER  \\ & outdegree & number of edges out of this process & int* & INTEGER  \\ & weighted & \mpicode{false} if \const{MPI_UNWEIGHTED} was supplied during creation, \mpicode{true} otherwise & int* & LOGICAL  \\
+ & comm & communicator with distributed graph topology & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\
+ & indegree & number of edges into this process & int* & INTEGER  \\
+ & outdegree & number of edges out of this process & int* & INTEGER  \\
+ & weighted & \mpicode{false} if \const{MPI_UNWEIGHTED} was supplied during creation, \mpicode{true} otherwise & int* & LOGICAL  \\
+
 &)\\
 
 \bottomrule

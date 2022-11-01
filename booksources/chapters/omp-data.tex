@@ -37,7 +37,7 @@ All threads increment the same variable, so after the loop it will
 have a value of five plus the number of threads;
 or maybe less because of the data races involved.
 This issue is discussed in \HPSCref{sec:shared-lock};
-see \ref{sec:critical} for a solution in OpenMP.
+see \ref{sec:critical} for a solution to data races in OpenMP.
 
 Sometimes this global update is what you want; in other cases the
 variable is intended only for intermediate results in a computation.
@@ -88,11 +88,16 @@ after the region.
 \end{lstlisting}
 
 Data that is declared private with the \indexpragma{private} directive is
-put on a separate \indextermbus{stack}{per thread}. The OpenMP standard
-does not dictate the size of these stacks, but beware of \indextermbus{stack}{overflow}.
-A~typical default
-is a few megabyte; you can control it with the environment variable
-\indexompshow{OMP_STACKSIZE}. Its values can be literal or with suffixes:
+put on a separate \indextermbus{stack}{per thread}.
+The OpenMP standard
+does not dictate the size of these stacks,
+but beware of \indextermbus{stack}{overflow}.
+A~typical default is a few megabyte;
+you can control it with the environment variable
+\indexompdef{OMP_STACKSIZE}.
+(You can find the current value by setting \indexompdef{OMP_DISPLAY_ENV}.)
+
+Its values can be literal or with suffixes:
 \begin{verbatim}
 123 456k 567K 678m 789M 246g 357G
 \end{verbatim}
@@ -128,6 +133,12 @@ parallel region. The rules for variables in that function are as follows:
   except if the have the \lstinline{Save} attribute.
   This attribute is implicitly given to any variable
   that has value-initialized.
+
+  In the following example we have two almost identical routines,
+  except that the first does value-initialization on the local variable,
+  thereby in effect making it shared. The second routine does not have that problem.
+  
+  \fsnippetwithoutput{hellosavef}{examples/omp/f}{save}
 \end{fortrannote}
 
 \Level 0 {Temporary variables in a loop}
@@ -214,21 +225,22 @@ can be shared or private, depending on the clause you use.
   \n{malloc}\index{malloc!and private/shared data} or
   \n{allocate}\index{allocate!and private/shared data}, can only be shared.
 \end{enumerate}
-Example of the first type: in
-%
-\cverbatimsnippet[examples/omp/c/alloc.c]{privatearray}
-%
+Example of the first type:
 each thread gets a private copy of the array, properly initialized.
+%
+%% \cverbatimsnippet[examples/omp/c/alloc.c]{privatearray}
+\csnippetwithoutput{privatearray}{examples/omp/c}{privarray}
+%
+Of course, since only the private copy is altered, the original array
+is unaffected.
 
 On the other hand, in
 %
-\cverbatimsnippet[examples/omp/c/alloc.c]{privatepointer}
+\csnippetwithoutput{privatepointer}{examples/omp/c}{pointarray}
+%% \cverbatimsnippet[examples/omp/c/alloc.c]{privatepointer}
 %
 each thread gets a private pointer, but all pointers point to the same
 object.
-
-It is possible to perform a reduction on an array;
-see section~\ref{sec:omp-array-reduct}.
 
 \Level 0 {First and last private}
 
@@ -249,6 +261,11 @@ You can force their initialization with \indexclause{firstprivate}.
 \end{lstlisting}
 The variable \n{t} behaves like a private variable, except that it is
 initialized to the outside value.
+
+\begin{remark}
+  Variables are \indexclause{firstprivate} by default in tasks;
+  see chapter~\ref{chomp-task}.
+\end{remark}
 
 Secondly, you may want a private value to be preserved to the
 environment outside the parallel region. This really only makes sense
@@ -355,15 +372,16 @@ in a parallel region.
 \end{exercise}
 
 \begin{cppnote}{Threadprivate random number generators}
-  The new C++ \lstinline{random} header has threadsafe generator,
+  The new C++ \lstinline{random} header has a threadsafe generator,
   by virtue of the statement in the standard that no STL object
   can rely on global state.
   The usual idiom 
+can not be made threadsafe because of the initialization:
 \begin{lstlisting}
 static random_device rd;
 static mt19937 rng(rd);    
 \end{lstlisting}
-can not be made threadsafe because of the initialization.
+
 However, the following works:
 %
 \cxxverbatimsnippet{privaterandom}

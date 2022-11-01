@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -34,7 +34,17 @@ l       % inout
 \midrule
 \hbox to 18pt{MPI_Type_create_darray (\hss} \\
 \hbox to 18pt{MPI_Type_create_darray_c (\hss} \\
- & size & size of process group & int & INTEGER  & IN \\ & rank & rank in process group & int & INTEGER  & IN \\ & ndims & number of array dimensions as well as process grid dimensions & int & INTEGER  & IN \\ & array_of_gsizes & number of elements of type \mpiarg{oldtype} in each dimension of global array & $\left[ \begin{array}{ll}\mathtt{ const int[] }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(ndims)  & IN \\ [+3pt] & array_of_distribs & distribution of array in each dimension & const int[] & INTEGER\discretionary{}{\kern10pt}{}(ndims)  & IN \\ & array_of_dargs & distribution argument in each dimension & const int[] & INTEGER\discretionary{}{\kern10pt}{}(ndims)  & IN \\ & array_of_psizes & size of process grid in each dimension & const int[] & INTEGER\discretionary{}{\kern10pt}{}(ndims)  & IN \\ & order & array storage order flag & int & INTEGER  & IN \\ & oldtype & old datatype & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\ & newtype & new datatype & MPI_Datatype* & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & OUT \\
+ & size & size of process group & int & INTEGER  & IN \\
+ & rank & rank in process group & int & INTEGER  & IN \\
+ & ndims & number of array dimensions as well as process grid dimensions & int & INTEGER  & IN \\
+ & array_of_gsizes & number of elements of type \mpiarg{oldtype} in each dimension of global array & $\left[ \begin{array}{ll}\mathtt{ const\ int[] }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(ndims)  & IN \\ [+3pt]
+ & array_of_distribs & distribution of array in each dimension & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(ndims)  & IN \\
+ & array_of_dargs & distribution argument in each dimension & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(ndims)  & IN \\
+ & array_of_psizes & size of process grid in each dimension & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(ndims)  & IN \\
+ & order & array storage order flag & int & INTEGER  & IN \\
+ & oldtype & old datatype & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\
+ & newtype & new datatype & MPI_Datatype* & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & OUT \\
+
 &)\\
 
 \bottomrule

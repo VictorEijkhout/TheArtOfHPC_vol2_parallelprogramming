@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,12 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Cart_get (\hss} \\
- & comm & communicator with Cartesian structure & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\ & maxdims & length of vectors \mpiarg{dims}, \mpiarg{periods}, and \mpiarg{coords} in the calling program & int & INTEGER  & IN \\ & dims & number of processes for each Cartesian dimension & int[] & INTEGER\discretionary{}{\kern10pt}{}(maxdims)  & OUT \\ & periods & periodicity (\mpicode{true}/\mpicode{false}) for each Cartesian dimension & int[] & LOGICAL\discretionary{}{\kern10pt}{}(maxdims)  & OUT \\ & coords & coordinates of calling process in Cartesian structure & int[] & INTEGER\discretionary{}{\kern10pt}{}(maxdims)  & OUT \\
+ & comm & communicator with Cartesian structure & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\
+ & maxdims & length of vectors \mpiarg{dims}, \mpiarg{periods}, and \mpiarg{coords} in the calling program & int & INTEGER  & IN \\
+ & dims & number of processes for each Cartesian dimension & int[] & INTEGER\discretionary{}{\kern10pt}{}(maxdims)  & OUT \\
+ & periods & periodicity (\mpicode{true}/\mpicode{false}) for each Cartesian dimension & int[] & LOGICAL\discretionary{}{\kern10pt}{}(maxdims)  & OUT \\
+ & coords & coordinates of calling process in Cartesian structure & int[] & INTEGER\discretionary{}{\kern10pt}{}(maxdims)  & OUT \\
+
 &)\\
 
 \bottomrule

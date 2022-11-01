@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -34,7 +34,12 @@ l       % inout
 \midrule
 \hbox to 18pt{MPI_Type_get_envelope (\hss} \\
 \hbox to 18pt{MPI_Type_get_envelope_c (\hss} \\
- & datatype & datatype to decode & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\ & num_integers & number of input integers used in call constructing \mpiarg{combiner} & $\left[ \begin{array}{ll}\mathtt{ int* }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & OUT \\ [+3pt] & num_addresses & number of input addresses used in call constructing \mpiarg{combiner} & $\left[ \begin{array}{ll}\mathtt{ int* }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & OUT \\ [+3pt] & num_datatypes & number of input large counts used in call constructing \mpiarg{combiner} & $\left[ \begin{array}{ll}\mathtt{ int* }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & OUT \\ [+3pt] & combiner & number of input datatypes used in call constructing \mpiarg{combiner} & $\left[ \begin{array}{ll}\mathtt{ int* }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & OUT \\ [+3pt]
+ & datatype & datatype to decode & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\
+ & num_integers & number of input integers used in call constructing \mpiarg{combiner} & $\left[ \begin{array}{ll}\mathtt{ int* }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & OUT \\ [+3pt]
+ & num_addresses & number of input addresses used in call constructing \mpiarg{combiner} & $\left[ \begin{array}{ll}\mathtt{ int* }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & OUT \\ [+3pt]
+ & num_datatypes & number of input large counts used in call constructing \mpiarg{combiner} & $\left[ \begin{array}{ll}\mathtt{ int* }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & OUT \\ [+3pt]
+ & combiner & number of input datatypes used in call constructing \mpiarg{combiner} & $\left[ \begin{array}{ll}\mathtt{ int* }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & OUT \\ [+3pt]
+
 &)\\
 
 \bottomrule

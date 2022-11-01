@@ -165,9 +165,13 @@ This subset inherits both sizes and periodicity from the original communicator.
 \csnippetwithoutput{hyperplane13p}{examples/mpi/c}{cartsub}
 
 \Level 1 {Reordering}
+\label{sec:mpi-cart-map}
 
-The routine \indexmpidef{MPI_Cart_map} gives a re-ordered rank
-for the calling process.
+The \indexmpishow{MPI_Cart_create} routine has a possibility
+of reordering ranks. If this is applied,
+the routine \indexmpidef{MPI_Cart_map} gives the result of this.
+Given the same parameters as \indexmpishow{MPI_Cart_create},
+it returns the re-ordered rank for the calling process.
 
 \Level 0 {Distributed graph topology}
 \label{sec:mpi-dist-graph}
@@ -449,6 +453,8 @@ Other legacy routines:
 
 \Level 1 {Re-ordering}
 
-The routine \indexmpidef{MPI_Graph_map} gives a re-ordered rank
+Similar to the \indexmpishow{MPI_Cart_map} routine
+(section~\ref{sec:mpi-cart-map}),
+the routine \indexmpidef{MPI_Graph_map} gives a re-ordered rank
 for the calling process.
 

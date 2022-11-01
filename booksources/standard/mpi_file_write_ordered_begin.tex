@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -34,7 +34,11 @@ l       % inout
 \midrule
 \hbox to 18pt{MPI_File_write_ordered_begin (\hss} \\
 \hbox to 18pt{MPI_File_write_ordered_begin_c (\hss} \\
- & fh & file handle & MPI_File & TYPE\discretionary{}{\kern10pt}{}(MPI_File)  & INOUT \\ & buf & initial address of buffer & const void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & IN \\ & count & number of elements in buffer & $\left[ \begin{array}{ll}\mathtt{ int }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & IN \\ [+3pt] & datatype & datatype of each buffer element & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\
+ & fh & file handle & MPI_File & TYPE\discretionary{}{\kern10pt}{}(MPI_File)  & INOUT \\
+ & buf & initial address of buffer & const\ void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & IN \\
+ & count & number of elements in buffer & $\left[ \begin{array}{ll}\mathtt{ int }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & IN \\ [+3pt]
+ & datatype & datatype of each buffer element & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\
+
 &)\\
 
 \bottomrule

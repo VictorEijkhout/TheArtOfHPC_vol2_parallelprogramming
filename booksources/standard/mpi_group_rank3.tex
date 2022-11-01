@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,9 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Group_rank (\hss} \\
- & group & group & MPI_Group & TYPE\discretionary{}{\kern10pt}{}(MPI_Group)  \\ & rank & rank of the calling process in group, or \const{MPI_UNDEFINED} if the process is not a member & int* & INTEGER  \\
+ & group & group & MPI_Group & TYPE\discretionary{}{\kern10pt}{}(MPI_Group)  \\
+ & rank & rank of the calling process in group, or \const{MPI_UNDEFINED} if the process is not a member & int* & INTEGER  \\
+
 &)\\
 
 \bottomrule

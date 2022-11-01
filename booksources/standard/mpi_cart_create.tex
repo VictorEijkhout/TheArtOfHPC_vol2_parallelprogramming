@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,13 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Cart_create (\hss} \\
- & comm_old & input communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\ & ndims & number of dimensions of Cartesian grid & int & INTEGER  & IN \\ & dims & integer array of size \mpiarg{ndims} specifying the number of processes in each dimension & const int[] & INTEGER\discretionary{}{\kern10pt}{}(ndims)  & IN \\ & periods & logical array of size \mpiarg{ndims} specifying whether the grid is periodic (\mpicode{true}) or not (\mpicode{false}) in each dimension & const int[] & LOGICAL\discretionary{}{\kern10pt}{}(ndims)  & IN \\ & reorder & ranking may be reordered (\mpicode{true}) or not (\mpicode{false}) & int & LOGICAL  & IN \\ & comm_cart & communicator with new Cartesian topology & MPI_Comm* & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & OUT \\
+ & comm_old & input communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\
+ & ndims & number of dimensions of Cartesian grid & int & INTEGER  & IN \\
+ & dims & integer array of size \mpiarg{ndims} specifying the number of processes in each dimension & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(ndims)  & IN \\
+ & periods & logical array of size \mpiarg{ndims} specifying whether the grid is periodic (\mpicode{true}) or not (\mpicode{false}) in each dimension & const\ int[] & LOGICAL\discretionary{}{\kern10pt}{}(ndims)  & IN \\
+ & reorder & ranking may be reordered (\mpicode{true}) or not (\mpicode{false}) & int & LOGICAL  & IN \\
+ & comm_cart & communicator with new Cartesian topology & MPI_Comm* & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & OUT \\
+
 &)\\
 
 \bottomrule

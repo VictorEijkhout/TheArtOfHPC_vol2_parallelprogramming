@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,15 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Ineighbor_allgather (\hss} \\
- & sendbuf & starting address of send buffer & const void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & IN \\ & sendcount & number of elements sent to each neighbor & int & INTEGER  & IN \\ & sendtype & datatype of send buffer elements & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\ & recvbuf & starting address of receive buffer & void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & OUT \\ & recvcount & number of elements received from each neighbor & int & INTEGER  & IN \\ & recvtype & datatype of receive buffer elements & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\ & comm & communicator with topology structure & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\ & request & communication request & MPI_Request* & TYPE\discretionary{}{\kern10pt}{}(MPI_Request)  & OUT \\
+ & sendbuf & starting address of send buffer & const\ void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & IN \\
+ & sendcount & number of elements sent to each neighbor & int & INTEGER  & IN \\
+ & sendtype & datatype of send buffer elements & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\
+ & recvbuf & starting address of receive buffer & void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & OUT \\
+ & recvcount & number of elements received from each neighbor & int & INTEGER  & IN \\
+ & recvtype & datatype of receive buffer elements & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\
+ & comm & communicator with topology structure & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\
+ & request & communication request & MPI_Request* & TYPE\discretionary{}{\kern10pt}{}(MPI_Request)  & OUT \\
+
 &)\\
 
 \bottomrule

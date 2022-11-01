@@ -43,7 +43,7 @@ Program Reducttype
      intarray(i) = inttype(i)
   end do
 
-  !$OMP parallel for reduction(+:intsum)
+  !$OMP parallel do reduction(+:intsum)
   do i=1,nsize
      intsum = intsum + intarray(i)
   end do

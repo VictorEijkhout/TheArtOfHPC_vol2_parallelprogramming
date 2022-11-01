@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,11 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Type_create_keyval (\hss} \\
- & type_copy_attr_fn & copy callback function for \mpiarg{type_keyval} & MPI_Type_copy_attr_function* & PROCEDURE\discretionary{}{\kern10pt}{}(MPI_Type_copy_attr_function)  & IN \\ & type_delete_attr_fn & delete callback function for \mpiarg{type_keyval} & MPI_Type_delete_attr_function* & PROCEDURE\discretionary{}{\kern10pt}{}(MPI_Type_delete_attr_function)  & IN \\ & type_keyval & key value for future access & int* & INTEGER  & OUT \\ & extra_state & extra state for callback function & void* & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_ADDRESS_KIND)  & IN \\
+ & type_copy_attr_fn & copy callback function for \mpiarg{type_keyval} & MPI_Type_copy_attr_function* & PROCEDURE\discretionary{}{\kern10pt}{}(MPI_Type_copy_attr_function)  & IN \\
+ & type_delete_attr_fn & delete callback function for \mpiarg{type_keyval} & MPI_Type_delete_attr_function* & PROCEDURE\discretionary{}{\kern10pt}{}(MPI_Type_delete_attr_function)  & IN \\
+ & type_keyval & key value for future access & int* & INTEGER  & OUT \\
+ & extra_state & extra state for callback function & void* & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_ADDRESS_KIND)  & IN \\
+
 &)\\
 
 \bottomrule

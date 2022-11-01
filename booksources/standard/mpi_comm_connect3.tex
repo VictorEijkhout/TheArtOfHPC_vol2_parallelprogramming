@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,12 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Comm_connect (\hss} \\
- & port_name & network address & const char* & CHARACTER  \\ & info & implementation-dependent information & MPI_Info & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)  \\ & root & rank in \mpiarg{comm} of root node & int & INTEGER  \\ & comm & intra-communicator over which call is collective & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\ & newcomm & inter-communicator with server as remote group & MPI_Comm* & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\
+ & port_name & network address & const\ char* & CHARACTER  \\
+ & info & implementation-dependent information & MPI_Info & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)  \\
+ & root & rank in \mpiarg{comm} of root node & int & INTEGER  \\
+ & comm & intra-communicator over which call is collective & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\
+ & newcomm & inter-communicator with server as remote group & MPI_Comm* & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\
+
 &)\\
 
 \bottomrule

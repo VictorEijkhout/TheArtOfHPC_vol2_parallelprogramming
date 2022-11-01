@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,13 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Graph_create (\hss} \\
- & comm_old & input communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\ & nnodes & number of nodes in graph & int & INTEGER  & IN \\ & index & array of integers describing node degrees (see below) & const int[] & INTEGER\discretionary{}{\kern10pt}{}(nnodes)  & IN \\ & edges & array of integers describing graph edges (see below) & const int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  & IN \\ & reorder & ranking may be reordered (\mpicode{true}) or not (\mpicode{false}) & int & LOGICAL  & IN \\ & comm_graph & communicator with graph topology added & MPI_Comm* & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & OUT \\
+ & comm_old & input communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\
+ & nnodes & number of nodes in graph & int & INTEGER  & IN \\
+ & index & array of integers describing node degrees (see below) & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(nnodes)  & IN \\
+ & edges & array of integers describing graph edges (see below) & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  & IN \\
+ & reorder & ranking may be reordered (\mpicode{true}) or not (\mpicode{false}) & int & LOGICAL  & IN \\
+ & comm_graph & communicator with graph topology added & MPI_Comm* & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & OUT \\
+
 &)\\
 
 \bottomrule

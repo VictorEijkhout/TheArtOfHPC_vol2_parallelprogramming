@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,12 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Type_create_hindexed (\hss} \\
- & count & number of blocks---also number of entries in \mpiarg{array_of_displacements} and \mpiarg{array_of_blocklengths} & int & INTEGER  & IN \\ & array_of_blocklengths & number of elements in each block & const int[] & INTEGER\discretionary{}{\kern10pt}{}(count)  & IN \\ & array_of_displacements & byte displacement of each block & const MPI_Aint[] & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_ADDRESS_KIND)\discretionary{}{\kern10pt}{}(count)  & IN \\ & oldtype & old datatype & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\ & newtype & new datatype & MPI_Datatype* & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & OUT \\
+ & count & number of blocks---also number of entries in \mpiarg{array_of_displacements} and \mpiarg{array_of_blocklengths} & int & INTEGER  & IN \\
+ & array_of_blocklengths & number of elements in each block & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(count)  & IN \\
+ & array_of_displacements & byte displacement of each block & const\ MPI_Aint[] & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_ADDRESS_KIND)\discretionary{}{\kern10pt}{}(count)  & IN \\
+ & oldtype & old datatype & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\
+ & newtype & new datatype & MPI_Datatype* & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & OUT \\
+
 &)\\
 
 \bottomrule

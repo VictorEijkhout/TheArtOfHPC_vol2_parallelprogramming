@@ -1,6 +1,6 @@
 Type(inttype),dimension(nsize) :: intarray
 Type(inttype) :: intsum = inttype(0)
-!$OMP parallel for reduction(+:intsum)
+!$OMP parallel do reduction(+:intsum)
 do i=1,nsize
    intsum = intsum + intarray(i)
 end do

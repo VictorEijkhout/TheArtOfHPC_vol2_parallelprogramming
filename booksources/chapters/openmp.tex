@@ -52,7 +52,8 @@ Here are the OpenMP \emph{environment variables}:
 \begin{itemize}
 \item \indexompshow{OMP_CANCELLATION} Set whether cancellation is activated;
   see section~\ref{sec:omp-cancel}.
-\item \indexompshow{OMP_DISPLAY_ENV} Show OpenMP version and environment variables
+\item \indexompshow{OMP_DISPLAY_ENV} Show OpenMP version (section~\ref{sec:omp-standards})
+  and environment variables.
 \item \indexompdef{OMP_DEFAULT_DEVICE} Set the device used in target regions
 \item \indexompdef{OMP_DYNAMIC} Dynamic adjustment of threads
 \item \indexompshow{OMP_MAX_ACTIVE_LEVELS} Set the maximum number of nested parallel
@@ -65,8 +66,10 @@ Here are the OpenMP \emph{environment variables}:
   section~\ref{sec:omp-proc-bind}.
 \item \indexompshow{OMP_PLACES} Specifies on which CPUs the theads should be placed;
   section~\ref{sec:omp-proc-bind}.
-\item \indexompdef{OMP_STACKSIZE} Set default thread stack size
-\item \indexompdef{OMP_SCHEDULE} How threads are scheduled
+\item \indexompshow{OMP_STACKSIZE} Set default thread stack size;
+  section~\ref{sec:omp-private}.
+\item \indexompdef{OMP_SCHEDULE} How threads are scheduled;
+  section~\ref{sec:schedule}.
 \item \indexompshow{OMP_THREAD_LIMIT} Set the maximum number of threads;
   see section~\ref{sec:omp-team}.
 \item \indexompdef{OMP_WAIT_POLICY} How waiting threads are
@@ -118,7 +121,7 @@ Other environment variables:
 \begin{itemize}
 \item \indexompshow{OMP_STACKSIZE} controls the amount of space that is
   allocated as per-thread \indexterm{stack}; the space for private
-  variables.
+  variables; see section~\ref{sec:omp-private}.
 \item \indexompshow{OMP_WAIT_POLICY} determines the behavior of
   threads that wait, for instance for \indexterm{critical section}:
   \begin{itemize}
@@ -345,3 +348,51 @@ and the standard versions:
 
 The \indextermtt{openmp.org} website maintains a record of which compilers
 support which standards: \url{https://www.openmp.org/resources/openmp-compilers-tools/}.
+
+\Level 0 {Memory model}
+\label{sec:omp-memory}
+
+\Level 1 {Dekker's algorithm}
+
+A standard illustration of the weak memory model is
+\indexterm{Dekker's algorithm}.
+We model that in OpenMP as follows;
+\cverbatimsnippet{dekkerweak}
+
+Under any reasonable interpretation of parallel execution,
+the possible values for \n{r1,r2} are $1,1$ $0,1$ or~$1,0$.
+This is known as \indexterm{sequential consistency}:
+the parallel outcome is consistent with a sequential execution that
+interleaves the parallel computations, respecting their local statement orderings.
+(See also~\HPSCref{sec:seq-consist}.)
+
+However, running this, we get a small number of cases where $r_1=r_2=0$.
+There are two possible explanations:
+\begin{enumerate}
+\item The compiler is allowed to interchange the first and second statements,
+  since there is no dependence between them; or
+\item The thread is allowed to have a local copy of the variable
+  that is not coherent with the value in memory.
+\end{enumerate}
+
+We fix this by flushing both \n{a,b}:
+\cverbatimsnippet{dekkerflush}.
+
+% \url{https://software.intel.com/es-es/forums/intel-moderncode-for-parallel-architectures/topic/610017}
+
+\Level 1 {Relaxed memory model}
+\label{sec:omp:flush}
+
+\indexpragma{flush}
+
+\begin{itemize}
+\item There is an implicit flush of all variables at the start and end 
+  of a \emph{parallel region}\index{parallel region!flush at}.
+\item There is a flush at each barrier, whether explicit or implicit,
+  such as at the end of a
+  \emph{work sharing}\index{workshare!flush after}.
+\item At entry and exit of a
+  \emph{critical section}\index{critical section!flush at}
+\item When a \emph{lock}\index{lock!flush at} is set or unset.
+\end{itemize}
+

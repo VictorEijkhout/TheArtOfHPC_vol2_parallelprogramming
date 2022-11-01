@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,10 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Session_get_num_psets (\hss} \\
- & session & session & MPI_Session & TYPE\discretionary{}{\kern10pt}{}(MPI_Session)  & IN \\ & info & info object & MPI_Info & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)  & IN \\ & npset_names & number of available process sets & int* & INTEGER  & OUT \\
+ & session & session & MPI_Session & TYPE\discretionary{}{\kern10pt}{}(MPI_Session)  & IN \\
+ & info & info object & MPI_Info & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)  & IN \\
+ & npset_names & number of available process sets & int* & INTEGER  & OUT \\
+
 &)\\
 
 \bottomrule

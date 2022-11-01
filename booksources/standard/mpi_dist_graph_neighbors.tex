@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,14 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Dist_graph_neighbors (\hss} \\
- & comm & communicator with distributed graph topology & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\ & maxindegree & size of sources and sourceweights arrays & int & INTEGER  & IN \\ & sources & processes for which the calling process is a destination & int[] & INTEGER\discretionary{}{\kern10pt}{}(maxindegree)  & OUT \\ & sourceweights & weights of the edges into the calling process & int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  & OUT \\ & maxoutdegree & size of destinations and destweights arrays & int & INTEGER  & IN \\ & destinations & processes for which the calling process is a source & int[] & INTEGER\discretionary{}{\kern10pt}{}(maxoutdegree)  & OUT \\ & destweights & weights of the edges out of the calling process & int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  & OUT \\
+ & comm & communicator with distributed graph topology & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\
+ & maxindegree & size of sources and sourceweights arrays & int & INTEGER  & IN \\
+ & sources & processes for which the calling process is a destination & int[] & INTEGER\discretionary{}{\kern10pt}{}(maxindegree)  & OUT \\
+ & sourceweights & weights of the edges into the calling process & int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  & OUT \\
+ & maxoutdegree & size of destinations and destweights arrays & int & INTEGER  & IN \\
+ & destinations & processes for which the calling process is a source & int[] & INTEGER\discretionary{}{\kern10pt}{}(maxoutdegree)  & OUT \\
+ & destweights & weights of the edges out of the calling process & int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  & OUT \\
+
 &)\\
 
 \bottomrule

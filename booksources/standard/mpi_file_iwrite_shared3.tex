@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,12 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_File_iwrite_shared (\hss} \\
- & fh & file handle & MPI_File & TYPE\discretionary{}{\kern10pt}{}(MPI_File)  & INOUT \\ & buf & initial address of buffer & const void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & IN \\ & count & number of elements in buffer & int & INTEGER  & IN \\ & datatype & datatype of each buffer element & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\ & request & request object & MPI_Request* & TYPE\discretionary{}{\kern10pt}{}(MPI_Request)  & OUT \\
+ & fh & file handle & MPI_File & TYPE\discretionary{}{\kern10pt}{}(MPI_File)  & INOUT \\
+ & buf & initial address of buffer & const\ void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & IN \\
+ & count & number of elements in buffer & int & INTEGER  & IN \\
+ & datatype & datatype of each buffer element & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\
+ & request & request object & MPI_Request* & TYPE\discretionary{}{\kern10pt}{}(MPI_Request)  & OUT \\
+
 &)\\
 
 \bottomrule

@@ -20,7 +20,7 @@ info ::
 	    echo "Please set MODE variable" && echo \
 	 ; else \
 	    case ${MODE} in \
-	        ( mpi | mpl | omp | hybrid | petsc | slepc | 1api ) \
+	        ( cuda | mpi | mpl | omp | hybrid | petsc | slepc | 1api ) \
 	            echo "using mode=${MODE}" ;; \
 	        ( * ) echo && echo "Unknown MODE=${MODE}" && echo ;; \
 	    esac \
@@ -46,11 +46,17 @@ CFLAGS =
 CXXFLAGS =
 FFLAGS =
 
-C_STD_FLAGS = -std=c99
+CSTANDARD = 99
+ifeq "${MODE}" "cuda"
+    C_STD_FLAGS = 
+else ifeq "${TACC_FAMILY_COMPILER}" "nvhpc"
+    C_STD_FLAGS = 
+else
+    C_STD_FLAGS = -std=c99
+endif
 CFLAGS   += ${C_STD_FLAGS}
 
 CPPSTANDARD = 17
-CSTANDARD = 99
 CXX_STD_FLAGS = -std=c++${CPPSTANDARD}
 CXXFLAGS += ${CXX_STD_FLAGS}
 
@@ -81,10 +87,6 @@ else
       C_COMPILER   = ${MPI_C_COMPILER}
       CXX_COMPILER = ${MPI_CXX_COMPILER}
       F_COMPILER   = ${MPI_F_COMPILER}
-    else ifeq "${MODE}" "cuda"
-      C_COMPILER   = nvcc
-      CXX_COMPILER = nvcc
-      F_COMPILER   = /bin/false
     else ifeq "${MODE}" "1api"
       ifeq "${TACC_SYSTEM}" "frontera"
         CXX_COMPILER = syclcc
@@ -133,9 +135,27 @@ else
       CXXFLAGS += ${PETSC_CXX_INCLUDES} 
       FFLAGS += ${PETSC_FC_INCLUDES} 
 
+    else ifeq "${MODE}" "cuda"
+      C_COMPILER   = nvcc
+      CXX_COMPILER = nvcc
+      F_COMPILER   = /bin/false
+
+      F_HOST_COMPILER   = no_such_f_compiler
+      ifeq "${TACC_FAMILY_COMPILER}" "intel"
+        C_HOST_COMPILER   = icc
+        CXX_HOST_COMPILER = icpc
+      else ifeq "${TACC_FAMILY_COMPILER}" "gcc"
+        C_HOST_COMPILER   = gcc
+        CXX_HOST_COMPILER = g++
+      else 
+        C_HOST_COMPILER   = no_such_compiler
+        CXX_HOST_COMPILER = no_such_compiler
+      endif
+
     else # other modes use the regular compilers
 
-	ifeq "${TACC_FAMILY_COMPILER}" "intel"
+	ifeq "not" "true"
+	else ifeq "${TACC_FAMILY_COMPILER}" "intel"
 	  C_COMPILER   = icc
 	  CXX_COMPILER = icpc
 	  F_COMPILER   = ifort
@@ -144,8 +164,8 @@ else
 	  CXX_COMPILER = icpx
 	  F_COMPILER   = ifx
 	else ifeq "${TACC_FAMILY_COMPILER}" "oneapi"
-	  C_COMPILER   = icc
-	  CXX_COMPILER = icpc
+	  C_COMPILER   = icx
+	  CXX_COMPILER = icpx
 	  F_COMPILER   = ifort
 	else ifeq "${TACC_FAMILY_COMPILER}" "gcc"
 	  C_COMPILER   = gcc
@@ -155,6 +175,10 @@ else
 	  C_COMPILER   = clang
 	  CXX_COMPILER = clang++
 	  F_COMPILER   = gfortran
+        else ifeq "${TACC_FAMILY_COMPILER}" "nvhpc"
+          C_COMPILER   = nvcc
+          CXX_COMPILER = nvcc
+          F_COMPILER   = /bin/false
 	else ifeq "${TACC_FAMILY_COMPILER}" "xl"
 	  C_COMPILER   = xlc
 	  CXX_COMPILER = xlc++
@@ -169,6 +193,8 @@ OMPFLAGS_intel    = -qopenmp
 OMPFLAGS_oneapi   = -qopenmp 
 OMPFLAGS_gcc      = -ggdb -fopenmp
 OMPFLAGS_clang    = -fopenmp
+OMPFLAGS_cuda     = -mp=gpu
+OMPFLAGS_nvhpc    = -fopenmp
 OMPFLAGS_xl       = -qsmp=omp -qoffload
 OMPFLAGS = ${OMPFLAGS_${TACC_FAMILY_COMPILER}}
 
@@ -193,6 +219,9 @@ CFLAGS   += ${EXTRA_OPTIONS}
 CXXFLAGS += ${EXTRA_OPTIONS}
 FFLAGS   += ${EXTRA_OPTIONS}
 
+##
+## Ordinary C/C++ rules
+##
 %.o : %.c
 	@cmdline="${C_COMPILER} -g  ${EXTRA_INCLUDES} ${CFLAGS} \
 	    -c $<" \
@@ -207,6 +236,29 @@ FFLAGS   += ${EXTRA_OPTIONS}
 	 && if [ "${ECHO}" = "1" ] ; then \
 	        echo "Compiling: $$cmdline" \
 	         && echo "with ${CXX_COMPILER}=$$( which ${CXX_COMPILER} )" \
+	    ; fi \
+	 && eval $$cmdline
+##
+## Cuda C/C++ rules
+##
+%.o : %.cu
+	@if [ "${LANGUAGE}" = "CXX" ] ; then \
+	    compiler=${CXX_COMPILER} && hostcompiler=${CXX_HOST_COMPILER} \
+	    ; else \
+	    compiler=${C_COMPILER} && hostcompiler=${C_HOST_COMPILER} \
+	    ; fi \
+	 && if [ -z "${HOST_FLAGS}" ] ; then \
+	      cmdline="$${compiler} -ccbin $${hostcompiler}" \
+	      ; \
+	    else \
+	      cmdline="$${compiler} -ccbin \"$${hostcompiler} ${HOST_FLAGS}\"" \
+	      ; \
+	    fi \
+	 && cmdline="$$cmdline ${EXTRA_INCLUDES} ${CFLAGS} -c $<" \
+	 && if [ "${ECHO}" = "1" ] ; then \
+	        echo "Compiling: $$cmdline" \
+	         && echo "with $${compiler}=$$( which $${compiler} )" \
+	         && echo " and $${hostcompiler}=$$( which $${hostcompiler} )" \
 	    ; fi \
 	 && eval $$cmdline
 
@@ -235,6 +287,9 @@ else ifeq "${MODE}" "1api"
 C_LINKER   := ${C_COMPILER}
 CXX_LINKER := ${CXX_COMPILER}
 F_LINKER   := ${F_COMPILER}
+else ifeq "${MODE}" "cuda"
+C_LINKER   := ${C_COMPILER} -ccbin ${C_HOST_COMPILER}
+CXX_LINKER := ${CXX_COMPILER} -ccbin ${CXX_HOST_COMPILER}
 else 
 C_LINKER   := ${C_COMPILER}
 CXX_LINKER := ${CXX_COMPILER}
@@ -327,6 +382,16 @@ runapps :
 	done \
 	) 2>&1 | tee run.log
 	@echo && echo "See run.log for all output" && echo 
-
+info ::
+	@echo "make extension : file extension depending on LANGUAGE"
+.PHONY: extension
+extension ::
+	@case ${LANGUAGE} in \
+	    ( C ) echo c ;; \
+	    ( CXX ) echo cxx ;; \
+	    ( F ) echo F90 ;; \
+	    ( P ) echo py ;; \
+	    ( * ) echo unknown ;; \
+	esac
 clean ::
 	@rm -f compile.log run.log

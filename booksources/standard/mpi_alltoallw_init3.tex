@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,18 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Alltoallw_init (\hss} \\
- & sendbuf & starting address of send buffer & const void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & IN \\ & sendcounts & integer array (of length group size) specifying the number of elements to send to each rank & const int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  & IN \\ & sdispls & integer array (of length group size). Entry \mpicode{j} specifies the displacement in bytes (relative to \mpiarg{sendbuf}) from which to take the outgoing data destined for process \mpicode{j} & const int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  & IN \\ & sendtypes & Array of datatypes (of length group size). Entry \mpicode{j} specifies the type of data to send to process \mpicode{j} & const MPI_Datatype[] & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)\discretionary{}{\kern10pt}{}(*)  & IN \\ & recvbuf & address of receive buffer & void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & OUT \\ & recvcounts & integer array (of length group size) specifying the number of elements that can be received from each rank & const int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  & IN \\ & rdispls & integer array (of length group size). Entry \mpicode{i} specifies the displacement in bytes (relative to \mpiarg{recvbuf}) at which to place the incoming data from process \mpicode{i} & const int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  & IN \\ & recvtypes & array of datatypes (of length group size). Entry \mpicode{i} specifies the type of data received from process \mpicode{i} & const MPI_Datatype[] & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)\discretionary{}{\kern10pt}{}(*)  & IN \\ & comm & communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\ & info & info argument & MPI_Info & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)  & IN \\ & request & communication request & MPI_Request* & TYPE\discretionary{}{\kern10pt}{}(MPI_Request)  & OUT \\
+ & sendbuf & starting address of send buffer & const\ void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & IN \\
+ & sendcounts & integer array (of length group size) specifying the number of elements to send to each rank & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  & IN \\
+ & sdispls & integer array (of length group size). Entry \mpicode{j} specifies the displacement in bytes (relative to \mpiarg{sendbuf}) from which to take the outgoing data destined for process \mpicode{j} & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  & IN \\
+ & sendtypes & Array of datatypes (of length group size). Entry \mpicode{j} specifies the type of data to send to process \mpicode{j} & const\ MPI_Datatype[] & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)\discretionary{}{\kern10pt}{}(*)  & IN \\
+ & recvbuf & address of receive buffer & void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & OUT \\
+ & recvcounts & integer array (of length group size) specifying the number of elements that can be received from each rank & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  & IN \\
+ & rdispls & integer array (of length group size). Entry \mpicode{i} specifies the displacement in bytes (relative to \mpiarg{recvbuf}) at which to place the incoming data from process \mpicode{i} & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  & IN \\
+ & recvtypes & array of datatypes (of length group size). Entry \mpicode{i} specifies the type of data received from process \mpicode{i} & const\ MPI_Datatype[] & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)\discretionary{}{\kern10pt}{}(*)  & IN \\
+ & comm & communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\
+ & info & info argument & MPI_Info & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)  & IN \\
+ & request & communication request & MPI_Request* & TYPE\discretionary{}{\kern10pt}{}(MPI_Request)  & OUT \\
+
 &)\\
 
 \bottomrule

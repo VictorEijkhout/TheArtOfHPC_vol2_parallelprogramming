@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,17 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Dist_graph_create_adjacent (\hss} \\
- & comm_old & input communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\ & indegree & size of \mpiarg{sources} and \mpiarg{sourceweights} arrays & int & INTEGER  \\ & sources & ranks of processes for which the calling process is a destination & const int[] & INTEGER\discretionary{}{\kern10pt}{}(indegree)  \\ & sourceweights & weights of the edges into the calling process & const int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  \\ & outdegree & size of \mpiarg{destinations} and \mpiarg{destweights} arrays & int & INTEGER  \\ & destinations & ranks of processes for which the calling process is a source & const int[] & INTEGER\discretionary{}{\kern10pt}{}(outdegree)  \\ & destweights & weights of the edges out of the calling process & const int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  \\ & info & hints on optimization and interpretation of weights & MPI_Info & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)  \\ & reorder & the ranks may be reordered (\mpicode{true}) or not~(\mbox{\mpicode{false}}) & int & LOGICAL  \\ & comm_dist_graph & communicator with distributed graph topology & MPI_Comm* & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\
+ & comm_old & input communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\
+ & indegree & size of \mpiarg{sources} and \mpiarg{sourceweights} arrays & int & INTEGER  \\
+ & sources & ranks of processes for which the calling process is a destination & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(indegree)  \\
+ & sourceweights & weights of the edges into the calling process & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  \\
+ & outdegree & size of \mpiarg{destinations} and \mpiarg{destweights} arrays & int & INTEGER  \\
+ & destinations & ranks of processes for which the calling process is a source & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(outdegree)  \\
+ & destweights & weights of the edges out of the calling process & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  \\
+ & info & hints on optimization and interpretation of weights & MPI_Info & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)  \\
+ & reorder & the ranks may be reordered (\mpicode{true}) or not~(\mbox{\mpicode{false}}) & int & LOGICAL  \\
+ & comm_dist_graph & communicator with distributed graph topology & MPI_Comm* & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\
+
 &)\\
 
 \bottomrule

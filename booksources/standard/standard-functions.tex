@@ -57,7 +57,6 @@
 \item \texttt{MPI_Comm_delete_attr}~\pageref{def:MPI_Comm_delete_attr}
 \item \texttt{MPI_Comm_disconnect}~\pageref{def:MPI_Comm_disconnect}
 \item \texttt{MPI_Comm_dup}~\pageref{def:MPI_Comm_dup}
-\item \texttt{MPI_Comm_dup_fn}~\pageref{def:MPI_Comm_dup_fn}
 \item \texttt{MPI_Comm_dup_with_info}~\pageref{def:MPI_Comm_dup_with_info}
 \item \texttt{MPI_Comm_free}~\pageref{def:MPI_Comm_free}
 \item \texttt{MPI_Comm_free_keyval}~\pageref{def:MPI_Comm_free_keyval}
@@ -70,8 +69,6 @@
 \item \texttt{MPI_Comm_idup}~\pageref{def:MPI_Comm_idup}
 \item \texttt{MPI_Comm_idup_with_info}~\pageref{def:MPI_Comm_idup_with_info}
 \item \texttt{MPI_Comm_join}~\pageref{def:MPI_Comm_join}
-\item \texttt{MPI_Comm_null_copy_fn}~\pageref{def:MPI_Comm_null_copy_fn}
-\item \texttt{MPI_Comm_null_delete_fn}~\pageref{def:MPI_Comm_null_delete_fn}
 \item \texttt{MPI_Comm_rank}~\pageref{def:MPI_Comm_rank}
 \item \texttt{MPI_Comm_remote_size}~\pageref{def:MPI_Comm_remote_size}
 \item \texttt{MPI_Comm_set_attr}~\pageref{def:MPI_Comm_set_attr}
@@ -85,15 +82,12 @@
 \item \texttt{MPI_Comm_split_type}~\pageref{def:MPI_Comm_split_type}
 \item \texttt{MPI_Comm_test_inter}~\pageref{def:MPI_Comm_test_inter}
 \item \texttt{MPI_Compare_and_swap}~\pageref{def:MPI_Compare_and_swap}
-\item \texttt{MPI_Conversion_fn_null}~\pageref{def:MPI_Conversion_fn_null}
-\item \texttt{MPI_Conversion_fn_null_c}~\pageref{def:MPI_Conversion_fn_null_c}
 \item \texttt{MPI_Compare_and_swap}~\pageref{def:MPI_Compare_and_swap}
 \item \texttt{MPI_Dims_create}~\pageref{def:MPI_Dims_create}
 \item \texttt{MPI_Dist_graph_create}~\pageref{def:MPI_Dist_graph_create}
 \item \texttt{MPI_Dist_graph_create_adjacent}~\pageref{def:MPI_Dist_graph_create_adjacent}
 \item \texttt{MPI_Dist_graph_neighbors}~\pageref{def:MPI_Dist_graph_neighbors}
 \item \texttt{MPI_Dist_graph_neighbors_count}~\pageref{def:MPI_Dist_graph_neighbors_count}
-\item \texttt{MPI_Dup_fn}~\pageref{def:MPI_Dup_fn}
 \item \texttt{MPI_Errhandler_create}~\pageref{def:MPI_Errhandler_create}
 \item \texttt{MPI_Errhandler_free}~\pageref{def:MPI_Errhandler_free}
 \item \texttt{MPI_Errhandler_get}~\pageref{def:MPI_Errhandler_get}
@@ -260,12 +254,9 @@
 \item \texttt{MPI_Neighbor_alltoallv_init}~\pageref{def:MPI_Neighbor_alltoallv_init}
 \item \texttt{MPI_Neighbor_alltoallw}~\pageref{def:MPI_Neighbor_alltoallw}
 \item \texttt{MPI_Neighbor_alltoallw_init}~\pageref{def:MPI_Neighbor_alltoallw_init}
-\item \texttt{MPI_Null_copy_fn}~\pageref{def:MPI_Null_copy_fn}
-\item \texttt{MPI_Null_delete_fn}~\pageref{def:MPI_Null_delete_fn}
 \item \texttt{MPI_Open_port}~\pageref{def:MPI_Open_port}
 \item \texttt{MPI_Op_commutative}~\pageref{def:MPI_Op_commutative}
 \item \texttt{MPI_Op_create}~\pageref{def:MPI_Op_create}
-\item \texttt{MPI_Op_create_c}~\pageref{def:MPI_Op_create_c}
 \item \texttt{MPI_Pack}~\pageref{def:MPI_Pack}
 \item \texttt{MPI_Pack_external}~\pageref{def:MPI_Pack_external}
 \item \texttt{MPI_Pack_size}~\pageref{def:MPI_Pack_size}
@@ -298,7 +289,6 @@
 \item \texttt{MPI_Rget_accumulate}~\pageref{def:MPI_Rget_accumulate}
 \item \texttt{MPI_Rput}~\pageref{def:MPI_Rput}
 \item \texttt{MPI_Rsend}~\pageref{def:MPI_Rsend}
-\item \texttt{MPI_Register_datarep_c}~\pageref{def:MPI_Register_datarep_c}
 \item \texttt{MPI_Scan}~\pageref{def:MPI_Scan}
 \item \texttt{MPI_Scan_init}~\pageref{def:MPI_Scan_init}
 \item \texttt{MPI_Scatter}~\pageref{def:MPI_Scatter}
@@ -323,6 +313,7 @@
 \item \texttt{MPI_Status_set_elements_c}~\pageref{def:MPI_Status_set_elements_c}
 \item \texttt{MPI_Status_set_elements_x}~\pageref{def:MPI_Status_set_elements_x}
 \item \texttt{MPI_Send}~\pageref{def:MPI_Send}
+\item \texttt{MPI_Status_set_elements_c}~\pageref{def:MPI_Status_set_elements_c}
 \item \texttt{MPI_Test}~\pageref{def:MPI_Test}
 \item \texttt{MPI_Testall}~\pageref{def:MPI_Testall}
 \item \texttt{MPI_Testany}~\pageref{def:MPI_Testany}
@@ -342,7 +333,6 @@
 \item \texttt{MPI_Type_create_subarray}~\pageref{def:MPI_Type_create_subarray}
 \item \texttt{MPI_Type_delete_attr}~\pageref{def:MPI_Type_delete_attr}
 \item \texttt{MPI_Type_dup}~\pageref{def:MPI_Type_dup}
-\item \texttt{MPI_Type_dup_fn}~\pageref{def:MPI_Type_dup_fn}
 \item \texttt{MPI_Type_extent}~\pageref{def:MPI_Type_extent}
 \item \texttt{MPI_Type_free}~\pageref{def:MPI_Type_free}
 \item \texttt{MPI_Type_get_attr}~\pageref{def:MPI_Type_get_attr}
@@ -358,8 +348,6 @@
 \item \texttt{MPI_Type_indexed}~\pageref{def:MPI_Type_indexed}
 \item \texttt{MPI_Type_lb}~\pageref{def:MPI_Type_lb}
 \item \texttt{MPI_Type_match_size}~\pageref{def:MPI_Type_match_size}
-\item \texttt{MPI_Type_null_copy_fn}~\pageref{def:MPI_Type_null_copy_fn}
-\item \texttt{MPI_Type_null_delete_fn}~\pageref{def:MPI_Type_null_delete_fn}
 \item \texttt{MPI_Type_set_attr}~\pageref{def:MPI_Type_set_attr}
 \item \texttt{MPI_Type_set_name}~\pageref{def:MPI_Type_set_name}
 \item \texttt{MPI_Type_size}~\pageref{def:MPI_Type_size}
@@ -431,7 +419,6 @@
 \item \texttt{MPI_Win_create_errhandler}~\pageref{def:MPI_Win_create_errhandler}
 \item \texttt{MPI_Win_create_keyval}~\pageref{def:MPI_Win_create_keyval}
 \item \texttt{MPI_Win_detach}~\pageref{def:MPI_Win_detach}
-\item \texttt{MPI_Win_dup_fn}~\pageref{def:MPI_Win_dup_fn}
 \item \texttt{MPI_Win_fence}~\pageref{def:MPI_Win_fence}
 \item \texttt{MPI_Win_flush}~\pageref{def:MPI_Win_flush}
 \item \texttt{MPI_Win_flush_all}~\pageref{def:MPI_Win_flush_all}
@@ -443,8 +430,6 @@
 \item \texttt{MPI_Win_get_info}~\pageref{def:MPI_Win_get_info}
 \item \texttt{MPI_Win_lock}~\pageref{def:MPI_Win_lock}
 \item \texttt{MPI_Win_lock_all}~\pageref{def:MPI_Win_lock_all}
-\item \texttt{MPI_Win_null_copy_fn}~\pageref{def:MPI_Win_null_copy_fn}
-\item \texttt{MPI_Win_null_delete_fn}~\pageref{def:MPI_Win_null_delete_fn}
 \item \texttt{MPI_Win_post}~\pageref{def:MPI_Win_post}
 \item \texttt{MPI_Win_set_attr}~\pageref{def:MPI_Win_set_attr}
 \item \texttt{MPI_Win_set_info}~\pageref{def:MPI_Win_set_info}

@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,10 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Group_from_session_pset (\hss} \\
- & session & session & MPI_Session & TYPE\discretionary{}{\kern10pt}{}(MPI_Session)  \\ & pset_name & name of process set to use to create the new group & const char* & CHARACTER  \\ & newgroup & new group derived from supplied session and process set & MPI_Group* & TYPE\discretionary{}{\kern10pt}{}(MPI_Group)  \\
+ & session & session & MPI_Session & TYPE\discretionary{}{\kern10pt}{}(MPI_Session)  \\
+ & pset_name & name of process set to use to create the new group & const\ char* & CHARACTER  \\
+ & newgroup & new group derived from supplied session and process set & MPI_Group* & TYPE\discretionary{}{\kern10pt}{}(MPI_Group)  \\
+
 &)\\
 
 \bottomrule

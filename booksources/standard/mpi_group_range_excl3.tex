@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,11 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Group_range_excl (\hss} \\
- & group & group & MPI_Group & TYPE\discretionary{}{\kern10pt}{}(MPI_Group)  \\ & n & number of triplets in array \mpiarg{ranges} & int & INTEGER  \\ & ranges & a one-dimensional array of integer triplets, of the form (first rank, last rank, stride) indicating ranks in \mpiarg{group} of processes to be excluded from the output group \mpiarg{newgroup} & int[][3] & INTEGER\discretionary{}{\kern10pt}{}(3, n)  \\ & newgroup & new group derived from above, preserving the order in \mpiarg{group} & MPI_Group* & TYPE\discretionary{}{\kern10pt}{}(MPI_Group)  \\
+ & group & group & MPI_Group & TYPE\discretionary{}{\kern10pt}{}(MPI_Group)  \\
+ & n & number of triplets in array \mpiarg{ranges} & int & INTEGER  \\
+ & ranges & a one-dimensional array of integer triplets, of the form (first rank, last rank, stride) indicating ranks in \mpiarg{group} of processes to be excluded from the output group \mpiarg{newgroup} & int[][3] & INTEGER\discretionary{}{\kern10pt}{}(3, n)  \\
+ & newgroup & new group derived from above, preserving the order in \mpiarg{group} & MPI_Group* & TYPE\discretionary{}{\kern10pt}{}(MPI_Group)  \\
+
 &)\\
 
 \bottomrule

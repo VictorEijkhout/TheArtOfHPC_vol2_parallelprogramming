@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,12 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_File_open (\hss} \\
- & comm & communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\ & filename & name of file to open & const char* & CHARACTER  & IN \\ & amode & file access mode & int & INTEGER  & IN \\ & info & info object & MPI_Info & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)  & IN \\ & fh & new file handle & MPI_File* & TYPE\discretionary{}{\kern10pt}{}(MPI_File)  & OUT \\
+ & comm & communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\
+ & filename & name of file to open & const\ char* & CHARACTER  & IN \\
+ & amode & file access mode & int & INTEGER  & IN \\
+ & info & info object & MPI_Info & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)  & IN \\
+ & fh & new file handle & MPI_File* & TYPE\discretionary{}{\kern10pt}{}(MPI_File)  & OUT \\
+
 &)\\
 
 \bottomrule

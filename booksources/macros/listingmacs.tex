@@ -178,6 +178,8 @@
     omp_get_nested,omp_get_wtime,omp_get_wtick,omp_set_schedule,omp_get_schedule,
     omp_set_max_active_levels,omp_get_max_active_levels,omp_get_thread_limit,
     omp_get_level,omp_get_active_level,omp_get_ancestor_thread_num,omp_get_team_size,
+    omp_init_lock,omp_destroy_lock,omp_set_lock,omp_unset_lock,omp_test_lock,
+    omp_init_nest_lock,omp_destroy_nest_lock,omp_set_nest_lock,omp_unset_nest_lock,omp_test_nest_lock,
     omp_get_cancellation,
   },emphstyle={\color{red!70!black}\bfseries}
 }
@@ -260,7 +262,7 @@
     %% Fortrn types
     MPI_Fint,MPI_F08_status,
     %% OMP directives
-    for,parallel,sections,section,single,workshare,
+    for,master,parallel,sections,section,single,workshare,
     task,taskgroup,taskwait,taskyield,task_reduction,in_reduction,
     depend,final,priority,
     %% MPL methods

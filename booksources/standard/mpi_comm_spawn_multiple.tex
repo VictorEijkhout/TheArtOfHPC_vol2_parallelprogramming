@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,16 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Comm_spawn_multiple (\hss} \\
- & count & number of commands & int & INTEGER  & IN \\ & array_of_commands & programs to be executed & char*[] & CHARACTER\discretionary{}{\kern10pt}{}(*)  & IN \\ & array_of_argv & arguments for \mpiarg{commands} & char**[] & CHARACTER\discretionary{}{\kern10pt}{}(count, *)  & IN \\ & array_of_maxprocs & maximum number of processes to start for each command & const int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  & IN \\ & array_of_info & info objects telling the runtime system where and how to start processes & const MPI_Info[] & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)\discretionary{}{\kern10pt}{}(*)  & IN \\ & root & rank of process in which previous arguments are examined & int & INTEGER  & IN \\ & comm & intra-communicator containing group of spawning processes & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\ & intercomm & inter-communicator between original group and the newly spawned group & MPI_Comm* & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & OUT \\ & array_of_errcodes & one error code per process & int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  & OUT \\
+ & count & number of commands & int & INTEGER  & IN \\
+ & array_of_commands & programs to be executed & char*[] & CHARACTER\discretionary{}{\kern10pt}{}(*)  & IN \\
+ & array_of_argv & arguments for \mpiarg{commands} & char**[] & CHARACTER\discretionary{}{\kern10pt}{}(count, *)  & IN \\
+ & array_of_maxprocs & maximum number of processes to start for each command & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  & IN \\
+ & array_of_info & info objects telling the runtime system where and how to start processes & const\ MPI_Info[] & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)\discretionary{}{\kern10pt}{}(*)  & IN \\
+ & root & rank of process in which previous arguments are examined & int & INTEGER  & IN \\
+ & comm & intra-communicator containing group of spawning processes & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\
+ & intercomm & inter-communicator between original group and the newly spawned group & MPI_Comm* & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & OUT \\
+ & array_of_errcodes & one error code per process & int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  & OUT \\
+
 &)\\
 
 \bottomrule

@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,12 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Imrecv (\hss} \\
- & buf & initial address of receive buffer & void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & OUT \\ & count & number of elements in receive buffer & int & INTEGER  & IN \\ & datatype & datatype of each receive buffer element & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\ & message & message & MPI_Message* & TYPE\discretionary{}{\kern10pt}{}(MPI_Message)  & INOUT \\ & request & communication request & MPI_Request* & TYPE\discretionary{}{\kern10pt}{}(MPI_Request)  & OUT \\
+ & buf & initial address of receive buffer & void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & OUT \\
+ & count & number of elements in receive buffer & int & INTEGER  & IN \\
+ & datatype & datatype of each receive buffer element & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\
+ & message & message & MPI_Message* & TYPE\discretionary{}{\kern10pt}{}(MPI_Message)  & INOUT \\
+ & request & communication request & MPI_Request* & TYPE\discretionary{}{\kern10pt}{}(MPI_Request)  & OUT \\
+
 &)\\
 
 \bottomrule

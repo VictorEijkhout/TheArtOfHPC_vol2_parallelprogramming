@@ -4,7 +4,7 @@
  **** `Introduction to the PETSc library'
  **** by Victor Eijkhout eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-2020
+ **** copyright Victor Eijkhout 2012-2022
  ****
  ****************************************************************/
 
@@ -24,7 +24,7 @@ int main(int argc,char **args)
   PetscScalar one = 1.0;
   
   PetscFunctionBegin;
-  PetscInitialize(&argc,&args,0,0);
+  PetscInitialize(&argc,&args,0,"ksp -n domainsize -unsymmetry x\n" );
 
   comm = MPI_COMM_WORLD;
 

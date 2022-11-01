@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,10 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Dims_create (\hss} \\
- & nnodes & number of nodes in a grid & int & INTEGER  & IN \\ & ndims & number of Cartesian dimensions & int & INTEGER  & IN \\ & dims & integer array of size \mpiarg{ndims} specifying the number of nodes in each dimension & int[] & INTEGER\discretionary{}{\kern10pt}{}(ndims)  & INOUT \\
+ & nnodes & number of nodes in a grid & int & INTEGER  & IN \\
+ & ndims & number of Cartesian dimensions & int & INTEGER  & IN \\
+ & dims & integer array of size \mpiarg{ndims} specifying the number of nodes in each dimension & int[] & INTEGER\discretionary{}{\kern10pt}{}(ndims)  & INOUT \\
+
 &)\\
 
 \bottomrule

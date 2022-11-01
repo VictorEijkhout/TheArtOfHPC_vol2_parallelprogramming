@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -34,7 +34,10 @@ l       % inout
 \midrule
 \hbox to 18pt{MPI_Op_create (\hss} \\
 \hbox to 18pt{MPI_Op_create_c (\hss} \\
- & user_fn & user defined function & $\left[ \begin{array}{ll}\mathtt{ MPI_User_function* }  \\ \mathtt{ MPI_User_function_c} \end{array} \right.$  & PROCEDURE\discretionary{}{\kern10pt}{}(MPI_User_function)  & IN \\ [+3pt] & commute & \mpicode{true} if commutative; \mpicode{false} otherwise. & int & LOGICAL  & IN \\ & op & operation & MPI_Op* & TYPE\discretionary{}{\kern10pt}{}(MPI_Op)  & OUT \\
+ & user_fn & user defined function & $\left[ \begin{array}{ll}\mathtt{ MPI_User_function* }  \\ \mathtt{ MPI_User_function_c} \end{array} \right.$  & PROCEDURE\discretionary{}{\kern10pt}{}(MPI_User_function)  & IN \\ [+3pt]
+ & commute & \mpicode{true} if commutative; \mpicode{false} otherwise. & int & LOGICAL  & IN \\
+ & op & operation & MPI_Op* & TYPE\discretionary{}{\kern10pt}{}(MPI_Op)  & OUT \\
+
 &)\\
 
 \bottomrule

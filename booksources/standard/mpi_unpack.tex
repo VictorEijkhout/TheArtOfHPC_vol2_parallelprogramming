@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -34,7 +34,14 @@ l       % inout
 \midrule
 \hbox to 18pt{MPI_Unpack (\hss} \\
 \hbox to 18pt{MPI_Unpack_c (\hss} \\
- & inbuf & input buffer start & const void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & IN \\ & insize & size of input buffer, in bytes & $\left[ \begin{array}{ll}\mathtt{ int }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & IN \\ [+3pt] & position & current position in bytes & $\left[ \begin{array}{ll}\mathtt{ int* }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & INOUT \\ [+3pt] & outbuf & output buffer start & void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & OUT \\ & outcount & number of items to be unpacked & $\left[ \begin{array}{ll}\mathtt{ int }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & IN \\ [+3pt] & datatype & datatype of each output data item & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\ & comm & communicator for packed message & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\
+ & inbuf & input buffer start & const\ void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & IN \\
+ & insize & size of input buffer, in bytes & $\left[ \begin{array}{ll}\mathtt{ int }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & IN \\ [+3pt]
+ & position & current position in bytes & $\left[ \begin{array}{ll}\mathtt{ int* }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & INOUT \\ [+3pt]
+ & outbuf & output buffer start & void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & OUT \\
+ & outcount & number of items to be unpacked & $\left[ \begin{array}{ll}\mathtt{ int }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & IN \\ [+3pt]
+ & datatype & datatype of each output data item & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\
+ & comm & communicator for packed message & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\
+
 &)\\
 
 \bottomrule

@@ -77,6 +77,46 @@ clean ::
 	@rm -f *.outall
 
 info ::
+	@echo && echo "================ Scaling"
+	@echo "make mpi_scaling"
+	@echo "    [ NDIV= (default: ${NDIV})]"
+	@echo "    [ SCALETAG= (default: ${SCALETAG})]"
+mpi_scaling :
+	@export np=$$( make --no-print-directory mpi_nprocs ) \
+	 && export mpiprocs="$$( make --no-print-directory mpi_procs NP=$$np )" \
+	 && if [ -z "${PROGRAM}" ] ; then \
+	        echo "Set PROGRAM variable" && exit 1 \
+	    ; fi \
+	 && results=${PROGRAM}-scaling${SCALETAG}.runout \
+	 && ( \
+	    for t in $$mpiprocs ; do \
+	        echo "Procs: $$t" \
+	         && make --no-print-directory mpirun NP=$$t PROGRAM=${PROGRAM} \
+	         && echo \
+	    ; done \
+	    ) | tee $$results
+.PHONY: mpi_procs
+mpi_procs :
+	@if [ ! -z "${MPIPROCS}" ] ; then \
+	    echo "${MPIPROCS}" \
+	    ; \
+	else \
+	    if [ ! -z "${NDIV}" ] ; then \
+	        ndiv=${NDIV} \
+	    ; else \
+	        ndiv=3 \
+	    ; fi \
+	     && if [ -z ${NP} ] ; then \
+	            np=$$( make --no-print-directory mpi_nprocs ) \
+	        ; else np=${NP} ; fi \
+	     && div=`seq 1 $$ndiv` \
+	     && frac=`for d in $$div ; do echo "$$(( $$d * $${np} / $$ndiv ))" ; done` \
+	     && echo "1 $$frac" \
+	    ; \
+	fi
+
+
+info ::
 	@echo && echo "================ Output and regression "
 	@echo "make runs : compile and run everything"
 	@echo "make runouts :same, and generate output files"

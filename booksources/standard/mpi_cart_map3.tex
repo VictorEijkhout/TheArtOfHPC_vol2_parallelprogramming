@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,12 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Cart_map (\hss} \\
- & comm & input communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\ & ndims & number of dimensions of Cartesian structure & int & INTEGER  \\ & dims & integer array of size \mpiarg{ndims} specifying the number of processes in each coordinate direction & const int[] & INTEGER\discretionary{}{\kern10pt}{}(ndims)  \\ & periods & logical array of size \mpiarg{ndims} specifying the periodicity specification in each coordinate direction & const int[] & LOGICAL\discretionary{}{\kern10pt}{}(ndims)  \\ & newrank & reordered rank of the calling process; \const{MPI_UNDEFINED} if calling process does not belong to grid & int* & INTEGER  \\
+ & comm & input communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\
+ & ndims & number of dimensions of Cartesian structure & int & INTEGER  \\
+ & dims & integer array of size \mpiarg{ndims} specifying the number of processes in each coordinate direction & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(ndims)  \\
+ & periods & logical array of size \mpiarg{ndims} specifying the periodicity specification in each coordinate direction & const\ int[] & LOGICAL\discretionary{}{\kern10pt}{}(ndims)  \\
+ & newrank & reordered rank of the calling process; \const{MPI_UNDEFINED} if calling process does not belong to grid & int* & INTEGER  \\
+
 &)\\
 
 \bottomrule

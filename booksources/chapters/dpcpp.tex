@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2021
+%%%% by Victor Eijkhout, copyright 2012-2022
 %%%%
 %%%% dpcpp.tex : intro stuff about DPC++
 %%%%
@@ -425,6 +425,11 @@ access from any device.
 
 \cxxverbatimsnippet[code/dpcpp/cxx/forloop.cxx]{syclbufdef}
 
+\begin{remark}
+  \lstinline{sycl::range} takes a \lstinline{size_t} parameter;
+  specifying an \lstinline{int} may give a compiler warning about a narrowing conversion.
+\end{remark}
+
 Inside the kernel, the array is then unpacked from the buffer:
 
 \cxxverbatimsnippet[code/dpcpp/cxx/forloop.cxx]{syclbufuse}
@@ -450,7 +455,7 @@ Accessors can have a mode associated:
 \end{dpcppnote}
 
 \begin{dpcppnote}
-there are modes
+There are modes
 \begin{lstlisting}
 // standard
 sycl::accessor acc = buffer.get_access<sycl::access::mode:write>(h);
@@ -459,6 +464,13 @@ sycl::accessor acc( buffer,h,sycl::read_only );
 sycl::accessor acc( buffer,h,sycl::write_only );
 \end{lstlisting}
 \end{dpcppnote}
+
+\Level 2 {Multi-D buffers}
+
+To create a multi-dimensional buffer object,
+use a \lstinline{sycl::range} to specify the dimensions:
+%
+\cxxverbatimsnippet{syclmatbuffer}
 
 \Level 1 {Querying}
 

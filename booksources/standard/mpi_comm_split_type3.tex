@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,12 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Comm_split_type (\hss} \\
- & comm & communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\ & split_type & type of processes to be grouped together & int & INTEGER  \\ & key & control of rank assignment & int & INTEGER  \\ & info & info argument & MPI_Info & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)  \\ & newcomm & new communicator & MPI_Comm* & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\
+ & comm & communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\
+ & split_type & type of processes to be grouped together & int & INTEGER  \\
+ & key & control of rank assignment & int & INTEGER  \\
+ & info & info argument & MPI_Info & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)  \\
+ & newcomm & new communicator & MPI_Comm* & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\
+
 &)\\
 
 \bottomrule

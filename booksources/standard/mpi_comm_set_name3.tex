@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,9 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Comm_set_name (\hss} \\
- & comm & communicator whose identifier is to be set & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\ & comm_name & the character string which is remembered as the name & const char* & CHARACTER  \\
+ & comm & communicator whose identifier is to be set & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\
+ & comm_name & the character string which is remembered as the name & const\ char* & CHARACTER  \\
+
 &)\\
 
 \bottomrule

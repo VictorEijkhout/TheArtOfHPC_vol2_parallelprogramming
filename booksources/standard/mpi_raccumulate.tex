@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -34,7 +34,17 @@ l       % inout
 \midrule
 \hbox to 18pt{MPI_Raccumulate (\hss} \\
 \hbox to 18pt{MPI_Raccumulate_c (\hss} \\
- & origin_addr & initial address of buffer & const void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & IN \\ & origin_count & number of entries in buffer & $\left[ \begin{array}{ll}\mathtt{ int }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & IN \\ [+3pt] & origin_datatype & datatype of each entry in origin buffer & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\ & target_rank & rank of target & int & INTEGER  & IN \\ & target_disp & displacement from start of window to beginning of target buffer & MPI_Aint & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_ADDRESS_KIND)  & IN \\ & target_count & number of entries in target buffer & $\left[ \begin{array}{ll}\mathtt{ int }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & IN \\ [+3pt] & target_datatype & datatype of each entry in target buffer & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\ & op & reduce operation & MPI_Op & TYPE\discretionary{}{\kern10pt}{}(MPI_Op)  & IN \\ & win & window object & MPI_Win & TYPE\discretionary{}{\kern10pt}{}(MPI_Win)  & IN \\ & request & \RMA/ request & MPI_Request* & TYPE\discretionary{}{\kern10pt}{}(MPI_Request)  & OUT \\
+ & origin_addr & initial address of buffer & const\ void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & IN \\
+ & origin_count & number of entries in buffer & $\left[ \begin{array}{ll}\mathtt{ int }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & IN \\ [+3pt]
+ & origin_datatype & datatype of each entry in origin buffer & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\
+ & target_rank & rank of target & int & INTEGER  & IN \\
+ & target_disp & displacement from start of window to beginning of target buffer & MPI_Aint & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_ADDRESS_KIND)  & IN \\
+ & target_count & number of entries in target buffer & $\left[ \begin{array}{ll}\mathtt{ int }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & IN \\ [+3pt]
+ & target_datatype & datatype of each entry in target buffer & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\
+ & op & reduce operation & MPI_Op & TYPE\discretionary{}{\kern10pt}{}(MPI_Op)  & IN \\
+ & win & window object & MPI_Win & TYPE\discretionary{}{\kern10pt}{}(MPI_Win)  & IN \\
+ & request & \RMA/ request & MPI_Request* & TYPE\discretionary{}{\kern10pt}{}(MPI_Request)  & OUT \\
+
 &)\\
 
 \bottomrule

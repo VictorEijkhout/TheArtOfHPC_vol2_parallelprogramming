@@ -45,6 +45,18 @@ RUNS += run_speedup
 run_speedup : speedup
 	@make --no-print-directory omp_scaling PROGRAM=speedup
 
+RUNS += run_privarray
+.PHONY: run_privarray
+run_privarray : alloc
+	@make --no-print-directory omp_run PROGRAM=alloc NP=4 \
+	| awk '/private/ {p=0} p==1 {print} /Private/ {p=1}'
+
+RUNS += run_pointarray
+.PHONY: run_pointarray
+run_pointarray : alloc
+	@make --no-print-directory omp_run PROGRAM=alloc NP=4 \
+	| awk '/pointer/ {p=0} p==1 {print} /Pointer/ {p=1}'
+
 RUNS += run_private
 .PHONY: run_private
 run_private : private

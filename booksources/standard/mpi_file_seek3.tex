@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,10 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_File_seek (\hss} \\
- & fh & file handle & MPI_File & TYPE\discretionary{}{\kern10pt}{}(MPI_File)  \\ & offset & file offset & MPI_Offset & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_OFFSET_KIND)  \\ & whence & update mode & int & INTEGER  \\
+ & fh & file handle & MPI_File & TYPE\discretionary{}{\kern10pt}{}(MPI_File)  \\
+ & offset & file offset & MPI_Offset & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_OFFSET_KIND)  \\
+ & whence & update mode & int & INTEGER  \\
+
 &)\\
 
 \bottomrule

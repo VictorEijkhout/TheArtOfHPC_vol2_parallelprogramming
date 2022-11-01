@@ -2,5 +2,8 @@
   common /threaddata/tp
   integer :: tp
 !$omp threadprivate(/threaddata/)
-
-!!codesnippet sentinelcont
+  !!codesnippet sentinelcont
+!$omp parallel &
+!$omp     num_threads(7)
+  tp = omp_get_thread_num()
+!$omp end parallel

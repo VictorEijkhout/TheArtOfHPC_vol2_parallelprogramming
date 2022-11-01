@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-202s
+%%%% by Victor Eijkhout, copyright 2012-2022
 %%%%
 %%%% mpi-data.tex : discussion of MPI datatypes
 %%%%
@@ -15,20 +15,21 @@
 
 In the examples you have seen so far, every time data was sent,
 it was as a contiguous buffer with elements of a single type.
-In practice you may want to send heterogeneous data, or
-noncontiguous data.
+In practice you may want to send noncontiguous 
+or heterogeneous data.
 \begin{itemize}
-\item Communicating the real parts of an array of complex numbers
+\item As an example of noncontiguous data,
+  communicating the real parts of an array of complex numbers
   means specifying every other number.
-\item Communicating a C~structure or Fortran type with more than one
-  type of element is not equivalent to sending an array of elements of
-  a single type.
+\item Heterogeneous data is needed when communicating a C~structure or Fortran type with more than one
+  type of element.
 \end{itemize}
 The datatypes you have dealt with so far are known as
-\indextermsub{elementary}{datatype}s; irregular objects
+\indextermsub{elementary}{datatype}s;
+the datatypes you create to deal with other data
 are known as \indextermsub{derived}{datatype}s.
 
-\Level 0 {Data type handling}
+\Level 0 {The \texttt{MPI\_Datatype} data type}
 \label{sec:mpi-datatype}
 
 Datatypes such as \indexmpishow{MPI_INT} are values
@@ -38,7 +39,7 @@ This type is handled differently in different languages.
 \begin{fortrannote}{Derived types for handles}
   In Fortran before 2008, datatypes variables are stored in
   \lstinline{Integer} variables.
-  With the 2008 standard, datatypes are Fortran derived types:
+  With the \fstandard{2008} standard, datatypes are Fortran derived types:
   \fverbatimsnippet{vector-f08}
 \end{fortrannote}
 

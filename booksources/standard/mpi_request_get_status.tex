@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,10 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Request_get_status (\hss} \\
- & request & request & MPI_Request & TYPE\discretionary{}{\kern10pt}{}(MPI_Request)  & IN \\ & flag & boolean flag, same as from \mpifunc{MPI_TEST} & int* & LOGICAL  & OUT \\ & status & status object if flag is true & MPI_Status* & TYPE\discretionary{}{\kern10pt}{}(MPI_Status)  & OUT \\
+ & request & request & MPI_Request & TYPE\discretionary{}{\kern10pt}{}(MPI_Request)  & IN \\
+ & flag & boolean flag, same as from \mpifunc{MPI_TEST} & int* & LOGICAL  & OUT \\
+ & status & status object if flag is true & MPI_Status* & TYPE\discretionary{}{\kern10pt}{}(MPI_Status)  & OUT \\
+
 &)\\
 
 \bottomrule

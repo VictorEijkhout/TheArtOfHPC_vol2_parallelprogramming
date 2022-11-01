@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,9 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Startall (\hss} \\
- & count & list length & int & INTEGER  & IN \\ & array_of_requests & array of requests & MPI_Request[] & TYPE\discretionary{}{\kern10pt}{}(MPI_Request)\discretionary{}{\kern10pt}{}(count)  & INOUT \\
+ & count & list length & int & INTEGER  & IN \\
+ & array_of_requests & array of requests & MPI_Request[] & TYPE\discretionary{}{\kern10pt}{}(MPI_Request)\discretionary{}{\kern10pt}{}(count)  & INOUT \\
+
 &)\\
 
 \bottomrule

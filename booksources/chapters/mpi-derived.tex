@@ -58,10 +58,14 @@ heterogeneous data, et cetera.
 The typical sequence of calls for creating a new datatype is as follows:
 \begin{itemize}
 \item You need a variable for the datatype;
+  this is of type \indexmpishow{MPI_Datatype}.
 \item There is a create call, followed by a `commit' call where MPI
   performs internal bookkeeping and optimizations;
+  we will discuss this in great detail below.
+\item The type needs to be `committed'. After this:
 \item The datatype is used, possibly multiple times;
-\item When the datatype is no longer needed, it must be freed to prevent memory leaks.
+\item When the datatype is no longer needed, it must be freed to prevent memory leaks;
+  see section~\ref{sec:mpi-type-commit-free}.
 \end{itemize}
 In code:
 \begin{lstlisting}
@@ -124,6 +128,7 @@ These calls take an existing type, whether elementary or also derived,
 and produce a new type.
 
 \Level 2 {Commit and free}
+\label{sec:mpi-type-commit-free}
 
 It is necessary to call \indexmpiref{MPI_Type_commit} on a new data
 type, which makes MPI do the indexing calculations for the data type.
@@ -315,7 +320,7 @@ by replacing the index expression by \n{mat+1}.
   usually it copies these instead of taking the address.
   Therefore, it is necessary to convert the matrix
   to a buffer and compute an explicit offset in bytes:
-  \verbatimsnippet{pmatcolsend}
+  \pverbatimsnippet{pmatcolsend}
 \end{pythonnote}
 
 \begin{figure}[t]
@@ -328,13 +333,18 @@ by replacing the index expression by \n{mat+1}.
   \label{ex:stridesend}
   Let processor~0 have an array~$x$ of length $10P$, where $P$~is the number of processors.
   Elements $0,P,2P,\ldots,9P$ should go to processor zero, $1,P+1,2P+1,\ldots$ to processor~1,
-  et cetera. Code this as a sequence of send/recv calls, using a vector datatype
-  for the send, and a contiguous buffer for the receive.
+  et cetera.
+  \begin{itemize}
+  \item
+    Code this as a sequence of send/recv calls, using a vector datatype
+    for the send, and a contiguous buffer for the receive.
+  \item 
+    For simplicity, skip the send to/from zero. What is the most elegant
+    solution if you want to include that case?
+  \item
+    For testing, define the array as $x[i]=i$.
+  \end{itemize}
 
-  For simplicity, skip the send to/from zero. What is the most elegant
-  solution if you want to include that case?
-
-  For testing, define the array as $x[i]=i$.
   \skeleton{stridesend}
 \end{exercise}
 
@@ -429,6 +439,10 @@ Received F order:
  8.000 9.000
  12.000 13.000
 \end{verbatim}
+
+\Level 1 {Distributed array type}
+
+TO BE WRITTEN
 
 \Level 1 {Indexed type}
 \label{sec:data:indexed}

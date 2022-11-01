@@ -577,3 +577,66 @@ This is again shows that the GNU compiler is really bad at OpenMP tasks.
 
 
 \lstset{language=C}
+
+\Level 0 {Thread synchronization}
+
+Let's do a \indexterm{producer-consumer} model\footnote{This example
+  is from Intel's excellent OMP course by Tim Mattson}.  This can be
+implemented with sections, where one section, the producer, sets a
+flag when data is available, and the other, the consumer, waits until
+the flag is set.
+\begin{lstlisting}
+#pragma omp parallel sections
+{
+  // the producer
+  #pragma omp section
+  {
+    ... do some producing work ...
+    flag = 1;
+  }
+  // the consumer
+  #pragma omp section
+  {
+    while (flag==0) { }
+    ... do some consuming work ...
+  }
+}
+\end{lstlisting}
+One reason this doesn't work, is that the compiler will see that the flag is never used
+in the producing section, and that is never changed in the consuming section, so
+it may optimize these statements, to the point of optimizing them away.
+
+The producer then needs to do:
+\begin{lstlisting}
+... do some producing work ...
+#pragma omp flush
+#pragma atomic write
+  flag = 1;
+#pragma omp flush(flag)
+\end{lstlisting}
+and the consumer does:
+\begin{lstlisting}
+#pragma omp flush(flag)
+while (flag==0) {
+  #pragma omp flush(flag)
+}
+#pragma omp flush
+\end{lstlisting}
+This code strictly speaking has a \indexterm{race condition} on the \n{flag} variable.
+
+The solution is to make this an \indexterm{atomic operation} and
+use an \indexpragma{atomic} pragma here: the producer has
+\begin{lstlisting}
+#pragma atomic write
+  flag = 1;
+\end{lstlisting}
+and the consumer:
+\begin{lstlisting}
+while (1) {
+  #pragma omp flush(flag)
+  #pragma omp atomic read
+    flag_read = flag
+  if (flag_read==1) break;
+}
+\end{lstlisting}
+

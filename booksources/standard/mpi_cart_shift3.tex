@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,12 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Cart_shift (\hss} \\
- & comm & communicator with Cartesian structure & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\ & direction & coordinate dimension of shift & int & INTEGER  \\ & disp & displacement ($> 0$: upwards shift, $< 0$: downwards shift) & int & INTEGER  \\ & rank_source & rank of source process & int* & INTEGER  \\ & rank_dest & rank of destination process & int* & INTEGER  \\
+ & comm & communicator with Cartesian structure & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\
+ & direction & coordinate dimension of shift & int & INTEGER  \\
+ & disp & displacement ($> 0$: upwards shift, $< 0$: downwards shift) & int & INTEGER  \\
+ & rank_source & rank of source process & int* & INTEGER  \\
+ & rank_dest & rank of destination process & int* & INTEGER  \\
+
 &)\\
 
 \bottomrule

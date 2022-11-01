@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,16 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Dist_graph_create (\hss} \\
- & comm_old & input communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\ & n & number of source nodes for which this process specifies edges & int & INTEGER  \\ & sources & array containing the \mpiarg{n} source nodes for which this process specifies edges & const int[] & INTEGER\discretionary{}{\kern10pt}{}(n)  \\ & degrees & array specifying the number of destinations for each source node in the source node array & const int[] & INTEGER\discretionary{}{\kern10pt}{}(n)  \\ & destinations & destination nodes for the source nodes in the source node array & const int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  \\ & weights & weights for source to destination edges & const int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  \\ & info & hints on optimization and interpretation of weights & MPI_Info & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)  \\ & reorder & the ranks may be reordered (\mpicode{true}) or not~(\mbox{\mpicode{false}}) & int & LOGICAL  \\ & comm_dist_graph & communicator with distributed graph topology added & MPI_Comm* & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\
+ & comm_old & input communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\
+ & n & number of source nodes for which this process specifies edges & int & INTEGER  \\
+ & sources & array containing the \mpiarg{n} source nodes for which this process specifies edges & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(n)  \\
+ & degrees & array specifying the number of destinations for each source node in the source node array & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(n)  \\
+ & destinations & destination nodes for the source nodes in the source node array & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  \\
+ & weights & weights for source to destination edges & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  \\
+ & info & hints on optimization and interpretation of weights & MPI_Info & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)  \\
+ & reorder & the ranks may be reordered (\mpicode{true}) or not~(\mbox{\mpicode{false}}) & int & LOGICAL  \\
+ & comm_dist_graph & communicator with distributed graph topology added & MPI_Comm* & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\
+
 &)\\
 
 \bottomrule

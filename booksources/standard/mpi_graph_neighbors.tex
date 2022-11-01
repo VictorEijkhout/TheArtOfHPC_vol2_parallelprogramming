@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,11 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Graph_neighbors (\hss} \\
- & comm & communicator with graph topology & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\ & rank & rank of process in group of \mpiarg{comm} & int & INTEGER  & IN \\ & maxneighbors & size of array \mpiarg{neighbors} & int & INTEGER  & IN \\ & neighbors & ranks of processes that are neighbors to specified process & int[] & INTEGER\discretionary{}{\kern10pt}{}(maxneighbors)  & OUT \\
+ & comm & communicator with graph topology & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\
+ & rank & rank of process in group of \mpiarg{comm} & int & INTEGER  & IN \\
+ & maxneighbors & size of array \mpiarg{neighbors} & int & INTEGER  & IN \\
+ & neighbors & ranks of processes that are neighbors to specified process & int[] & INTEGER\discretionary{}{\kern10pt}{}(maxneighbors)  & OUT \\
+
 &)\\
 
 \bottomrule

@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,15 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Intercomm_create_from_groups (\hss} \\
- & local_group & local group & MPI_Group & TYPE\discretionary{}{\kern10pt}{}(MPI_Group)  \\ & local_leader & rank of local group leader in \mpiarg{local\_group} & int & INTEGER  \\ & remote_group & remote group, significant only at \mpiarg{local\_leader} & MPI_Group & TYPE\discretionary{}{\kern10pt}{}(MPI_Group)  \\ & remote_leader & rank of remote group leader in \mpiarg{remote\_group}, significant only at \mpiarg{local\_leader} & int & INTEGER  \\ & stringtag & unique idenitifier for this operation & const char* & CHARACTER  \\ & info & info object & MPI_Info & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)  \\ & errhandler & error handler to be attached to new inter-communicator & MPI_Errhandler & TYPE\discretionary{}{\kern10pt}{}(MPI_Errhandler)  \\ & newintercomm & new inter-communicator & MPI_Comm* & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\
+ & local_group & local group & MPI_Group & TYPE\discretionary{}{\kern10pt}{}(MPI_Group)  \\
+ & local_leader & rank of local group leader in \mpiarg{local\_group} & int & INTEGER  \\
+ & remote_group & remote group, significant only at \mpiarg{local\_leader} & MPI_Group & TYPE\discretionary{}{\kern10pt}{}(MPI_Group)  \\
+ & remote_leader & rank of remote group leader in \mpiarg{remote\_group}, significant only at \mpiarg{local\_leader} & int & INTEGER  \\
+ & stringtag & unique idenitifier for this operation & const\ char* & CHARACTER  \\
+ & info & info object & MPI_Info & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)  \\
+ & errhandler & error handler to be attached to new inter-communicator & MPI_Errhandler & TYPE\discretionary{}{\kern10pt}{}(MPI_Errhandler)  \\
+ & newintercomm & new inter-communicator & MPI_Comm* & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\
+
 &)\\
 
 \bottomrule

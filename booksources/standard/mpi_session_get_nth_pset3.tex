@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,12 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Session_get_nth_pset (\hss} \\
- & session & session & MPI_Session & TYPE\discretionary{}{\kern10pt}{}(MPI_Session)  \\ & info & info object & MPI_Info & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)  \\ & n & index of the desired process set name & int & INTEGER  \\ & pset_len & length of the pset\_name argument & int* & INTEGER  \\ & pset_name & name of the \mpiarg{n}th process set & char* & CHARACTER  \\
+ & session & session & MPI_Session & TYPE\discretionary{}{\kern10pt}{}(MPI_Session)  \\
+ & info & info object & MPI_Info & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)  \\
+ & n & index of the desired process set name & int & INTEGER  \\
+ & pset_len & length of the pset\_name argument & int* & INTEGER  \\
+ & pset_name & name of the \mpiarg{n}th process set & char* & CHARACTER  \\
+
 &)\\
 
 \bottomrule

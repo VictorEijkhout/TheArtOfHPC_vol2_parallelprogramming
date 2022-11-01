@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,19 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Sendrecv (\hss} \\
- & sendbuf & initial address of send buffer & const void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & IN \\ & sendcount & number of elements in send buffer & int & INTEGER  & IN \\ & sendtype & type of elements in send buffer & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\ & dest & rank of destination & int & INTEGER  & IN \\ & sendtag & send tag & int & INTEGER  & IN \\ & recvbuf & initial address of receive buffer & void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & OUT \\ & recvcount & number of elements in receive buffer & int & INTEGER  & IN \\ & recvtype & type of elements receive buffer element & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\ & source & rank of source or \const{MPI_ANY_SOURCE} & int & INTEGER  & IN \\ & recvtag & receive tag or \const{MPI_ANY_TAG} & int & INTEGER  & IN \\ & comm & communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\ & status & status object & MPI_Status* & TYPE\discretionary{}{\kern10pt}{}(MPI_Status)  & OUT \\
+ & sendbuf & initial address of send buffer & const\ void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & IN \\
+ & sendcount & number of elements in send buffer & int & INTEGER  & IN \\
+ & sendtype & type of elements in send buffer & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\
+ & dest & rank of destination & int & INTEGER  & IN \\
+ & sendtag & send tag & int & INTEGER  & IN \\
+ & recvbuf & initial address of receive buffer & void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & OUT \\
+ & recvcount & number of elements in receive buffer & int & INTEGER  & IN \\
+ & recvtype & type of elements receive buffer element & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\
+ & source & rank of source or \const{MPI_ANY_SOURCE} & int & INTEGER  & IN \\
+ & recvtag & receive tag or \const{MPI_ANY_TAG} & int & INTEGER  & IN \\
+ & comm & communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\
+ & status & status object & MPI_Status* & TYPE\discretionary{}{\kern10pt}{}(MPI_Status)  & OUT \\
+
 &)\\
 
 \bottomrule

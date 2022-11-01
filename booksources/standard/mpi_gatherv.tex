@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -34,7 +34,16 @@ l       % inout
 \midrule
 \hbox to 18pt{MPI_Gatherv (\hss} \\
 \hbox to 18pt{MPI_Gatherv_c (\hss} \\
- & sendbuf & starting address of send buffer & const void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & IN \\ & sendcount & number of elements in send buffer & $\left[ \begin{array}{ll}\mathtt{ int }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & IN \\ [+3pt] & sendtype & datatype of send buffer elements & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\ & recvbuf & address of receive buffer & void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & OUT \\ & recvcounts & non-negative integer array (of length group size) containing the number of elements that are received from each process & $\left[ \begin{array}{ll}\mathtt{ const int[] }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(*)  & IN \\ [+3pt] & displs & integer array (of length group size). Entry \mpicode{i} specifies the displacement relative to \mpiarg{recvbuf} at which to place the incoming data from process \mpicode{i} & $\left[ \begin{array}{ll}\mathtt{ const int[] }  \\ \mathtt{ MPI_Aint} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(*)  & IN \\ [+3pt] & recvtype & datatype of recv buffer elements & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\ & root & rank of receiving process & int & INTEGER  & IN \\ & comm & communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\
+ & sendbuf & starting address of send buffer & const\ void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & IN \\
+ & sendcount & number of elements in send buffer & $\left[ \begin{array}{ll}\mathtt{ int }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & IN \\ [+3pt]
+ & sendtype & datatype of send buffer elements & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\
+ & recvbuf & address of receive buffer & void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & OUT \\
+ & recvcounts & non-negative integer array (of length group size) containing the number of elements that are received from each process & $\left[ \begin{array}{ll}\mathtt{ const\ int[] }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(*)  & IN \\ [+3pt]
+ & displs & integer array (of length group size). Entry \mpicode{i} specifies the displacement relative to \mpiarg{recvbuf} at which to place the incoming data from process \mpicode{i} & $\left[ \begin{array}{ll}\mathtt{ const\ int[] }  \\ \mathtt{ MPI_Aint} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(*)  & IN \\ [+3pt]
+ & recvtype & datatype of recv buffer elements & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\
+ & root & rank of receiving process & int & INTEGER  & IN \\
+ & comm & communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\
+
 &)\\
 
 \bottomrule

@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,14 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Compare_and_swap (\hss} \\
- & origin_addr & initial address of buffer & const void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  \\ & compare_addr & initial address of compare buffer & const void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  \\ & result_addr & initial address of result buffer & void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  \\ & datatype & datatype of the element in all buffers & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  \\ & target_rank & rank of target & int & INTEGER  \\ & target_disp & displacement from start of window to beginning of target buffer & MPI_Aint & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_ADDRESS_KIND)  \\ & win & window object & MPI_Win & TYPE\discretionary{}{\kern10pt}{}(MPI_Win)  \\
+ & origin_addr & initial address of buffer & const\ void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  \\
+ & compare_addr & initial address of compare buffer & const\ void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  \\
+ & result_addr & initial address of result buffer & void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  \\
+ & datatype & datatype of the element in all buffers & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  \\
+ & target_rank & rank of target & int & INTEGER  \\
+ & target_disp & displacement from start of window to beginning of target buffer & MPI_Aint & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_ADDRESS_KIND)  \\
+ & win & window object & MPI_Win & TYPE\discretionary{}{\kern10pt}{}(MPI_Win)  \\
+
 &)\\
 
 \bottomrule

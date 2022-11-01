@@ -15,15 +15,33 @@
 \label{sec:elementary}
 \index{datatype!elementary|(}
 
-MPI has a number of elementary data types, corresponding to the 
-simple data types of the host languages.
-The names are made to resemble the types of C and~Fortran, 
-for instance \indexmpishow{MPI_FLOAT} and \indexmpishow{MPI_DOUBLE}
-corresponding to \lstinline{float} and \lstinline{double} in~C,
-versus
-\indexmpishow{MPI_REAL} and \indexmpishow{MPI_DOUBLE_PRECISION}
-corresponding to \finline{Real} and \finline{Double precision}
-in~Fortran.
+MPI has a number of elementary data types of various kinds
+\begin{itemize}
+\item First of all there are the type corresponding to the 
+  simple data types of the host languages.
+  The names are made to resemble the types of C and~Fortran, 
+  for instance \indexmpishow{MPI_FLOAT} and \indexmpishow{MPI_DOUBLE}
+  corresponding to \lstinline{float} and \lstinline{double} in~C,
+  versus
+  \indexmpishow{MPI_REAL} and \indexmpishow{MPI_DOUBLE_PRECISION}
+  corresponding to \finline{Real} and \finline{Double precision}
+  in~Fortran.
+\item The types \indexmpishow{MPI_PACKED} and \indexmpishow{MPI_BYTE}
+  do not correspond to language types.
+\item The type \indexmpishow{MPI_Aint}
+  (and the Fortran kind \indexmpishow{MPI_ADDRESS_KIND})
+  is used in \ac{RMA} windows; see section~\ref{sec:mpi-put}.
+\item The type \indexmpishow{MPI_Offset}
+  (and the corresponding Fortran \indexmpidef{MPI_OFFSET_KIND} kind)
+  is used to define \indexmpishow{MPI_Offset} quantities,
+  used in file I/O; section~\ref{sec:mpi-filepoint}.
+\item The type \indexmpishow{MPI_Count} describes buffers;
+  see section~\ref{sec:mpi-bigdata}.
+\item The type \indexmpishow{MPI_CHAR} corresponds to a character, which
+  is not the same as a C \lstinline{char}: it can be more than one byte.
+  Also, MPI converts between native character representations when communicating
+  between different architectures.
+\end{itemize}
 
 \begin{comment}
   MPI calls accept arrays of elements:
@@ -41,12 +59,13 @@ in~Fortran.
 \Level 1 {C/C++}
 \index{datatype!elementary!in C}
 
-Here we illustrate the correspondence between a type used to declare a variable,
+Here we illustrate for C/C++ the correspondence between a type used to declare a variable,
 and how this type appears in MPI communication routines:
 \begin{lstlisting}
 long int i;
 MPI_Send(&i,1,MPI_LONG,target,tag,comm);
 \end{lstlisting}
+See table~\ref{tab:elemen-c}.
 
 \begin{table}[ht]
 \begin{tabular}{|ll|}
@@ -112,7 +131,10 @@ MPI_Send(&i,1,MPI_LONG,target,tag,comm);
 
 \begin{itemize}
 \item
-  There is some, but not complete, support for \cstandard{99} types.
+  There is some, but not complete, support for \cstandard{99} types;
+  see table~\ref{tab:c99-types}.
+\item There is support for \cstandard{11} fixed width integer types;
+  see table~\ref{tab:c11-int-types}.
 \item
   The \indexmpishow{MPI_LONG_INT} type is not an integer type,
   but rather a \lstinline{long} and an \lstinline{int} packed together;
@@ -158,7 +180,7 @@ MPI_Send(&i,1,MPI_LONG,target,tag,comm);
 \indexmpidef{MPI_REAL4}\\
 \indexmpidef{MPI_REAL8}\\
 % complex
-\indexmpidef{MPI_DOUBLE_COMPLEX}\\ \kern20pt Complex(Kind=Kind(0.d0))\\
+\indexmpidef{MPI_DOUBLE_COMPLEX}\\ \kern20pt \texttt{Complex(Kind=Kind(0.d0))} \\
   \hline
 \end{tabular}
 }
@@ -166,43 +188,37 @@ MPI_Send(&i,1,MPI_LONG,target,tag,comm);
 \label{tab:mpi-f-types}
 \end{table}
 
-Not all these types need be supported, for instance
-\indexmpishow{MPI_INTEGER16} may not exist, in which case it will be
+Table~\ref{tab:mpi-f-types} lists standard Fortran types and
+common extensions.
+Not all the types in the right table need be supported;
+for instance \indexmpishow{MPI_INTEGER16} may not exist,
+in which case it will be
 equivalent to \indexmpishow{MPI_DATATYPE_NULL}.
 
 The default integer type \indexmpishow{MPI_INTEGER} is equivalent to
 \lstinline{INTEGER(KIND=MPI_INTEGER_KIND)}.
 
-\Level 2 {Big data types}
+%% \Level 2 {Big data types}
+%% \label{sec:mpi-big-data}
 
-The C type \indexmpishow{MPI_Count} corresponds to an integer of type
-\indexmpidef{MPI_COUNT_KIND}, used most prominently in `big data'
-routines such as \indexmpishow{MPI_Type_size_x} 
-(section~\ref{sec:mpi-type-size}):
-\begin{lstlisting}
-Integer(kind=MPI_COUNT_KIND) :: count
-call MPI_Type_size_x(my_type, count)
-\end{lstlisting}
+%% The C type \indexmpishow{MPI_Count} corresponds to an integer of type
+%% \indexmpidef{MPI_COUNT_KIND}, used most prominently in `big data'
+%% routines such as \indexmpishow{MPI_Type_size_x} 
+%% (section~\ref{sec:mpi-type-size}):
+%% \begin{lstlisting}
+%% Integer(kind=MPI_COUNT_KIND) :: count
+%% call MPI_Type_size_x(my_type, count)
+%% \end{lstlisting}
 
-\begin{mpifournote}{Count type}
-  For every routine \lstinline{MPI_Something}
-  with an \lstinline{int} count parameter,
-  there is a corresponding routine \lstinline{MPI_Something_c}
-  with an \lstinline{MPI_Count} parameter.
+%% \begin{mpifournote}{Count type}
+%%   For every routine \lstinline{MPI_Something}
+%%   with an \lstinline{int} count parameter,
+%%   there is a corresponding routine \lstinline{MPI_Something_c}
+%%   with an \lstinline{MPI_Count} parameter.
 
-  The above \lstinline{MPI_Something_x} routines
-  will probably be deprecated in the \mpistandard{4.1} standard.
-\end{mpifournote}
-
-\Level 2 {Byte counting types}
-\label{sec:mpi-byte-count}
-
-Kind \indexmpishow{MPI_ADDRESS_KIND} is used for \indexmpishow{MPI_Aint}
-quantities, used in \ac{RMA} windows; see section~\ref{sec:mpi-put}.
-
-The \indexmpidef{MPI_OFFSET_KIND}
-is used to define \indexmpishow{MPI_Offset} quantities,
-used in file I/O; section~\ref{sec:mpi-filepoint}.
+%%   The above \lstinline{MPI_Something_x} routines
+%%   will probably be deprecated in the \mpistandard{4.1} standard.
+%% \end{mpifournote}
 
 \Level 2 {Fortran90 kind-defined types}
 \label{sec:f90-types}
@@ -221,7 +237,7 @@ predefined MPI datatypes. Hence the following routines exist to make
   \indexmpiref{MPI_Type_create_f90_complex}.
 \end{itemize}
 
-Examples:
+Example of an integer kind;
 \begin{lstlisting}
 INTEGER ( KIND = SELECTED_INT_KIND(15) ) , &
  DIMENSION(100) :: array INTEGER :: root , integertype , error 
@@ -229,19 +245,32 @@ INTEGER ( KIND = SELECTED_INT_KIND(15) ) , &
 CALL MPI_Type_create_f90_integer( 15 , integertype , error )
 CALL MPI_Bcast ( array , 100 , &
  integertype , root , MPI_COMM_WORLD , error )
+\end{lstlisting}
 
+Example of a real kind:
+\begin{lstlisting}
 REAL ( KIND = SELECTED_REAL_KIND(15 ,300) ) , &
  DIMENSION(100) :: array
-CALL MPI_Type_create_f90_real( 15 , 300 , realtype , error )
+CALL MPI_Type_create_f90_real( 15 , 300 , realtype , error )  
+\end{lstlisting}
 
+Example of a complex kind:
+\begin{lstlisting}
 COMPLEX ( KIND = SELECTED_REAL_KIND(15 ,300) ) , &
  DIMENSION(100) :: array 
 CALL MPI_Type_create_f90_complex( 15 , 300 , complextype , error )
 \end{lstlisting}
+
 \lstset{style=reviewcode,language=C} %pyskip
 
 \Level 1 {Python}
+\label{sec:py-elementary}
 \index{datatype!elementary!in Python}
+
+\begin{pythonnote}{Elementary data types}
+  This section~\ref{sec:py-elementary}
+  discusses of elementary datatypes in Python.
+\end{pythonnote}
 
 In python, all buffer data comes from \indexterm{Numpy}.
 
@@ -262,7 +291,7 @@ Numpy has three integer types,
 one corresponding to C~\lstinline{int}s,
 and two with the number of bits explicitly indicated.
 There used to be a \lstinline{np.int} type,
-but this is deprecated as of \indextermbus{Numpy}{1.20}
+but this is deprecated as of \indextermbus{Numpy}{1.20}.
 
 Examples:
 
@@ -313,8 +342,7 @@ MPI_Aint MPI_Aint_add(MPI_Aint base, MPI_Aint disp)
 \end{lstlisting}
 and similarly \indexmpidef{MPI_Aint_diff}.
 
-\Level 2 {Fortran}
-
+\begin{fortrannote}{Byte counting types in Fortran}
 The equivalent of
 %\indexmpishowsub{MPI_Aint}{in Fortran}
 \indexmpishowf{MPI_Aint} in Fortran
@@ -338,12 +366,13 @@ window_size = window_element_size*500
 call MPI_Win_create( windowdata,window_size,window_element_size,... )
 \end{lstlisting}
 \lstset{language=C} %pyskip
+\end{fortrannote}
 
-\Level 2 {Python}
-
-Here is a good way for finding the size of \indexterm{numpy} datatypes
-in bytes:
-\pverbatimsnippet{windispp}% source is in one-sided chapter
+\begin{pythonnote}{Size of numpy types}
+  Here is a good way for finding the size of \indexterm{numpy} datatypes
+  in bytes:
+  \pverbatimsnippet{windispp}% source is in one-sided chapter
+\end{pythonnote}
 
 \Level 1 {Matching language type to MPI type}
 \label{sec:mpi-type-match}

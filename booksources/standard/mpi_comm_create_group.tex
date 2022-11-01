@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,11 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Comm_create_group (\hss} \\
- & comm & intra-communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\ & group & group, which is a subset of the group of \mpiarg{comm} & MPI_Group & TYPE\discretionary{}{\kern10pt}{}(MPI_Group)  & IN \\ & tag & tag & int & INTEGER  & IN \\ & newcomm & new communicator & MPI_Comm* & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & OUT \\
+ & comm & intra-communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\
+ & group & group, which is a subset of the group of \mpiarg{comm} & MPI_Group & TYPE\discretionary{}{\kern10pt}{}(MPI_Group)  & IN \\
+ & tag & tag & int & INTEGER  & IN \\
+ & newcomm & new communicator & MPI_Comm* & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & OUT \\
+
 &)\\
 
 \bottomrule

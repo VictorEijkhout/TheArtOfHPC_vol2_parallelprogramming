@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,11 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Comm_get_attr (\hss} \\
- & comm & communicator to which the attribute is attached & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\ & comm_keyval & key value & int & INTEGER  \\ & attribute_val & attribute value, unless \mpiarg{flag}\mpicode{ = false} & void* & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_ADDRESS_KIND)  \\ & flag & \mpicode{false} if no attribute is associated with the key & int* & LOGICAL  \\
+ & comm & communicator to which the attribute is attached & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\
+ & comm_keyval & key value & int & INTEGER  \\
+ & attribute_val & attribute value, unless \mpiarg{flag}\mpicode{ = false} & void* & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_ADDRESS_KIND)  \\
+ & flag & \mpicode{false} if no attribute is associated with the key & int* & LOGICAL  \\
+
 &)\\
 
 \bottomrule

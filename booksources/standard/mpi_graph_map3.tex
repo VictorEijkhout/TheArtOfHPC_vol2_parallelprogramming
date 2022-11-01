@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,12 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Graph_map (\hss} \\
- & comm & input communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\ & nnodes & number of graph nodes & int & INTEGER  \\ & index & integer array specifying the graph structure, see \mpifunc{MPI_GRAPH_CREATE} & const int[] & INTEGER\discretionary{}{\kern10pt}{}(nnodes)  \\ & edges & integer array specifying the graph structure & const int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  \\ & newrank & reordered rank of the calling process; \const{MPI_UNDEFINED} if the calling process does not belong to graph & int* & INTEGER  \\
+ & comm & input communicator & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  \\
+ & nnodes & number of graph nodes & int & INTEGER  \\
+ & index & integer array specifying the graph structure, see \mpifunc{MPI_GRAPH_CREATE} & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(nnodes)  \\
+ & edges & integer array specifying the graph structure & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(*)  \\
+ & newrank & reordered rank of the calling process; \const{MPI_UNDEFINED} if the calling process does not belong to graph & int* & INTEGER  \\
+
 &)\\
 
 \bottomrule

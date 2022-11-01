@@ -34,10 +34,12 @@ int main(int argc,char **argv) {
       array[0] = t;
     }
 
+    printf("Pointer\n");
     printf("Array result:\n");
     for (int i=0; i<nthreads; i++)
       printf("%d:%d, ",i,array[i]);
     printf("\n");
+    printf(".. pointer\n");
   }
 
   {
@@ -56,12 +58,16 @@ int main(int argc,char **argv) {
       array[t] = t;
     }
 
+    printf("Private\n");
     printf("Array result:\n");
     for (int i=0; i<nthreads; i++)
       printf("%d:%d, ",i,array[i]);
     printf("\n");
+    printf(".. private\n");
   }
 
+#if 0
+  I HAVE NO IDEA WHAT THIS DOES
   {
     int nthreads=4;
 
@@ -80,6 +86,7 @@ int main(int argc,char **argv) {
       printf("%d:%d, ",i,array[i]);
     printf("\n");
   }
+#endif
 
   return 0;
 }

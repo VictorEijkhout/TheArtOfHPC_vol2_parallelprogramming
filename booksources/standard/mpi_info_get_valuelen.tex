@@ -20,7 +20,7 @@
 l       % name
 l       % param name
 p{\mpiparmtextsize}  % explanation
-p{.7in} % ctype
+p{.85in} % ctype
 p{.9in} % ftype
 l       % inout
 }
@@ -33,7 +33,11 @@ l       % inout
 \mdseries\textrm{inout}\\
 \midrule
 \hbox to 18pt{MPI_Info_get_valuelen (\hss} \\
- & info & info object & MPI_Info & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)  & IN \\ & key & key & const char* & CHARACTER  & IN \\ & valuelen & length of value associated with \mpiarg{key} & int* & INTEGER  & OUT \\ & flag & \mpicode{true} if \mpiarg{key} defined, \mpicode{false} if not & int* & LOGICAL  & OUT \\
+ & info & info object & MPI_Info & TYPE\discretionary{}{\kern10pt}{}(MPI_Info)  & IN \\
+ & key & key & const\ char* & CHARACTER  & IN \\
+ & valuelen & length of value associated with \mpiarg{key} & int* & INTEGER  & OUT \\
+ & flag & \mpicode{true} if \mpiarg{key} defined, \mpicode{false} if not & int* & LOGICAL  & OUT \\
+
 &)\\
 
 \bottomrule
