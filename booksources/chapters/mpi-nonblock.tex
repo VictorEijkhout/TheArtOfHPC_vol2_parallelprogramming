@@ -56,8 +56,7 @@ In such cases, one wants a possibility to state `these are the expected incoming
 messages', without having to wait for them in sequence. Likewise, one wants to declare
 the outgoing messages without having to do them in any particular sequence.
 Imposing any sequence on the sends and receives is likely to run into the serialization
-behavior observed above, or at least be inefficient since processors will be
-waiting for messages.
+behavior observed above, or at least be inefficient.
 
 \Level 1 {Nonblocking send and receive calls}
 \label{sec:nonblocking}
@@ -115,6 +114,9 @@ status object, you can pass \indexmpishow{MPI_STATUS_IGNORE}.
 
 \cverbatimsnippet[examples/mpi/c/hangwait.c]{bcastsendwait}
 
+(Note that this example uses a mix of blocking and non-blocking
+operations: a blocking send is paired with a non-blocking receive.)
+
 The request is passed by reference, so that the wait routine
 can free it:
 \begin{itemize}
@@ -147,8 +149,7 @@ the request variable is not possible.
 \end{mplimpl}
 \end{mplnote}
 
-
-Here we discuss in some detail the various wait calls.
+Now we discuss in some detail the various wait calls.
 These are blocking; for the nonblocking versions
 see section~\ref{sec:mpitest}.
 
@@ -180,6 +181,17 @@ and it could be more efficient.
 The output argument is an array or \indexmpishow{MPI_Status} object.
 If you don't need the status objects, you can pass
 \indexmpishow{MPI_STATUSES_IGNORE}.
+
+As an illustration, we realize exercise~\ref{ex:linear-sequential},
+and its trace in figure~\ref{fig:serialization},
+with non-blocking execution and \indexmpishow{MPI_Waitall}.
+Figure~\ref{fig:jump-nonblock} shows the trace of this variant of the code.
+
+\begin{figure}[ht]
+\includegraphics[scale=.4]{linear-nonblock}
+\caption{A trace of a nonblocking send between neighboring processors}
+\label{fig:jump-nonblock}
+\end{figure}
 
 \begin{exercise}
   \label{ex:bucket-nonblock}
@@ -244,6 +256,7 @@ reference, and not an array of statuses!
 
 \begin{fortrannote}{Index of requests}
   The \n{index} parameter is the index in the array of requests,
+  which is a Fortran array,
   so it uses \emph{1-based indexing}\index{Fortran!1-based indexing}.
 
   \fverbatimsnippet[examples/mpi/f/irecvsource.F90]{waitforany-f}
@@ -311,14 +324,6 @@ except that it returns multiple numbers, if multiple requests are
 satisfied. Now the status argument is an array of \indexmpishow{MPI_Status}
 objects.
 
-Figure~\ref{fig:jump-nonblock} shows the trace of a nonblocking execution
-using \indexmpishow{MPI_Waitall}.
-\begin{figure}[ht]
-\includegraphics[scale=.4]{linear-nonblock}
-\caption{A trace of a nonblocking send between neighboring processors}
-\label{fig:jump-nonblock}
-\end{figure}
-
 \Level 2 {Receive status of the wait calls}
 \label{sec:mpi-wait-status}
 
@@ -334,7 +339,7 @@ for \indexmpishow{MPI_Waitall}, \indexmpishow{MPI_Waitsome},
 
 \begin{remark}
   The routines that can return multiple statuses,
-  can return the error condition \indexmpidef{MPI_ERR_IN_STATUS},
+  can return the error condition \indexmpishow{MPI_ERR_IN_STATUS},
   indicating that one of the statuses was in error.
   See section~\ref{sec:mpi-status-error}.
 \end{remark}
@@ -345,7 +350,14 @@ for \indexmpishow{MPI_Waitall}, \indexmpishow{MPI_Waitsome},
   Now use nonblocking send/receive routines to implement
   the three-point averaging operation
   \[ y_i=\bigl( x_{i-1}+x_i+x_{i+1} \bigr)/3\colon i=1,\ldots,N-1 \]
-  on a distributed array. (Hint: use \indexmpishow{MPI_PROC_NULL} at the ends.)
+  on a distributed array.
+  There are two approaches to the first and last process:
+  \begin{enumerate}
+  \item you can use \indexmpishow{MPI_PROC_NULL} for the `missing' communications;
+  \item you can skip these communications altogether, but now you have to
+    count the requests carefully.
+  \end{enumerate}
+
 \end{exercise}
 
 \Level 2 {Latency hiding / overlapping communication and computation}
@@ -394,7 +406,7 @@ hardware, firmware, and MPI implementation.
   The answer is that, on the receiving end, there is nothing to distinguish
   a nonblocking or
   synchronous message. The \indexmpishow{MPI_Recv} call can match any of the
-  send routines you have seen so far (but not \indexmpishow{MPI_Sendrecv}), and
+  send routines you have seen so far, and
   conversely a message sent with \indexmpishow{MPI_Send}
   can be received by \indexmpishow{MPI_Irecv}.
 \end{remark}
@@ -434,9 +446,6 @@ MPI_Wait( /* the requests */ );
 
 \cverbatimsnippet[examples/mpi/c/irecvloop.c]{irecvloop}
 
-The last example we explicitly noted the possibility of
-overlapping computation and communication.
-
 \Level 1 {Wait and test calls}
 \label{sec:mpitest}
 \label{sec:mpi-test}
@@ -470,7 +479,9 @@ while ( not done ) {
 \end{lstlisting}
 
 If the test is true, the request is deallocated and set to \indexmpishow{MPI_REQUEST_NULL},
-or, in the case of an active persistent request, set to inactive.
+or, in the case of an active persistent request
+(section~\ref{sec:persistent}),
+set to inactive.
 
 Analogous to \indexmpishow{MPI_Wait}, \indexmpishow{MPI_Waitany},
 \indexmpishow{MPI_Waitall}, \indexmpishow{MPI_Waitsome},

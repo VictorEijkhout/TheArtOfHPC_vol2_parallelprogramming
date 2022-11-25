@@ -38,8 +38,8 @@ l       % inout
  & sendcount & number of elements sent to each neighbor & $\left[ \begin{array}{ll}\mathtt{ int }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & IN \\ [+3pt]
  & sendtype & datatype of send buffer elements & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\
  & recvbuf & starting address of receive buffer & void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & OUT \\
- & recvcounts & non-negative integer array (of length indegree) containing the number of elements that are received from each neighbor & $\left[ \begin{array}{ll}\mathtt{ const\ int[] }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(*)  & IN \\ [+3pt]
- & displs & integer array (of length indegree). Entry \mpicode{i} specifies the displacement (relative to \mpiarg{recvbuf}) at which to place the incoming data from neighbor \mpicode{i} & $\left[ \begin{array}{ll}\mathtt{ const\ int[] }  \\ \mathtt{ MPI_Aint} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(*)  & IN \\ [+3pt]
+ & recvcounts & non-negative integer array (of length indegree) containing the number of elements that are received from each neighbor & $\left[ \begin{array}{ll}\mathtt{ const\ int[] }  \\ \mathtt{ MPI_Count[]} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(*)  & IN \\ [+3pt]
+ & displs & integer array (of length indegree). Entry \mpicode{i} specifies the displacement (relative to \mpiarg{recvbuf}) at which to place the incoming data from neighbor \mpicode{i} & $\left[ \begin{array}{ll}\mathtt{ const\ int[] }  \\ \mathtt{ MPI_Aint[]} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(*)  & IN \\ [+3pt]
  & recvtype & datatype of receive buffer elements & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\
  & comm & communicator with topology structure & MPI_Comm & TYPE\discretionary{}{\kern10pt}{}(MPI_Comm)  & IN \\
 

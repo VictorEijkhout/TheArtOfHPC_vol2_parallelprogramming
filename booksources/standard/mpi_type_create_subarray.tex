@@ -35,9 +35,9 @@ l       % inout
 \hbox to 18pt{MPI_Type_create_subarray (\hss} \\
 \hbox to 18pt{MPI_Type_create_subarray_c (\hss} \\
  & ndims & number of array dimensions & int & INTEGER  & IN \\
- & array_of_sizes & number of elements of type \mpiarg{oldtype} in each dimension of the full array & $\left[ \begin{array}{ll}\mathtt{ const\ int[] }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(ndims)  & IN \\ [+3pt]
- & array_of_subsizes & number of elements of type \mpiarg{oldtype} in each dimension of the subarray & $\left[ \begin{array}{ll}\mathtt{ const\ int[] }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(ndims)  & IN \\ [+3pt]
- & array_of_starts & starting coordinates of the subarray in each dimension & $\left[ \begin{array}{ll}\mathtt{ const\ int[] }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(ndims)  & IN \\ [+3pt]
+ & array_of_sizes & number of elements of type \mpiarg{oldtype} in each dimension of the full array & $\left[ \begin{array}{ll}\mathtt{ const\ int[] }  \\ \mathtt{ MPI_Count[]} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(ndims)  & IN \\ [+3pt]
+ & array_of_subsizes & number of elements of type \mpiarg{oldtype} in each dimension of the subarray & $\left[ \begin{array}{ll}\mathtt{ const\ int[] }  \\ \mathtt{ MPI_Count[]} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(ndims)  & IN \\ [+3pt]
+ & array_of_starts & starting coordinates of the subarray in each dimension & $\left[ \begin{array}{ll}\mathtt{ const\ int[] }  \\ \mathtt{ MPI_Count[]} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(ndims)  & IN \\ [+3pt]
  & order & array storage order flag & int & INTEGER  & IN \\
  & oldtype & old datatype & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\
  & newtype & new datatype & MPI_Datatype* & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & OUT \\

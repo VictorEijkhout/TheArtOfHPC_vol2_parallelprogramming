@@ -1,5 +1,8 @@
 // persist.c
 if (procno==src) {
+  /*
+   * Send ping, receive pong
+   */
   MPI_Send_init
     (send,s,MPI_DOUBLE,tgt,0,comm,
      requests+0);
@@ -14,13 +17,24 @@ if (procno==src) {
     int r = chck_buffer(send,s,n);
     if (!r) printf("buffer problem %d\n",s);
   }
-  MPI_Request_free(requests+0);
-  MPI_Request_free(requests+1);
 } else if (procno==tgt) {
+  /*
+   * Receive ping, send pong
+   */
+  MPI_Send_init
+    (recv,s,MPI_DOUBLE,src,0,comm,
+     requests+0);
+  MPI_Recv_init
+    (recv,s,MPI_DOUBLE,src,0,comm,
+     requests+1);
   for (int n=0; n<NEXPERIMENTS; n++) {
-    MPI_Recv(recv,s,MPI_DOUBLE,src,0,
-            comm,MPI_STATUS_IGNORE);
-    MPI_Send(recv,s,MPI_DOUBLE,src,0,
-             comm);
+	// receive
+    MPI_Start(requests+1);
+	MPI_Wait(requests+1,MPI_STATUS_IGNORE);
+	// send
+    MPI_Start(requests+0);
+	MPI_Wait(requests+0,MPI_STATUS_IGNORE);
   }
 }
+MPI_Request_free(requests+0);
+MPI_Request_free(requests+1);

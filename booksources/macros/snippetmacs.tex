@@ -70,9 +70,10 @@
     {\lstset{style=reviewcode,language=Python}\begin{lstlisting}}
     {\end{lstlisting}}
 
-\makeatletter
 \def\snippetcodefraction{.6}
 \def\snippettextfraction{.35}
+
+% #1 snippet #2 dir #3 output
 \newcommand{\csnippetwithoutput}[3]{
   \snippetwithoutput{#1}{#2}{#3}{C}
 }
@@ -80,7 +81,6 @@
 \newcommand{\fsnippetwithoutput}[3]{
   \snippetwithoutput{#1}{#2}{#3}{Fortran}
 }
-
 \newcommand{\psnippetwithoutput}[3]{
   \snippetwithoutput{#1}{#2}{#3}{Python}
 }
@@ -88,6 +88,7 @@
 \def\snippetcodefraction{.6}
 \def\snippetlistfraction{.35}
 \newcommand\snippetoutputsize{\footnotesize}
+\makeatletter
 \newcommand{\snippetwithoutput}[4]{
   \message{Code snippet <#1> in dir <#2> with output file <#3> language <#4>}
   % go into vertical mode

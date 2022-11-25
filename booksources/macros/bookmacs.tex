@@ -143,8 +143,13 @@
   \immediate\message{sourcing <<#1>>}
   \Level 1 {Listing of code #1}
   \label{lst:#1}
-  \ListStrippedSource{#1}
+  %% \ListStrippedSource{#1}
+  \LinkRepoSource{#1}
   \par
+}
+\def\SourceRepoRoot{https://github.com/VictorEijkhout/TheArtOfHPC_vol2_parallelprogramming/tree/main}
+\newcommand\LinkRepoSource[1]{
+  \url{\SourceRepoRoot /#1}
 }
 \newcommand\ListStrippedSource[1]{
   \begingroup \footnotesize

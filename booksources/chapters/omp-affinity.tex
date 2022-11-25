@@ -585,16 +585,14 @@ Setting binding to \n{false} only gives bad performance for large core counts.
 
 \Level 1 {Stampede2 Knights Landing}
 
-Single socket 68-core \indextermbus{Intel}{Knights Landing};
-\ref{fig:knl-bind}.
+We test on a single socket 68-core processor:
+the \indextermbus{Intel}{Knights Landing}.
 
 Since this is a single socket design,
 we don't distinguish between the \n{close} and \n{spread} binding.
 However, the binding value of \n{true} shows good speedup
 --~in fact beyond the core count~--
 while \n{false} gives worse performance than in other architectures.
-
-Single 68 core
 
 \begin{figure}[t]
   \begin{tikzpicture}  

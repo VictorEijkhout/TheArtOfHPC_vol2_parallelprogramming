@@ -13,7 +13,7 @@
 
 \index{datatype|(}
 
-In the examples you have seen so far, every time data was sent,
+In the examples you have seen so far, every time data was sent
 it was as a contiguous buffer with elements of a single type.
 In practice you may want to send noncontiguous 
 or heterogeneous data.
@@ -25,7 +25,7 @@ or heterogeneous data.
   type of element.
 \end{itemize}
 The datatypes you have dealt with so far are known as
-\indextermsub{elementary}{datatype}s;
+\indextermsub{predefined}{datatype}s;
 the datatypes you create to deal with other data
 are known as \indextermsub{derived}{datatype}s.
 
@@ -36,11 +36,16 @@ Datatypes such as \indexmpishow{MPI_INT} are values
 of the type \indexmpidef{MPI_Datatype}.
 This type is handled differently in different languages.
 
+In C you can declare variables as
+\begin{lstlisting}
+MPI_Datatype mytype;
+\end{lstlisting}
+
 \begin{fortrannote}{Derived types for handles}
   In Fortran before 2008, datatypes variables are stored in
   \lstinline{Integer} variables.
   With the \fstandard{2008} standard, datatypes are Fortran derived types:
-  \fverbatimsnippet{vector-f08}
+  \fverbatimsnippet{vector-f08-type}
 \end{fortrannote}
 
 \begin{pythonnote}{Data types}
@@ -75,7 +80,13 @@ mpi4py.MPI.Datatype.DOUBLE
   received by MPL.
 \end{mplnote}
 
-%% \Level 0 {Elementary data types}
+\begin{mplnote}{Raw datatype handles}
+  Should you need the \indexmpishow{MPI_Datatype} object
+  contained in an MPL datatype,
+  there is an access function \indexmplshow{native_handle}.
+\end{mplnote}
+
+%% \Level 0 {Predefined data types}
 \input chapters/mpi-elementary
 
 %% \Level 0 {Derived datatypes}

@@ -6,18 +6,18 @@
 %%%% `Parallel Programming in MPI and OpenMP'
 %%%% by Victor Eijkhout, copyright 2012-2022
 %%%%
-%%%% mpi-elementary.tex : elementary datatypes
+%%%% mpi-elementary.tex : predefined datatypes
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\Level 0 {Elementary data types}
-\label{sec:elementary}
-\index{datatype!elementary|(}
+\Level 0 {Predefined data types}
+\label{sec:predefined}
+\index{datatype!predefined|(}
 
-MPI has a number of elementary data types of various kinds
+MPI has a number of predefined data types of various kinds
 \begin{itemize}
-\item First of all there are the type corresponding to the 
+\item First of all there are the types corresponding to the 
   simple data types of the host languages.
   The names are made to resemble the types of C and~Fortran, 
   for instance \indexmpishow{MPI_FLOAT} and \indexmpishow{MPI_DOUBLE}
@@ -57,7 +57,7 @@ MPI has a number of elementary data types of various kinds
 \end{comment}
 
 \Level 1 {C/C++}
-\index{datatype!elementary!in C}
+\index{datatype!predefined!in C}
 
 Here we illustrate for C/C++ the correspondence between a type used to declare a variable,
 and how this type appears in MPI communication routines:
@@ -68,10 +68,10 @@ MPI_Send(&i,1,MPI_LONG,target,tag,comm);
 See table~\ref{tab:elemen-c}.
 
 \begin{table}[ht]
-\begin{tabular}{|ll|}
-  \hline
+\begin{tabular}{ll}
+  \toprule
   C type&MPI type\\
-  \hline
+  \midrule
 % char
 \lstinline+char+&\indexmpidef{MPI_CHAR}\\
 \lstinline+unsigned char+&\indexmpidef{MPI_UNSIGNED_CHAR}\\
@@ -91,15 +91,17 @@ See table~\ref{tab:elemen-c}.
 % other
 \lstinline+unsigned char+&\indexmpidef{MPI_BYTE}\\
 (does not correspond to a C type)&\indexmpishow{MPI_PACKED}\\
-  \hline
+  \bottomrule
 \end{tabular}
-\caption{Elementary datatypes in C}
+\caption{Predefined datatypes in C}
 \label{tab:elemen-c}
 \end{table}
 
 \begin{table}[ht]
   \begin{tabular}{ll}
     \toprule
+    C9 type&MPI type\\
+    \midrule
     \lstinline+_Bool+&\indexmpidef{MPI_C_BOOL}\\
     \lstinline+float _Complex+&\indexmpidef{MPI_C_COMPLEX}\\
                               &\indexmpidef{MPI_C_FLOAT_COMPLEX}\\
@@ -114,6 +116,8 @@ See table~\ref{tab:elemen-c}.
 \begin{table}[ht]
   \begin{tabular}{ll}
     \toprule
+    C11 type&MPI type\\
+    \midrule
     \lstinline+int8_t+&\indexmpidef{MPI_INT8_T}\\
     \lstinline+int16_t+&\indexmpidef{MPI_INT16_T}\\
     \lstinline+int32_t+&\indexmpidef{MPI_INT32_T}\\
@@ -145,13 +149,13 @@ See table~\ref{tab:elemen-c}.
 \end{itemize}
 
 \Level 1 {Fortran}
-\index{datatype!elementary!in Fortran}
+\index{datatype!predefined!in Fortran}
 \lstset{style=reviewcode,language=Fortran} %pyskip
 
 \begin{table}[ht]
 \hbox{
-\begin{tabular}{|ll|}
-  \hline
+\begin{tabular}{ll}
+  \toprule
 \indexmpidef{MPI_CHARACTER}&Character(Len=1)\\
 % int
 \indexmpidef{MPI_INTEGER}&\\
@@ -164,11 +168,11 @@ See table~\ref{tab:elemen-c}.
 \indexmpidef{MPI_LOGICAL}&\\
 \indexmpishow{MPI_BYTE}&\\
 \indexmpidef{MPI_PACKED}&\\
-  \hline
+  \bottomrule
 \end{tabular}
 
-\begin{tabular}{|l|}
-  \hline
+\begin{tabular}{l}
+  \toprule
 % int
 \indexmpidef{MPI_INTEGER1}\\
 \indexmpidef{MPI_INTEGER2}\\
@@ -181,7 +185,7 @@ See table~\ref{tab:elemen-c}.
 \indexmpidef{MPI_REAL8}\\
 % complex
 \indexmpidef{MPI_DOUBLE_COMPLEX}\\ \kern20pt \texttt{Complex(Kind=Kind(0.d0))} \\
-  \hline
+  \bottomrule
 \end{tabular}
 }
 \caption{Standard Fortran types (left) and common extension (right)}
@@ -198,34 +202,12 @@ equivalent to \indexmpishow{MPI_DATATYPE_NULL}.
 The default integer type \indexmpishow{MPI_INTEGER} is equivalent to
 \lstinline{INTEGER(KIND=MPI_INTEGER_KIND)}.
 
-%% \Level 2 {Big data types}
-%% \label{sec:mpi-big-data}
-
-%% The C type \indexmpishow{MPI_Count} corresponds to an integer of type
-%% \indexmpidef{MPI_COUNT_KIND}, used most prominently in `big data'
-%% routines such as \indexmpishow{MPI_Type_size_x} 
-%% (section~\ref{sec:mpi-type-size}):
-%% \begin{lstlisting}
-%% Integer(kind=MPI_COUNT_KIND) :: count
-%% call MPI_Type_size_x(my_type, count)
-%% \end{lstlisting}
-
-%% \begin{mpifournote}{Count type}
-%%   For every routine \lstinline{MPI_Something}
-%%   with an \lstinline{int} count parameter,
-%%   there is a corresponding routine \lstinline{MPI_Something_c}
-%%   with an \lstinline{MPI_Count} parameter.
-
-%%   The above \lstinline{MPI_Something_x} routines
-%%   will probably be deprecated in the \mpistandard{4.1} standard.
-%% \end{mpifournote}
-
 \Level 2 {Fortran90 kind-defined types}
 \label{sec:f90-types}
 
 If your \fstandard{90} code uses \lstinline{KIND} to define scalar types with
-specified precision, these do not in general correspond to any
-predefined MPI datatypes. Hence the following routines exist to make
+specified precision,
+you need to use the following routines to make
 \emph{MPI equivalences of Fortran scalar types}%
 \index{Fortran!MPI equivalences of scalar types}:
 \begin{itemize}
@@ -240,11 +222,14 @@ predefined MPI datatypes. Hence the following routines exist to make
 Example of an integer kind;
 \begin{lstlisting}
 INTEGER ( KIND = SELECTED_INT_KIND(15) ) , &
- DIMENSION(100) :: array INTEGER :: root , integertype , error 
+    DIMENSION(100) :: array
+INTEGER :: root , error 
+Type(MPI_Datatype) :: integertype
 
 CALL MPI_Type_create_f90_integer( 15 , integertype , error )
 CALL MPI_Bcast ( array , 100 , &
  integertype , root , MPI_COMM_WORLD , error )
+! error parameter optional in f08, both routines.
 \end{lstlisting}
 
 Example of a real kind:
@@ -264,26 +249,26 @@ CALL MPI_Type_create_f90_complex( 15 , 300 , complextype , error )
 \lstset{style=reviewcode,language=C} %pyskip
 
 \Level 1 {Python}
-\label{sec:py-elementary}
-\index{datatype!elementary!in Python}
+\label{sec:py-predefined}
+\index{datatype!predefined!in Python}
 
-\begin{pythonnote}{Elementary data types}
-  This section~\ref{sec:py-elementary}
-  discusses of elementary datatypes in Python.
+\begin{pythonnote}{Predefined data types}
+  This section~\ref{sec:py-predefined}
+  discusses of predefined datatypes in Python.
 \end{pythonnote}
 
 In python, all buffer data comes from \indexterm{Numpy}.
 
-\begin{tabular}{|ll|}
-  \hline
+\begin{tabular}{ll}
+  \toprule
   mpi4py type&NumPy type\\
-  \hline
+  \midrule
   \n{MPI.INT}&\n{np.intc}\\
              &\n{np.int32}\\
   \n{MPI.LONG}&\n{np.int64}\\
   \n{MPI.FLOAT}&\n{np.float32}\\
   \n{MPI.DOUBLE}&\n{np.float64}\\
-  \hline
+  \bottomrule
 \end{tabular}
 
 In this table we see that
@@ -295,7 +280,8 @@ but this is deprecated as of \indextermbus{Numpy}{1.20}.
 
 Examples:
 
-\pverbatimsnippet[examples/mpi/p/inttype.py]{npintc}
+\psnippetwithoutput{npintc}{examples/mpi/p}{intsize}
+    % [examples/mpi/p/inttype.py]{npintc}
 
 \pverbatimsnippet{bufallocp}
 
@@ -326,7 +312,9 @@ given in \indexmpishow{MPI_BOTTOM}.
 See also the \indexmpishow{MPI_Sizeof}
 (section~\ref{sec:mpi-type-match})
 and
-\indexmpishow{MPI_Get_address} routines.
+\indexmpishow{MPI_Get_address}
+(section~\ref{sec:data:indexed})
+routines.
 
 Variables of type \indexmpishow{MPI_Aint} can be sent as \indexmpidef{MPI_AINT}:
 \begin{lstlisting}
@@ -414,7 +402,7 @@ where the \lstinline{typeclass} argument is one of
 \indexmpishow{MPI_TYPECLASS_INTEGER},
 \indexmpishow{MPI_TYPECLASS_COMPLEX}.
 
-\cverbatimsnippet[examples/mpi/c/typematch.c]{typematchc}
+\csnippetwithoutput{typematchc}{examples/mpi/c/typematch.c}{typematch}
 
 The space that MPI takes for a structure type can be queried in a
 variety of ways. First of all \indexmpiref{MPI_Type_size} counts the
@@ -443,5 +431,5 @@ This routine is deprecated in \mpistandard{4}: use of
 
 Petsc has its own translation mechanism; see section~\ref{sec:petsc-scalar}.
 
-\index{datatype!elementary|)}
+\index{datatype!predefined|)}
 

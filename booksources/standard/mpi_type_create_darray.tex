@@ -37,7 +37,7 @@ l       % inout
  & size & size of process group & int & INTEGER  & IN \\
  & rank & rank in process group & int & INTEGER  & IN \\
  & ndims & number of array dimensions as well as process grid dimensions & int & INTEGER  & IN \\
- & array_of_gsizes & number of elements of type \mpiarg{oldtype} in each dimension of global array & $\left[ \begin{array}{ll}\mathtt{ const\ int[] }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(ndims)  & IN \\ [+3pt]
+ & array_of_gsizes & number of elements of type \mpiarg{oldtype} in each dimension of global array & $\left[ \begin{array}{ll}\mathtt{ const\ int[] }  \\ \mathtt{ MPI_Count[]} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(ndims)  & IN \\ [+3pt]
  & array_of_distribs & distribution of array in each dimension & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(ndims)  & IN \\
  & array_of_dargs & distribution argument in each dimension & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(ndims)  & IN \\
  & array_of_psizes & size of process grid in each dimension & const\ int[] & INTEGER\discretionary{}{\kern10pt}{}(ndims)  & IN \\

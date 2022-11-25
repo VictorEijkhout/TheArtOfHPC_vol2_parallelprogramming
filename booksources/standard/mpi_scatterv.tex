@@ -35,8 +35,8 @@ l       % inout
 \hbox to 18pt{MPI_Scatterv (\hss} \\
 \hbox to 18pt{MPI_Scatterv_c (\hss} \\
  & sendbuf & address of send buffer & const\ void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & IN \\
- & sendcounts & non-negative integer array (of length group size) specifying the number of elements to send to each rank & $\left[ \begin{array}{ll}\mathtt{ const\ int[] }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(*)  & IN \\ [+3pt]
- & displs & integer array (of length group size). Entry \mpicode{i} specifies the displacement (relative to \mpiarg{sendbuf}) from which to take the outgoing data to process \mpicode{i} & $\left[ \begin{array}{ll}\mathtt{ const\ int[] }  \\ \mathtt{ MPI_Aint} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(*)  & IN \\ [+3pt]
+ & sendcounts & non-negative integer array (of length group size) specifying the number of elements to send to each rank & $\left[ \begin{array}{ll}\mathtt{ const\ int[] }  \\ \mathtt{ MPI_Count[]} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(*)  & IN \\ [+3pt]
+ & displs & integer array (of length group size). Entry \mpicode{i} specifies the displacement (relative to \mpiarg{sendbuf}) from which to take the outgoing data to process \mpicode{i} & $\left[ \begin{array}{ll}\mathtt{ const\ int[] }  \\ \mathtt{ MPI_Aint[]} \end{array} \right.$  & INTEGER\discretionary{}{\kern10pt}{}(*)  & IN \\ [+3pt]
  & sendtype & datatype of send buffer elements & MPI_Datatype & TYPE\discretionary{}{\kern10pt}{}(MPI_Datatype)  & IN \\
  & recvbuf & address of receive buffer & void* & TYPE(*), \hbox{}\kern10pt{}DIMENSION(..)  & OUT \\
  & recvcount & number of elements in receive buffer & $\left[ \begin{array}{ll}\mathtt{ int }  \\ \mathtt{ MPI_Count} \end{array} \right.$  & INTEGER  & IN \\ [+3pt]

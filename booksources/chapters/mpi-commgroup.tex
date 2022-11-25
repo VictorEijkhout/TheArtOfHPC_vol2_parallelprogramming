@@ -70,6 +70,12 @@ This not the same as \indexmpidef{MPI_GROUP_NULL},
 which is the output of invalid operations on groups,
 or the result of \indexmpishow{MPI_Group_free}.
 
+\begin{mplnote}{Raw group handles}
+  Should you need the \indexmpishow{MPI_Datatype} object
+  contained in an MPL group,
+  there is an access function \indexmplshow{native_handle}.
+\end{mplnote}
+
 \Level 1 {Example}
 
 Suppose you want to split the world communicator into

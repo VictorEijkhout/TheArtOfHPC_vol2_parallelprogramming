@@ -22,15 +22,16 @@ info ::
 APPS = init thread env outerr abort procname \
     sendandrecv isendandirecv bufring pingpongbig count \
     irecvsource irecvnonblock longint \
-    probe testhang findbarrier ibarriertest ibarrierprobe backintime reductpositive \
+    hangwait probe testhang findbarrier ibarriertest ibarrierprobe backintime reductpositive \
     putfence putfencealloc getfence windynamic anysource \
     cancel scan exscan fft itranspose progress interleavegather \
-    postwaitwin passive numa nodecount \
+    postwaitwin numa nodecount \
     reduce reduceinplace reducecount \
     allreduce allreduceinplace gather gatherv allgatherv \
     randomupdatefence randomupdatelock randomupdateshared \
     reducescatter trueextent typesize typematch countx tags \
-    contiguous vector vectorx vectorpadsend getx stridestretch interleave indexed struct pack subarray \
+    contiguous vector vectorx vectorpadsend getx stridestretch interleave \
+    indexed struct pack subarray darray \
     typefloat \
     itransposeblock \
     commdupwrong commdupright commdupall commcompare \
@@ -187,6 +188,17 @@ run_port : portapp
 	@export FI_MLX_ENABLE_SPAWN=yes \
 	 && export FI_MLX_NS_ENABLE=1 \
 	 && ${MPIRUN} -n 4 ./$^
+
+RUNS += run_session
+.PHONY: run_session
+run_session : session
+	${MPIRUN} -n 2 ./$^
+## make --no-print-directory mpirun PROGRAM=session NP=1 ECHO=${ECHO}
+
+RUNS += run_typematch
+.PHONY: run_typematch
+run_typematch : typematch
+	${MPIRUN} -n 1 ./$^
 
 ####
 #### generic runs

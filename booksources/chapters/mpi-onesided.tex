@@ -177,7 +177,7 @@ The data array must not be \n{PARAMETER} or \n{static const}.
 The size parameter is measured in bytes. In~C this can be done
 with the \indextermtt{sizeof} operator;
 %
-\cverbatimsnippet[examples/mpi/c/examples/putfencealloc.c]{windowsizeof}
+\cverbatimsnippet[examples/mpi/c/putfencealloc.c]{windowsizeof}
 %
 for doing this calculation in Fortran, see section~\ref{sec:mpif-shape}.
 
@@ -693,7 +693,7 @@ turns these routines into an atomic Get. Similarly, using
   atomic gets and update of that data using
   \indexterm{passive target synchronization} through \indexmpishow{MPI_Win_lock}.
   %
-  \cverbatimsnippet[examples/mpi/c/fetchop.c]{fetchop}
+  \cxxverbatimsnippet[examples/mpi/cxx/passive.cxx]{fetchop}
   %
   \pverbatimsnippet[examples/mpi/p/passive.py]{fetchopp}
 \end{example}

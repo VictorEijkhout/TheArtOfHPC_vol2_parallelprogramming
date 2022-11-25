@@ -67,11 +67,11 @@ These types may have some unusual size properties:
 
   Likewise, the input needs to be arrays of such type. Consider this example:
   \lstset{language=Fortran}
-  \begin{lstlisting}
-    Real*8,dimension(2,N) :: input,output
-    call MPI_Reduce( input,output, N, MPI_2DOUBLE_PRECISION, &
+\begin{lstlisting}
+Real*8,dimension(2,N) :: input,output
+call MPI_Reduce( input,output, N, MPI_2DOUBLE_PRECISION, &
     MPI_MAXLOC, root, comm )
-  \end{lstlisting}
+\end{lstlisting}
 \end{fortrannote}
 
 \begin{mplnote}{Operators}

@@ -89,7 +89,7 @@ const communicator& mpl::environment::comm_self();
 There doesn't seem to be an equivalent of \indexmpishow{MPI_COMM_NULL}.
 \end{mplnote}
 
-\begin{mplnote}{Raw communicators}
+\begin{mplnote}{Raw communicator handles}
   Should you need the \indexmpishow{MPI_Comm} object
   contained in an MPL \indexmplshow{communicator},
   there is an access function \indexmplshow{native_handle}.
@@ -121,7 +121,8 @@ processors in three groups corresponding to generation, computation, rendering.
 As long as you only do sends and receives, this division works fine. However,
 if one group of processes needs to perform a collective operation, you don't
 want the other groups involved in this. Thus, you really want the three groups
-to be distinct from each other.
+to be distinct from each other:
+you want them to be in separate communicators.
 
 In order to make such subsets of processes, MPI has the mechanism of
 taking a subset of \indexmpishow{MPI_COMM_WORLD}
@@ -150,7 +151,9 @@ The usage is as follows:
 
 \Level 1 {Scenario: distributed linear algebra}
 
-For \emph{scalability} reasons, matrices should often be distributed
+For \emph{scalability} reasons
+(see \HPSCref{sec:densescaling}),
+matrices should often be distributed
 in a 2D manner, that is, each process receives a subblock that is not
 a block of full columns or rows. This means that the processors themselves
 are, at least logically, organized in a 2D grid. Operations

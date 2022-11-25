@@ -19,7 +19,7 @@ info ::
 APPS = f08 procname count reduceinplace reduceinplaceptr section sectionisend \
     anysource putfence matchkind contiguous struct tags \
     waitnull vector vectorx pingpongbig
-WRONGS = typecheck typecheckarg typecheckbuf typecheck8
+WRONGS = typecheck typecheckarg typecheckbuf typecheck8 typecheckkind
 
 LANGUAGE = F
 MODE = mpi

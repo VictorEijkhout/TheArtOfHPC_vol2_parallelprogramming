@@ -8,5 +8,6 @@ if (procno==sender) {
   double recv=0.;
   MPI_Request request;
   MPI_Irecv( &recv,1,MPI_DOUBLE,sender,0,comm,&request);
+  do_some_work();
   MPI_Wait(&request,MPI_STATUS_IGNORE);
 }

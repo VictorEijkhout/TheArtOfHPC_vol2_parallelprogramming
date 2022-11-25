@@ -46,21 +46,20 @@ attribute \indexmpidef{MPI_UNIVERSE_SIZE}, retrieved with
 you to the total number of hosts available.
 
 If this option is not supported, you can determine yourself how many
-processes you want to spawn. If you exceed the hardware resources,
+processes you want to spawn.
+However, if you exceed the hardware resources,
 your multi-tasking operating system (which is some variant of Unix for
 almost everyone) will use \indexterm{time-slicing} to start the
 spawned processes, but you will not gain any performance.
 
 Here is an example of a work manager.
 %
-First we query how much space we have for new processes:
+First we query how much space we have for new processes,
+using the flag to see if this option is supported:
 %
-\cverbatimsnippet[examples/mpi/c/spawnmanager.c]{spawnmanagerq}
+\cverbatimsnippet[examples/mpi/c/spawnapp.c]{spawnmanagerq}
 
 (See section~\ref{sec:mpi_attr} for that dereference behavior.)
-
-Use the flag to see if this option is supported:
-\cverbatimsnippet[examples/mpi/c/spawnmanager.c]{uverse}
 
 Then we actually spawn the processes:
 %
@@ -256,14 +255,22 @@ with
 
 The most common way of initializing MPI,
 with \indexmpishow{MPI_Init} (or \indexmpishow{MPI_Init_thread}) and \indexmpishow{MPI_Finalize},
-is known as the \indexterm{world model}.
+is known as the \indextermdef{world model} which can be described as:
+\begin{enumerate}
+\item There is a single call to \indexmpishow{MPI_Init} or \indexmpishow{MPI_Init_thread};
+\item There is a single call to \indexmpishow{MPI_Finalize};
+\item With very few exceptions, all MPI calls appear in between the initialize and finalize calls.
+\end{enumerate}
+
 This model suffers from some disadvantages:
 \begin{enumerate}
 \item There is no error handling during \indexmpishow{MPI_Init}.
+\item MPI can not be finalized and restarted;
 \item If multiple libraries are active, they can not initialize
   or finalize MPI, but have to base themselves on subcommunicators;
   section~\ref{sec:mpi-comm-dup-lib}.
-\item A library can't even 
+\item There is no threadsafe way of initializing MPI:
+  a~library can't safely do
 \begin{lstlisting}
 MPI_Initialized(&flag);
 if (!flag) MPI_Init(0,0);
@@ -283,23 +290,12 @@ independently.
 The two models can be used in the same program, but there are limitations
 on how they can mix.
 
-\Level 1 {World model versus sessions model}
-
-The \indextermdef{world model} of using MPI can be described as:
-\begin{enumerate}
-\item There is a single call to \indexmpishow{MPI_Init} or \indexmpishow{MPI_Init_thread};
-\item There is a single call to \indexmpishow{MPI_Finalize};
-\item With very few exceptions, all MPI calls appear in between the initialize and finalize calls.
-\end{enumerate}
-
-This has some problems:
-\begin{itemize}
-\item MPI can not be finalized and restarted;
-\item there is no threadsafe way of initializing MPI.
-\end{itemize}
+\Level 1 {Short description of the session model}
 
 In the \indextermdef{session model},
-the world model has become a separate way of starting MPI.
+each session starts and finalizes MPI independently,
+giving each a separate \indexmpishow{MPI_COMM_WORLD}.
+The world model then becomes a separate way of starting MPI.
 You can create a communicator using the world model
 in addition to starting multiple sessions,
 each on
@@ -316,7 +312,7 @@ or \indexmpishow{MPI_Comm_join}.
 \Level 1 {Session creation}
 
 An MPI \indextermdef{session} is initialized and finalized
-with \indexmpidef{MPI_Session_init} and \indexmpidef{MPI_Session_finalize},
+with \indexmpiref{MPI_Session_init} and \indexmpidef{MPI_Session_finalize},
 somewhat similar to \indexmpishow{MPI_Init} and \indexmpishow{MPI_Finalize}.
 
 \cverbatimsnippet{sessioninit}
@@ -325,7 +321,8 @@ This call is thread-safe, in view of the above reasoning.
 
 \Level 2 {Session info}
 
-The \indexmpishow{MPI_Info} object can be null, or
+The \indexmpishow{MPI_Info} object that is passed to \indexmpishow{MPI_Session_init}
+can be null, or
 it can be used to request a threading level:
 %
 \cverbatimsnippet{sessionreq}
@@ -341,7 +338,7 @@ Info keys can be retrieved again with \indexmpidef{MPI_Session_get_info}:
 
 The error handler argument accepts a pre-defined error handler
 (section~\ref{sec:mpi-error})
-or one create by \indexmpidef{MPI_Session_create_errhandler}.
+or one created by \indexmpidef{MPI_Session_create_errhandler}.
 
 \Level 1 {Process sets and communicators}
 
@@ -353,7 +350,7 @@ are always defined.
 You query the `psets' with \indexmpidef{MPI_Session_get_num_psets}
 and \indexmpidef{MPI_Session_get_nth_pset}:
 %
-\cverbatimsnippet{sessionpsetq}
+\csnippetwithoutput{sessionpsetq}{examples/mpi/c}{session}
 
 The following partial code creates a communicator equivalent to \indexmpishow{MPI_COMM_WORLD}
 in the session model:

@@ -58,7 +58,7 @@ Since Fortran has polymorphism, the same routine names can be used.
   The legit way of coding:
   %
   \lstset{xleftmargin=0pt}
-  \fverbatimsnippet{ftypecheck}
+  \fverbatimsnippet{ftypecheckkind}
   \columnbreak
   \ldots~but you can see what's under the hood:
   %
@@ -104,8 +104,9 @@ of integer type, it can't store the right value.
 
 The \mpistandard{3} standard has addressed this
 through the introduction of an \indexmpishow{MPI_Count} datatype,
-and new routines that return that type of count.
-(In view of the `embiggened' routins, this solution
+and new routines with an \lstinline{_x} extension,
+that return that type of count.
+(In view of the `embiggened' routines, this solution
 is no longer needed, and will probably be deprecated in later standards.)
 
 Let us consider an example.

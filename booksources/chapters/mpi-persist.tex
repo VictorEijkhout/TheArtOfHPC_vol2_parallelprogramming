@@ -15,16 +15,16 @@
 \index{persistent communication|see{communication, persistent}}
 \label{sec:persistent}
 
-Persistent communication is a mechanism for dealing
-with a repeating communication transaction,
-where the parameters of the transaction,
-such as sender, receiver, tag, root, and buffer type and size,
-stay the same.
-Only the contents of the buffers involved changes between the transactions.
-
 You can imagine that setting up a communication
 carries some overhead, and if the same communication structure
 is repeated many times, this overhead may be avoided.
+
+Persistent communication is a mechanism for dealing
+with a repeating communication transaction,
+where the parameters of the transaction,
+such as sender, receiver, tag, root, and buffer address~/type~/ size,
+stay the same.
+Only the contents of the buffers involved may change between the transactions.
 
 \begin{enumerate}
 \item
@@ -89,7 +89,11 @@ and \indexmpishow{MPI_Waitall} to test their completion.
   \def\snippetlistfraction{.5}  
   \csnippetwithoutput{persist}{examples/mpi/c}{persist}
 }
-%
+
+(Ask yourself: why does the sender use \indexmpishow{MPI_Startall} and \indexmpishow{MPI_Waitall},
+but the receiver uses \indexmpishow{MPI_Start} and \indexmpishow{MPI_Wait}
+twice?)
+
 \pverbatimsnippet[examples/mpi/p/persist.py]{persistp}
 
 As with ordinary send commands, there are persistent variants
@@ -135,8 +139,8 @@ Some points.
 \item
   Metadata arrays, such as of counts and datatypes,
   must not be altered until the \indexmpishow{MPI_Request_free} call.
-\item The initialization call is nonlocal, so it can block until all
-  processes have performed it.
+\item The initialization call is nonlocal (for this particular case of persistent collectives),
+  so it can block until all processes have performed it.
 \item Multiple persistent collective can be initialized, in which case
   they satisfy the same restrictions as ordinary collectives, in particular
   on ordering. Thus, the following code is incorrect:
@@ -203,7 +207,8 @@ and in different order among the processes.
 
 Partitioned communication is a variant
 on \indextermbus{persistent}{communication},
-where a message is constructed in partitions.
+in the sense that we use the init~/ start~/ wait sequence.
+There difference is that now  a message can be constructed in bit-by-bit.
 \begin{itemize}
 \item The normal \indexmpishow{MPI_Send_init} is replaced
   by \indexmpiref{MPI_Psend_init}.
@@ -212,7 +217,7 @@ where a message is constructed in partitions.
 \item After this, the \indexmpishow{MPI_Start} does not
   actually start the transfer; instead:
 \item Each partition of the message is separately
-  declared as read-to-be-sent with \indexmpishow{MPI_Pready}.
+  declared as ready-to-be-sent with \indexmpishow{MPI_Pready}.
 \item An \indexmpishow{MPI_Wait} call completes the operation,
   indicating that all partitions have been sent.
 \end{itemize}
@@ -343,7 +348,7 @@ way of managing buffer space.
 \item You allocate your own buffer space, and you attach it to your
   process. This buffer is not a send buffer: it is a replacement for
   buffer space used inside the MPI library or on the network card;
-  figure~\ref{fig:bufattach}. If high-bandwdith memory is available,
+  figure~\ref{fig:bufattach}. If high-bandwidth memory is available,
   you could create your buffer there.
 \item You use the \indexmpiref{MPI_Bsend}
   (or its \emph{local}\index{local!operation} variant \indexmpishow{MPI_Ibsend})
@@ -413,7 +418,7 @@ std::pair< void *, int > mpl::environment::buffer_detach ();
 \end{lstlisting}
 \end{mplnote}
 
-\Level 1 {Bufferend send calls}
+\Level 1 {Buffered send calls}
 
 The possible error codes are
 \begin{itemize}
@@ -424,12 +429,5 @@ The possible error codes are
 \end{itemize}
 
 The asynchronous version is \indexmpishow{MPI_Ibsend}, the persistent
-(see section~\ref{sec:persistent}) call is \indexmpishow{MPI_Bsend_init}.
-
-\Level 1 {Persistent buffered communication}
-
-There is a persistent variant 
-\indexmpiref{MPI_Bsend_init}
-of buffered sends, as with regular
-sends (section~\ref{sec:persistent}).
+(see section~\ref{sec:persistent}) call is \indexmpiref{MPI_Bsend_init}.
 

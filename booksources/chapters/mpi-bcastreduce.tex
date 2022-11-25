@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2021
+%%%% by Victor Eijkhout, copyright 2012-2022
 %%%%
 %%%% mpi-bcastreduce.tex : about broadcast & reduce collectives
 %%%%
@@ -49,7 +49,7 @@ Each of these needs some elucidation.
   up to and including~\mpistandard{3}.
   In the \mpistandard{4} standard the \indexmpishow{MPI_Count} data type
   become allowed. See section~\ref{sec:mpi-bigdata} for details.
-\item Datatypes can be elementary, as in the above example, or user-defined.
+\item Datatypes can be predefined, as in the above example, or user-defined.
   See chapter~\ref{ch:mpi-data} for details.
 \end{enumerate}
 
@@ -260,6 +260,7 @@ For even more complicated effects, use \n{numpy.frombuffer}:
 \end{pythonnote}
 
 \begin{mplnote}{Scalar buffers}
+  \label{mpl:buf-scalar}
   \emph{Buffer}\index{buffer!MPI, in MPL} type handling
   is done through polymorphism and templating: no explicit indiation of types.
 
@@ -289,6 +290,7 @@ part of a buffer specification.
 \end{mplnote}
 
 \begin{mplnote}{Iterator buffers}
+  \label{mpl:buf-itr}
   MPL point-to-point routines have a way of specifying the buffer(s)
   through a \lstinline{begin} and \lstinline{end} iterator.
   %
@@ -377,7 +379,7 @@ In that case, the operation is applied pointwise to each location in the array.
 
 By default MPI will not overwrite the original data with the reduction
 result, but you can tell it to do so
-using the \indexmpishow{MPI_IN_PLACE} specifier:
+using the \indexmpidef{MPI_IN_PLACE} specifier:
 %
 \cverbatimsnippet[examples/mpi/c/allreduceinplace.c]{allreduceinplace}
 %

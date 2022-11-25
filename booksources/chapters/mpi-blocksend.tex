@@ -16,15 +16,17 @@
 Suppose you have an array of numbers $x_i\colon i=0,\ldots,N$
 and you want to compute
 \[ y_i=(x_{i-1}+x_i+x_{i+1})/3\colon i=1,\ldots,N-1. \]
-As before (see figure~\ref{fig:mpi-array}), we give each processor
-a subset of the~$x_i$s and $y_i$s.
+As seen in figure~\ref{fig:mpi-array}, we give each processor
+a contiguous subset of the~$x_i$s and $y_i$s.
 Let's define $i_p$ as the first index of~$y$ that is
 computed by processor~$p$. (What is the last index computed by processor~$p$?
 How many indices are computed on that processor?)
 
 We often talk about the \indexterm{owner computes}
 model of parallel computing: each processor `owns' certain data items,
-and it computes their value.
+and it computes their value. The values used for this computation
+need of course not be local, and this is where the need for
+communication arises.
 
 \begin{comment}
   %
@@ -38,11 +40,11 @@ and it computes their value.
 
 \begin{figure}[t]
   \includegraphics[scale=.12]{threepoint-interior}
-  \caption{Three point averaging in parallel}
+  \caption{Three point averaging in parallel, case of interior points}
   \label{fig:3pt-interior}
 \end{figure}
 %
-Now let's investigate how processor~$p$ goes about computing~$y_i$ for
+Let's investigate how processor~$p$ goes about computing~$y_i$ for
 the $i$-values it owns. Let's assume that process~$p$ also stores
 the values $x_i$ for these same indices.
 Now, for many values~$i$ it can evalute the computation
@@ -82,7 +84,12 @@ We will now discuss the send and receive routines in detail.
 
 A simple scenario for information exchange between just two processes
 is the \indexterm{ping-pong}: process~A sends data to process~B, which
-sends data back to~A. This means that process~A executes the code
+sends data back to~A.
+This is not an operation that is particularly relevant to applications,
+although it is often used as a benchmark.
+Here we discuss it for to explain basic ideas.
+
+This means that process~A executes the code
 \begin{lstlisting}
 MPI_Send( /* to: */ B ..... );
 MPI_Recv( /* from: */ B ... );
@@ -138,6 +145,9 @@ to the result of \indexmpishow{MPI_Comm_size}.
 It is allowed for a process to send to itself, but
 this may lead to a runtime \indexterm{deadlock};
 see section~\ref{sec:blocking} for discussion.
+The value \indexmpishow{MPI_PROC_NULL} is allowed:
+using that as a target causes no message to be sent
+or received.
 
 \heading{Tag}
 Next, a message can have a
@@ -160,6 +170,8 @@ section~\ref{sec:mpi_attr}.
 \heading{Communicator}
 Finally, in common with the vast majority of MPI calls,
 there is a communicator argument that provides a context for the send transaction.
+In order to match a send and receive operation,
+they need to be in the same communicator.
 
 \begin{mplnote}{Blocking send and receive}
   \ac{MPL} uses a default value for the tag, and it can deduce the type
@@ -167,6 +179,7 @@ there is a communicator argument that provides a context for the send transactio
   %
   \cxxverbatimsnippet[examples/mpi/mpl/sendscalar.cxx]{mplsendscalar}
   %
+  (See also note~\ref{mpl:buf-scalar}.)
 \end{mplnote}
 
 \begin{mplnote}{Sending arrays}
@@ -179,13 +192,16 @@ there is a communicator argument that provides a context for the send transactio
   %
   \cxxverbatimsnippet[examples/mpi/mpl/sendbuffer.cxx]{mplsendbuffer}
   
+  (See also note~\ref{mpl:vec-buf}.)
 \end{mplnote}
 
-\begin{mplnote}{Iterator buffers}
-  It is possible to to send containers by iterators
-  %
-  \cxxverbatimsnippet[examples/mpi/mpl/sendrange.cxx]{mplsendrange}
-\end{mplnote}
+\begin{comment}
+  \begin{mplnote}{Iterator buffers}
+    It is possible to to send containers by iterators
+    %
+    \cxxverbatimsnippet[examples/mpi/mpl/sendrange.cxx]{mplsendrange}
+  \end{mplnote}
+\end{comment}
 
 \begin{mplnote}{Iterator layout}
   Noncontiguous iteratable objects can be send with a
@@ -196,6 +212,7 @@ std::list<int> v(20, 0);
 mpl::iterator_layout<int> l(v.begin(), v.end());
 comm_world.recv(&(*v.begin()), l, 0);  
 \end{lstlisting}
+(See also note~\ref{mpl:buf-itr}.)
 \end{mplnote}
 
 \Level 1 {Receive call}
@@ -245,7 +262,12 @@ which makes the receive succeed immediately with no data received.
 Similar to the messsage source, the message tag of a receive call can
 be a specific value or a wildcard, in this case
 \indexmpidef{MPI_ANY_TAG}.
-Again, see below.
+
+\begin{pythonnote}{Message tags}
+  Python calls sensible use a default \lstinline{tag=0},
+  but you can specify your own tag value.
+  On the receive call, the tag wildcard is \indexmpishow{MPI.ANY_TAG}.
+\end{pythonnote}
 
 \heading{Communicator}
 The communicator argument almost goes without remarking.
@@ -262,11 +284,10 @@ for more about the status object.
 \begin{remark}
   If you're not interested in the status,
   as is the case in many examples in this book,
-  specify the constant \indexmpidef{MPI_STATUS_IGNORE}.
+  you can specify the constant \indexmpidef{MPI_STATUS_IGNORE}.
   Note that the signature of \indexmpishow{MPI_Recv} lists the status parameter
   as `output'; this `direction' of the parameter of course only applies
   if you do not specify this constant.
-  (See also section~\ref{sec:mpi-constant}.)
 \end{remark}
 
 \begin{exercise}
@@ -292,6 +313,7 @@ for more about the status object.
   Take your pingpong program and modify it 
   to let half the processors
   be source and the other half the targets. Does the pingpong time increase?
+  Does the observed behavior depend on how you choose the two sets?
 \end{exercise}
 
 \Level 1 {Problems with blocking communication}
@@ -299,7 +321,7 @@ for more about the status object.
 \index{communication!blocking|(textbf}
 
 You may be tempted to think that the send call puts the data somewhere
-in the network, and the sending code can progress,
+in the network, and the sending code can progress after this call,
 as in figure~\ref{fig:send-ideal}, left.
 %
 \begin{figure}[ht]
@@ -320,14 +342,10 @@ small messages, as explained in the next section.)
 The use of \indexmpishow{MPI_Send} and \indexmpishow{MPI_Recv}
 is known as \emph{blocking communication}: when your code reaches a
 send or receive call, it blocks until the call is succesfully completed.
-
 Technically, blocking operations are called
 \emph{non-local}\index{operation!non-local} since their execution
 depends on factors that are not local to the process.
 See section~\ref{sec:mpi-local-non}.
-
-For a receive call it is clear that the receiving code will wait until
-the data has actually come in, but for a send call this is more subtle.
 
 \Level 2 {Deadlock}
 
@@ -357,7 +375,8 @@ The \indextermsub{rendezvous}{protocol} is the most general.
 Sending a message takes several steps:
 \begin{enumerate}
 \item the sender sends a header,
-  typically containing the \indextermbus{message}{envelope};
+  typically containing the \indextermbus{message}{envelope}:
+  metadata describing the message;
 \item the receiver returns a `ready-to-send' message;
 \item the sender sends the actual data.
 \end{enumerate}
@@ -377,9 +396,10 @@ since the send calls will be waiting for the receive operation to be posted.
 
 In practice, however, this code will often work. The reason is that
 MPI implementations sometimes send small messages regardless of whether
-the receive has been posted. This relies on the availability of
+the receive has been posted. This is known as an \indextermbus{eager}{send},
+and it relies on the availability of
 some amount of available buffer space. The size under which this behavior
-is used is sometimes referred to as the \emph{eager limit}.
+is used is sometimes referred to as the \indextermbus{eager}{limit}.
 
 \begin{comment}
   The following code is guaranteed to block, since a \indexmpishow{MPI_Recv}
@@ -429,12 +449,12 @@ if ( /* I am processor 0 */ ) {
 
 Eager sends also influences
 \emph{non-blocking}\index{eager send!and non-blocking} sends.
-The wait call after a non-blocking send:
+The wait call after a non-blocking send
+will return immediately, regardless any receive call,
+if the message is under the eager limit:
 %
 \csnippetwithoutput{eagerisend}{code/mpi/c}{eageri}
 %
-will return immediately, regardless any receive call,
-if the message is under the eager limit.
 
 The eager limit is implementation-specific.
 For instance,
@@ -530,7 +550,7 @@ explore in the next section.
 \label{sec:bucketbrigade}
 
 The problem with the previous exercise was that an operation that was
-conceptually parallel, became serial in execution. On the other hand,
+conceptually parallel became serial in execution. On the other hand,
 sometimes the operation is actually serial in nature. One example is
 the \indextermdef{bucket brigade} operation, where a piece of data is
 successively passed down a sequence of processors.
@@ -551,7 +571,6 @@ successively passed down a sequence of processors.
   Food for thought: all quantities involved here are integers. Is it a good idea to
   use the integer datatype here?
 
-  Question: could you have done this with a collective call?
   \skeleton{bucketblock}
 \end{exercise}
 
@@ -573,7 +592,8 @@ either deadlock, or something that is not efficient at all in
 parallel. MPI has a way out of this problem that is sufficient for
 many purposes: the combined send/recv call \indexmpiref{MPI_Sendrecv}.
 
-The sendrecv call works great if every process is paired up.
+The sendrecv call works great if every process is paired
+with precisely one sender and one receiver.
 You would then write
 \begin{lstlisting}
 sendrecv( ....from... ...to... );
@@ -593,13 +613,13 @@ In order to use the sendrecv call on these processes,
 we use \indexmpishow{MPI_PROC_NULL} for the non-existing
 processes that the endpoints communicate with.
 \begin{lstlisting}
-MPI_Comm_rank( .... &mytid );
+MPI_Comm_rank( .... &procno );
 if ( /* I am not the first processor */ )
-  predecessor = mytid-1;
+  predecessor = procno-1;
 else
   predecessor = MPI_PROC_NULL;
 if ( /* I am not the last processor */ )
-  successor = mytid+1;
+  successor = procno+1;
 else
   successor = MPI_PROC_NULL;
 sendrecv(from=predecessor,to=successor);
@@ -610,10 +630,8 @@ All processors but the last one send to their neighbor; the target
 value of \indexmpishow{MPI_PROC_NULL} for
 the last processor means a `send to the null processor': no actual
 send is done. 
-The null processor value is also of use with the
-\indexmpishow{MPI_Sendrecv} call; section~\ref{sec:send-recv}.
 
-Likewise, receive from \indexmpishow{MPI_PROC_NULL} succeeds without
+Likewise, receiving from \indexmpishow{MPI_PROC_NULL} succeeds without
 altering the receive buffer.  The corresponding
 \indexmpishow{MPI_Status} object has source
 \indexmpishow{MPI_PROC_NULL}, tag \indexmpishow{MPI_ANY_TAG}, and
@@ -710,9 +728,9 @@ send-receive call\footnote {There is an \n{MPI\_Compare\_and\_swap}
   minimum values, and the other the maximum.
   For simplicity, in this exercise we give each processor just a single number.
 
-  The exchange sort algorithm is split in even and odd stages, where
-  in the even stage, processors $2i$ and $2i+1$ compare and swap data,
-  and in the odd stage, processors $2i+1$ and $2i+2$ compare and swap.
+  The transposition sort algorithm is split in even and odd stages, where
+  in the even stage processors $2i$ and $2i+1$ compare and swap data,
+  and in the odd stage processors $2i+1$ and $2i+2$ compare and swap.
   You need to repeat this $P/2$ times, where $P$~is the number of
   processors; see figure~\ref{fig:swapsort1}.
 
@@ -729,7 +747,8 @@ send-receive call\footnote {There is an \n{MPI\_Compare\_and\_swap}
 \end{figure}
 
 \begin{remark}
-  It is not possible to use \indexmpishow{MPI_IN_PLACE} for the buffers.
+  It is not possible to use \indexmpishow{MPI_IN_PLACE} for the buffers,
+  as in section~\ref{sec:allreduce-inplace}.
   Instead, the routine \indexmpiref{MPI_Sendrecv_replace} has only one buffer,
   used as both send and receive buffer.
   Of course, this requires the send and receive messages
@@ -748,7 +767,7 @@ send-receive call\footnote {There is an \n{MPI\_Compare\_and\_swap}
   \emph{non-blocking}\index{non-blocking communication}
   and
   \emph{persistent}\index{persistent communication}
-  versions of this routine:
+  versions of \indexmpishow{MPI_Sendrecv}:
   \indexmpidef{MPI_Isendrecv}, \indexmpidef{MPI_Sendrecv_init},
   \indexmpidef{MPI_Isendrecv_replace}, \indexmpidef{MPI_Sendrecv_replace_init}.
 \end{mpifournote}

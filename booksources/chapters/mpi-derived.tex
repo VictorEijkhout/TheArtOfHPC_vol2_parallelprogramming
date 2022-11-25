@@ -20,7 +20,7 @@ analogous to defining
 structures in a programming language. MPI data types are mostly of use
 if you want to send multiple items in one message.
 
-There are two problems with using only elementary datatypes
+There are two problems with using only predefined datatypes
 as you have seen so far.
 \begin{itemize}
 \item MPI communication routines can only send multiples of a
@@ -30,7 +30,7 @@ as you have seen so far.
 \item It is also ordinarily not possible to send items of one type if they are
   not contiguous in memory. You could of course send a contiguous memory area
   that contains the items you want to send, but that is wasteful of
-  bandwidth.
+  bandwidth, and of memory space on the receiving side.
 \end{itemize}
 With MPI data types you can solve these problems in several ways.
 \begin{itemize}
@@ -101,7 +101,7 @@ call MPI_Type_free(newvectortype)
   In \ac{MPL} type creation routines are in the main namespace,
   templated over the datatypes.
   %
-  \cxxverbatimsnippet[examples/mpi/mpl/vector.cxx]{mplstatuscreate}
+  \cxxverbatimsnippet[examples/mpi/mpl/vector.cxx]{vectormpl}
   %
   The commit call is part of the type creation,
   and freeing is done in the destructor.
@@ -109,7 +109,7 @@ call MPI_Type_free(newvectortype)
 
 \Level 2 {Create calls}
 
-The \indexmpishow{MPI_Datatype} varriable gets its value by a call to
+The \indexmpishow{MPI_Datatype} variable gets its value by a call to
 one of the following routines:
 \begin{itemize}
 \item \indexmpishow{MPI_Type_contiguous} for contiguous blocks of
@@ -124,7 +124,7 @@ one of the following routines:
   \indexmpishow{MPI_Type_hindexed} for irregularly strided data;
   section~\ref{sec:data:indexed}.
 \end{itemize}
-These calls take an existing type, whether elementary or also derived,
+These calls take an existing type, whether predefined or also derived,
 and produce a new type.
 
 \Level 2 {Commit and free}
@@ -153,7 +153,7 @@ The simplest derived type is the `contiguous' type,
 constructed with \indexmpiref{MPI_Type_contiguous}.
 
 A~contigous type describes an array of items
-of an elementary or earlier defined type. There is no difference between sending
+of an predefined or earlier defined type. There is no difference between sending
 one item of a contiguous type and multiple items of the constituent type.
 \begin{figure}[t]
   \includegraphics[scale=.08]{data-contiguous}
@@ -177,7 +177,7 @@ This is illustrated in figure~\ref{fig:data-contiguous}.
 
 \begin{mplnote}{Contiguous composing}
   \label{mpl:cont_vector}
-  Contiguous layouts can only use elementary types or other contiguous layouts
+  Contiguous layouts can only use predefined types or other contiguous layouts
   as their `old' type.
   To make a contiguous type for other layouts, use \indexmpidef{vector_layout}:
   %
@@ -208,15 +208,15 @@ sender sends \n{b}~blocks of length~\n{l} each, the receiver can
 %
 \begin{figure}[t]
   \includegraphics[scale=.12]{data-vector-to-contiguous}
-  \caption{Sending a vector datatype and receiving it as elementary or
+  \caption{Sending a vector datatype and receiving it as predefined or
     contiguous}
   \label{fig:data-vector-to-contiguous}
 \end{figure}
 %
 receive them as \n{bl} contiguous elements, either as a contiguous
-datatype, or as a contiguous buffer of an elementary type; see
-figure~\ref{fig:data-vector-to-contiguous}. In this case, the receiver
-has no knowledge of the stride of the datatype on the sender.
+datatype, or as a contiguous buffer of an predefined type; see
+figure~\ref{fig:data-vector-to-contiguous}.
+The receiver has no knowledge of the stride of the datatype on the sender.
 
 In this example a vector type is created only on the sender, in order to send
 a strided subset of an array; the receiver receives the data as a contiguous block.
@@ -272,7 +272,8 @@ equal to the column length.
 
 As an example of this datatype, consider the example of transposing
 a matrix, for instance to convert between
-C and Fortran arrays (see section~\CARPref{sec:CFarrays}). Suppose that 
+C and Fortran arrays.
+Suppose that 
 a processor has a matrix stored in~C, row-major, layout, and it needs
 to send a column to another processor. If the matrix is declared as
 \begin{lstlisting}
@@ -442,7 +443,20 @@ Received F order:
 
 \Level 1 {Distributed array type}
 
-TO BE WRITTEN
+Each dimension can independently be distributed as
+\indexmpidef{MPI_DISTRIBUTE_BLOCK},
+\indexmpidef{MPI_DISTRIBUTE_CYCLIC},
+\indexmpidef{MPI_DISTRIBUTE_NONE},
+
+With the cyclic distribution, the amount of cyclicity
+can be indicated by setting \lstinline{dargs[id]} to a certain number.
+
+With the block distribution,
+blocks can be set explicitly in \lstinline{dargs[id]},
+but \indexmpidef{MPI_DISTRIBUTE_DFLT_DARG} causes an even distribution
+to be found.
+
+Ordering can be \indexmpishow{MPI_ORDER_C} or \indexmpishow{MPI_ORDER_FORTRAN}.
 
 \Level 1 {Indexed type}
 \label{sec:data:indexed}
@@ -566,7 +580,7 @@ The following Fortran code uses \indexmpishow{MPI_Get_address},
 which is more elegant, and in fact
 the only way address calculations can be done in Fortran.
 
-\fverbatimsnippet[examples/mpi/f/struct.F90]{fstructure}
+\fverbatimsnippet[examples/mpi/f08/struct.F90]{fstructure}
 
 It would have been incorrect to write
 \begin{lstlisting}

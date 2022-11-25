@@ -246,7 +246,7 @@ A sample printout of the result would be:
 The trick is to use \indexmpishow{MPI_Type_create_resized}
 to make the extent of the type only one int long:
 %
-\cverbatimsnippet[examples/mpi/c/interleavegather]{interleavegather}
+\cverbatimsnippet[examples/mpi/c/interleavegather.c]{interleavegather}
 %
 Now data is written with the same stride, but
 at starting points equal to the shrunk extent:
