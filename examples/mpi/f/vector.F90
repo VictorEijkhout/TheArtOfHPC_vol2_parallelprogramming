@@ -17,8 +17,9 @@ Program Vector
   double precision, dimension(:),allocatable :: source,target
   integer :: sender = 0,receiver = 1, count = 5, stride = 2
 
+  integer :: recv_status(MPI_STATUS_SIZE)
   integer :: newvectortype
-  integer :: recv_status(MPI_STATUS_SIZE),recv_count
+  integer :: recv_count
 
 #include "globalinit.F90"
 
