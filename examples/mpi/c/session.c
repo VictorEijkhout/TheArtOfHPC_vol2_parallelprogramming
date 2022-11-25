@@ -49,13 +49,16 @@ int main(int argc,char **argv) {
   int npsets;
   MPI_Session_get_num_psets
     ( the_session,MPI_INFO_NULL,&npsets );
-  if (mainproc) printf("Number of process sets: %d\n",npsets);
+  if (mainproc)
+    printf("Number of process sets: %d\n",npsets);
   for (int ipset=0; ipset<npsets; ipset++) {
     int len_pset; char name_pset[MPI_MAX_PSET_NAME_LEN];
-    MPI_Session_get_nth_pset( the_session,MPI_INFO_NULL,
-                              ipset,&len_pset,name_pset );
+    MPI_Session_get_nth_pset
+      ( the_session,MPI_INFO_NULL,
+        ipset,&len_pset,name_pset );
     if (mainproc)
-      printf("Process set %2d: <<%s>>\n",ipset,name_pset);
+      printf("Process set %2d: <<%s>>\n",
+             ipset,name_pset);
     if (!strcmp(name_pset,world_name)) world_pset = ipset;
   }
 

@@ -32,12 +32,12 @@ int main(int argc,char **argv) {
    */
   MPI_Comm comm_work;
   {
-    MPI_Group group_world,group_work;
-    MPI_Comm_group( comm_world,&group_world );
+    MPI_Group world_group,work_group;
+    MPI_Comm_group( comm_world,&world_group );
     int manager[] = {0};
-    MPI_Group_excl( group_world,1,manager,&group_work );
-    MPI_Comm_create( comm_world,group_work,&comm_work );
-    MPI_Group_free( &group_world ); MPI_Group_free( &group_work );
+    MPI_Group_excl( world_group,1,manager,&work_group );
+    MPI_Comm_create( comm_world,work_group,&comm_work );
+    MPI_Group_free( &world_group ); MPI_Group_free( &work_group );
   }
 
   if (world_p==0) {

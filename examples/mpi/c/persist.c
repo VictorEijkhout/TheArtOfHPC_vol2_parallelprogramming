@@ -65,6 +65,9 @@ int main(int argc,char **argv) {
   // Now persistent communication
   for (int cnt=0,s=1; cnt<NSIZES; s*=10,cnt++) {
     if (procno==src) {
+      /*
+       * Send ping, receive pong
+       */
       MPI_Send_init
         (send,s,MPI_DOUBLE,tgt,0,comm,
          requests+0);
@@ -81,16 +84,27 @@ int main(int argc,char **argv) {
         if (!r) printf("buffer problem %d\n",s);
       }
       t[cnt] = MPI_Wtime()-t[cnt];//snipthis
-      MPI_Request_free(requests+0);
-      MPI_Request_free(requests+1);
     } else if (procno==tgt) {
+      /*
+       * Receive ping, send pong
+       */
+      MPI_Send_init
+        (recv,s,MPI_DOUBLE,src,0,comm,
+         requests+0);
+      MPI_Recv_init
+        (recv,s,MPI_DOUBLE,src,0,comm,
+         requests+1);
       for (int n=0; n<NEXPERIMENTS; n++) {
-        MPI_Recv(recv,s,MPI_DOUBLE,src,0,
-                comm,MPI_STATUS_IGNORE);
-        MPI_Send(recv,s,MPI_DOUBLE,src,0,
-                 comm);
+	// receive
+        MPI_Start(requests+1);
+	MPI_Wait(requests+1,MPI_STATUS_IGNORE);
+	// send
+        MPI_Start(requests+0);
+	MPI_Wait(requests+0,MPI_STATUS_IGNORE);
       }
     }
+    MPI_Request_free(requests+0);
+    MPI_Request_free(requests+1);
   }
   if (procno==src) {
     for (int cnt=0,s=1; cnt<NSIZES; s*=10,cnt++) {

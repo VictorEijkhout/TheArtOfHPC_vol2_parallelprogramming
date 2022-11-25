@@ -55,8 +55,12 @@ int main(int argc,char **argv) {
     MPI_Comm_get_attr
       (comm_world,MPI_UNIVERSE_SIZE,
        &universe_size_attr,&uflag);
-    universe_size = *universe_size_attr;
-    if (!uflag) universe_size = world_n;
+    if (uflag) {
+      universe_size = *universe_size_attr;
+    } else {
+      printf("This MPI does not support UNIVERSE_SIZE.\nUsing world size");
+      universe_size = world_n;
+    }
     int work_n = universe_size - world_n;
     if (world_p==0) {
       printf("A universe of size %d leaves room for %d workers\n",
