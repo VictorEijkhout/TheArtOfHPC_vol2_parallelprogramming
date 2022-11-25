@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%% "Parallel Computing"
-   %%%% by Victor Eijkhout, copyright 2020-2021
+   %%%% by Victor Eijkhout, copyright 2020-2022
    %%%%
    %%%% vector.cxx : vector datatype in MPL
    %%%%
@@ -51,7 +51,7 @@ int main(int argc,char **argv) {
   else if (procno==receiver) {
     int recv_count;
     mpl::contiguous_layout<double> target_layout(count);
-    mpl::status_t recv_status =
+    mpl::status recv_status =
       comm_world.recv(target.data(),target_layout, the_other);
     recv_count = recv_status.get_count<double>();
     assert(recv_count==count);
