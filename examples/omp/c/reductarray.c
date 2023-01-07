@@ -29,11 +29,13 @@ int main(int argc,char **argv) {
     for (int i=0; i<nthreads; i++)
       data[i] = 0;
 
-#pragma omp parallel for schedule(static,1) reduction(+:data[:nthreads])
+    #pragma omp parallel for schedule(static,1) \
+      reduction(+:data[:nthreads])
     for (int it=0; it<nthreads; it++) {
       for (int i=0; i<nthreads; i++)
-	data[i]++;
+        data[i]++;
     }
+
     printf("Data should be ===%d:",nthreads);
     for (int i=0; i<nthreads; i++)
       printf(" %d",data[i]);
@@ -44,7 +46,8 @@ int main(int argc,char **argv) {
     int *alloced = (int*)malloc( nthreads*sizeof(int) );
     for (int i=0; i<nthreads; i++)
       alloced[i] = 0;
-#pragma omp parallel for schedule(static,1) reduction(+:alloced[:nthreads])
+    #pragma omp parallel for schedule(static,1) \
+      reduction(+:alloced[:nthreads])
     for (int it=0; it<nthreads; it++) {
       for (int i=0; i<nthreads; i++)
 	alloced[i]++;

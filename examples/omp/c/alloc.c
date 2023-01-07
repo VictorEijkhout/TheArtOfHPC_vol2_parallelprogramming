@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%% "Parallel Computing"
-   %%%% by Victor Eijkhout, copyright 2013-6
+   %%%% by Victor Eijkhout, copyright 2013-2022
    %%%%
    %%%% alloc.c : dealing with allocated data
    %%%%
@@ -23,11 +23,12 @@ int main(int argc,char **argv) {
 #pragma omp master
     nthreads = omp_get_num_threads();
 
-    int *array = (int*) malloc(nthreads*sizeof(int));
+    int *array =
+      (int*) malloc(nthreads*sizeof(int));
     for (int i=0; i<nthreads; i++)
       array[i] = 0;
 
-#pragma omp parallel firstprivate(array)
+    #pragma omp parallel firstprivate(array)
     {
       int t = omp_get_thread_num();
       array += t;
@@ -55,7 +56,7 @@ int main(int argc,char **argv) {
 #pragma omp parallel firstprivate(array)
     {
       int t = omp_get_thread_num();
-      array[t] = t;
+      array[t] = t+1;
     }
 
     printf("Private\n");
