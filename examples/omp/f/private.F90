@@ -6,7 +6,7 @@
 !****
 !**** copyright Victor Eijkhout 2012-2022
 !****
-!**** OpenMP example of private data
+!**** private.F90: example of private data
 !****
 !****************************************************************/
 
