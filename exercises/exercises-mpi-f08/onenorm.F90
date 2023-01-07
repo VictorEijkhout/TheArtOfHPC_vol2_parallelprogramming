@@ -22,9 +22,9 @@ Program OneNorm
 
   !! data specific for this program
   Type(MPI_Op) :: norm_one_reduct
-  real(4) :: actual_norm
-  real(4) :: data, data_one_norm
-  !real(4),pointer :: data, data_one_norm
+  real :: actual_norm
+  real :: data, data_one_norm
+  !real,pointer :: data, data_one_norm
   !allocate(data,data_one_norm)
 
   call MPI_Init()
@@ -47,7 +47,7 @@ Program OneNorm
   call MPI_Finalize()
   
 contains
-  subroutine add_abs(invec,inoutvec,len,datatype) ! error? bind(c)
+  subroutine add_abs(invec,inoutvec,len,datatype) bind(c)
     use, intrinsic :: iso_c_binding, only : c_ptr,c_f_pointer
     use mpi_f08
 
@@ -59,7 +59,7 @@ contains
     Type(MPI_Datatype) :: datatype
 
     ! local variables
-    Real(4),pointer :: invec_r(:),inoutvec_r(:)
+    real,pointer :: invec_r(:),inoutvec_r(:)
 
     ! sanity check
     if (datatype%MPI_VAL/=MPI_REAL4%MPI_VAL) then
@@ -77,4 +77,5 @@ contains
 !!!! your code here !!!!
 
   end subroutine add_abs
+
 end Program OneNorm

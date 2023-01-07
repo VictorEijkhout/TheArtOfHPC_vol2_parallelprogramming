@@ -1,7 +1,7 @@
 VecScatter separate;
-ierr = VecScatterCreate
-  (in,oddeven,out,NULL,&separate); 
-ierr = VecScatterBegin
-  (separate,in,out,INSERT_VALUES,SCATTER_FORWARD); 
-ierr = VecScatterEnd
-  (separate,in,out,INSERT_VALUES,SCATTER_FORWARD); 
+PetscCall( VecScatterCreate
+  (in,oddeven,out,NULL,&separate) );
+PetscCall( VecScatterBegin
+  (separate,in,out,INSERT_VALUES,SCATTER_FORWARD) );
+PetscCall( VecScatterEnd
+  (separate,in,out,INSERT_VALUES,SCATTER_FORWARD) );

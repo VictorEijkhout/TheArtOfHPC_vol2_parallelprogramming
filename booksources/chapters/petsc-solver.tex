@@ -469,10 +469,6 @@ For background refer to section~\ref{sec:matfieldsplit}.
   as well as the various specific subsections.
 \end{exercise}
 
-\Level 1 {Customization: monitoring and convergence tests}
-
-PETSc solvers can do various \indexterm{callback}s to user functions.
-
 \Level 3 {Shell preconditioners}
 
 You already saw that,
@@ -517,6 +513,10 @@ for multiplicative application
 PCCompositeSetType(PC pc,PCCompositeType PC_COMPOSITE_MULTIPLICATIVE);
 \end{lstlisting}
 
+\Level 1 {Customization: monitoring and convergence tests}
+
+PETSc solvers can do various \indexterm{callback}s to user functions.
+
 \Level 2 {Convergence tests}
 
 For instance, you can set your own convergence test with
@@ -556,7 +556,7 @@ a norm of the residual.
 This corresponds to setting \indexpetscdef{KSPMonitorDefault}
 as the monitor.
 
-This actually outputs the `preconditined norm' of the residual,
+This actually outputs the `preconditioned norm' of the residual,
 which is not the L2 norm, but the square root of~$r^tM\inv r$,
 a~quantity that is computed in the course of the iteration process.
 Specifying \indexpetscdef{KSPMonitorTrueResidualNorm}

@@ -54,23 +54,19 @@ no_acro_rule :
 	      && make --no-print-directory pdf FILE=${COURSE}_course \
 	    ; fi
 
-.PHONY: onepass pdf
+.PHONY: onepass pdf filename onepassformat
 info ::
 	@echo "make onepass COURSE=... / FILE=..."
 TEXROOTDIR = ../..
 onepass ::
-	@if [ ! -z "${FILE}" ] ; then \
-	    export file=${FILE} \
-	; elif [ ! -z "${COURSE}" ] ; then \
-	    export file=${COURSE}_course \
-	; else \
-	    echo "Please set FILE or COURSE" && exit 1 \
-	; fi \
-	 && TEXINPUTS=.:..:${TEXROOTDIR}:../taccstyle:../taccstyle/figures:${TEXROOTDIR}/chapters:${TEXROOTDIR}/exercises:${TEXROOTDIR}/graphics//:${TEXROOTDIR}/plots//:${TEXROOTDIR}/macros:${TEXROOTDIR}/hwloc:${TEXROOTDIR}/mpireference:${TEXROOTDIR}/snippets:../course-support:${TEXINPUTS}${EXTRATEXINPUTS} ${ENGINE} $$file
+	@export file=$$( make --no-print-directory filename COURSE="${COURSE}" FILE="${FILE}" ) \
+	 && make --no-print-directory onepassformat FILE=$$file
+onepassformat :
+	@echo && echo "One pass over file: ${FILE}" && echo \
+	 && TEXINPUTS=.:..:${TEXROOTDIR}:../taccstyle:../taccstyle/figures:${TEXROOTDIR}/chapters:${TEXROOTDIR}/exercises:${TEXROOTDIR}/graphics//:${TEXROOTDIR}/plots//:${TEXROOTDIR}/macros:${TEXROOTDIR}/hwloc:${TEXROOTDIR}/mpireference:${TEXROOTDIR}/snippets:../course-support:${TEXINPUTS}${EXTRATEXINPUTS} ${ENGINE} ${FILE}
 pdf :: 
-	@\
-	file=${FILE} \
-	 && make --no-print-directory onepass FILE=$${file} \
+	@export file=$$( make --no-print-directory filename COURSE="${COURSE}" FILE="${FILE}" ) \
+	 && make --no-print-directory onepassformat FILE=$${file} \
 	 && if [ -z "${BIB}" ] ; then \
 	        bib=0 ; else bib=1 ; fi \
 	 && if [ $${bib} -eq 1 ] ; then \
@@ -84,8 +80,17 @@ pdf ::
 	 && if [ $$( cat ${FILE}.log | grep "Rerun to get cross-references right" | wc -l ) -eq 0 ] ; then \
 	    ref=0; else ref=1 ; fi \
 	 && if [ $${index} -eq 1 -o $${bib} -eq 1 -o $${ref} -eq 1 ] ; then \
-	        make onepass FILE=$${file} \
+	        make onepassformat FILE=$${file} \
 	    ; fi
+filename :
+	@if [ ! -z "${COURSE}" ] ; then \
+	    export file=${COURSE}_course \
+	; elif [ ! -z "${FILE}" ] ; then \
+	    export file=${FILE} \
+	; else \
+	    echo "Please set FILE or COURSE" && exit 1 \
+	; fi \
+	 && echo $$file
 
 include ../../makefiles/Make.tex
 
@@ -94,7 +99,7 @@ listextra :
 	@echo ${EXTRAFILES}
 extrafiles :
 	@for f in `make --no-print-directory listextra` ; do \
-	    make --no-print-directory onepass FILE=$${f%%.pdf} \
+	    make --no-print-directory onepass COURSE= FILE=$${f%%.pdf} \
 	    ; done
 
 info ::

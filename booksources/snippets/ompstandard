@@ -1,0 +1,19 @@
+// version.c
+int standard = _OPENMP;
+printf("Supported OpenMP standard: %d\n",standard);
+switch (standard) {
+case  201511: printf("4.5\n");
+  break;
+case 201611: printf("Technical report 4: information about 5.0 but not yet mandated.\n");
+  break;
+case 201811: printf("5.0\n");
+  break;
+case 202011:
+  printf("5.1\n");
+  break;
+case 202111: printf("5.2\n");
+  break;
+default:
+  printf("Unrecognized version\n");
+  break;
+}

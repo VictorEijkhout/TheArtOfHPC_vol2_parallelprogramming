@@ -1,0 +1,4 @@
+!! workshare2d.F90
+           !$omp parallel workshare
+           C = A*B + C
+           !$omp end parallel workshare

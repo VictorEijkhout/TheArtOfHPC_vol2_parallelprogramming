@@ -1,0 +1,8 @@
+// reductexpr.cxx
+#pragma omp declare reduction\
+  (minabs : int : \
+   omp_out = \
+       [] (int x,int y) -> int { \
+          return abs(x) > abs(y) ? abs(y) : abs(x); } \
+       (omp_in,omp_out) ) \
+  initializer (omp_priv=limit::max())

@@ -1,0 +1,11 @@
+Kokkos::parallel_for
+	( "gauss-jordan sweep",
+	  Kokkos::RangePolicy<>(0,nsize),
+	  KOKKOS_LAMBDA( int update ) {
+	    if (update!=col) {
+	      for (int row=0; row<nsize; row++) {
+		matrix(row,update) -= scaling(row) * matrix(col,update);
+	      }
+	    }
+	  }
+	  );

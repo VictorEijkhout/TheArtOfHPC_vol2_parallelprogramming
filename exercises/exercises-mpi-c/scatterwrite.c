@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%%   "Parallel Computing for Science and Engineering"
-   %%%% by Victor Eijkhout, copyright 2013-7
+   %%%% by Victor Eijkhout, copyright 2013-2022
    %%%%
    %%%% scatterwrite.c : MPI IO example
    %%%%

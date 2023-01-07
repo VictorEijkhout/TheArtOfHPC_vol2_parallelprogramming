@@ -186,7 +186,7 @@ The client can sever the connection with
 \indexmpishow{MPI_Comm_disconnect}.
 
 Running the above code on 5 processes gives:
-\begin{small}
+\begin{small}%pyskip
 \begin{verbatim}
 # exchange port name:
 Host sent port <<tag#0$OFA#000010e1:0001cde9:0001cdee$rdma_port#1024$rdma_host#10:16:225:0:1:205:199:254:128:0:0:0:0:0:0$>>
@@ -200,7 +200,7 @@ host accepted connection
 Manager sent 4 items over intercomm
 Worker zero received data  
 \end{verbatim}
-\end{small}
+\end{small}%pyskip
 
 \Level 1 {Published service names}
 \label{sec:mpi-publish}

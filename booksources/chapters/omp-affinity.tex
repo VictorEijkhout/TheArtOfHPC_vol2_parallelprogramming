@@ -1,4 +1,4 @@
- -*- latex -*-
+% -*- latex -*-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
@@ -22,7 +22,7 @@ see the example in section~\ref{sec:first-touch}.
 
 Thread placement can be controlled with two environment variables:
 \begin{itemize}
-\item the environment variable \indextermtt{OMP_PROC_BIND}
+\item the environment variable \indexompshow{OMP_PROC_BIND}
   describes how threads are bound to \indextermbus{OpenMP}{places}; while
 \item the variable \indextermtt{OMP_PLACES} describes these places
   in terms of the available hardware.
@@ -36,7 +36,36 @@ Thread placement can be controlled with two environment variables:
 \label{omp:threadbind}
 
 The variable \indexompdef{OMP_PLACES} defines a series of places to
-which the threads are assigned.
+which the threads are assigned,
+and \indexompdef{OMP_PROC_BIND} describes how threads are tied to those places.
+
+Typical values for \indexompshow{OMP_PLACES} are
+\begin{itemize}
+\item \indexompshow{socket}: threads are bound to a \indexterm{socket}, but can be
+  moved between cores in the socket;
+\item \indexompshow{core}: threads are bound to a \indexterm{core}, but
+  can be moved between hyperthreads in the core;
+\item \indexompshow{thread}: threads are bound to a specific \indexterm{hyper-thread}.
+\end{itemize}
+
+Values for \indexompshow{OMP_PROC_BIND} are implementation-defined,
+but typically:
+\begin{itemize}
+\item \indexompshow{master}: threads are bound to the same place as the master thread;
+\item \indexompshow{close}: subsequent thread numbers are placed close together
+  in the defined places;
+\item \indexompshow{spread}: subsequent thread numbers are maxially spread over places;
+\item \indexompshow{true}: threads are bound to their initial placement;
+\item \indexompshow{false}: threads are not bound to their initial placement;
+\end{itemize}
+where the values \lstinline{master,close,spread} are ordained by the standard,
+and the others depend on the implementation.
+
+There is no runtime function for setting the binding, but the \ac{ICV} \indexompshow{bind-var}
+can be retrieved with \indexompshow{omp_get_proc_bind}.
+The binding can also be set with the \indexompclause{proc_bind} clause
+on the \lstinline{parallel} directive,
+with values \lstinline{master,close,spread}.
 
 Example: if you have two sockets and you define
 \begin{verbatim}
@@ -345,6 +374,7 @@ equivalent to the non-parallel allocation and initialization above.
 Here is a solution.
 \begin{cppnote}{Uninitialized containers}
   \label{cpp:uninitial}
+  Default initialization is a problem.
   We make a template for uninitialized types:
   %
   \cxxverbatimsnippet{cppuninitial}

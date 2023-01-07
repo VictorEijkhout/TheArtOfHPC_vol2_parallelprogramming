@@ -50,4 +50,7 @@ RUNS += run_private
 run_private : private
 	@make --no-print-directory omp_run PROGRAM=private NP=4
 
+PUBLICEXTS = F90 runout
+include ../../../makefiles/Make.public
+
 include  ../../../makefiles/Make.clean

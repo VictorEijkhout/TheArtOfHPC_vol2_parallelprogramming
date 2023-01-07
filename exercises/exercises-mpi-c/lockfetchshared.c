@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%% "Parallel Programming for Science and Engineering"
-   %%%% by Victor Eijkhout, copyright 2020
+   %%%% by Victor Eijkhout, copyright 2020-2022
    %%%%
    %%%% lockfetch.c : passive target synchronization & atomic update
    %%%%
@@ -11,35 +11,33 @@
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 */
 
-#include <mpi.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
+#include <unistd.h>
+
+#include <mpi.h>
 
 int main(int argc, char *argv[])
 {
 
-#define CHK(x) if (x) {						 \
-    char errtxt[200]; int len=200;				 \
-  MPI_Error_string(x,errtxt,&len);				 \
-  printf("p=%d, line=%d, err=%d, %s\n",procno,__LINE__,x,errtxt); \
-  return x;}
-
   MPI_Comm comm;
-  int procno=-1,nprocs,ierr,err;
-  err = MPI_Init(&argc,&argv); CHK(err);
+  int procno=-1,nprocs;
+  MPI_Init(&argc,&argv);
   comm = MPI_COMM_WORLD;
-  err = MPI_Comm_rank(comm,&procno); CHK(err);
-  err = MPI_Comm_size(comm,&nprocs); CHK(err);
-  err = MPI_Comm_set_errhandler(comm,MPI_ERRORS_RETURN); CHK(err);
+  MPI_Comm_rank(comm,&procno);
+  MPI_Comm_size(comm,&nprocs);
+  MPI_Comm_set_errhandler(comm,MPI_ERRORS_RETURN);
 
+  // declare processes with special role
   int repo=0, supervisor = nprocs-1;
-  MPI_Aint zero_disp = 0;
 
   /*
    * Make a window that is only nonzero on procno==repo
    */
   int *win_buffer;
   MPI_Win the_window;
+  MPI_Aint zero_disp = 0;
   MPI_Aint winsize = 0;
   if (procno==repo)
     winsize = sizeof(MPI_INT);
@@ -49,40 +47,70 @@ int main(int argc, char *argv[])
    * The supervisor rank initializes the window
    */
   MPI_Win_fence(0,the_window);
+  int workcount = 5 * nprocs;
   if (procno==supervisor) {
-    int zero=0;
-    MPI_Put( &zero,1,MPI_INT, repo,zero_disp, 1,MPI_INT,
-	     the_window);
+    MPI_Put( &workcount,1,MPI_INT, repo,zero_disp, 1,MPI_INT,
+             the_window);
   }
   MPI_Win_fence(0,the_window);
 
-  /*
-   * Passive target epoch
-   */
-  int readout;
-  int assert = 0; // MPI_MODE_NOCHECK;
-  MPI_Win_lock(MPI_LOCK_SHARED, repo, assert, the_window);
+  srand(procno);
+  MPI_Win_lock
+    (MPI_LOCK_SHARED,
+     repo, 0, the_window);
   if (procno == supervisor) {
+    /*
+     * Supervisor cycles until the window is zero
+     */
+    int readout;
     do {
       /*
-       * Exercise: read out the windows content using an atomic operation
+       * Exercise: merely reading the window is no longer enough!
        */
+      int update=0;
+      MPI_Fetch_and_op
+        (&update, &readout ,
+         MPI_INT,
+         repo,zero_disp,
+         MPI_NO_OP, the_window);
 /**** your code here ****/
       printf("Supervisor readout: %d\n", readout);
-    } while( readout<nprocs-1 );
-    printf("Supervisor is done!\n");
+    } while ( readout>0 );
+    /*
+     * Finish up: gather how much work every process has done
+     * and correctness check
+     */
+    int nwork[nprocs], sum_work=0;
+    MPI_Gather(&readout,1,MPI_INT,nwork,1,MPI_INT,supervisor,comm);
+    nwork[supervisor] = 0;
+    printf("Work by proc:");
+    for (int ip=0; ip<nprocs; ip++) {
+      sum_work += nwork[ip]; printf(" %d",nwork[ip]); }
+    printf("\n");
+    assert(sum_work==workcount);
   } else {
-    int one=1;
-    MPI_Fetch_and_op(&one, &readout, MPI_INT, repo,zero_disp, MPI_SUM, the_window);
-    MPI_Win_flush_local(repo,the_window);
-    //MPI_Win_flush(repo,the_window);
-    printf("[%d] adding 1 to %d\n",procno,readout);
+    /*
+     * Worker processes do atomic update of the repo
+     */
+    int readout, my_work=0;
+    do {
+      float f = rand()/(float)RAND_MAX;
+      if (f>.5) sleep(1);
+      /*
+       * Exercise: merely updating the window is not enough!
+       */
+      int mone = -1;
+      MPI_Fetch_and_op(&mone, &readout, MPI_INT, repo,zero_disp, MPI_SUM, the_window);
+      if (readout>0) my_work++;
+      MPI_Win_flush_local
+	(repo,the_window);
+      printf("[%d] adding -1 to %d\n",procno,readout);
+    } while (readout>0);
+    // report how much work we have done
+    MPI_Gather(&my_work,1,MPI_INT,NULL,1,MPI_INT,supervisor,comm);
   }
   MPI_Win_unlock(repo,the_window);
-  if (procno==supervisor)
-    printf("Supervisor window readout=%d\n",readout);
-  if (procno==repo)
-    printf("Window buffer=%d\n",win_buffer[0]);
+
   MPI_Win_free(&the_window);
 
   MPI_Finalize();

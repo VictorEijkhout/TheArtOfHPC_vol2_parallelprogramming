@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2021
+%%%% by Victor Eijkhout, copyright 2012-2022
 %%%%
 %%%% hybrid.tex : about hybrid computing
 %%%%
@@ -33,6 +33,20 @@ Figure~\ref{fig:hybrid-modes} illustrates three modes: pure MPI
 with no threads used; one MPI process per node and full
 multi-threading; two MPI processes per node, one per socket, and
 multiple threads on each socket.
+
+\Level 0 {Concurrency}
+\label{sec:hybrid-order}
+
+With hybrid multi-process~/ multi-thread computing, one thing that goes
+out the door is the sequential semantics of each MPI process.
+For instance, the fact that messages between a single sender
+and a single receiver are \emph{non-overtaking}\index{message!non-overtaking}
+no longer holds if the messages originated in different threads.
+
+\begin{multicols}{2}
+  \cverbatimsnippet{mpithreadsend}
+  \cverbatimsnippet{mpithreadrecv}
+\end{multicols}
 
 \Level 0 {Affinity}
 

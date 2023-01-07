@@ -39,12 +39,6 @@ or maybe less because of the data races involved.
 This issue is discussed in \HPSCref{sec:shared-lock};
 see \ref{sec:critical} for a solution to data races in OpenMP.
 
-Sometimes this global update is what you want; in other cases the
-variable is intended only for intermediate results in a computation.
-In that case 
-there are various ways of creating
-data that is local to a thread, and therefore invisible to other threads.
-
 \Level 0 {Private data}
 \label{sec:omp-private}
 
@@ -73,7 +67,8 @@ The \indexpragma{private} directive declares data to have a separate copy
 in the memory of each thread. 
 Such private variables are initialized as they would be in a main program.
 Any computed value goes away at the end 
-of the parallel region. (However, see below.)
+of the parallel region.
+(However, see \lstinline{lastprivate} below.)
 Thus, you should not rely on any initial value, or on the value of the outer variable
 after the region.
 
@@ -84,7 +79,7 @@ after the region.
     x = x+1; // dangerous
     printf("private: x is %d\n",x);
   }
-  printf("after: x is %d\n",x); // also dangerous
+  printf("after: x is %d\n",x);
 \end{lstlisting}
 
 Data that is declared private with the \indexpragma{private} directive is
@@ -92,11 +87,10 @@ put on a separate \indextermbus{stack}{per thread}.
 The OpenMP standard
 does not dictate the size of these stacks,
 but beware of \indextermbus{stack}{overflow}.
-A~typical default is a few megabyte;
+A~typical default is a few megabytes;
 you can control it with the environment variable
 \indexompdef{OMP_STACKSIZE}.
 (You can find the current value by setting \indexompdef{OMP_DISPLAY_ENV}.)
-
 Its values can be literal or with suffixes:
 \begin{verbatim}
 123 456k 567K 678m 789M 246g 357G
@@ -161,7 +155,7 @@ variables to each iteration.
 \begin{itemize}
 \item In both C and Fortran you can declare these variables private in
   the parallel for directive.
-\item In C, you can also redefine the variables inside the loop.
+\item In~C you can also define the variables locally inside the loop.
 \end{itemize}
 
 Sometimes, even if you forget to declare these temporaries as private,
@@ -171,7 +165,13 @@ values are not otherwise used.
 
 \Level 0 {Default}
 
+There are default rules for whether data in OpenMP constructs
+is private or shared, and you can control this explicitly.
+
+First the default behavior:
 \begin{itemize}
+\item Variables declared outside a a parallel region
+  are shared as described above;
 \item Loop variables in an \indexpragma{omp for} are private;
 \item Local variables in the parallel region are private.
 \end{itemize}
@@ -210,38 +210,6 @@ Specifying the status of every variable is a good way to
 debug this.
 \end{itemize}
 
-\Level 0 {Array data}
-\label{sec:omp-array}
-
-The rules for arrays are slightly different from those for scalar data:
-\begin{enumerate}
-\item Statically allocated data, that is with a syntax like
-\begin{lstlisting}
-int array[100];
-integer,dimension(:) :: array(100}
-\end{lstlisting}
-can be shared or private, depending on the clause you use.
-\item Dynamically allocated data, that is, created with
-  \n{malloc}\index{malloc!and private/shared data} or
-  \n{allocate}\index{allocate!and private/shared data}, can only be shared.
-\end{enumerate}
-Example of the first type:
-each thread gets a private copy of the array, properly initialized.
-%
-%% \cverbatimsnippet[examples/omp/c/alloc.c]{privatearray}
-\csnippetwithoutput{privatearray}{examples/omp/c}{privarray}
-%
-Of course, since only the private copy is altered, the original array
-is unaffected.
-
-On the other hand, in
-%
-\csnippetwithoutput{privatepointer}{examples/omp/c}{pointarray}
-%% \cverbatimsnippet[examples/omp/c/alloc.c]{privatepointer}
-%
-each thread gets a private pointer, but all pointers point to the same
-object.
-
 \Level 0 {First and last private}
 
 Above, you saw that private variables are completely separate from any
@@ -272,16 +240,55 @@ environment outside the parallel region. This really only makes sense
 in one case, where you
 preserve a private variable
 from the last iteration of a parallel loop, or the last section in an
-\indexpragma{sections} construct. This is done with \indexclause{lastprivate}:
+\indexpragma{sections} construct.
+This is done with \indexclause{lastprivate}:
 \begin{lstlisting}
 #pragma omp parallel for \
         lastprivate(tmp)
-for (i=0; i<N; i+) {
+for (int i=0; i<N; i+) {
   tmp = ......
   x[i] = .... tmp ....
 }
 ..... tmp ....
 \end{lstlisting}
+
+\Level 0 {Array data}
+\label{sec:omp-array}
+
+The rules for arrays are slightly different from those for scalar data:
+\begin{enumerate}
+\item Statically allocated data, that is with a syntax like
+\begin{lstlisting}
+int array[100];
+integer,dimension(:) :: array(100}
+\end{lstlisting}
+can be shared or private, depending on the clause you use.
+\item Dynamically allocated data, that is, created with
+  \n{malloc}\index{malloc!and private/shared data} or
+  \n{allocate}\index{allocate!and private/shared data}, can only be shared.
+\end{enumerate}
+Example of the first type:
+each thread gets a private copy of the array, properly initialized.
+%
+%% \cverbatimsnippet[examples/omp/c/alloc.c]{privatearray}
+\csnippetwithoutput{privatearray}{examples/omp/c}{privarray}
+%
+Of course, since only the private copy is altered, the original array
+is unaffected.
+
+On the other hand, in the following example
+each thread gets a private pointer, but all pointers point to the same
+object:
+%
+\csnippetwithoutput{privatepointer}{examples/omp/c}{pointarray}
+%% \cverbatimsnippet[examples/omp/c/alloc.c]{privatepointer}
+
+\begin{cppnote}{Vectors are copied, unlike arrays}
+  Compare
+  \csnippetwithoutput{privatepointer}{examples/omp/c}{pointarray}
+  and
+  \cxxsnippetwithoutput{privatevector}{examples/omp/c}{privvector}
+\end{cppnote}
 
 \Level 0 {Persistent data through \texttt{threadprivate}}
 \label{sec:threadprivate}
@@ -323,7 +330,7 @@ $!OMP threadprivate( /blockname/ )
 \end{lstlisting}
 Example:
 %
-\fsnippetwithoutput{threadprivf}{examples/omp/f}{priv}
+\fsnippetwithoutput{threadprivf}{examples/omp/f}{private}
 % [/count.F90]
 %
 \end{fortrannote}
@@ -393,7 +400,7 @@ You can then use the generator safely and independently:
 
 \Level 0 {Allocators}
 
-The OpenMP was initially designed for shared memory.
+OpenMP was initially designed for shared memory.
 With accelerators (see chapter~\ref{ch:omp-gpu}), non-coherent memory was added to this.
 In the \ompstandard{5} standard, the story is further complicated, to account
 for new memory types such as \indextermsub{high-bandwidth}{memory}

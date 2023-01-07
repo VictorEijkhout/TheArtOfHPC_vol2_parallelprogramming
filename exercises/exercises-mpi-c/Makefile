@@ -2,7 +2,7 @@
 ################################################################
 ####
 #### This makefile is part of `Parallel Programming in MPI and OpenMP'
-#### by Victor Eijkhout, copyright 2013-2021
+#### by Victor Eijkhout, copyright 2013-2022
 #### eijkhout@tacc.utexas.edu
 ####
 #### Makefile for MPI course exercises in C
@@ -28,8 +28,7 @@ EXERCISES = hello \
     randomput countdown onesidedbuild lockall lockfetch lockfetchshared \
     blockwrite blockadvance blockseek blockall viewwrite scatterwrite \
     jordan rightsend rightput rightgraph \
-    ibarrierupdate shareddata \
-    mcve
+    ibarrierupdate shareddata
 SOURCES = $(patsubst %,%.c,${EXERCISES})
 OBJS = $(patsubst %,%.o,${EXERCISES})
 

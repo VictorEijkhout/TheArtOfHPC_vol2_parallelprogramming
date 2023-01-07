@@ -1,3 +1,5 @@
 // cudainit.c
-ierr = PetscCUDAInitialize(comm,PETSC_DECIDE); 
-ierr = PetscCUDAInitializeCheck(); 
+PetscDeviceType cuda = PETSC_DEVICE_CUDA;
+ierr = PetscDeviceInitialize(cuda); 
+PetscBool has_cuda;
+has_cuda = PetscDeviceInitialized(cuda); 

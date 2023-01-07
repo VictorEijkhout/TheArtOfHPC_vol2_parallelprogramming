@@ -28,7 +28,6 @@ if nprocs<2:
 root = 1
 dsize = 10
 
-#snippet bcastp
 # first native
 if procid==root:
     buffer = [ 5.0 ] * dsize
@@ -52,4 +51,3 @@ if not all( buffer==5.0 ):
 else:
     if procid==root:
         print("Success.")
-#snippet end

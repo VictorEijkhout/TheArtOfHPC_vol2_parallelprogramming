@@ -5,7 +5,7 @@
 !**** `Parallel programming for Science and Engineering'
 !**** by Victor Eijkhout, eijkhout@tacc.utexas.edu
 !****
-!**** copyright Victor Eijkhout 2012-9
+!**** copyright Victor Eijkhout 2012-2022
 !****
 !**** MPI Exercise to illustrate graph topologies
 !**** fortran 2008 version
@@ -46,7 +46,7 @@ Program RightGraph
   !! Exercise:
   !! -- fill in the arrays that describe the topology
   !! .. set nsources
-  !! .. fill the arrays `sources', `destinations', `degrees'
+  !! .. fill the arrays `sources', `degrees', `destinations'
   !! .. for the weights use 1 everywhere
   nsources = &
 !!!! your code here !!!!

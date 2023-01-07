@@ -1,19 +1,25 @@
 // lockobject.cxx
-class object {
+class atomic_int {
 private:
   omp_lock_t the_lock;
   int _value{0};
+  bool delay;
 public:
-  object() {
+  atomic_int(bool delay=false)
+    : delay(delay) {
     omp_init_lock(&the_lock);
   };
-  ~object() {
+  atomic_int( const atomic_int& )
+      = delete;
+  atomic_int& operator=( const atomic_int& )
+      = delete;
+  ~atomic_int() {
     omp_destroy_lock(&the_lock);
   };
   int operator +=( int i ) {
 // atomic increment
     omp_set_lock(&the_lock);
-    _value += (s>0); int rv = _value;
+    _value += i; int rv = _value;
     omp_unset_lock(&the_lock);
     return rv;
   };

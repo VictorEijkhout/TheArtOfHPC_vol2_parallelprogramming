@@ -1,0 +1,11 @@
+// nested.cxx
+class c {
+public:
+  void f() {
+    cout << omp_get_num_threads() << '\n';
+  };
+};
+int main() {
+  c my_object;
+#pragma omp parallel
+  my_object.f();

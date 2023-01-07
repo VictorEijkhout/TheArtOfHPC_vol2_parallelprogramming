@@ -1,9 +1,9 @@
 // kspcg.c
-ierr = KSPCreate(comm,&solver);
-ierr = KSPSetOperators(solver,A,A); 
-ierr = KSPSetType(solver,KSPCG); 
+PetscCall( KSPCreate(comm,&solver);
+	     PetscCall( KSPSetOperators(solver,A,A) );
+	     PetscCall( KSPSetType(solver,KSPCG) ) );
 {
   PC prec;
-  ierr = KSPGetPC(solver,&prec); 
-  ierr = PCSetType(prec,PCNONE); 
+  PetscCall( KSPGetPC(solver,&prec) );
+  PetscCall( PCSetType(prec,PCNONE) );
 }

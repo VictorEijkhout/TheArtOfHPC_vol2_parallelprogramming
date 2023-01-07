@@ -19,7 +19,7 @@ int main() {
 
 #pragma omp parallel
 #pragma omp single
-  for (int i=2; i<bignum/*maxfactor*/; i++) {
+  for (int i=2; i<bignum; i++) {
     if (the_factor>0) break;
 #pragma omp task
     try_as_factor(i);

@@ -3,7 +3,7 @@
 ####
 #### This makefile is part of the source of 
 #### "Parallel Computing for Science and Engineering"
-#### by Victor Eijkhout, copyright 2013-2022
+#### by Victor Eijkhout, copyright 2013-2023
 ####
 #### This is the makefile for the C examples
 ####     in examples/mpi/c
@@ -66,20 +66,22 @@ RUNS =
 include ../../../makefiles/Make.mpi_run
 
 RUNS += run_abort
-.PHONY: run_abort
 run_abort : abort
 	-@${MPIRUN} -n ${NP} ./abort ; \
 	  echo "Return code from ${MPIRUN} is <<$$?>>"
 
+RUNS += run_nodecount
+run_nodecount : nodecount
+	@echo "Nodes: ${SLURM_NNODES}; processes: ${SLURM_NPROCS}"
+	@make mpirun PROGRAM=nodecount
+
 ## RUNS += run_backintime
-.PHONY: run_backintime
 run_backintime : backintime
 	for i in `seq 1 150` ; do \
 	  ${MPIRUN} -n ${NP} ./backintime ; \
 	done | grep back
 
 RUNS += run_graph run_graphcount
-.PHONY: run_graph run_graphcount
 run_graph run_graphcount : graph
 run_graph :
 	@make --no-print-directory catchrun \
@@ -93,7 +95,6 @@ run_graphcount :
 	    NP=6 PROGRAM=graph
 
 RUNS += run_progress
-.PHONY: run_progress
 run_progress : progress
 	@if [ "${TACC_FAMILY_MPI}" != "intel" ] ; then \
 	    echo "This code only works with Intel MPI" && exit 1 \
@@ -139,30 +140,25 @@ run_cartdims : cartdims
 	done
 
 RUNS += run_cartshift
-.PHONY: run_cartshift
 run_cartshift : cartcoord
 	@${MPIRUN} -n 6 ./cartcoord \
 	| awk '/cartshift/ {p=0} p==1 {print} /CartShift/ {p=1}'
 
 
 RUNS += run_cartsub
-.PHONY: run_cartsub
 run_cartsub : cartcoord
 	@${MPIRUN} -n 6 ./cartcoord \
 	| awk '/hyperplane13p/ {p=0} p==1 {print} /Hyperplane13p/ {p=1}'
 
 RUNS += run_commcompare
-.PHONY: run_commcompare
 run_commcompare : commcompare
 	@${MPIRUN} -n 1 ./commcompare
 
 RUNS += run_trueextent
-.PHONY: run_trueextent
 run_trueextent : trueextent
 	@${MPIRUN} -n 2 ./trueextent
 
 RUNS += run_pack run_packsize
-.PHONY: run_pack run_packsize
 run_pack : pack
 	@${MPIRUN} -n 6 ./pack 6 \
 	| awk '/packing/ {p=0} p==1 {print} /Packing/ {p=1}'
@@ -171,32 +167,27 @@ run_packsize : pack
 	| awk '/size/ {p=0} p==1 {print} /Size/ {p=1}'
 
 RUNS += run_sessionmix
-.PHONY: run_sessionmix
 run_sessionmix : sessionmix
 	@${MPIRUN} -n 4 ./sessionmix
 
 RUNS += run_write
-.PHONY: run_write
 run_write : filewrite
 	@${MPIRUN} -n 4 ./filewrite \
 	 && echo "octal dump:" \
 	 && od filewrite.dat
 
 RUNS += run_port
-.PHONY: run_port
 run_port : portapp
 	@export FI_MLX_ENABLE_SPAWN=yes \
 	 && export FI_MLX_NS_ENABLE=1 \
 	 && ${MPIRUN} -n 4 ./$^
 
 RUNS += run_session
-.PHONY: run_session
 run_session : session
 	${MPIRUN} -n 2 ./$^
 ## make --no-print-directory mpirun PROGRAM=session NP=1 ECHO=${ECHO}
 
 RUNS += run_typematch
-.PHONY: run_typematch
 run_typematch : typematch
 	${MPIRUN} -n 1 ./$^
 
@@ -209,7 +200,7 @@ GENERICS = run_irecvsource run_commsplittype run_gatherv run_longint \
 info ::
 	@echo "generics: ${GENERICS}"
 RUNS += ${GENERICS}
-.PHONY: ${GENERICS}
+.PHONY: ${RUNS}
 ${GENERICS} :
 	@r=$@ && runname=$${r##run_} \
 	 && echo "generic run for $$runname" \
@@ -223,6 +214,9 @@ ${GENERICS} :
 	         && git add $$runname.runout \
 	        ; \
 	    fi
+
+PUBLICEXTS = c runout
+include ../../../makefiles/Make.public
 
 MODE = mpi
 include ../../../makefiles/Make.clean

@@ -53,26 +53,28 @@ This exercise is illustrated in figure~\ref{fig:hello-parallel}.
 \Level 1 {Headers}
 
 If you use MPI commands in a program file, be sure to include
-the proper header file, \indextermtt{mpi.h} or \indextermtt{mpif.h}.
+the proper header file, \indextermtt{mpi.h} for~C/C++.
 \begin{verbatim}
 #include "mpi.h" // for C
-#include "mpif.h" ! for Fortran
-\end{verbatim}
-For \fstandard{90}, many MPI installations
-also have an MPI module, so you can write
-\begin{verbatim}
-use mpi     ! pre 3.0
-use mpi_f08 ! 3.0 standard
 \end{verbatim}
 The internals of these files can be different between MPI
 installations, so you can not compile one file against one \n{mpi.h}
 file and another file, even with the same compiler on the same machine,
 against a different MPI.
 
-\begin{fortrannote}{New developments only in f08 module}
+\begin{fortrannote}{MPI module}
+For MPI use from Fortran, use an MPI module.
+\begin{verbatim}
+use mpi     ! pre 3.0
+use mpi_f08 ! 3.0 standard
+\end{verbatim}
+
   New language developments, such as large counts; section~\ref{sec:f-largecount}
   will only be included in the \indextermtt{mpi_f08} module,
   not in the earlier mechanisms.
+
+  The header file \indexmpidef{mpif.h} is deprecated as of \mpistandard{4.1}:
+  it may be supported by installations, but doing so is strongly discouraged.
 \end{fortrannote}
 
 \begin{pythonnote}{Import mpi module}

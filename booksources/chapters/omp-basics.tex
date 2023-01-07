@@ -34,14 +34,18 @@ and getting the most out of the available parallelism available there.
 \end{figure}
 %
 Figure~\ref{fig:stampedenode} pictures a typical design of a node:
-within one enclosure you find two \emph{sockets}\index{socket|textbf}:
-single processor chips.
+within one enclosure you find two \emph{sockets}\index{socket|textbf},
+single processor chips, plus an \indexterm{accelerator}.
+(The picture is of a node of the \indextermbus{TACC}{Stampede} cluster
+no longer in serivce, with two
+sockets and an \indextermbus{Intel}{Xeon PHI} co-processor.)
+
 Your personal laptop or desktop computer will probably
-have one socket, most supercomputers have nodes with two or four
-sockets (the picture is of a \indextermbus{Stampede}{node} with two
-sockets).
+have one socket,
+most supercomputers have nodes with two or four sockets.
 In either case there can be a \ac{GPU} as co-processor;
-supercomputer clusters can also have other types of \indexterm{accelerator}s.
+supercomputer clusters can also have other types of accelerators.
+OpenMP versions as of \ompstandard{4.0} target such offloadable devices.
 
 \begin{figure}[ht]
   \includegraphics[scale=.45]{sandybridge-eightcore-ann}
@@ -167,7 +171,7 @@ icc -o foo foo.c -qopenmp
 \end{verbatim}
 If you have separate compile and link stages, you need that option in both.
 
-When you use the openmp compiler option, 
+When you use the above compiler options, 
 the \indextermbus{OpenMP}{macro},
 (or  \indexterm{cpp} macro)
  \indexompshow{_OPENMP}
@@ -331,8 +335,7 @@ using the following functions:
 \end{exercise}
 
 If the above puzzles you, read about \indexterm{race condition}s
-in section~\ref{sec:mpi-atomic},
-or \HPSCref{sec:shared-lock}.
+in \HPSCref{sec:shared-lock}.
 
 \Level 1 {Code and execution structure}
 \label{sec:omp-code-structure}

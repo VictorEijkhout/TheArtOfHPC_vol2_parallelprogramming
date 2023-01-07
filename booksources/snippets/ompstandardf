@@ -1,0 +1,4 @@
+!! version.F90
+  integer :: standard
+
+  standard = openmp_version

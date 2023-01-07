@@ -1,0 +1,6 @@
+const int s = [] () {
+  int s;
+#   pragma omp parallel
+#   pragma omp master
+  s = 2 * omp_get_num_threads();
+  return s; }();

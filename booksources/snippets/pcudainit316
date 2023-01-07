@@ -1,0 +1,3 @@
+ierr = PetscCUDAInitialize(comm,PETSC_DECIDE); 
+PetscBool has_cuda;
+has_cuda = PetscCUDAInitializeCheck(); // 

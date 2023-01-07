@@ -1,0 +1,13 @@
+void reduce_without_zero(void *in,void *inout,int *len,MPI_Datatype *type) {
+  !! r is the already reduced value, n is the new value
+  int n = *(int*)in, r = *(int*)inout;
+  int m;
+  if (n==0) { !! new value is zero: keep r
+    m = r;
+  } else if (r==0) {
+    m = n;
+  } else if (n<r) { !! new value is less but not zero: use n
+    m = n;
+  } else { !! new value is more: use r
+    m = r;
+  };

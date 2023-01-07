@@ -3,7 +3,7 @@
 ####
 #### This makefile is part of the source of 
 #### "Parallel Computing for Science and Engineering"
-#### by Victor Eijkhout, copyright 2013-2022
+#### by Victor Eijkhout, copyright 2013-2023
 ####
 #### This is the makefile for the examples/mpi/f
 ####
@@ -30,5 +30,8 @@ ${patsubst %,%.o,${APPS}} tools.o : globalinit.F90
 
 RUNS = 
 include ../../../makefiles/Make.run
+
+PUBLICEXTS = F90 runout
+include ../../../makefiles/Make.public
 
 include ../../../makefiles/Make.clean

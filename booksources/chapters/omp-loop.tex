@@ -121,6 +121,15 @@ It is also possible to have a combined
   for (int i=0; .....
 \end{lstlisting}
 
+\begin{cppnote}{Custom iterators}
+  OpenMP can parallelize any range-based loop with a random-access iterator.
+  \cxxverbatimsnippet{classwithiter}
+  The following methods are needed for the contained \lstinline{iter} class:
+  \cxxverbatimsnippet{omprandaccess}
+  And then a range-based loop is allowed:
+  \cxxverbatimsnippet{ompcustompar}
+\end{cppnote}
+
 \Level 1 {Loops are static}
 
 There are some restrictions on the loop: basically, OpenMP needs to be
@@ -313,7 +322,7 @@ For reference, the commandlines executed were:
 \end{verbatim}
 
 \begin{cppnote}{Range syntax}
-  Parallel loops in can use range-based syntax as of \ompstandard{5.0}:
+  Parallel loops in C++ can use range-based syntax as of \ompstandard{5.0}:
   %
   \cxxverbatimsnippet{omprangeloop}
   %
@@ -534,7 +543,7 @@ Here are the various schedules you can set with the
 
 So far we have focused on loops with independent iterations.
 Reductions are a common type of loop with dependencies.
-There is an extended discussion of reductions in section~\ref{sec:reduction}.
+There is an extended discussion of reductions in chapter~\ref{sec:reduction}.
 
 \Level 0 {Nested loops}
 
@@ -557,7 +566,7 @@ clause will parallelize more than one level:
 \begin{lstlisting}
 #pragma omp for collapse(2)
 for ( int i=0; i<N; i++ )
-  for ( j=0; j<N; j++ )
+  for ( int j=0; j<N; j++ )
     A[i][j] = B[i][j] + C[i][j] 
 \end{lstlisting}
 It is only possible to collapse perfectly nested loops, that is, the
@@ -576,7 +585,7 @@ can not be collapsed.
 \begin{exercise}
   You could rewrite the above code as
 \begin{lstlisting}
-for (inti=0; i<N; i++)
+for (int i=0; i<N; i++)
   y[i] = 0.;
 for (int i=0; i<N; i++) {
   for (int j=0; j<N; j++)
@@ -633,14 +642,14 @@ and the operation $s\leftarrow y^tAx$.
 You should find that the row/column (or \indexterm{row-major}) variant
 is faster. Can you find reasons for this?
 
-\Level 1 {Affinity}
+%% \Level 1 {Affinity}
 
-Since OpenMP is based on shared memory, each thread
-can access any item of memory.
-However, that does not imply that it can do so at equal cost.
-The topic of where a thread executes versus where its data is located
-is known as \indexterm{affinity}.
-We will explore this in great detail in section~\ref{sec:loop-affinity}.
+%% Since OpenMP is based on shared memory, each thread
+%% can access any item of memory.
+%% However, that does not imply that it can do so at equal cost.
+%% The topic of where a thread executes versus where its data is located
+%% is known as \indexterm{affinity}.
+%% We will explore this in great detail in section~\ref{sec:loop-affinity}.
 
 \Level 0 {Ordered iterations}
 \label{sec:omp-ordered}

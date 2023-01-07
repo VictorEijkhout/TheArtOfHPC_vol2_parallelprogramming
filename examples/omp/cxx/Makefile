@@ -16,11 +16,11 @@ info ::
 info ::
 	@echo
 	@echo "make app (where app=${APPS})"
-APPS = hello hellocount pi pivector speedup vecdata \
+APPS = hello hellocount nested pi pivector speedup vecdata alloc \
     link treesearch taskreduct taskreductwrong \
     reductpositive reductcomplex \
     heat heatalloc heatptr \
-    lockobject
+    lockobject iterator
 WRONGS = reductarray
 
 MODE = omp
@@ -37,18 +37,22 @@ testrun:
 	make clean; rm -f ${EXEC}; make ${EXEC}
 	OMP_NUM_THREADS=${NP} ./${EXEC}
 
-include ../Make.omp
-
 info ::
 	@echo "make run_xyz (in: ${RUNS})"
 	@echo "    [NP=nnn (default: ${NP})]"
 include  ../../../makefiles/Make.omp_run
 RUNS =
+
+RUNS += run_privvector
+run_privvector : alloc
+	@make --no-print-directory omp_run PROGRAM=alloc NP=4 ECHO=${ECHO} \
+	| awk '/private/ {p=0} p==1 {print} /Private/ {p=1} \
+	    /Executing/ {print}'
+
 RUNS += run_speedup
-.PHONY: run_speedup
 run_speedup : speedup
 	@make --no-print-directory omp_scaling PROGRAM=speedup
-.PHONY: run_race
+
 RUNS += run_race
 run_race : race
 	( \
@@ -58,6 +62,13 @@ run_race : race
 	    ; \
 	done \
 	) 2>&1 | tee ../../../output/racecounter.out
+
+RUNS += run_nested
+run_nested : nested
+	@make omp_run PROGRAM=nested NP=2 ACTIVE=2
+
+.PHONY: ${RUNS}
+
 info ::
 	@echo "make output : regenerate all output"
 .PHONY: output
@@ -66,5 +77,10 @@ output :
 	  make $${r} \
 	  ; \
 	done
+
+PUBLICEXTS = cxx runout
+include ../../../makefiles/Make.public
+
+include  ../../../makefiles/Make.cmake
 
 include  ../../../makefiles/Make.clean

@@ -1,0 +1,8 @@
+// jordan.cxx
+#ifdef COLMAJOR
+    cout << "Column major with " << nthreads << " threads, n=" << nsize << '\n';
+    Kokkos::View<double**,Kokkos::LayoutLeft> matrix("matrix",nsize,nsize);
+#else
+    cout << "Row major with " << nthreads << " threads, n=" << nsize << '\n';
+    Kokkos::View<double**,Kokkos::LayoutRight> matrix("matrix",nsize,nsize);
+#endif

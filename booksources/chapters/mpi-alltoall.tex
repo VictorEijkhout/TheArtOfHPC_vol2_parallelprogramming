@@ -161,6 +161,18 @@ Another application of the reduce-scatter mechanism is in the
 dense matrix-vector product, if a two-dimensional data distribution
 is used.
 
+\begin{exercise}
+  \label{ex:mpi-mvp-bycol}
+  Implement the dense matrix-vector product, where the matrix is distributed by columns:
+  each process stores $A_{*j}$ for a disjoint set of $j$-values.
+  At the start and end of the algorithm each process should store a
+  distinct part of the input and output vectors.
+  Argue that this can be done naively with an \indexmpishow{MPI_Reduce} operation,
+  but more efficiently using \indexmpishow{MPI_Reduce_scatter}.
+  
+  For discussion, see \HPSCref{sec:blockcol}.
+\end{exercise}
+
 \Level 1 {Examples}
 
 An important application of this is establishing an irregular

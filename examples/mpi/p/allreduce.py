@@ -25,26 +25,20 @@ if nprocs<2:
 
 random.seed(procid)
 random_bound = nprocs*nprocs
-##codesnippet allreducep
 random_number = random.randint(1,random_bound)
-##codesnippet end
 #print("[%d] random=%d" % (procid,random_number))
 
-##codesnippet allreducep
 # native mode send
 max_random = comm.allreduce(random_number,op=MPI.MAX)
-##codesnippet end
 
 if procid==0:
     print("Python native:\n  max=%d" % max_random)
 
-##codesnippet allreducenump
 myrandom = np.empty(1,dtype=int)
 myrandom[0] = random_number
 allrandom = np.empty(nprocs,dtype=int)
 # numpy mode send
 comm.Allreduce(myrandom,allrandom[:1],op=MPI.MAX)
-##codesnippet end
 
 if procid==0:
     print("Python numpy:\n  max=%d" % allrandom[0])

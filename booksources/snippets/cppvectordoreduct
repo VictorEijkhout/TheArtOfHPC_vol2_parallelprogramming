@@ -1,0 +1,10 @@
+#pragma omp parallel \
+  reduction(+ : filtered)
+  {
+    vector<int> local;
+#   pragma omp for
+    for ( auto e : data )
+      if ( f(e) )
+	local.push_back(e);
+    filtered += local;
+  }

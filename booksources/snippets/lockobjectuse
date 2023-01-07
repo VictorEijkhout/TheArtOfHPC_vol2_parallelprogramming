@@ -1,9 +1,9 @@
 for (int ithread=0; ithread<NTHREADS; ithread++) {
   threads.push_back
-    ( thread(
-	       [&my_object] () {
-		 for (int iop=0; iop<NOPS; iop++)
-		   my_object += iop; } ) );
+    ( std::thread(
+             [=,&my_object] () {
+               for (int iop=0; iop<nops; iop++)
+                 my_object += 1; } ) );
 }
 for ( auto &t : threads )
   t.join();

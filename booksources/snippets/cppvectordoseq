@@ -1,0 +1,5 @@
+// filteratomic.cxx
+#   pragma omp critical
+    if (threadnum==ithread) {
+      filtered += local;
+      ithread++;

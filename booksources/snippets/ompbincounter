@@ -2,15 +2,17 @@
 template<typename key>
 class bincounter : public map<key,int> {
 public:
+// merge this with other map
   void operator+=( const bincounter<key>& other ) {
     for ( auto [k,v] : other )
-      if ( map<key,int>::this->contains(k) )
+      if ( map<key,int>::contains(k) ) // c++20
 	this->at(k) += v;
       else
 	this->insert( {k,v} );
   };
+// insert one char in this map
   void inc(char k) {
-    if ( map<key,int>::this->contains(k) )
+    if ( map<key,int>::contains(k) )
       this->at(k) += 1;
     else
       this->insert( {k,1} );

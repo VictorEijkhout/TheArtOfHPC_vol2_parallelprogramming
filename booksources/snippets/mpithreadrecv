@@ -1,0 +1,10 @@
+#pragma omp section
+    MPI_Irecv
+      ( &xy1,1,MPI_DOUBLE,
+	sender, MPI_ANY_TAG, comm, requests+0);
+#pragma omp section
+    MPI_Irecv
+      ( &xy2,1,MPI_DOUBLE,
+	sender, MPI_ANY_TAG, comm, requests+1);
+    }
+    MPI_Waitall(2,requests,statuses);

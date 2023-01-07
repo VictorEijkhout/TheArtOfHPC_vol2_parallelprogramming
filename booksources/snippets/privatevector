@@ -1,0 +1,8 @@
+// alloc.cxx
+vector<int> array(nthreads);
+
+#pragma omp parallel firstprivate(array)
+{
+  int t = omp_get_thread_num();
+  array[t] = t+1;
+}

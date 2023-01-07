@@ -4,7 +4,7 @@
  **** `Parallel programming for Science and Engineering'
  **** by Victor Eijkhout, eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-8
+ **** copyright Victor Eijkhout 2012-2022
  ****
  **** MPI Exercise to illustrate graph topologies
  ****
@@ -29,7 +29,7 @@ int main(int argc,char **argv) {
    * Exercise:
    * -- declare the following parameters and set correct values:
    *    int nsources
-   *    int sources[], destinations[], degrees[]
+   *    int sources[], degrees[], destinations[]
    * -- also declare, with values set to identically one:
    *    int weights[]
    */

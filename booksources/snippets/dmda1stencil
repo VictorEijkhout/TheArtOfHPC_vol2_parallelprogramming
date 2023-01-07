@@ -6,4 +6,4 @@ col[ncols].i = i_index; v[ncols] = 2.;
 ncols++;
 if (i_index>0)          { col[ncols].i = i_index-1; v[ncols] = 1.; ncols++; }
 if (i_index<i_global-1) { col[ncols].i = i_index+1; v[ncols] = 1.; ncols++; }
-ierr = MatSetValuesStencil(A,1,&row,ncols,col,v,INSERT_VALUES);
+PetscCall( MatSetValuesStencil(A,1,&row,ncols,col,v,INSERT_VALUES) );

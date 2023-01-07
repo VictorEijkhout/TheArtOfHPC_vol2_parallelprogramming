@@ -37,7 +37,7 @@ l       % inout
  & win & shared memory window object & MPI_Win & TYPE\discretionary{}{\kern10pt}{}(MPI_Win)  & IN \\
  & rank & rank in the group of window win or \const{MPI_PROC_NULL} & int & INTEGER  & IN \\
  & size & size of the window segment & MPI_Aint* & INTEGER\discretionary{}{\kern10pt}{}(KIND=MPI_ADDRESS_KIND)  & OUT \\
- & disp_unit & local unit size for displacements, in bytes & $\left[ \begin{array}{ll}\mathtt{ int* }  \\ \mathtt{ MPI_Aint} \end{array} \right.$  & INTEGER  & OUT \\ [+3pt]
+ & disp_unit & local unit size for displacements, in bytes & $\left[ \begin{array}{ll}\mathtt{ int* }  \\ \mathtt{ MPI_Aint*} \end{array} \right.$  & INTEGER  & OUT \\ [+3pt]
  & baseptr & address for load/store access to window segment & void* & TYPE\discretionary{}{\kern10pt}{}(C_PTR)  & OUT \\
 
 &)\\

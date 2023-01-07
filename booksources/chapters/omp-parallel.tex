@@ -43,14 +43,26 @@ There is also a function
 
 The first thing we want to do is create a team of threads. This
 is done with a \indexterm{parallel region}.
-Here is a very simple example:
+Here is a very simple example where each thread
+outputs its number:
 \cverbatimsnippet[examples/omp/c/hello.c]{hello-omp}
 or in Fortran
 \fverbatimsnippet[examples/omp/f/hellocount.F90]{hello-who-omp-f}
-or in C++
-\cxxverbatimsnippet[examples/omp/cxx/hello.cxx]{hello-omp-cxx}
-(Note the use of \indextermtt{stringstream}: without that
-the output lines from the various threads may get mixed up.)
+
+\begin{cppnote}{Output streams in parallel}
+  \label{sl:par-stringstream}
+  The use of \lstinline{cout} may give jumbled output: lines can
+  break at each \verb+<<+.
+  Use \indextermtt{stringstream} to form a single stream to output.
+  
+  \cxxverbatimsnippet[examples/omp/cxx/hello.cxx]{hello-omp-cxx}
+\end{cppnote}
+
+\begin{cppnote}{Parallel regions in lambdas}
+  OpenMP parallel regions can be in functions,
+  including lambda expressions.
+  \cxxverbatimsnippet{ompinlambda}
+\end{cppnote}
 
 The following example uses parallelism for an actual calculation:
 \begin{lstlisting}
@@ -139,8 +151,9 @@ int omp_get_max_active_levels(void);
 \end{lstlisting}
 
 \begin{remark}
-  A deprecated mechanism is to
-  set \indexompdepr{OMP_NESTED} (default: false):
+  A deprecated mechanism is to set the environment variable
+  \indexompdepr{OMP_NESTED} (default: false)
+  or its corresponding function:
 \begin{verbatim}
 OMP_NESTED=true
  or
@@ -197,6 +210,12 @@ parallel region, so the for loop will be parallelized.
 
 If the function may be called both from inside and outside parallel
 regions, you can test which is the case with \indexompshow{omp_in_parallel}.
+
+\begin{cppnote}{Dynamic scope for class methods}
+  Dynamic scope holds for class methods as for any other function:
+  %
+  \cxxsnippetwithoutput{nestclass}{examples/omp/cxx}{nested}
+\end{cppnote}
 
 \Level 1 {Fine control}
 

@@ -25,7 +25,8 @@ else
   NPOPTION=-np
 endif
 NP_default = 4
-CATCHER = ${SCRIPTSDIR}/catchout
+SCRIPTSDIR = ../../../scripts
+
 .PHONY: mpirun catchrun
 info ::
 	@echo "make mpirun / slurmrun / catchrun"
@@ -49,14 +50,36 @@ mpi_nprocs :
 	; else \
 	        echo ${NP_default} \
 	; fi
-mpirun :
-	@if [ ! -f "${PROGRAM}${PROGRAM_EXTENSION}" ] ; then \
-	    echo "No such program: ${PROGRAM}" && exit 1 ; fi \
-	 && progargs="${PROGRAM}${PROGRAM_EXTENSION} ${OPTIONS}" \
+proginvocation :
+	@program=${PROGRAM} \
 	 && if [ "${LANGUAGE}" = "python" ] ; then \
-	        progargs="${PYTHON} $$progargs" ; fi \
-	 && np=`make --no-print-directory mpi_nprocs PROGRAM=${PROGRAM}` \
-	 && cmdline="${ENVOPTIONS} ${MPIRUN} ${NPOPTION} $$np $${progargs}" \
+	      program=$${program%%.py}.py ; fi\
+	 && if [ ! -f "$${program}" ] ; then \
+	      echo "Could not find program: $${program}" && exit 1 ; fi \
+	 && if [ "${LANGUAGE}" = "python" -a -z "${CATCHER}" ] ; then \
+	      progargs="${PYTHON} $$progargs" \
+	    ; else \
+	      progargs=$${program} ; fi \
+	 && if [ ! -z "${OPTIONS}" ] ; then \
+	      progargs="$${progargs} ${OPTIONS}" ; fi \
+	 && if [ ! -z "${CATCHER}" ] ; then \
+	      catcher=${CATCHER} \
+	       && if [ "${LANGUAGE}" = "P" ] ; then \
+	            catcher="$${catcher} -p ${PYTHON}" ; fi \
+	       && progargs="$${catcher} $${progargs}" \
+	    ; fi \
+	 && echo "$${progargs}"
+mpirun :
+	@program=${PROGRAM} \
+	 && if [ ! -z "${RUNNER}" ] ; then \
+	      progargs="${RUNNER} $${progargs}" ; fi \
+	 && np=`make --no-print-directory mpi_nprocs PROGRAM=${PROGRAM} NP=${NP}` \
+	 && invoke=$$( make --no-print-directory proginvocation \
+	                PROGRAM="${PROGRAM}" \
+	                LANGUAGE="${LANGUAGE}" OPTIONS="${OPTIONS}" PYTHON="${PYTHON}" \
+	                CATCHER="${CATCHER}" \
+	            ) \
+	 && cmdline="${ENVOPTIONS} ${MPIRUN} ${NPOPTION} $$np $${invoke}" \
 	 && if [ "${ECHO}" = "1" ] ; then \
 	        echo $$cmdline ; fi \
 	 && eval $$cmdline \
@@ -64,14 +87,18 @@ mpirun :
 slurmrun :
 	${ENVOPTIONS} ${MPIRUN} -np ${SLURM_NPROCS} ${PYTHON} ${PROGRAM}${PROGRAM_EXTENSION} ${OPTIONS}
 catchrun :
-	@if [ ! -f "${CATCHER}" ] ; then \
-	    echo "Can not find catcher script: <<${CATCHER}>>" \
-	     && exit 1 ; fi
-	@${MPIRUN} -np ${NP} ${CATCHER} ${PROGRAM} >/dev/null 2>&1
-	@for i in `seq 0 $$(( NP-1 ))` ; do \
-	    cat ${PROGRAM}.out$$i \
+	@catcher=${SCRIPTSDIR}/catchout
+	 && if [ ! -f "$${catcher}" ] ; then \
+	    echo "Can not find catcher script: <<${catcher}>>" \
+	     && exit 1 ; fi \
+	 && make --no-print-directory mpirun \
+	        PROGRAM=${PROGRAM} OPTIONS="${OPTIONS}" \
+	        PYTHON="${PYTHON}" LANGUAGE="${LANGUAGE}" \
+	        ECHO=${ECHO} CATCHER="${CATCHER}" \
+	 && for i in `seq 0 $$(( NP-1 ))` ; do \
+	      cat ${PROGRAM}.out$$i \
 	        ${CATCHFILTER} \
-	  ; done > ${PROGRAM}.outall \
+	    ; done > ${PROGRAM}.outall \
 	 && cat ${PROGRAM}.outall
 clean ::
 	@rm -f *.outall
@@ -137,10 +164,11 @@ run_generic :
 	            PROGRAM_EXTENSION=${PROGRAM_EXTENSION} OPTIONS=${OPTIONS} \
 	        ${PROGRAM} \
 	    ; fi \
-	 && make --no-print-directory \
+	 && program=${PROGRAM} \
+	 && make --no-print-directory mpirun \
 	            ECHO=${ECHO} MPIRUN=${MPIRUN} OPTIONS=${OPTIONS} \
 	            NP=${NP} PYTHON=${PYTHON} PROGRAM_EXTENSION=${PROGRAM_EXTENSION} \
-	        mpirun PROGRAM=${PROGRAM}
+	            PROGRAM=$${program}
 runs :
 	@logfile=allruns.out \
 	 && for r in ${RUNS} ; do \

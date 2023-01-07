@@ -302,17 +302,20 @@ There are two further arguments to \indexpetscshow{PetscInitialize}:
 \end{enumerate}
 
 \begin{fortrannote}{Petsc Initialization}
-  \begin{itemize}
-  \item
-    The Fortran version has no arguments for commandline options;
-    it also doesn't take a help string.
-  \item The first argument is the name of a database file of options;
-    if none is specified, give \indexpetsctt{PETSC_NULL_CHARACTER} as argument.
-  \item If your main program is in~C, but some of your PETSc calls are
+  The Fortran version has no arguments for commandline options;
+  however, you can pass a file of database options:
+\begin{lstlisting}
+PetscInitialize(filename,ierr)    
+\end{lstlisting}
+  If none is specified, give \indexpetsctt{PETSC_NULL_CHARACTER} as argument.
+
+  For passing help information there is a variant that takes a help string:
+  \fsnippetwithoutput{petschelpf}{examples/petsc/f}{mainhelp}
+
+  If your main program is in~C, but some of your PETSc calls are
     in Fortran files, it is necessary to call
     \indexpetscdef{PetscInitializeFortran} after
     \indexpetscshow{PetscInitialize}.
-  \end{itemize}
   \fverbatimsnippet[examples/petsc/f/init.F90]{petscinitf}
 \end{fortrannote}
 
@@ -378,6 +381,25 @@ files\index{PETSc!log files}:
 $PETSC_DIR/$PETSC_ARCH/lib/petsc/conf/configure.log
 $PETSC_DIR/$PETSC_ARCH/lib/petsc/conf/make.log
 \end{verbatim}
+
+\Level 1 {Versions}
+
+PETSc is up to version \n{3.18.x} as of this writing.
+Older versions may miss certain routines, or display certain bugs.
+However, older versions may also contain routines and keywords
+that have subsequently been removed. PETSc version are not
+backwards compatible!
+
+The version is stored in macros
+\indexpetscshow{PETSC_VERSION},
+\indexpetscshow{PETSC_VERSION_MAJOR},
+\indexpetscshow{PETSC_VERSION_MINOR},
+\indexpetscshow{PETSC_VERSION_SUBMINOR}.
+
+For testing, the following macros are defined:
+\indexpetscshow{PETSC_VERSION_EQ/LT/LE/GT/GE}
+Example:
+\cverbatimsnippet{petscversionlt}
 
 \Level 1 {Debug}
 

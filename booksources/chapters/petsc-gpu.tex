@@ -34,7 +34,9 @@ section~\ref{sec:petscrc}.
 
 GPUs need to be initialized.
 This can be done implicitly when a GPU object is created,
-or explicitly through \indexpetscdef{PetscCUDAInitialize}.
+or explicitly through \indexpetscdef{PetscDeviceInitialize}.
+(PETSc versions before \petscstandard{3.17}
+had an explicit routine \indexpetscshow{PetscCUDAInitialize}.)
 
 \cverbatimsnippet{pcudainit}
 

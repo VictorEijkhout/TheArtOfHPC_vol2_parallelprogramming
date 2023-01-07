@@ -21,7 +21,8 @@ info ::
 	@echo "make app (where app=${APPS})"
 APPS = hello hellocount version proccount pi speedup scaling \
     parfor critfun reductexpr reductpar taskreduct \
-    private alloc sharing race taskfor scan \
+    private alloc sharing race taskfor \
+    scan scanintsum \
     threadprivate ireduct ireductinit ureduct reductpositive reductarray \
     taskgroup0 taskgroup1 taskgroup2 taskgroup3 taskgroup4 taskgroup5
 
@@ -31,51 +32,48 @@ include ../../../makefiles/Make.compile
 
 include  ../../../makefiles/Make.omp_run
 RUNS += run_version
-.PHONY: run_version
 run_version : version
 	@make --no-print-directory omp_run PROGRAM=version
 
 RUNS += run_parfor
-.PHONY: run_parfor
 run_parfor : parfor
 	@make --no-print-directory omp_run PROGRAM=parfor
 
 RUNS += run_speedup
-.PHONY: run_speedup
 run_speedup : speedup
 	@make --no-print-directory omp_scaling PROGRAM=speedup
 
 RUNS += run_privarray
-.PHONY: run_privarray
 run_privarray : alloc
-	@make --no-print-directory omp_run PROGRAM=alloc NP=4 \
-	| awk '/private/ {p=0} p==1 {print} /Private/ {p=1}'
+	@make --no-print-directory omp_run PROGRAM=alloc NP=4 ECHO=${ECHO} \
+	| awk '/private/ {p=0} p==1 {print} /Private/ {p=1} \
+	    /Executing/ {print}'
 
 RUNS += run_pointarray
-.PHONY: run_pointarray
 run_pointarray : alloc
 	@make --no-print-directory omp_run PROGRAM=alloc NP=4 \
-	| awk '/pointer/ {p=0} p==1 {print} /Pointer/ {p=1}'
+	| awk '/pointer/ {p=0} p==1 {print} /Pointer/ {p=1} \
+	    /Executing/ {print}'
 
 RUNS += run_private
-.PHONY: run_private
 run_private : private
 	@make --no-print-directory omp_run PROGRAM=private NP=4
 
 RUNS += run_scaling
-.PHONY: run_scaling
 run_scaling : scaling
 	@make --no-print-directory omp_run PROGRAM=scaling
 
 RUNS += run_scan
-.PHONY: run_scan
 run_scan : scan
 	@make --no-print-directory omp_run PROGRAM=scan
 
-.PHONY: run_race
+RUNS += run_scansum
+run_scansum : scanintsum
+	@make --no-print-directory omp_run PROGRAM=$<
+
 RUNS += run_race
 run_race : race
-	( \
+	@( \
 	for t in ${OMPTHREADS} ; do \
 	    echo "On $${t} threads:" \
 	    && OMP_NUM_THREADS=$${t} ./race \
@@ -83,7 +81,6 @@ run_race : race
 	done \
 	) 2>&1 | tee racecounter.out
 
-.PHONY: run_pi
 RUNS += run_pi
 run_pi : pi
 	@export OMP_PROC_BIND=true && export OMP_PLACES=cores \
@@ -97,11 +94,15 @@ run_pi : pi
 	    done
 
 RUNS += run_proccount
-.PHONY: run_proccount
 run_proccount : proccount
 	for t in 1 2 4 8 16 ; do \
 	    echo "================ env: $$t threads" \
 	     && OMP_NUM_THREADS=$$t ./proccount \
 	    ; done
+
+.PHONY: ${RUNS}
+
+PUBLICEXTS = c runout
+include ../../../makefiles/Make.public
 
 include ../../../makefiles/Make.clean

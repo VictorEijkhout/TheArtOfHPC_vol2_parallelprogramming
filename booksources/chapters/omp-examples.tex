@@ -578,6 +578,86 @@ This is again shows that the GNU compiler is really bad at OpenMP tasks.
 
 \lstset{language=C}
 
+\Level 0 {Filtering array elements}
+\lstset{language=C++}
+
+Let's assume we have an array of (integer, for the sake of the argument)
+elements and we want to construct a subarray
+of only those elements that satisfy some test
+\begin{lstlisting}
+bool f(int);
+\end{lstlisting}
+
+\begin{cppnote}{List filtering example}
+  We will do this example only in~C++ because of its ease
+  of handling \lstinline{std::vector}s.
+\end{cppnote}
+
+The sequential code is as follows:
+\begin{lstlisting}
+vector<int> data(100);
+// fil the data
+vector<int> filtered;
+for ( auto e : data ) {
+  if ( f(e) )
+    filtered.push_back(e);
+}
+\end{lstlisting}
+There are two problems here.
+First is the \indexterm{race condition} on the filtered array.
+Even if we fix this with a critical region, there remains
+the lack of ordering of inserted elements.
+
+The key to the solution is to let each thread have a local array,
+and then to concatenate these:
+\begin{lstlisting}
+#pragma omp parallel 
+{
+  vector<int> local;
+# pragma omp for
+  for ( auto e : data )
+    if ( f(e) )
+      local.push_back(e);
+  filtered += local;
+}
+\end{lstlisting}
+where we have used an append operation on vectors:
+\cxxverbatimsnippet{cppvectorplusis}
+
+\Level 1 {Attempt 1: reduction}
+
+We could use the plus-is operation to declare a reduction:
+\cxxverbatimsnippet{cppvectorplusreduct}
+
+The problem here is that OpenMP reductions can not be declared
+non-commutative, so the contributions from the threads
+may not appear in order.
+
+\cxxsnippetwithoutput{cppvectordoreduct}{code/omp/cxx}{filterreduct}
+
+\Level 1 {Attempt 2: sequential appending}
+
+If we don't use a reduction, but do the appending explicitly,
+we first of all have to make this operation into a critical section.
+Secondly, we have to impose the correct ordering.
+
+Here is an attempt to do this by keeping a shared counter:
+\cxxsnippetwithoutput{cppvectordoseq}{code/omp/cxx}{filteratomic}
+
+The problem here is that threads who decide it's not their turn
+will simply skip the append operation: there is no way to
+tell them to wait their turn.
+(You could experiment with a while loop. Try it.)
+
+The best solution is to use a completely different mechanism.
+
+\Level 1 {Attempt 3: using tasks}
+
+With a task it becomes possible to have a spin-wait loop:
+\cxxsnippetwithoutput{cppvectordotask}{code/omp/cxx}{filtertask}
+
+\lstset{language=C}
+
 \Level 0 {Thread synchronization}
 
 Let's do a \indexterm{producer-consumer} model\footnote{This example

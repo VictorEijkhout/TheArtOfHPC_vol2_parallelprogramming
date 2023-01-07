@@ -1,0 +1,8 @@
+// jordan.cxx
+#ifdef COLMAJOR
+#define INDEX(i,j,n) (i)+(j)*(n)
+  cout << "Column major, " << nthreads << " threads; n=" << nsize << '\n';
+#else
+#define INDEX(i,j,n) (j)+(i)*(n)
+  cout << "Row major, " << nthreads << " threads; n=" << nsize << '\n';
+#endif

@@ -69,7 +69,8 @@ int main(int argc,char **argv) {
 
   if (procno==0) {
     comm_world.reduce
-      ( mpl::plus<int>(),0,my_number_of_elements,total_number_of_elements );
+      ( mpl::plus<int>(),0,
+        my_number_of_elements,total_number_of_elements );
     stringstream proctext;
     proctext << "Total number of elements: " << total_number_of_elements;
     cout << proctext.str() << endl;

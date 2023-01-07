@@ -1,0 +1,12 @@
+// filtertask.cxx
+#   pragma omp task \
+      shared(filtered,ithread)
+    {
+// wait your turn
+      while (threadnum>ithread) {
+#       pragma omp taskyield
+      }
+// merge
+      filtered += local;
+      ithread++;
+    }

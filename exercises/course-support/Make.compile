@@ -336,10 +336,9 @@ info ::
 	    echo "make listsources : list all sources in this directory" \
 	    echo "make listapps : list all apps in this directory" \
 	    && echo "make apps : compile all applications in this directory" \
-	    && echo "make runapps : compile and run all applications in this directory" \
 	    ; \
 	fi
-.PHONY: apps listapps runapps listsources
+.PHONY: apps listapps listsources
 listsources :
 	@for a in ${APPS} ; do \
 	  if [ -e $$a.c ] ; then echo $$a.c ; fi ; \
@@ -347,7 +346,7 @@ listsources :
 	  if [ -e $$a.F90 ] ; then echo $$a.F90 ; fi ; \
 	done | awk 'BEGIN { v="" } {v = v " " $$0} END {print v}'
 	@echo tools.{c,h}
-apps :
+apps : clean
 	@( \
 	for a in ${APPS} ${EXERCISES} ; do \
 	    echo "%%%%%%%%%%%%%%%%" && echo "Compiling: $${a}" \
@@ -363,25 +362,7 @@ listapps :
 	        echo "Missing source for <<$$a>>" \
 	    ; fi \
 	; done
-runapps :
-	@( \
-	for a in ${APPS} ${EXERCISES} ; do \
-	    echo "%%%%%%%%%%%%%%%% Compile $${a}" \
-	     && make --no-print-directory $${a} ECHO=${ECHO} \
-	     && if [ ${MODE} = "mpi" -o ${MODE} = "petsc" -o ${MODE} = "slepc" ] ; then \
-	            echo "%%%%%%%%%%%%%%%% mpirun $${a}" \
-	             && make --no-print-directory mpirun \
-	                    PROGRAM=$$a ECHO=${ECHO} \
-	            ; \
-	        else \
-	            echo "%%%%%%%%%%%%%%%% run $${a}" \
-	             && ./$${a} \
-	            ; \
-	        fi \
-	    ; \
-	done \
-	) 2>&1 | tee run.log
-	@echo && echo "See run.log for all output" && echo 
+
 info ::
 	@echo "make extension : file extension depending on LANGUAGE"
 .PHONY: extension

@@ -395,24 +395,12 @@ MPI offers the following:
 \item the buffer is sent with a datatype of \indexmpishow{MPI_PACKED}.
 \end{itemize}
 
-With \indexmpishow{MPI_Pack} data elements can be added 
+With \indexmpiref{MPI_Pack} data elements can be added 
 to a buffer one at a time. The \n{position} parameter is updated
 each time by the packing routine.
-\begin{lstlisting}
-int MPI_Pack(
-  void *inbuf, int incount, MPI_Datatype datatype,
-  void *outbuf, int outcount, int *position,
-  MPI_Comm comm);
-\end{lstlisting}
 
-Conversely, \indexmpishow{MPI_Unpack} retrieves one element
+Conversely, \indexmpiref{MPI_Unpack} retrieves one element
 from the buffer at a time. You need to specify the MPI datatype.
-\begin{lstlisting}
-int MPI_Unpack(
-  void *inbuf, int insize, int *position,
-  void *outbuf, int outcount, MPI_Datatype datatype,
-  MPI_Comm comm);
-\end{lstlisting}
 
 A packed buffer is sent or received with a datatype of
 \indexmpishow{MPI_PACKED}. The sending routine uses the \n{position}

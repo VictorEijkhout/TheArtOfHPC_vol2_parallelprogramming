@@ -1,6 +1,6 @@
 !! vector.F90
   integer :: newvectortype
-  integer :: recv_status(MPI_STATUS_SIZE),recv_count
+  integer :: recv_count
      call MPI_Type_vector(count,1,stride,MPI_DOUBLE_PRECISION,&
           newvectortype,err)
      call MPI_Type_commit(newvectortype,err)

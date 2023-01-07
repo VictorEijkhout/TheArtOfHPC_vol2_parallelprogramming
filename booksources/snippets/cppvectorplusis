@@ -1,0 +1,6 @@
+// filterreduct.cxx
+template<typename T>
+vector<T>& operator+=( vector<T>& me, const vector<T>& other ) {
+  me.insert( me.end(),other.begin(),other.end() );
+  return me;
+};

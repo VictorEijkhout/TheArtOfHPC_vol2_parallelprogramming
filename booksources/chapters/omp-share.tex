@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-6
+%%%% by Victor Eijkhout, copyright 2012-2022
 %%%%
 %%%% omp-share.tex : work sharing
 %%%%
@@ -17,20 +17,25 @@ get meaningful parallel activity you need something more.
 OpenMP uses the concept of a \indexterm{work sharing
 construct}: a way of dividing parallelizable work over a team of threads.
 
+You have already seen loop parallelism
+as a way of distributing parallel work
+in chapter~\ref{ch:omp-loop}.
+We will now discuss other work sharing constructs.
+
 \Level 0 {Work sharing constructs}
 \label{sec:work-sharing}
 
 The work sharing constructs are:
 \begin{itemize}
 \item \texttt{for} (for~C) or
-  \texttt{do} (for Fortran). The threads divide up the loop iterations among
+  \texttt{do} (for Fortran): The threads divide up the loop iterations among
   themselves; see~\ref{sec:omp-for}.
-\item \texttt{sections} The threads divide a fixed number of sections
+\item \texttt{sections}: The threads divide a fixed number of sections
   between themselves; see section~\ref{sec:omp-sections}.
 \item \texttt{single} The section is executed by a single thread;
   section~\ref{sec:omp-single}.
-\item \texttt{task} See section~\ref{sec:omp:task}.
-\item \texttt{workshare} Can parallelize Fortran array syntax;
+\item \texttt{task}: See chapter~\ref{sec:omp:task}.
+\item \texttt{workshare}. This can parallelize Fortran array syntax;
   section~\ref{sec:fortran-workshare}.
 \end{itemize}
 
@@ -84,8 +89,8 @@ You could then write
 \Level 0 {Single/master}
 \label{sec:omp-single}
 
-The \indexpragmadef{single} and \indexpragmadef{master} pragma
-limit the execution of a block to a single thread. 
+The \indexpragmadef{single} pragma
+limits the execution of a block to a single thread. 
 This can for instance be used to print tracing information
 or doing \emph{I/O}\index{I/O!in OpenMP} operations.
 \begin{lstlisting}
@@ -122,9 +127,10 @@ local memory (see section~\ref{sec:omp:flush}).
   computation would be parallelized in MPI?
 \end{exercise}
 
-The \indexpragma{master} directive, also enforces execution
-on a single thread, specifically the master thread of the team,
-but it does not have the synchronization through the implicit barrier.
+The \indexpragma{master} directive also enforces execution
+on a single thread, specifically the master thread of the team.
+This is not a work sharing construct, and therefore
+does not have the synchronization through the implicit barrier.
 
 \begin{exercise}
   Modify the above code to read:
@@ -166,3 +172,29 @@ It can be used to parallelize
 the implied loops in \emph{array syntax}\index{Fortran!array syntax},
 as well as  \emph{forall}\index{Fortran!forall loops} loops.
 
+We compare two version of $C\leftarrow C+A\times B$
+(where all operations are elementwise),
+running on \indextermbus{TACC}{Frontera}
+up to 56~cores.
+
+\begin{multicols}{2}
+  Workshare based:
+  \fverbatimsnippet{wsmatmul}
+  \columnbreak
+  SIMD'ized loop
+  \fverbatimsnippet{sdmatmul}
+\end{multicols}
+
+With results:
+
+\begin{verbatim}
+SIMD times     :
+0.07115 0.04053 0.02498 0.01609 0.01210 0.01247 0.01765 0.02689
+Speedup:
+ 1 1.75549 2.84828 4.422 5.88017 5.70569 4.03116 2.64597
+
+Workshare times:
+0.06188 0.03186 0.01625 0.00867 0.00619 0.00379 0.00354 0.00373
+Speedup:
+ 1 1.94225 3.808 7.13725 9.99677 16.3272 17.4802 16.5898  
+\end{verbatim}

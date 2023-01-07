@@ -1,0 +1,14 @@
+subroutine savehello
+  use omp_lib
+  implicit none
+  integer :: thread = -1
+  thread = omp_get_thread_num()
+  print *,"Hello from",thread
+end subroutine savehello
+subroutine finehello
+  use omp_lib
+  implicit none
+  integer :: thread
+  thread = omp_get_thread_num()
+  print *,"World from",thread
+end subroutine finehello

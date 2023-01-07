@@ -1,0 +1,5 @@
+#pragma omp declare reduction\
+  (	\
+	+:vector<int>:omp_out += omp_in	\
+	) \
+  initializer( omp_priv = vector<int>{} )

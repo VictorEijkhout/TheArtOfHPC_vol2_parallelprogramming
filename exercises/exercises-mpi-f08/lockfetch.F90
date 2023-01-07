@@ -3,19 +3,21 @@
 ! %%%%
 ! %%%% This program file is part of the book and course
 ! %%%% "Parallel Programming for Science and Engineering"
-! %%%% by Victor Eijkhout, copyright 2020
+! %%%% by Victor Eijkhout, copyright 2020-2022
 ! %%%%
-! %%%% lockfetch.c : passive target synchronization & atomic update
+! %%%% lockfetch.F90 : passive target synchronization & atomic update
 ! %%%%
 ! %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ! %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 Program LockFetch
-  use mpi_f08
-  use iso_c_binding
+  use :: mpi_f08
+  use :: iso_c_binding
+  use :: posix
   implicit none
 
-  integer :: nprocs, procno,ierr
+  integer :: nprocs, procno,sleep
+  real :: randomfraction
   type(MPI_Comm) :: comm = MPI_COMM_WORLD
 
   !! data specifically for this program
@@ -24,7 +26,9 @@ Program LockFetch
   integer :: win_buffer
   integer(kind=MPI_ADDRESS_KIND) :: winsize,zero_disp=0
   integer :: bytesofint
-  integer :: zero=0, one = 1,update,readout,assert=0
+  integer :: zero=0, mone = -1,update,readout,assert=0, &
+       workcount,ip,sum_work,my_work
+  integer,dimension(:),allocatable :: nwork
 
   !!
   !! Start MPI
@@ -32,6 +36,7 @@ Program LockFetch
   call MPI_Init()
   call MPI_Comm_size(comm,nprocs)
   call MPI_Comm_rank(comm,procno)
+  ALLOCATE( nwork(nprocs) )
 
   !!
   !! Setup window and data:
@@ -45,7 +50,6 @@ Program LockFetch
   else
      winsize = 0
   end if
-  !call MPI_Win_allocate( winsize, bytesofint, comm, win_buffer, the_window)
   call MPI_Win_create(win_buffer,winsize,1,MPI_INFO_NULL,comm,the_window)
 
   !!
@@ -53,7 +57,8 @@ Program LockFetch
   !!
   call MPI_Win_fence(0,the_window)
   if (procno==supervisor) then
-     call MPI_Put( zero,1,MPI_INTEGER, &
+     workcount = 5 * nprocs;
+     call MPI_Put( workcount,1,MPI_INTEGER, &
           repo,zero_disp,1,MPI_INTEGER,the_window)
   end if
   call MPI_Win_fence(0,the_window)
@@ -62,6 +67,9 @@ Program LockFetch
   !! Passive target epoch
   !!
   if (procno==supervisor) then
+     !!
+     !! Supervisor cycles until the window is zero
+     !!
      do
         !!
         !! Exercise: read out the window's content using an atomic operation
@@ -70,22 +78,39 @@ Program LockFetch
 !!!! your code here !!!!
         call MPI_Win_unlock(repo,the_window)
         print *,"Supervisor readout: ", readout
-        if ( readout>=nprocs-1 ) exit
+        if ( readout<=0 ) exit
      end do
-     print *,"Supervisor is done!"
+     !!
+     !! Finish up: gather how much work every process has done
+     !! and do correctness check
+     !!
+     call MPI_Gather(readout,1,MPI_INT,nwork,1,MPI_INT,supervisor,comm)
+     nwork(supervisor+1) = 0
+     print *,"Work by proc:"
+     print *,(nwork(ip),ip=1,nprocs)
+     sum_work = SUM( nwork )
+     if (sum_work/=workcount) then
+        print *,"Found work:",sum_work,"s/b",workcount
+        call MPI_Abort(comm,0)
+     end if
   else 
      !!
-     !! Atomic update of the repo
+     !! Worker processes do atomic update of the repo
      !!
-     call MPI_Win_lock(MPI_LOCK_EXCLUSIVE,repo,assert,the_window)
-     call MPI_Fetch_and_op(one, readout, MPI_INTEGER, repo,zero_disp, MPI_SUM, the_window)
-     call MPI_Win_unlock(repo,the_window)
-     print *,"Proc",procno,"adding 1 to ",readout
+     my_work = 0
+     do 
+        call random_number(randomfraction)
+        sleep = c_usleep( int(randomfraction * 1000000) )
+        call MPI_Win_lock(MPI_LOCK_EXCLUSIVE,repo,assert,the_window)
+        call MPI_Fetch_and_op(mone, readout, MPI_INTEGER, repo,zero_disp, MPI_SUM, the_window)
+        call MPI_Win_unlock(repo,the_window)
+        if (readout<=0) exit
+        my_work = my_work+1
+        print *,"Proc",procno,"adding -1 to ",readout
+     end do
+     call MPI_Gather(my_work,1,MPI_INT,0,1,MPI_INT,supervisor,comm)
   end if
-  if (procno==supervisor) &
-    print *,"Supervisor final readout",readout
 
-  call MPI_Barrier(comm)
   call MPI_Win_free(the_window)
 
   call MPI_Finalize()

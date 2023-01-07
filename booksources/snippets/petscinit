@@ -1,6 +1,6 @@
 // init.c
-ierr = PetscInitialize
-  (&argc,&argv,(char*)0,help); 
+PetscCall( PetscInitialize
+  (&argc,&argv,(char*)0,help) );
 int flag;
 MPI_Initialized(&flag);
 if (flag)

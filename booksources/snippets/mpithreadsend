@@ -1,0 +1,13 @@
+// anytag.c
+#pragma omp parallel sections
+    {
+#pragma omp section
+    MPI_Isend
+      ( &x,1,MPI_DOUBLE,
+	receiver,xtag,comm,requests+0);
+#pragma omp section
+    MPI_Isend
+      ( &y,1,MPI_DOUBLE,
+	receiver,ytag,comm,requests+1);
+    }
+    MPI_Waitall(2,requests,MPI_STATUSES_IGNORE);

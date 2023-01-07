@@ -151,16 +151,27 @@ int source = recv_status.source();
 \Level 1 {Tag}
 \label{sec:mpi-tag}
 
-If a processor is expecting more than one (non-blocking)
-messsage from a single other processor,
-message tags can be used to distinguish between them. In that case,
-a value of \indexmpishow{MPI_ANY_TAG} can be used, and the actual
+In some circumstances, a tag wildcard can be used on the receive operation:
+\indexmpishow{MPI_ANY_TAG}.
+The actual
 \emph{tag}\index{message!status!tag}
 of a message can be retrieved as the
 %
 \indexmpidef{MPI_TAG}
 %
 member in the status structure.
+
+There are not many cases where this is needed.
+\begin{itemize}
+\item Messages from a single source, even non-blocking,
+  are \emph{non-overtaking}\index{message!non-overtaking}.
+  This means that messages can be distinguished by their order.
+\item Messages from multiple sources can be distinguished by the source field.
+\item Retrieving the message tag might be needed if information is encoded in it.
+\item The non-overtaking argument does not apply in the case of hybrid
+  computing: two threads may send messages that do not have an MPI-imposed order.
+  See the example in section~\ref{sec:hybrid-order}.
+\end{itemize}
 
 \begin{mplnote}{Message tag}
   \ac{MPL} differs from other \acp{API} in its treatment of tags:

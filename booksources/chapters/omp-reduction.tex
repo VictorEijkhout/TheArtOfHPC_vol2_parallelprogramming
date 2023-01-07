@@ -84,7 +84,7 @@ double result = 0;
   if (num==0)      local_result = f(x);
   else if (num==1) local_result = g(x);
   else if (num==2) local_result = h(x);
-#pragma omp critical
+# pragma omp critical
   result += local_result;
 }
 \end{lstlisting}
@@ -97,10 +97,10 @@ double result = 0;
 #pragma omp parallel
 {
   double local_result;
-#pragma omp for
+# pragma omp for
   for (i=0; i<N; i++) {
     local_result = f(x,i);
-#pragma omp critical
+#   pragma omp critical
     result += local_result;
   } // end of for loop
 }
@@ -183,8 +183,8 @@ Logical operator reductions in Fortran:
 
 Starting with the \ompstandard{4.5} standard, you can reduce
 on statically and dynamically allocated arrays:
-\cxxverbatimsnippet{creductstatic}
-\cxxverbatimsnippet{creductdynamic}
+\cverbatimsnippet{creductstatic}
+\cverbatimsnippet{creductdynamic}
 
 \begin{cppnote}{Reductions on vectors}
   Use the \lstinline{data} method to extract the array
@@ -253,7 +253,7 @@ We discuss two strategies:
   and declare that to be a reduction operator with the
   \indexpragma{declare}~\indexclause{reduction} construct.
 \item In \ac{OO} languages (C++ and \fstandard{2003})
-  you can overload ordinary operators for a class.
+  you can overload ordinary operators for types, including class objects.
 \end{enumerate}
 
 \Level 1 {Reduction functions}
@@ -303,6 +303,16 @@ you can declare the reduction through an expression:
 and use that in the \indexclause{reduction} clause:
 %
 \cverbatimsnippet{ompminabsclause}
+
+\begin{cppnote}{Lambda expressions in declared reductions}
+  You can use lambda expressions in the explicit expression:
+  %
+  \cxxverbatimsnippet{cppreductlambda}
+  %
+  You can not assign the lambda expression to a variable and use that,
+  because \lstinline{omp_in/out} are the only variables allowed
+  in the explicit expression.
+\end{cppnote}
 
 \Level 2 {Reduction functions}
 
@@ -389,14 +399,22 @@ This needs the following:
 #pragma omp parallel for reduction(inscan,+:sumvar)
 \end{lstlisting}
 \item In the body of the parallel loop there is a \indexompshow{scan} directive
-  that allows you to store the partial results:
+  that allows you to store the partial results.
+  For inclusive scans the reduction variable is updated before the \indexompshow{scan} pragma:
 \begin{lstlisting}
+  sumvar // update
 #pragma omp scan inclusive(sumvar)
   partials[i] = sumvar
 \end{lstlisting}
+  For exclusive scans the reduction variable is updated after the \indexompshow{scan} pragma:
+\begin{lstlisting}
+  partials[i] = sumvar
+#pragma omp scan inclusive(sumvar)
+  sumvar // update
+\end{lstlisting}
 \end{itemize}
 
-\csnippetwithoutput{scaninc}{example/mpi/c}{scan}
+\csnippetwithoutput{scanincexc}{examples/omp/c}{scansum}
 
 \Level 0 {Reductions and floating-point math}
 

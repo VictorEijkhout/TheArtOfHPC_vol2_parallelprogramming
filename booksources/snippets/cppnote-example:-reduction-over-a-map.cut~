@@ -1,0 +1,7 @@
+You can do a reduction over a \lstinline{std::map}
+by merging thread-local maps:
+\begin{multicols}{2}
+  \cxxverbatimsnippet{ompbincounter}
+  \columnbreak
+  \cxxverbatimsnippet{ompbinreduce}
+\end{multicols}

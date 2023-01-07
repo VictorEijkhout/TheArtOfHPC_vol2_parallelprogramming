@@ -3,7 +3,7 @@
 ####
 #### This makefile is part of the source of 
 #### "Parallel Computing for Science and Engineering"
-#### by Victor Eijkhout, copyright 2013-2022
+#### by Victor Eijkhout, copyright 2013-2023
 ####
 #### This is the makefile for the python examples
 ####     in examples/mpi/p
@@ -44,32 +44,28 @@ include ../../../makefiles/Make.mpi_run
 info ::
 	@echo "make run_spawn : process spawning example"
 RUNS += run_spawn
-.PHONY: run_spawn
 run_spawn :
 	@make regression APPS=spawn_manager
 
 RUNS += run_dup
-.PHONY: run_dup
 run_dup :
 	@make --no-print-directory mpirun PROGRAM=commsplit NP=8
 
 RUNS += run_buffer
-.PHONY: run_buffer
 run_buffer :
 	@make --no-print-directory mpirun PROGRAM=bcastcolumn NP=6
 
 RUNS += run_version
-.PHONY: run_version
 run_version :
 	@make --no-print-directory mpirun PROGRAM=version.py NP=1
 
 RUNS += run_intsize
-.PHONY: run_intsize
 run_intsize :
 	@make --no-print-directory catchrun PROGRAM=inttype NP=2 \
 	        ECHO=${ECHO} \
 	2>/dev/null \
 	| awk '/int size/ {p=0} p==1 {print} /Int Size/ {p=1}'
+.PHONY: ${RUNS}
 
 TESTSWRONG = buffertoosmall.py 
 TESTSNOT = exscan.py
@@ -92,5 +88,8 @@ SOURCES = mpi.py hello.py pingpong.py scipingpong.py bcast.py buffertoosmall.py 
   gatherv.py allreduce.py getfence.py
 listsources :
 	@echo ${SOURCES}
+
+PUBLICEXTS = py runout
+include ../../../makefiles/Make.public
 
 include  ../../../makefiles/Make.clean

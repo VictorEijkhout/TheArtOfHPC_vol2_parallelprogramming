@@ -33,37 +33,32 @@ PETSc performs a good amount of runtime error checking. Some of this
 is for internal consistency, but it can also detect certain
 mathematical errors. To facilitate error reporting, the following
 scheme is used.
-\begin{enumerate}
-\item Every PETSc routine is a function returning a parameter of type
-  \indexpetscdef{PetscErrorCode}.
-\item For a good traceback, surround the executable part of any subprogram
-  with \indexpetscdef{PetscFunctionBeginUser} and \indexpetscdef{PetscFunctionReturn},
-  where the latter has the return value as parameter.
-  (The routine \indexpetscdef{PetscFunctionBegin} does the same, but
-  should only be used for PETSc library routines.)
-\item Calling the macro \indexpetscdef{CHKERRQ} on the error code will
-  cause an error to be printed and the current routine to be
-  terminated. Recursively this gives a traceback of where the error
-  occurred.
-\begin{lstlisting}
-PetscErrorCode ierr;
-ierr = AnyPetscRoutine( arguments ); CHKERRQ(ierr);
-\end{lstlisting}
-\item Other error checking macros are \indexpetscdef{CHKERRABORT}
-  which aborts immediately, and \indexpetscdef{CHKERRMPI}.
-\item You can effect your own error return by using
-  \indexpetscref{SETERRQ}
-  \indexpetscxref{SETERRQ1}{SETERRQ},
-  \indexpetscxref{SETERRQ2}{SETERRQ}.
-\end{enumerate}
 
-\begin{fortrannote}{Error code handling}
-  In the main program, use \indexpetscdef{CHKERRA} and
-  \indexpetscdef{SETERRA}. Also beware that these error `commands' are
-  macros, and after expansion may interfere with
-  \indextermbus{Fortran}{line length}, so they should only be
-  used in \n{.F90} files.
-\end{fortrannote}
+Every PETSc call returns an error code;
+typically zero for success, and non-zero for various conditions.
+You should wrap each such function call in the
+\indexpetscdef{PetscCall} macro:
+\begin{lstlisting}
+PetscCall( SomePetscRoutine( arguments ) );
+\end{lstlisting}
+(In many codes you may see a macro \indexpetscshow{CHKERRQ};
+which was the mechanism pre-\petscstandard{3.18};
+see section~\ref{sec:petsc-chkerrq}.)
+This macro detects any error code, reports it, and exits
+the current routine.
+
+For a good traceback, surround the executable part of any subprogram
+with \indexpetscdef{PetscFunctionBeginUser} and \indexpetscdef{PetscFunctionReturn},
+where the latter has the return value as parameter.
+(The routine \indexpetscdef{PetscFunctionBegin} does the same, but
+should only be used for PETSc library routines.)
+
+\Level 2 {Error throwing}
+
+You can effect your own error return by using
+the variadic function \indexpetscref{SETERRQ}.
+(Before \petscstandard{3.17} there were separate functions
+\indexpetsc{SETERRQ1}, \indexpetsc{SETERRQ2}, et cetera.)
 
 Example. We write a routine that sets an error:
 \cverbatimsnippet[examples/petsc/c/backtrace.c]{petscbacktrace}
@@ -117,6 +112,39 @@ Root of 1.500000 is 1.224745
 \end{verbatim}
 
 \end{exercise}
+
+\Level 2 {Legacy error checking}
+\label{sec:petsc-chkerrq}
+
+In PETSc versions pre-\petscstandard{3.18},
+errors were handled slightly differently.
+
+\begin{enumerate}
+\item Every PETSc routine is a function returning a parameter of type
+  \indexpetscdef{PetscErrorCode}.
+\item Calling the macro \indexpetscdef{CHKERRQ} on the error code will
+  cause an error to be printed and the current routine to be
+  terminated. Recursively this gives a traceback of where the error
+  occurred.
+\begin{lstlisting}
+PetscErrorCode ierr;
+ierr = AnyPetscRoutine( arguments ); CHKERRQ(ierr);
+\end{lstlisting}
+\item Other error checking macros are \indexpetscdef{CHKERRABORT}
+  which aborts immediately, and \indexpetscdef{CHKERRMPI}.
+\end{enumerate}
+
+\begin{fortrannote}{Error code handling}
+  In the main program, use \indexpetscdef{CHKERRA} and
+  \indexpetscdef{SETERRA}. Also beware that these error `commands' are
+  macros, and after expansion may interfere with
+  \indextermbus{Fortran}{line length}, so they should only be
+  used in \n{.F90} files.
+\end{fortrannote}
+
+\begin{cppnote}{Exception handling}
+  The macro \indexpetscshow{CHCKERCXX} handles exceptions.
+\end{cppnote}
 
 \Level 1 {Memory corruption}
 \label{sec:petsc-mem}

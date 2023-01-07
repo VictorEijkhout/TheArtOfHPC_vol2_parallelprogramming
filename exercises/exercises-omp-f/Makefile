@@ -14,7 +14,11 @@ info ::
 COURSE = omp
 
 info ::
-	@echo "make EXERCISE (where EXERCISE=${EXERCISES})"
+	@echo "================================================================"
+	@echo " make exercises for system=${MODE}, language=${LANGUAGE}"
+	@echo "================================================================"
+	@echo "available rules:"
+
 EXERCISES = parallel pi piadapt taskfactor
 
 MODE = omp

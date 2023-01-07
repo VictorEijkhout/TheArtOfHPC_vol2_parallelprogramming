@@ -1,0 +1,5 @@
+!! save.F90
+!$omp parallel
+  call savehello
+  call finehello
+!$omp end parallel

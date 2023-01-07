@@ -1,11 +1,11 @@
 Vec ghostvector;
-ierr = DMGetLocalVector(grid,&ghostvector); 
-ierr = DMGlobalToLocal(grid,xy,INSERT_VALUES,ghostvector); 
+PetscCall( DMGetLocalVector(grid,&ghostvector) );
+PetscCall( DMGlobalToLocal(grid,xy,INSERT_VALUES,ghostvector) );
 PetscReal **xyarray,**gh;
-ierr = DMDAVecGetArray(grid,xy,&xyarray); 
-ierr = DMDAVecGetArray(grid,ghostvector,&gh); 
+PetscCall( DMDAVecGetArray(grid,xy,&xyarray) );
+PetscCall( DMDAVecGetArray(grid,ghostvector,&gh) );
 // computation on the arrays
-ierr = DMDAVecRestoreArray(grid,xy,&xyarray); 
-ierr = DMDAVecRestoreArray(grid,ghostvector,&gh); 
-ierr = DMLocalToGlobal(grid,ghostvector,INSERT_VALUES,xy); 
-ierr = DMRestoreLocalVector(grid,&ghostvector); 
+PetscCall( DMDAVecRestoreArray(grid,xy,&xyarray) );
+PetscCall( DMDAVecRestoreArray(grid,ghostvector,&gh) );
+PetscCall( DMLocalToGlobal(grid,ghostvector,INSERT_VALUES,xy) );
+PetscCall( DMRestoreLocalVector(grid,&ghostvector) );

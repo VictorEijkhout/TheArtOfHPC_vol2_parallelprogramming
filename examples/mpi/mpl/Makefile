@@ -3,7 +3,7 @@
 ####
 #### This makefile is part of the source of 
 #### "Parallel Computing for Science and Engineering"
-#### by Victor Eijkhout, copyright 2013-2021
+#### by Victor Eijkhout, copyright 2013-2023
 ####
 #### This is the makefile for the MPL examples
 ####     in examples/mpi/mpl
@@ -42,6 +42,10 @@ run_commcompare ::
 run_rawcompare :: 
 	@${MPIRUN} -n 1 commcompare \
 	| awk '/rawcompare/ {p=0} p==1 {print} /Rawcompare/ {p=1}'
+.PHONY: ${RUNS}
+
+PUBLICEXTS = cxx runout
+include ../../../makefiles/Make.public
 
 include ../../../makefiles/Make.clean
 #include ../../../teaching/course-support/Make.mpi_regress

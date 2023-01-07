@@ -80,7 +80,7 @@ Splitting by shared memory:
   \end{enumerate}
   If you run this program on an unequal distribution,
   say 10~processes on 3~nodes, what distribution do you find?
-  \lstinputlisting{code/mpi/c/nodecount.runout}
+  \lstinputlisting{examples/mpi/c/nodecount.runout}
 \end{exercise}
 
 \begin{remark}
@@ -104,7 +104,8 @@ In order to do such user-level copying:
 \item We need to create a shared memory area with
   \indexmpishow{MPI_Win_allocate_shared}.
   This creates a window with the
-  \emph{unified memory model}\index{window!memory!model!unified};
+  \emph{unified memory model}\index{window!memory!model!unified}
+  (see section~\ref{sec:win-model});
   and
 \item We need to get pointers to where a process' area is in this
   shared space; this is done with \indexmpishow{MPI_Win_shared_query}.

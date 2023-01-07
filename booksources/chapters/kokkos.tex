@@ -21,18 +21,24 @@ April 21-24, 2020.
 Include file:
 \cxxverbatimsnippet[code/kokkos/cxx/hello.cxx]{kokkoscore}
 
-\Level 0 {Data-parallel constructs}
+\Level 0 {Parallel code execution}
 
-Parallel constructs,
-what you use directives for in OpenMP,
-are explicitly called.
+In parallel execution we basically have two issues:
+\begin{enumerate}
+\item The parallel structure of the algorithm;
+  that's what we discuss in this section.
+\item the memory structure of how the data is laid out;
+  this will be discussed in section~\ref{sec:kokkos-data}.
+\end{enumerate}
+
+The algorithmic parallel structure is indicated with the following constructs.
 \begin{lstlisting}
 Kokkos::parallel_for
 Kokkos::parallel_reduce
 Kokkos::parallel_scan
 \end{lstlisting}
 
-\Level 1 {1D loop}
+\Level 1 {Example: 1D loop}
 
 Hello world:
 \cxxverbatimsnippet[code/kokkos/cxx/hello.cxx]{kkhello}
@@ -64,7 +70,7 @@ For reductions other than summing, a \indexkokkosshow{reducer} is needed.
 %
 \cxxverbatimsnippet{kreduxmax}
 
-\Level 1 {Multi-D loops}
+\Level 1 {Examples: Multi-D loops}
 
 You can of course parallelize over the outer loop, and do the inner loops
 in the functor.
@@ -105,6 +111,7 @@ gets translated to the correct row/column-major depending on whether the
 code runs on a CPU or GPU; see section~\ref{sec:omp-row-col-major}.
 
 \Level 0 {Data}
+\label{sec:kokkos-data}
 
 One of the problems Kokkos addresses is the coherence of data between
 main processor and attached devicees such \acp{GPU}.

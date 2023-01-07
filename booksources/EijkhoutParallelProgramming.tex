@@ -102,15 +102,6 @@
 \setlength{\headheight}{14pt}
 \addtolength{\topmargin}{-1.6pt}
 
-\begin{lulu}
-%% no source listing in the printed book
-\def\chaptersourcelisting#1{}
-\end{lulu}
-\begin{notlulu}
-%% source listing for online book online
-\def\chaptersourcelisting#1{\newpage\listchaptersources{#1}}
-\end{notlulu}
-
 \newwrite\nx
 \newcommand\CHAPTER[2]{
   \Level 0 {#1}\label{ch:#2}
@@ -194,8 +185,35 @@
 \input snippetmacs
 \input bookmacs
 
+%% \begin{lulu}
+%% %% no source listing in the printed book
+%% \def\chaptersourcelisting#1{}
+%% \end{lulu}
+%% \begin{notlulu}
+%% % source listing for online book online
+
+\ifincludesources
+  \def\chaptersourcelisting#1{
+    \newpage
+    \listchaptersources{#1}
+  }
+\else
+  \def\chaptersourcelisting#1{
+    \newpage
+    \Level 0 {Full source code of examples}
+    Please see the repository:
+    \expandafter\url\expandafter{\SourceRepoRoot}.
+    Examples are sorted first by programming system, then by language.
+  }
+\fi
+
+%% \end{notlulu}
+
+%%
+%% Title and front matter
+%%
 \def\publicdraft{{\bf\normalsize \relax Public draft - open for comments}}
-\def\revdate{3rd edition 2022, formatted \today\\
+\def\revdate{2nd edition 2022, formatted \today\\
   \small
   Book and slides download: \url{https://tinyurl.com/vle335course}\\
   Public repository:
@@ -204,8 +222,10 @@
   This book is published under the CC-BY 4.0 license.
 }
 \begin{lulu}
-\def\publicdraft{}
-\def\revdate{3rd edition 2022}
+  \def\publicdraft{}
+  \def\revdate{2nd edition 2022\\
+    Series reference: \url{https://theartofhpc.com/}
+  }
 \end{lulu}
 
 \newwrite\chapterlist \openout\chapterlist=chapternames.tex
@@ -213,7 +233,7 @@
 \begin{document}
 
 \author{Victor Eijkhout}
-\title{Parallel Programming for Science and Engineering\\
+\title{Parallel Programming in MPI and OpenMP\\
   \small The Art of HPC, volume 2}
 \expandafter\date\expandafter{\revdate}
 \maketitle
@@ -313,33 +333,6 @@
 %% \CHAPTER{Parallel I/O}{io}
 \CHAPTER{Support libraries}{libraries}
 
-%% \vfill\pagebreak
-%% \appendix
-%% \makeatletter
-%% \renewcommand\exercisenumber{\Alph{chapter}.\arabic{section}.\arabic{excounter}}
-%% \makeatother
-%% \setcounter{tocdepth}{1}
-%% \addcontentsline{toc}{toc}{Appendices}
-
-%\Level 0 {Theoretical background}
-
-%\input appendices/blurb
-
-%\APPENDIX{Linear algebra}{linear algebra}{norms}
-
-%% \part{Tutorials}
-%% \label{app:practical}
-%% \addcontentsline{loftn}{fortrannote}{Tutorials}
-%% \addcontentsline{lopy}{fortrannote}{Tutorials}
-
-%% \input tutorials/blurb
-
-%% \TUTORIAL{Debugging}{debug} % VLE is this the same as gnudebug in scicompbook?
-%% \TUTORIAL{Tracing, timing, and profiling}{tracing}
-%% \TUTORIAL{SimGrid}{simgrid}
-%% \TUTORIAL{Batch systems}{slurm}
-%% \TUTORIAL{Parallel I/O}{io}
-
 \part{Class projects}
 
 \PROJECT{A Style Guide to Project Submissions}{projectstyle}
@@ -353,16 +346,12 @@
 
 \CHAPTER{Teaching guide}{mpi-course}
 \CHAPTER{Teaching from mental models}{mpi-mental}
+%\CHAPTER{Parallel Programming Explained through Conway's Game Of Life}{conwaysection}
 %pyskipend
 
-%\CHAPTER{Introduction to parallel programming}{conwaysection}
 
 
 \part {Bibliography, index, and list of acronyms}
-
-%% \Level 1 {Ascii table}
-%% \input ascii
-%% \vfill\pagebreak
 
 \Level 0 {Bibliography}
 
@@ -380,15 +369,15 @@
 \input acronyms
 \end{description}
 \end{multicols}
-\vfill\pagebreak
 
 \Level 0 {General Index}
 
 \index{parallel!prefix|see{prefix}}
 
-%\begin{multicols*}{2}
+% \begin{multicols*}{1} % this runs off the page...
+%% \let\theindex\description \input parcombook.ind
 \printindex
-%\end{multicols*}
+% \end{multicols*}
 
 \Level 0 {Lists of notes}
 

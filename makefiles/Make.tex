@@ -17,6 +17,16 @@ info ::
 	@echo
 	@echo "================ LaTeX"
 
+LOCAL_TEXINPUTS =
+LATEXENGINE = pdflatex
+.PHONY: onepass
+onepass ::
+	@if [ `which ${LATEXENGINE} >/dev/null 2>&1 ; echo $$?` -ne 0 ] ; then \
+	    echo && echo "Can not invoke LATEXENGINE=${LATEXENGINE}. Maybe load a module?" && echo \
+	    && exit 1 \
+	    ; fi
+	TEXINPUTS=${TEXINPUTS}${LOCAL_TEXINPUTS} ${LATEXENGINE} -shell-escape ${LATEXTARGET}
+
 info ::
 	@echo "make diagnostics [FILE=...(default: ${FILE})]] : formatting problems"
 .PHONY: diagnostics
@@ -28,6 +38,8 @@ diagnostics ::
 	 && ( grep multiply ${FILE}.log | grep -v header \
 	        || echo >/dev/null ) \
 	 && ( grep "missing snippet" ${FILE}.log \
+	        || echo >/dev/null ) \
+	 && ( grep "Missing output" ${FILE}.log \
 	        || echo >/dev/null ) \
 	 && echo "----------------" \
 	 && ( grep "LaTeX Warning: Citation" ${FILE}.log ) \

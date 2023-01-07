@@ -24,7 +24,7 @@ EXERCISES = hello \
     pingpong sendrecv sumsquares scangather \
     rightsend rightput rightgraph \
     bucketblock bucketpipenonblock setdiff \
-    isendirecv isendirecvarray status \
+    isendirecv isendirecvarray status transposeblock \
     stridesend cubegather onenorm procgrid \
     randomput onesidedbuild countdown lockfetch lockfetchshared \
     blockwrite shareddata ibarrierupdate

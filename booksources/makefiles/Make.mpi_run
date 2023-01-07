@@ -26,7 +26,7 @@ else
 endif
 NP_default = 4
 SCRIPTSDIR = ../../../scripts
-CATCHER = ${SCRIPTSDIR}/catchout
+
 .PHONY: mpirun catchrun
 info ::
 	@echo "make mpirun / slurmrun / catchrun"
@@ -64,7 +64,7 @@ proginvocation :
 	      progargs="$${progargs} ${OPTIONS}" ; fi \
 	 && if [ ! -z "${CATCHER}" ] ; then \
 	      catcher=${CATCHER} \
-	       && if [ ! -z "${PYTHON}" ] ; then \
+	       && if [ "${LANGUAGE}" = "P" ] ; then \
 	            catcher="$${catcher} -p ${PYTHON}" ; fi \
 	       && progargs="$${catcher} $${progargs}" \
 	    ; fi \
@@ -76,7 +76,9 @@ mpirun :
 	 && np=`make --no-print-directory mpi_nprocs PROGRAM=${PROGRAM} NP=${NP}` \
 	 && invoke=$$( make --no-print-directory proginvocation \
 	                PROGRAM="${PROGRAM}" \
-	                LANGUAGE="${LANGUAGE}" OPTIONS="${OPTIONS}" PYTHON="${PYTHON}" ) \
+	                LANGUAGE="${LANGUAGE}" OPTIONS="${OPTIONS}" PYTHON="${PYTHON}" \
+	                CATCHER="${CATCHER}" \
+	            ) \
 	 && cmdline="${ENVOPTIONS} ${MPIRUN} ${NPOPTION} $$np $${invoke}" \
 	 && if [ "${ECHO}" = "1" ] ; then \
 	        echo $$cmdline ; fi \
@@ -85,17 +87,18 @@ mpirun :
 slurmrun :
 	${ENVOPTIONS} ${MPIRUN} -np ${SLURM_NPROCS} ${PYTHON} ${PROGRAM}${PROGRAM_EXTENSION} ${OPTIONS}
 catchrun :
-	@if [ ! -f "${CATCHER}" ] ; then \
-	    echo "Can not find catcher script: <<${CATCHER}>>" \
-	     && exit 1 ; fi
-	@make --no-print-directory mpirun \
+	@catcher=${SCRIPTSDIR}/catchout
+	 && if [ ! -f "$${catcher}" ] ; then \
+	    echo "Can not find catcher script: <<${catcher}>>" \
+	     && exit 1 ; fi \
+	 && make --no-print-directory mpirun \
 	        PROGRAM=${PROGRAM} OPTIONS="${OPTIONS}" \
 	        PYTHON="${PYTHON}" LANGUAGE="${LANGUAGE}" \
-	        ECHO=${ECHO} CATCHER="${CATCHER}" 
-	@for i in `seq 0 $$(( NP-1 ))` ; do \
-	    cat ${PROGRAM}.out$$i \
+	        ECHO=${ECHO} CATCHER="${CATCHER}" \
+	 && for i in `seq 0 $$(( NP-1 ))` ; do \
+	      cat ${PROGRAM}.out$$i \
 	        ${CATCHFILTER} \
-	  ; done > ${PROGRAM}.outall \
+	    ; done > ${PROGRAM}.outall \
 	 && cat ${PROGRAM}.outall
 clean ::
 	@rm -f *.outall

@@ -1,16 +1,16 @@
 // dmrhs.c
 DM grid;
-ierr = DMDACreate2d
-  ( comm,          
-    DM_BOUNDARY_NONE,DM_BOUNDARY_NONE,
-    DMDA_STENCIL_STAR,
-    100,100,          
-    PETSC_DECIDE,PETSC_DECIDE,
-    1,         
-    1,         
-    NULL,NULL, 
-    &grid      
-    ); 
-ierr = DMSetFromOptions(grid); 
-ierr = DMSetUp(grid); 
-ierr = DMViewFromOptions(grid,NULL,"-dm_view"); 
+PetscCall( DMDACreate2d
+	     ( comm,          
+	       DM_BOUNDARY_NONE,DM_BOUNDARY_NONE,
+	       DMDA_STENCIL_STAR,
+	       100,100,          
+	       PETSC_DECIDE,PETSC_DECIDE,
+	       1,         
+	       1,         
+	       NULL,NULL, 
+	       &grid      
+	       ) );
+PetscCall( DMSetFromOptions(grid) );
+PetscCall( DMSetUp(grid) );
+PetscCall( DMViewFromOptions(grid,NULL,"-dm_view") );

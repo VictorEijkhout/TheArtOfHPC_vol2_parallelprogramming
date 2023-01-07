@@ -15,7 +15,7 @@
 
 Bandwidth is the quantity that measures the number of bytes per second that
 can go through a connection.
-This definition seems straightforward, but commes with many footnotes.
+This definition seems straightforward, but comes with many footnotes.
 \begin{itemize}
 \item The size of the message used matters, since there is a \indexterm{latency}
   cost to merely starting the message. Often, the bandwidth number quoted
@@ -26,18 +26,19 @@ This definition seems straightforward, but commes with many footnotes.
 \item And combinations of these considerations.
 \end{itemize}
 
-A useful measure comes from asking what bandwdith is achievable if all processes
+A useful measure comes from asking what bandwidth is achievable if all processes
 are either sending or receiving.
 As a further refinement, we ask what the least favorable choice is
 for the communicating pairs:
 \begin{quote}
-  Halfbandwidth is defined as the minimum total bandwidth,
+  Bisection bandwidth is defined as the minimum total bandwidth,
   over all possible choices of splitting the processes into
   a sending and receiving half.
 \end{quote}
+See also \HPSCref{sec:graph-theory}.
 
 \begin{figure}[ht]
-  \hbox\bgroup  %pyskip
+  \hbox to \textwidth \bgroup \hss %pyskip
   \includegraphics[scale=.4]{hbwprocs-intra}
   \hss  %pyskip
   \includegraphics[scale=.4]{hbwprocs-inter}
@@ -113,7 +114,7 @@ transaction 100~times.
 
 In the left graph of figure~\ref{fig:hbw-interintra} we see that the time
 for $P/2$ simultaneous pingpongs stays fairly constant.
-This reflects the fact that, on node, the ping pong operations are
+This reflects the fact that, on node, the pingpong operations are
 data copies, which proceed simultaneously.
 Thus, the time is independent of the number of cores that are moving data.
 The exception is the final data point: with all cores active we take up

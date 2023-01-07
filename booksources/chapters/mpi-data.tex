@@ -46,6 +46,9 @@ MPI_Datatype mytype;
   \lstinline{Integer} variables.
   With the \fstandard{2008} standard, datatypes are Fortran derived types:
   \fverbatimsnippet{vector-f08-type}
+  Implementationwise speaking, these types have exactly one member,
+  \indexmpidef{MPI_VAL}, which is the same integer
+  as was used for that datatype in the earlier Fortran version.
 \end{fortrannote}
 
 \begin{pythonnote}{Data types}
@@ -62,13 +65,15 @@ mpi4py.MPI.Datatype.DOUBLE
   see section~\ref{sec:data-commit}.
 \end{pythonnote}
 
-\begin{mplnote}{Other types}
+\begin{mplnote}{Datatype handling}
+  MPL mostly handles datatypes through subclasses
+  of the \indexmplshow{layout} class.
+  Layouts are 
+  MPL routines are templated over the data type.
   \cxxverbatimsnippet{mplsendlong}
   Also works with complex of float and double.
-\end{mplnote}
 
-\begin{mplnote}{Data types}
-  MPL routines are templated over the data type.  The data types,
+  The data types,
   where MPL can infer their internal representation, are enumeration
   types, C~arrays of constant size and the template classes
   \lstinline+std::array+,
@@ -80,9 +85,9 @@ mpi4py.MPI.Datatype.DOUBLE
   received by MPL.
 \end{mplnote}
 
-\begin{mplnote}{Raw datatype handles}
+\begin{mplnote}{Native MPI data types}
   Should you need the \indexmpishow{MPI_Datatype} object
-  contained in an MPL datatype,
+  contained in an MPL layout,
   there is an access function \indexmplshow{native_handle}.
 \end{mplnote}
 

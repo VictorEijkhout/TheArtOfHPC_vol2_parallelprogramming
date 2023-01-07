@@ -1,0 +1,10 @@
+// vecdata.cxx
+#pragma omp parallel for 
+    for ( auto& elt : values ) {
+      elt = 5.f;
+    }
+    float sum{0.f};
+#pragma omp parallel for reduction(+:sum)
+    for ( auto elt : values ) {
+      sum += elt;
+    }

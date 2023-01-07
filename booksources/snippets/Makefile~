@@ -1,0 +1,4 @@
+
+PUBLICEXTS = jpg jpeg pdf png
+PUBLICDIRS = petsc_graphics
+include ../makefiles/Make.public

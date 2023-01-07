@@ -1,0 +1,2 @@
+!! vector.F90
+  Type(MPI_Datatype) :: newvectortype

@@ -76,6 +76,7 @@ Here are the OpenMP \emph{environment variables}:
   handled; \ac{ICV} \indexompdef{wait-policy-var}. Values:
   \n{ACTIVE} for keeping threads spinning, \n{PASSIVE} for possibly
   yielding the processor when threads are waiting.
+  There is no runtime function for setting this.
 \end{itemize}
 
 There are 4 \acp{ICV} that behave as if each thread has its own copy of them.
@@ -379,20 +380,4 @@ We fix this by flushing both \n{a,b}:
 \cverbatimsnippet{dekkerflush}.
 
 % \url{https://software.intel.com/es-es/forums/intel-moderncode-for-parallel-architectures/topic/610017}
-
-\Level 1 {Relaxed memory model}
-\label{sec:omp:flush}
-
-\indexpragma{flush}
-
-\begin{itemize}
-\item There is an implicit flush of all variables at the start and end 
-  of a \emph{parallel region}\index{parallel region!flush at}.
-\item There is a flush at each barrier, whether explicit or implicit,
-  such as at the end of a
-  \emph{work sharing}\index{workshare!flush after}.
-\item At entry and exit of a
-  \emph{critical section}\index{critical section!flush at}
-\item When a \emph{lock}\index{lock!flush at} is set or unset.
-\end{itemize}
 

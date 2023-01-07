@@ -26,7 +26,6 @@ info ::
 	@echo "    [ RUN_OPTIONS=... (run options for executable) ]"
 	@echo "    OMPTHREADS= core range (default=${OMPTHREADS})"
 	@echo "    OMPSCHEDULE= core range (default=${OMPSCHEDULE})"
-	@echo "    NEST=true/false (default=${NEST})"
 	@echo "    BIND=true/false/cores/... (OMP_PROC_BIND, default=${BIND})"
 	@echo "    ACTIVE=... (default=${ACTIVE}) for OMP_MAX_ACTIVE_LEVELS"
 	@echo "make omp_scaling [ NP=... ] [ NDIV=... ] [ PROGRAM=... ]"
@@ -34,7 +33,6 @@ info ::
 
 .PHONY: omp_scaling
 BIND = true
-NEST = false
 ACTIVE = 1
 ECHO = 0
 .PHONY: omp_run omp_scaling
@@ -43,11 +41,11 @@ omp_run :
 	 && np=`make --no-print-directory num_cores NP=${NP}` \
 	 && command="OMP_NUM_THREADS=$$np $$command" \
 	 && command="OMP_PROC_BIND=${BIND} $$command" \
-	 && if [ "${NEST}" = true ] ; then \
+	 && if [ ${ACTIVE} -gt 1 ] ; then \
 	         command="OMP_MAX_ACTIVE_LEVELS=${ACTIVE} $$command" ; fi \
 	 && if [ ! -z "${RUN_OPTIONS}" ] ; then \
 	        command="$$command ${RUN_OPTIONS}" ; fi \
-	 && if [ ${ECHO} = 1 ] ; then echo "executing: $$command" ; fi \
+	 && if [ "${ECHO}" = "1" ] ; then echo "Executing: $$command" ; fi \
 	 && eval $$command
 omp_scaling :
 	@export np=$$( make --no-print-directory num_cores ) \
@@ -60,7 +58,8 @@ omp_scaling :
 	    ; else results=${PROGRAM}-scaling.out ; fi \
 	 && ( \
 	    for t in $$ompthreads ; do \
-	        make --no-print-directory omp_run NP=$$t PROGRAM=${PROGRAM} \
+	        echo "==== Run ${PROGRAM} on $$t threads ====" \
+	         && make --no-print-directory omp_run NP=$$t PROGRAM=${PROGRAM} \
 	                ECHO=${ECHO} NEST=${NEST} \
 	                RUN_OPTIONS="${RUN_OPTIONS}" \
 	    ; done \
@@ -101,10 +100,26 @@ omp_threads :
 
 info ::
 	@echo "make runs : compile and run everything and generate output file"
+	@echo "make runouts : generate runout files"
 	@echo "    using RUNS=${RUNS}"
 
-.PHONY: runs
+.PHONY: runs runouts
 runs :
+	@for r in ${APPS} ; do \
+	    echo "---------------- Test run: $$r ----------------" \
+	     && rule=run_$${r} \
+	     && if [ $$( grep $$rule Makefile | wc -l ) -gt 0 ] ; then \
+	          echo "using run rule: $$rule" \
+	           && runtarget=$$rule \
+	        ; else \
+	          echo "generic run: $$r" \
+	           && runtarget="omp_run PROGRAM=$$r" \
+	        ; fi \
+	     && make --no-print-directory $$runtarget OPTLEVEL=${OPTLEVEL} \
+	                NEST=${NEST} ACTIVE=${ACTIVE} OMPTHREADS="${OMPTHREADS}" \
+	 ; done \
+	 && echo "runout in:  $${runout}"
+runouts :
 	@for r in ${RUNS} ; do \
 	    echo "---------------- Test run: $$r ----------------" \
 	     && runname=$${r##run_} \
@@ -117,6 +132,19 @@ runs :
 	     && git add $${runout} \
 	 ; done \
 	 && echo "runout in:  $${runout}"
+
+runapps : clean
+	@( \
+	for a in ${APPS} ${EXERCISES} ; do \
+	    echo "%%%%%%%%%%%%%%%% Compile $${a}" \
+	     && make --no-print-directory $${a} ECHO=${ECHO} \
+	     && echo "%%%%%%%%%%%%%%%% Run $${a}" \
+	     && make --no-print-directory omp_run \
+	            PROGRAM=$$a ECHO=${ECHO} NP=${NP} ECHO=${ECHO} \
+	    ; \
+	done \
+	) 2>&1 | tee run.log
+	@echo && echo "See run.log for all output" && echo 
 
 total_clean ::
 	@rm -f *.runout

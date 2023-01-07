@@ -4,7 +4,7 @@
 #### This makefile is part of the course
 #### Introduction to Scientific Programming in C++ and Fortran
 #### by Victor Eijkhout (eijkhout@tacc.utexas.edu)
-#### copyright 2017-2022 Victor Eijkhout
+#### copyright 2017-2023 Victor Eijkhout
 ####
 #### Make.cmake : experimental cmake stuff
 ####
@@ -12,13 +12,37 @@
 
 info ::
 	@echo && echo "================ Cmake rules:"
-	@echo "make cmake"
-.PHONY: cmake
+	@echo "make cmake PROGRAM=..."
+	@echo "make cmake_multi"
+.PHONY: cmake cmake_multi
 cmake :
+	@if [ -z "${PROGRAM}" ] ; then \
+	    echo "Please specify PROGRAM" && exit 1 \
+	 ; fi \
+	 && codedir=`pwd` \
+	 && echo "Start cmake in: $$codedir" \
+	 && installdir=`pwd`/exe && builddir=`pwd`/build \
+	 && rm -rf $$installdir && mkdir -p $$installdir \
+	 && rm -rf $$builddir && mkdir -p $$builddir \
+	 && echo " .. building program : ${PROGRAM}" \
+	 && echo " .. cmake in   : `pwd`" \
+	 && echo " .. with code  : $$codedir" \
+	 && echo " .. to prefix  : $$installdir" \
+	 && echo " .. using build: $$builddir" \
+	 && cp ../CMakeLists.txt . \
+	 && cmake \
+	        -S $$codedir -B $$builddir \
+	        -D PROJECT_NAME=${PROGRAM} \
+	        -D CMAKE_INSTALL_PREFIX=$$installdir \
+	        -D CMAKE_VERBOSE_MAKEFILE=ON \
+	 && echo && echo " .. cmaking done" && echo \
+	 && ( cd $$builddir && make V=1 && make install ) \
+	 && echo && echo " .. installation:" && ls $$installdir && echo
+cmake_multi :
 	@codedir=`pwd` \
 	 && echo "Start cmake in: $$codedir" \
 	 && installdir=`pwd`/exe && builddir=`pwd`/build \
-	 && rm -f CMakeLists.omp.txt \
+	 && rm -f CMakeLists.{mpi,omp}.txt \
 	     && extension=$$( make --no-print-directory extension ) \
 	     && cp ../../../Makefiles/CMakeLists.${MODE}.$${extension}.txt CMakeLists.txt \
 	 && rm -rf $$installdir && mkdir -p $$installdir \

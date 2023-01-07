@@ -14,6 +14,6 @@ for (int j=info.ys; j<info.ys+info.ym; j++) {
     if (j>0)         {col[ncols].j = j-1; col[ncols].i = i;   v[ncols++] = -1.;}
     if (j<info.my-1) {col[ncols].j = j+1; col[ncols].i = i;   v[ncols++] = -1.;}
 
-    ierr = MatSetValuesStencil(A,1,&row,ncols,col,v,INSERT_VALUES);
+    PetscCall( MatSetValuesStencil(A,1,&row,ncols,col,v,INSERT_VALUES) );
   }
 }

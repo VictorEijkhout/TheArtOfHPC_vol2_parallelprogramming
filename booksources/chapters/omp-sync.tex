@@ -23,12 +23,15 @@ threads to bring a certain order to the sequence in which they do things.
   thread at a time; see~\ref{sec:critical}.
 \item \texttt{atomic} \emph{Atomic update}\index{atomic operation}
   of a single memory location. Only certain
-  specified syntax pattterns are supported. This was added in order to
+  specified syntax patterns are supported. This was added in order to
   be able to use hardware support for atomic updates.
 \item \texttt{barrier}: section~\ref{sec:ompbarrier}.
-\item \texttt{ordered}: section~\ref{sec:omp-ordered}.
 \item locks: section \ref{sec:ompref:locks}.
 \item \texttt{flush}: section \ref{sec:omp:flush}.
+\end{itemize}
+Loop-related synchronization constructs were discussed earlier:
+\begin{itemize}
+\item \texttt{ordered}: section~\ref{sec:omp-ordered}.
 \item \texttt{nowait}: section~\ref{sec:omp-nowait}.
 \end{itemize}
 
@@ -63,7 +66,8 @@ This can be guaranteed with a \indexpragma{barrier} pragma:
 
 Apart from the barrier directive, which inserts an explicit barrier,
 OpenMP has \emph{implicit barriers}\index[omp]{omp!barrier!implicit} after
-a load sharing construct. Thus the following code is well defined:
+a work sharing construct; see section~\ref{sec:omp-single}.
+Thus the following code is well defined:
 \begin{lstlisting}
 #pragma omp parallel 
 {
@@ -84,7 +88,7 @@ At the end of a parallel region the team of threads is dissolved and
 only the master thread continues. Therefore, there is an
 \emph{implicit barrier at the end of a parallel region}%
 \index[omp]{parallel region!barrier at the end of}.
-This barrier behavior can be cancelled with the \indexclause{nowait}
+This barrier behavior can be canceled with the \indexclause{nowait}
 clause.
 
 You will often see the idiom
@@ -112,15 +116,16 @@ OpenMP has several mechanisms for realizing this.
 
 \Level 1 {Race conditions}
 
-OpenMP, being based on shared memory, has a potential for \emph{race
-  conditions}. These happen when two threads access the same data
-item. The problem with race conditions is that programmer convenience
-runs counter to efficient execution. For this reason, OpenMP simply
-does not allow some things that would be desirable.
+OpenMP, being based on shared memory, has a potential for
+\emph{race conditions}.
+These happen when two threads access the same data
+item, with at least one access a write.
+The problem with race conditions is that programmer convenience
+runs counter to efficient execution.
 
 For a simple example:
 %\csnippetwithoutput{racecounter}{racecounter}
-\cverbatimsnippet[examples/omp/c/race.c]{racecounter}
+\csnippetwithoutput{racecounter}{examples/omp/c}{race}
 
 The basic rule about multiple-thread access of a single data item is:
 \begin{quote}
@@ -132,15 +137,6 @@ The basic rule about multiple-thread access of a single data item is:
 To start with that last clause: any workshare construct ends with an
 \indextermsub{implicit}{barrier}, so data written before that barrier
 can safely be read after it.
-
-\Level 1 {Why critical sections?}
-
-The most common use of critical sections is to update a variable. Since updating
-involves reading the old value, and writing back the new, this has the possibility
-for a \indexterm{race condition}: another thread reads the current value
-before the first can update it; the second thread the updates to the wrong value.
-
-For more discussion, see \HPSCref{sec:shared-lock}.
 
 \Level 1 {\texttt{critical} and \texttt{atomic}}
 \label{sec:critical}
@@ -192,24 +188,24 @@ A good use of critical sections is doing file writes or database updates.
   threads.
 \end{exercise}
 
-A \n{critical} section works by acquiring a lock, which carries a substantial overhead.
+Critical sections are an easy way to turn an existing code into a correct parallel code.
+However, there are performance disadvantages to critical sections,
+and sometimes a more drastic rewrite
+is called for.
+
+A critical section works by acquiring a lock, which carries a substantial overhead.
 Furthermore, if your code has multiple critical sections, they are all mutually exclusive:
 if a thread is in one critical section, the other ones are all blocked.
-
-On the other hand, the syntax for \n{atomic} sections is limited to the update
-of a single memory location, but such sections
-are not exclusive and they can be more efficient, since they assume that there is a hardware
-mechanism for making them critical. See the next section.
 
 The problem with \n{critical} sections being mutually exclusive can be mitigated by naming them:
 \begin{lstlisting}
 #pragma omp critical (optional_name_in_parens)
 \end{lstlisting}
 
-Critical sections are an easy way to turn an existing code into a correct parallel code.
-However, there are performance disadvantages to critical sections,
-and sometimes a more drastic rewrite
-is called for.
+On the other hand, the syntax for \n{atomic} sections is limited to the update
+of a single memory location, but such sections
+are not exclusive and they can be more efficient, since they assume that there is a hardware
+mechanism for making them critical. See the next section.
 
 \Level 1 {\texttt{atomic} construct}
 \label{sec:atomic}
@@ -239,7 +235,7 @@ There are various further refinements on the atomic specification:
   \begin{lstlisting}
     x++; x += 1.5;
   \end{lstlisting}
-\item \lstinline{omp atomic capture} can accomodate a single statement
+\item \lstinline{omp atomic capture} can accommodate a single statement
   similar to \lstinline{omp atomic update},
   or a block that essentially combines a \lstinline{read} and \lstinline{update} form.
 \end{enumerate}
@@ -274,7 +270,8 @@ omp_test_lock();
 
 Unsetting a lock needs to be done by the thread that set it.
 
-Lock operations implicitly have a \indexpragma{flush}.
+Lock operations implicitly have a \indexpragma{flush};
+see section \ref{sec:omp:flush}.
 
 \begin{exercise}
   \label{ex:loc-deadlock}
@@ -377,6 +374,22 @@ thread before being unlocked.
 \end{itemize}
 
 \index{lock|)}
+
+\Level 0 {Relaxed memory model}
+\label{sec:omp:flush}
+
+\indexpragma{flush}
+
+\begin{itemize}
+\item There is an implicit flush of all variables at the start and end 
+  of a \emph{parallel region}\index{parallel region!flush at}.
+\item There is a flush at each barrier, whether explicit or implicit,
+  such as at the end of a
+  \emph{work sharing}\index{workshare!flush after}.
+\item At entry and exit of a
+  \emph{critical section}\index{critical section!flush at}
+\item When a \emph{lock}\index{lock!flush at} is set or unset.
+\end{itemize}
 
 \Level 0 {Example: Fibonacci computation}
 \index{Fibonacci sequence|(}

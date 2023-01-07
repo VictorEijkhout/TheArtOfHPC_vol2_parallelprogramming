@@ -1,5 +1,5 @@
-ierr = MatCreate(comm,&J); 
-ierr = MatSetType(J,MATSEQDENSE); 
-ierr = MatSetSizes(J,1,1,1,1); 
-ierr = MatSetUp(J); 
-ierr = SNESSetJacobian(solver,J,J,&Jacobian,NULL); 
+PetscCall( MatCreate(comm,&J) );
+PetscCall( MatSetType(J,MATSEQDENSE) );
+PetscCall( MatSetSizes(J,1,1,1,1) );
+PetscCall( MatSetUp(J) );
+PetscCall( SNESSetJacobian(solver,J,J,&Jacobian,NULL) );

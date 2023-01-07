@@ -18,15 +18,27 @@ info ::
 .PHONY: runs
 MPIRUN  = mpiexec
 NP = 3
-runs :
+runs : clean
 	@for r in ${RUNS} ; do \
 	    echo "---------------- Test run: $$r ----------------" \
 	     && runname=$${r##run_} \
-	     && make $$r \
+	     && make --no-print-directory $$r \
 	           EXTRALIBS=${EXTRALIBS} OPTIONS=${OPTIONS} OPTLEVEL=${OPTLEVEL} \
 	           NP=${NP} \
 	        2>&1 | tee $$runname.runout \
 	 ; done
+runapps : clean
+	@( \
+	for a in ${APPS} ${EXERCISES} ; do \
+	    echo "%%%%%%%%%%%%%%%% Compile $${a}" \
+	     && make --no-print-directory $${a} ECHO=${ECHO} \
+	     && echo "%%%%%%%%%%%%%%%% Run $${a}" \
+	     && ./$$a \
+	    ; \
+	done \
+	) 2>&1 | tee run.log
+	@echo && echo "See run.log for all output" && echo 
+
 clean ::
 	@rm -f *.out[0-9]*
 total_clean ::
