@@ -78,6 +78,10 @@
   \snippetwithoutput{#1}{#2}{#3}{C}
 }
 
+\newcommand{\cxxsnippetwithoutput}[3]{
+  \snippetwithoutput{#1}{#2}{#3}{C++}
+}
+
 \newcommand{\fsnippetwithoutput}[3]{
   \snippetwithoutput{#1}{#2}{#3}{Fortran}
 }
@@ -110,7 +114,9 @@
             \def\verbatim@startline{\verbatim@line{\leavevmode\relax}}
             \verbatiminput{#2/#3.runout}
           }
-          { \textbf{Missing output for #3} }
+          { \textbf{Missing output for #3}
+            \message{Missing output for #3}
+          }
     \end{minipage}
   }
 }

@@ -149,7 +149,7 @@
 }
 \def\SourceRepoRoot{https://github.com/VictorEijkhout/TheArtOfHPC_vol2_parallelprogramming/tree/main}
 \newcommand\LinkRepoSource[1]{
-  \url{\SourceRepoRoot /#1}
+  \expandafter\url\expandafter{\SourceRepoRoot /#1}
 }
 \newcommand\ListStrippedSource[1]{
   \begingroup \footnotesize
@@ -175,24 +175,6 @@
   \expandafter\ListSourcesRecursively
   \fi
 }
-
-  %% \message{Test chapter list <<\the\chaptersourcelist>> }
-  %% \edef\temp{\noexpand\TestInChapterSources#1\the\chaptersourcelist\noexpand\LSR}
-  %% \temp
-  %% \ifIsInSourceList\else
-%% \def\TestInChapterSources#1#2\LSR{
-%%   \def\empty{}\def\test{#2}
-%%   \message{Test source <<#1>> in list <<#2>>}
-%%   \ifx\empty\test \IsInSourceListfalse
-%%   \else \TestInNonemptyChapterSources{#1}#2\LSR \fi
-%% }
-%% \def\TestInNonemptyChapterSources#1#2#3\LSR{
-%%   \def\test{#1}\def\testsource{#2}
-%%   \message{Test source <<#1>> against <<#2>>}
-%%   \if\test\testsource \IsInSourceListtrue
-%%   \else \TestInChapterSources{#1}#3\LSR
-%%   \fi
-%% }
 
 \newenvironment{raggedlist}{\begingroup\rightskip=0pt plus 2in}{\par\endgroup}
 \newenvironment{question}{\begin{quotation}\textbf{Question.\ }}{\end{quotation}}

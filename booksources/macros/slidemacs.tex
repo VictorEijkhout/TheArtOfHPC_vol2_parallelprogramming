@@ -137,6 +137,15 @@
 %%%% snippets
 %%%%
 \begin{comment}
+  %%
+  %% why is this commented out?
+  %% we are always icludng snippetmacs?
+  %%
+\newcommand\cxxverbatimsnippet[2][XX]{
+  \lstset{style=reviewcode,language=C++}
+  \lstinputlisting{#2}
+  \lstset{style=reviewcode,language=C}
+}
 \def\verbatimsnippet#1{\verbatiminput{#1}} % snippets/
 \newcommand{\cverbatimsnippet}[2][XX]{
   % record this file as bracketed name
@@ -152,11 +161,7 @@
     \vfill\hbox{}\columnbreak
   \end{multicols}
   }
-\newcommand{\cxxverbatimsnippet}[2][XX]{
-  % record this file as bracketed name
-  \addchaptersource{{#1}}
-  % typeset as nice C code
-  \lstset{style=reviewcode,language=C++}\lstinputlisting{#2}}
+\show\cxxverbatimsnippet
 \def\fverbatimsnippet#1{
   \lstset{style=reviewcode,language=Fortran}\lstinputlisting{#1}
   \lstset{style=reviewcode,language=C}
