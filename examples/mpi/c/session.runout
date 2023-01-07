@@ -1,0 +1,7 @@
+mpiexec -n 2 ./session
+Could not obtain thread level,flag=0
+Number of process sets: 2
+Process set  0: <<mpi://WORLD>>
+Process set  1: <<mpi://SELF>>
+Found WORLD as pset 0
+World has 2 processes

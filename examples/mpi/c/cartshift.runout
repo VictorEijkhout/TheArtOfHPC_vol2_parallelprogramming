@@ -1,0 +1,7 @@
+Grid of size 6 in 3 dimensions:
+   3 x  2 x  1
+Shifting process 0.
+periodic dimension 0:
+  src=4, tgt=2
+non-periodic dimension 1:
+  src=-1, tgt=1

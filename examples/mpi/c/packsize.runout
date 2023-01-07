@@ -1,0 +1,12 @@
+1 chars: 1
+2 chars: 2
+3 chars: 3
+4 chars: 4
+1 unsigned shorts: 2
+2 unsigned shorts: 4
+3 unsigned shorts: 6
+4 unsigned shorts: 8
+1 ints: 4
+2 ints: 8
+3 ints: 12
+4 ints: 16

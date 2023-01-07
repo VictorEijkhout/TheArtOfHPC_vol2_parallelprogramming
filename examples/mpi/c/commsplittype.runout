@@ -1,0 +1,7 @@
+make[3]: `commsplittype' is up to date.
+TACC:  Starting up job 4356245 
+TACC:  Starting parallel tasks... 
+There are 10 ranks total
+[0] is processor 0 in a shared group of 5, running on c209-010.frontera.tacc.utexas.edu
+[5] is processor 0 in a shared group of 5, running on c209-011.frontera.tacc.utexas.edu
+TACC:  Shutdown complete. Exiting. 

@@ -1,0 +1,2 @@
+This code only works with Intel MPI
+make[1]: *** [run_progress] Error 1

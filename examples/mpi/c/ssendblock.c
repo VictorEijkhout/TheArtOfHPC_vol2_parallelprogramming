@@ -25,6 +25,7 @@ int main(int argc,char **argv) {
 #include "globalinit.c"
 
   if (procno>1) goto skip;
+  //codesnippet ssendblock
   other = 1-procno;
   sendbuf = (int*) malloc(sizeof(int));
   recvbuf = (int*) malloc(sizeof(int));
@@ -32,6 +33,7 @@ int main(int argc,char **argv) {
   MPI_Ssend(sendbuf,size,MPI_INT,other,0,comm);
   MPI_Recv(recvbuf,size,MPI_INT,other,0,comm,&status);
   printf("This statement is not reached\n");
+  //codesnippet end
   free(sendbuf); free(recvbuf);
   
  skip:

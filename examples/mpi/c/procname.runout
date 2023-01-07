@@ -1,0 +1,14 @@
+make[3]: `procname' is up to date.
+TACC:  Starting up job 4328411 
+TACC:  Starting parallel tasks... 
+This process is running on node <<c205-036.frontera.tacc.utexas.edu>>
+This process is running on node <<c205-036.frontera.tacc.utexas.edu>>
+This process is running on node <<c205-036.frontera.tacc.utexas.edu>>
+This process is running on node <<c205-036.frontera.tacc.utexas.edu>>
+This process is running on node <<c205-036.frontera.tacc.utexas.edu>>
+This process is running on node <<c205-035.frontera.tacc.utexas.edu>>
+This process is running on node <<c205-035.frontera.tacc.utexas.edu>>
+This process is running on node <<c205-035.frontera.tacc.utexas.edu>>
+This process is running on node <<c205-035.frontera.tacc.utexas.edu>>
+This process is running on node <<c205-035.frontera.tacc.utexas.edu>>
+TACC:  Shutdown complete. Exiting. 

@@ -1,0 +1,16 @@
+make[3]: `persist' is up to date.
+TACC:  Starting up job 4328411 
+TACC:  Starting parallel tasks... 
+Pingpong size=1: t=1.2123e-04
+Pingpong size=10: t=4.2826e-06
+Pingpong size=100: t=7.1507e-06
+Pingpong size=1000: t=1.2084e-05
+Pingpong size=10000: t=3.7668e-05
+Pingpong size=100000: t=3.4415e-04
+Persistent size=1: t=3.8177e-06
+Persistent size=10: t=3.2410e-06
+Persistent size=100: t=4.0468e-06
+Persistent size=1000: t=1.1525e-05
+Persistent size=10000: t=4.1672e-05
+Persistent size=100000: t=2.8648e-04
+TACC:  Shutdown complete. Exiting. 

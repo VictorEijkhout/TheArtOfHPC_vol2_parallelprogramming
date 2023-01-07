@@ -1,0 +1,6 @@
+assign:    comm==copy: 1 
+            congruent: 0 
+            not equal: 0 
+duplicate: comm==copy: 0 
+            congruent: 1 
+            not equal: 0 

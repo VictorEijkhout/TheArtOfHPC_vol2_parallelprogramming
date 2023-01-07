@@ -1,0 +1,19 @@
+mpicc -o cartdims cartdims.o  
+Cartesian grid size: 3 dim: 1
+ 3
+Cartesian grid size: 3 dim: 2
+ 3 x  1
+Cartesian grid size: 4 dim: 1
+ 4
+Cartesian grid size: 4 dim: 2
+ 2 x  2
+Cartesian grid size: 4 dim: 3
+ 2 x  2 x  1
+Cartesian grid size: 12 dim: 1
+12
+Cartesian grid size: 12 dim: 2
+ 4 x  3
+Cartesian grid size: 12 dim: 3
+ 3 x  2 x  2
+Cartesian grid size: 12 dim: 4
+ 3 x  2 x  2 x  1

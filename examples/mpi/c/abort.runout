@@ -1,0 +1,2 @@
+application called MPI_Abort(MPI_COMM_WORLD, 37) - process 3
+Return code from mpirun is <<37>>

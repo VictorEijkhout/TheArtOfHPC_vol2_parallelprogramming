@@ -34,6 +34,7 @@ int main(int argc,char **argv) {
   /* we only use processors 0 and 1 */
   int other;
   if (procno>1) goto skip;
+  //codesnippet sendblock
   other = 1-procno;
   /* loop over increasingly large messages */
   for (int size=1; size<2000000000; size*=10) {
@@ -52,6 +53,7 @@ int main(int argc,char **argv) {
       printf("Send did not block for size %d\n",size);
     free(sendbuf); free(recvbuf);
   }
+  //codesnippet end
   
  skip:
   MPI_Finalize();

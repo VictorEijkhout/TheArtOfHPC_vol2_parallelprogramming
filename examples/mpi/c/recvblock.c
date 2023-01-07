@@ -22,11 +22,15 @@ int main(int argc,char **argv) {
 #include "globalinit.c"
   MPI_Status status;
 
+//codesnippet recvblock
   other = 1-procno;
+//codesnippet end
   if (procno>1) goto skip;
+//codesnippet recvblock
   MPI_Recv(&recvbuf,1,MPI_INT,other,0,comm,&status);
   MPI_Send(&sendbuf,1,MPI_INT,other,0,comm);
   printf("This statement will not be reached on %d\n",procno);
+//codesnippet end
   
  skip:
   MPI_Finalize();

@@ -1,0 +1,5 @@
+mpirun -n 4 ./struct
+Structure has size 32, naive size 21
+Type extent: 32 bytes; displacements: 0 8 24
+Finished
+Char 'x' double0=2.700000e+00 double1=1.500000e+00 int=37

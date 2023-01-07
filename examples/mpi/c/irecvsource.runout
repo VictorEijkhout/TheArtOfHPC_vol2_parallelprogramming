@@ -1,0 +1,15 @@
+make[3]: `irecvsource' is up to date.
+process 1 waits 6s before sending
+process 2 waits 3s before sending
+process 0 waits 13s before sending
+process 3 waits 8s before sending
+process 5 waits 1s before sending
+process 6 waits 14s before sending
+process 4 waits 12s before sending
+Message from 5: 5
+Message from 2: 2
+Message from 1: 1
+Message from 3: 3
+Message from 4: 4
+Message from 0: 0
+Message from 6: 6

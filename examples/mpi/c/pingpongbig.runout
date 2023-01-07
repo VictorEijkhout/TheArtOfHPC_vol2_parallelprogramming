@@ -1,0 +1,19 @@
+make[3]: `pingpongbig' is up to date.
+Ping-pong between ranks 0--1, repeated 10 times
+MPI Count has 8 bytes
+Size: 10^3, (repeats=10000)
+Time 1.399211e-05 for size 10^3: 1.1435 Gb/sec
+Size: 10^4, (repeats=10000)
+Time 4.077882e-05 for size 10^4: 3.9236 Gb/sec
+Size: 10^5, (repeats=1000)
+Time 1.532863e-04 for size 10^5: 10.4380 Gb/sec
+Size: 10^6, (repeats=1000)
+Time 1.418844e-03 for size 10^6: 11.2768 Gb/sec
+Size: 10^7, (repeats=100)
+Time 1.443470e-02 for size 10^7: 11.0844 Gb/sec
+Size: 10^8, (repeats=100)
+Time 1.540918e-01 for size 10^8: 10.3834 Gb/sec
+Size: 10^9, (repeats=10)
+Time 1.813220e+00 for size 10^9: 8.8241 Gb/sec
+Size: 10^10, (repeats=10)
+Time 1.846741e+01 for size 10^10: 8.6639 Gb/sec
