@@ -1,0 +1,9 @@
+%%%% equal thread/core counts %%%%
+Threads entering parallel region: 4
+thread 3 executing iter 3
+Threads entering parallel region: 4
+thread 0 executing iter 0
+Threads entering parallel region: 4
+thread 2 executing iter 2
+Threads entering parallel region: 4
+thread 1 executing iter 1

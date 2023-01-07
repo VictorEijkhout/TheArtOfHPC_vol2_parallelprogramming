@@ -1,0 +1,29 @@
+for t in 1 2 4 8 16 ; do \
+	    echo "================ env: $t threads" \
+	     && OMP_NUM_THREADS=$t ./proccount \
+	    ; done
+================ env: 1 threads
+Sequential:  4 cores and  1 threads out of max  1
+Parallel  :  4 cores and  1 threads out of max  1
+Double    :  4 cores and  2 threads out of max  1
+Nested    :  4 cores and  1 threads out of max  1
+================ env: 2 threads
+Sequential:  4 cores and  1 threads out of max  2
+Parallel  :  4 cores and  2 threads out of max  2
+Double    :  4 cores and  4 threads out of max  2
+Nested    :  4 cores and  1 threads out of max  2
+================ env: 4 threads
+Sequential:  4 cores and  1 threads out of max  4
+Parallel  :  4 cores and  4 threads out of max  4
+Double    :  4 cores and  8 threads out of max  4
+Nested    :  4 cores and  1 threads out of max  4
+================ env: 8 threads
+Sequential:  4 cores and  1 threads out of max  8
+Parallel  :  4 cores and  8 threads out of max  8
+Double    :  4 cores and 16 threads out of max  8
+Nested    :  4 cores and  1 threads out of max  8
+================ env: 16 threads
+Sequential:  4 cores and  1 threads out of max 16
+Parallel  :  4 cores and 16 threads out of max 16
+Double    :  4 cores and 32 threads out of max 16
+Nested    :  4 cores and  1 threads out of max 16

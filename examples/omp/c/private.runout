@@ -1,0 +1,5 @@
+Thread 3 sets x to 4
+Thread 2 sets x to 3
+Thread 0 sets x to 1
+Thread 1 sets x to 2
+Outer x is still 5

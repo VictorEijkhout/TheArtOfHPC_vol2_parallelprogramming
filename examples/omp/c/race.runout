@@ -1,0 +1,10 @@
+On 1 threads:
+Counter should be 100000, is 100000
+On 2 threads:
+Counter should be 100000, is 100000
+On 4 threads:
+Counter should be 100000, is 75000
+On 8 threads:
+Counter should be 100000, is 87500
+On 12 threads:
+Counter should be 100000, is 100000

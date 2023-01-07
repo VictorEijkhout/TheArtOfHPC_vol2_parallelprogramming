@@ -1,0 +1,3 @@
+executing: OMP_MAX_ACTIVE_LEVELS=2 OMP_PROC_BIND=true OMP_NUM_THREADS=2 ./nested
+2
+2
