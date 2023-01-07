@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2021
+%%%% by Victor Eijkhout, copyright 2012-2022
 %%%%
 %%%% omp_course.tex : master file for an OpenMP course
 %%%%
@@ -32,10 +32,14 @@
   \hbox to 0in {\hss \includegraphics[scale=.1]{tacclogonew}}%
   \hbox to 0in {\hss \arabic{page}\hskip 1in}}
 
+\usepackage{morewrites}
+
 \input commonmacs
+\input acromacs
 \input slidemacs
 \input coursemacs
 \input listingmacs
+\input snippetmacs
 
 \newcounter{tacc}
 \specialcomment{tacc}{\stepcounter{tacc}\def\CommentCutFile{tacc\arabic{tacc}.cut}}{}

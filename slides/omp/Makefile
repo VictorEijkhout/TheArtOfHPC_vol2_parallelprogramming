@@ -13,8 +13,7 @@
 info::
 
 COURSE = omp
-COURSES = omp omptopics
-FILE = omp_course
+COURSES = omp ompcases ompcpp
 INEX = tacc-full
 
 include ../course-support/Make.course
