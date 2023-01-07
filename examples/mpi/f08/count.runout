@@ -1,0 +1,7 @@
+make[3]: `count' is up to date.
+TACC:  Starting up job 4051425 
+TACC:  Setting up parallel environment for MVAPICH2+mpispawn. 
+TACC:  Starting parallel tasks... 
+ One less
+ Received           9 elements
+TACC:  Shutdown complete. Exiting. 

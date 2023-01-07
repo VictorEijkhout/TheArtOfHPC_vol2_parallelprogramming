@@ -1,27 +1,32 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 ################################################################
 ################################################################
 ####
 #### This program file is part of the book and course
 #### "Parallel Computing"
-#### by Victor Eijkhout, copyright 2013-2021
+#### by Victor Eijkhout, copyright 2013-6
 ####
-#### mpi.py : initializing comm world
+#### spawn_worker.py : the worker part of a spawn example
 ####
 ################################################################
 ################################################################
 
 import numpy as np
 import random # random.randint(1,N), random.random()
-##codesnippet pympiimport
+
 from mpi4py import MPI
-##codesnippet end
 
 comm = MPI.COMM_WORLD
 procid = comm.Get_rank()
 nprocs = comm.Get_size()
-if nprocs<2:
-    print("C'mon, get real....")
-    sys.exit(1)
 
-print("Comm size:",comm.Get_size())
+if procid==0:
+    print("#workers:",nprocs)
+
+#snippet spawnworkerp
+parentcomm = comm.Get_parent()
+nparents = parentcomm.Get_remote_size()
+#snippet end
+
+print("#parents=",nparents)
+

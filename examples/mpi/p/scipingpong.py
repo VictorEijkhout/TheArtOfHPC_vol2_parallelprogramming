@@ -26,6 +26,7 @@ if mytid==0 or mytid==ntids-1:
     print("Node name:",MPI.Get_processor_name())
 
 for s in [1,10,100,1000,10000,100000,1000000]:
+    #snippet pingpongpp
     if mytid==0:
         data = np.arange(s, dtype=np.float64)
         rdata = np.empty(s, dtype=np.float64)
@@ -45,3 +46,4 @@ for s in [1,10,100,1000,10000,100000,1000000]:
         for test in range(ntests):
             comm.Recv([zdata,MPI.DOUBLE],source=0)
             comm.Send([zdata,MPI.DOUBLE],dest=0)
+            #snippet end

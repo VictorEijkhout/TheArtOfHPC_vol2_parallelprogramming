@@ -3,7 +3,9 @@
 !  %%%%
 !  %%%% This program file is part of the book and course
 !  %%%% "Parallel Computing"
-!  %%%% by Victor Eijkhout, copyright 2013-2020
+!  %%%% by Victor Eijkhout, copyright 2013-2022
+!  %%%%
+!  %%%% WRONG: dealock at large enough message sizes
 !  %%%%
 !  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 !  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -11,6 +13,7 @@
 
 Program SendBlock
 
+  implicit none
 #include "mpif.h"
 
   integer :: other,size,status(MPI_STATUS_SIZE)
@@ -18,6 +21,7 @@ Program SendBlock
 #include "globalinit.F90"
 
   if (mytid>1) goto 10
+!codesnippet sendblock-f
      other = 1-mytid
      size = 1
      do 
@@ -33,6 +37,7 @@ Program SendBlock
         if (size>2000000000) goto 20
      end do
 20   continue
+!codesnippet end
 
 10   call MPI_Finalize(err)
 

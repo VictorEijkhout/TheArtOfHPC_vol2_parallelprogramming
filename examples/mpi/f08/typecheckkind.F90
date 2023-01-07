@@ -14,7 +14,7 @@ Program Typecheck
   use mpi_f08
   implicit none
 
-  !!codesnippet ftypecheck8
+  !!codesnippet ftypecheckkind
   integer(8) :: source,n=1
   call MPI_Init()
   call MPI_Send(source,n,MPI_INTEGER8, &

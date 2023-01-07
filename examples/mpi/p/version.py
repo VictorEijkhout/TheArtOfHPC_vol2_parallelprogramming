@@ -1,21 +1,21 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 ################################################################
 ################################################################
 ####
 #### This program file is part of the book and course
 #### "Parallel Computing"
-#### by Victor Eijkhout, copyright 2013-5
+#### by Victor Eijkhout, copyright 2013-2022
 ####
-#### hello.py : just init and hello world
+#### version.py : MPI version information
 ####
 ################################################################
 ################################################################
 
-#codesnippet hellop
 from mpi4py import MPI
-comm = MPI.COMM_WORLD
-nprocs = comm.Get_size()
-procno = comm.Get_rank()
-#codesnippet end
 
-print("Starting processes %d out of %d" % (procno,nprocs))
+##codesnippet mpiversionp
+print(MPI.Get_version())
+print(MPI.VERSION)
+print(MPI.SUBVERSION)
+##codesnippet end
+

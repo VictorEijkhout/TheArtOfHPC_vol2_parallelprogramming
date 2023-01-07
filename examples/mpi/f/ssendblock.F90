@@ -3,7 +3,9 @@
 !  %%%%
 !  %%%% This program file is part of the book and course
 !  %%%% "Parallel Computing"
-!  %%%% by Victor Eijkhout, copyright 2013-5
+!  %%%% by Victor Eijkhout, copyright 2013-2022
+!  %%%%
+!  %%%% WRONG: guaranteed deadlock
 !  %%%%
 !  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 !  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -11,6 +13,7 @@
 
 Program SsendBlock
 
+  implicit none
 #include "mpif.h"
 
   integer :: other,size,status(MPI_STATUS_SIZE)
@@ -21,9 +24,11 @@ Program SsendBlock
   other = 1-mytid
   size = 1
   allocate(sendbuf(size)); allocate(recvbuf(size))
+!!codesnippet ssendblock-f
   call MPI_Ssend(sendbuf,size,MPI_INTEGER,other,0,comm,err)
   call MPI_Recv(recvbuf,size,MPI_INTEGER,other,0,comm,status,err)
   print *,"This statement is not reached"
+!!codesnippet end
 
 10   call MPI_Finalize(err)
 

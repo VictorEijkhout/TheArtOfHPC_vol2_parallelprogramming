@@ -4,18 +4,16 @@
 ####
 #### This program file is part of the book and course
 #### "Parallel Computing"
-#### by Victor Eijkhout, copyright 2013-2021
+#### by Victor Eijkhout, copyright 2020
 ####
-#### mpi.py : initializing comm world
+#### allreduceinplace.py : reduce in place
 ####
 ################################################################
 ################################################################
 
 import numpy as np
-import random # random.randint(1,N), random.random()
-##codesnippet pympiimport
+import random
 from mpi4py import MPI
-##codesnippet end
 
 comm = MPI.COMM_WORLD
 procid = comm.Get_rank()
@@ -24,4 +22,16 @@ if nprocs<2:
     print("C'mon, get real....")
     sys.exit(1)
 
-print("Comm size:",comm.Get_size())
+random_number = random.randint(1,nprocs*nprocs)
+print("[%d] random=%d" % (procid,random_number))
+
+#snippet allreduceip
+myrandom = np.empty(1,dtype=int)
+myrandom[0] = random_number
+
+comm.Allreduce(MPI.IN_PLACE,myrandom,op=MPI.MAX)
+#snippet end
+
+if procid==0:
+    print("Python numpy:\n  max=%d" % myrandom[0])
+

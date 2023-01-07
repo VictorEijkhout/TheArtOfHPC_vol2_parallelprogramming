@@ -4,24 +4,26 @@
 ####
 #### This program file is part of the book and course
 #### "Parallel Computing"
-#### by Victor Eijkhout, copyright 2013-2021
+#### by Victor Eijkhout, copyright 2013-2020
 ####
-#### mpi.py : initializing comm world
+#### tags.py : get tags upper bound
 ####
 ################################################################
 ################################################################
 
 import numpy as np
 import random # random.randint(1,N), random.random()
-##codesnippet pympiimport
 from mpi4py import MPI
-##codesnippet end
 
 comm = MPI.COMM_WORLD
 procid = comm.Get_rank()
 nprocs = comm.Get_size()
-if nprocs<2:
-    print("C'mon, get real....")
+if nprocs<4:
+    prin( "Need 4 procs at least")
     sys.exit(1)
 
-print("Comm size:",comm.Get_size())
+##codesnippet gettagubp
+tag_upperbound = comm.Get_attr(MPI.TAG_UB)
+if procid==0:
+    print("Determined tag upperbound: {}".format(tag_upperbound))
+##codesnippet end

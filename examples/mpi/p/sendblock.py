@@ -4,18 +4,16 @@
 ####
 #### This program file is part of the book and course
 #### "Parallel Computing"
-#### by Victor Eijkhout, copyright 2013-2021
+#### by Victor Eijkhout, copyright 2013-6
 ####
-#### mpi.py : initializing comm world
+#### sendblock.py : illustration of the eager limit
 ####
 ################################################################
 ################################################################
 
 import numpy as np
 import random # random.randint(1,N), random.random()
-##codesnippet pympiimport
 from mpi4py import MPI
-##codesnippet end
 
 comm = MPI.COMM_WORLD
 procid = comm.Get_rank()
@@ -24,4 +22,16 @@ if nprocs<2:
     print("C'mon, get real....")
     sys.exit(1)
 
-print("Comm size:",comm.Get_size())
+if procid in [0,nprocs-1]:
+    other = nprocs-1-procid
+    #snippet sendblockp
+    size = 1
+    while size<2000000000:
+        sendbuf = np.empty(size, dtype=int)
+        recvbuf = np.empty(size, dtype=int)
+        comm.Send(sendbuf,dest=other)
+        comm.Recv(sendbuf,source=other)
+        if procid<other:
+            print("Send did not block for",size)
+        size *= 10
+    #snippet end
