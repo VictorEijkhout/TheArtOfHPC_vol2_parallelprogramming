@@ -28,7 +28,7 @@ struct uninitialized {
   uninitialized() {};
   T val;
   constexpr operator T() const {return val;};
-  double operator=( const T&& v ) { val = v; return val; };
+  T operator=( const T&& v ) { val = v; return val; };
 };
 
 int main(int argc,char **argv) {
