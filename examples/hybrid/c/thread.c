@@ -19,13 +19,8 @@
 int main(int argc,char **argv) {
 
   int procid;
-  int requested=MPI_THREAD_MULTIPLE,provided;
 
-  MPI_Init_thread(&argc,&argv,requested,&provided);
-  MPI_Comm_rank(MPI_COMM_WORLD,&procid);
-  if (procid==0)
-    printf("Threading level requested=%d, provided=%d\n",
-	   requested,provided);
+#include "threadinit.c"
 
   MPI_Finalize();
   return 0;
