@@ -28,6 +28,7 @@ localdata = np.empty(localsize,dtype=int)
 for i in range(localsize):
     localdata[i] = procid
 
+#snippet gathervp
 # implicitly using root=0
 globalsize = comm.reduce(localsize)
 if procid==0:
@@ -35,5 +36,6 @@ if procid==0:
 collecteddata = np.empty(globalsize,dtype=int)
 counts = comm.gather(localsize)
 comm.Gatherv(localdata, [collecteddata, counts])
+#snippet end
 if procid==0:
     print("Collected",str(collecteddata))
