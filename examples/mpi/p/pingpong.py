@@ -25,7 +25,6 @@ if mytid==0 or mytid==ntids-1:
     print("Node name:",MPI.Get_processor_name())
 
 for s in [1,10,100,1000,10000,100000,1000000]:
-    #snippet pingpongp
     if mytid==0:
         data = [ 2.*i for i in range(s) ]
         starttime = MPI.Wtime()
@@ -41,4 +40,3 @@ for s in [1,10,100,1000,10000,100000,1000000]:
         for test in range(ntests):
             zdata = comm.recv(source=0)
             comm.send(zdata,dest=0)
-            #snippet end

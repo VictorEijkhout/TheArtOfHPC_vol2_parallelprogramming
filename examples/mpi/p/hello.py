@@ -11,11 +11,9 @@
 ################################################################
 ################################################################
 
-#codesnippet hellop
 from mpi4py import MPI
 comm = MPI.COMM_WORLD
 nprocs = comm.Get_size()
 procno = comm.Get_rank()
-#codesnippet end
 
 print("Starting processes %d out of %d" % (procno,nprocs))

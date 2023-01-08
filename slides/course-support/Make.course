@@ -63,7 +63,7 @@ onepass ::
 	 && make --no-print-directory onepassformat FILE=$$file
 onepassformat :
 	@echo && echo "One pass over file: ${FILE}" && echo \
-	 && TEXINPUTS=.:..:${TEXROOTDIR}:../taccstyle:../taccstyle/figures:${TEXROOTDIR}/chapters:${TEXROOTDIR}/exercises:${TEXROOTDIR}/graphics//:${TEXROOTDIR}/plots//:${TEXROOTDIR}/macros:${TEXROOTDIR}/hwloc:${TEXROOTDIR}/mpireference:${TEXROOTDIR}/snippets:../course-support:${TEXINPUTS}${EXTRATEXINPUTS} ${ENGINE} ${FILE}
+	 && TEXINPUTS=.:..:../..//:${TEXROOTDIR}:../taccstyle:../taccstyle/figures:${TEXROOTDIR}/chapters:${TEXROOTDIR}/exercises:${TEXROOTDIR}/graphics//:${TEXROOTDIR}/plots//:${TEXROOTDIR}/macros:${TEXROOTDIR}/hwloc:${TEXROOTDIR}/mpireference:${TEXROOTDIR}/snippets:../course-support:${TEXINPUTS}${EXTRATEXINPUTS} ${ENGINE} ${FILE}
 pdf :: 
 	@export file=$$( make --no-print-directory filename COURSE="${COURSE}" FILE="${FILE}" ) \
 	 && make --no-print-directory onepassformat FILE=$${file} \
