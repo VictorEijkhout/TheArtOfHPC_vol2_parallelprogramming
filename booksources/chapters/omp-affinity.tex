@@ -530,6 +530,7 @@ Lonestar 6, dual socket \indextermbus{AMD}{Milan}, total 112 cores:
 figure~\ref{fig:ls6-bind}.
 
 \begin{figure}[t]
+  \tikzsetnextfilename{speedup-ls6}
   \begin{tikzpicture}  
     \begin{axis}
       [  
@@ -562,6 +563,7 @@ After that , \n{close} and \n{spread} perform equally,
 but the speedup for the \n{false} value gives erratic numbers.
 
 \begin{figure}[t]
+  \tikzsetnextfilename{speedup-frontera}
   \begin{tikzpicture}  
     \begin{axis}
       [  
@@ -592,6 +594,7 @@ We see that \n{close} binding gives worse performance than \n{spread}.
 Setting binding to \n{false} only gives bad performance for large core counts.
 
 \begin{figure}[t]
+  \tikzsetnextfilename{speedup-s2}
   \begin{tikzpicture}  
     \begin{axis}
       [  
@@ -625,6 +628,7 @@ However, the binding value of \n{true} shows good speedup
 while \n{false} gives worse performance than in other architectures.
 
 \begin{figure}[t]
+  \tikzsetnextfilename{speedup-knl}
   \begin{tikzpicture}  
     \begin{axis}
       [  
@@ -657,6 +661,7 @@ For higher thread counts the speedup increases to well beyond the
 physical core count of~$40$.
 
 \begin{figure}[t]
+  \tikzsetnextfilename{speedup-longhorn}
   \begin{tikzpicture}  
     \begin{axis}
       [  
