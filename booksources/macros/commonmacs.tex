@@ -15,11 +15,6 @@
 \def\verbatimsnippet#1{\begingroup\small \verbatiminput{snippets/#1}\endgroup}
 \usepackage{comment}
 
-\usepackage{amsmath}
-\usepackage{array,booktabs,multirow,multicol}
-\newcolumntype{R}{>{\hbox to 1.2em\bgroup\hss}{r}<{\egroup}}
-\newcolumntype{T}{>{\hbox to 8em\bgroup}{c}<{\hss\egroup}}
-
 %%
 %% verbatim
 %%
@@ -49,7 +44,8 @@
 \newcommand\bbR{\mathbb{R}}
 
 % custom arrays and tables
-\usepackage{array} %,multirow,multicol}
+\usepackage{amsmath}
+\usepackage{array,booktabs,multirow,multicol}
 \newcolumntype{R}{>{\hbox to 1.2em\bgroup\hss}{r}<{\egroup}}
 \newcolumntype{T}{>{\hbox to 8em\bgroup}{c}<{\hss\egroup}}
 \newcolumntype{L}{>{\hbox to 20pt \bgroup$}{l}<{$\hss\egroup}}
