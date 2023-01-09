@@ -27,25 +27,30 @@ int main(int argc,char **argv) {
      * this illustrates syntax more than semantics
      */
     if (iter==1) {
+      //codesnippet allreduceinplace
       for (int irand=0; irand<nrandoms; irand++)
 	myrandoms[irand] = (float) rand()/(float)RAND_MAX;
       // add all the random variables together
       MPI_Allreduce(MPI_IN_PLACE,myrandoms,
 		    nrandoms,MPI_FLOAT,MPI_SUM,comm);
+      //codesnippet end
     } else if (iter==2) {
       for (int irand=0; irand<nrandoms; irand++)
 	myrandoms[irand] = (float) rand()/(float)RAND_MAX;
       int root=nprocs-1;
+      //codesnippet onereduceinplace
       if (procno==root)
         MPI_Reduce(MPI_IN_PLACE,myrandoms,
 		   nrandoms,MPI_FLOAT,MPI_SUM,root,comm);
       else
         MPI_Reduce(myrandoms,MPI_IN_PLACE,
 		   nrandoms,MPI_FLOAT,MPI_SUM,root,comm);
+      //codesnippet end
     } else if (iter==2) {
       for (int irand=0; irand<nrandoms; irand++)
 	myrandoms[irand] = (float) rand()/(float)RAND_MAX;
       int root=nprocs-1;
+      //codesnippet tworeduceinplace
       float *sendbuf,*recvbuf;
       if (procno==root) {
         sendbuf = MPI_IN_PLACE; recvbuf = myrandoms;
@@ -54,6 +59,7 @@ int main(int argc,char **argv) {
       }
       MPI_Reduce(sendbuf,recvbuf,
         	 nrandoms,MPI_FLOAT,MPI_SUM,root,comm);
+      //codesnippet end
     }
     // the result should be approx nprocs/2:
     if (procno==nprocs-1) {

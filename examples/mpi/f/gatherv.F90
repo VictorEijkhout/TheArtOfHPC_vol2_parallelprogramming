@@ -27,6 +27,7 @@ Program Gatherv
   do i=1,localsize
      localdata(i) = mytid+1
   end do
+!!codesnippet gatherv-f
   ! we assume that each process has an array "localdata"
   ! of size "localsize"
 
@@ -39,9 +40,11 @@ Program Gatherv
   ! everyone contributes their info
   call MPI_Gather(localsize,1,MPI_INTEGER,&
        localsizes,1,MPI_INTEGER,root,comm,err)
+!!codesnippet end
   if (mytid==root) then
      write(6,'("Local sizes: ",20(i3))') (localsizes(i),i=1,ntids)
   end if
+!!codesnippet gatherv-f
   ! the root constructs the offsets array
   if (mytid==root) then
     offsets(1) = 0;
@@ -53,6 +56,7 @@ Program Gatherv
   ! everyone contributes their data
   call MPI_Gatherv(localdata,localsize,MPI_INTEGER,&
 	      alldata,localsizes,offsets,MPI_INTEGER,root,comm,err)
+!!codesnippet end
   ! if (mytid==root) then
   !   int p=0;
   !   printf("Collected:\n");

@@ -18,10 +18,12 @@
 
 int main(int argc,char **argv) {
 
+//codesnippet hello-outside
   int mythread,nthreads;
   nthreads = omp_get_num_threads();
   mythread = omp_get_thread_num();
   printf("Hello from %d out of %d outside the region\n",mythread,nthreads);
+//codesnippet end
 
 #pragma omp parallel
   {

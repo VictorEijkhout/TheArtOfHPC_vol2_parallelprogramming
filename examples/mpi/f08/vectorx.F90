@@ -31,11 +31,15 @@ Program VectorX
 
   sender = 0; receiver = 1; the_other = 1-mytid; count = 5; stride=2
 
+  !!codesnippet bigvectorallocf
   mediumsize = 100000000 !! 100 million
   nblocks = 8
+  !!codesnippet end
 
+  !!codesnippet bigvectorallocf
   if (mytid==sender) then
      allocate(source(nblocks*mediumsize))
+    !!codesnippet end
     ! long int idx = 0;
     ! for (int iblock=0; iblock<nblocks; iblock++) {
     !   for (int element=0; element<mediumsize; element++) {
@@ -50,13 +54,19 @@ Program VectorX
    end if
 
 
+  !!codesnippet bigvectorptpf
   call MPI_Type_contiguous(mediumsize,MPI_REAL4,blocktype)
   call MPI_Type_commit(blocktype)
   if (mytid==sender) then
     call MPI_Send(source,nblocks,blocktype,receiver,0,comm);
+    !!codesnippet end
+    !!codesnippet bigvectorrecvf
   else if (mytid==receiver) then
     call MPI_Recv(target,nblocks,blocktype,sender,0,comm,recv_status)
+    !!codesnippet end
+    !!codesnippet bigvectorqf
     call MPI_Get_elements_x(recv_status,MPI_REAL4,recv_count)
+    !!codesnippet end
     !!printf("Received %7.3f medium size elements\n",recv_count * 1e-9);
  end if
   call MPI_Type_free(blocktype)

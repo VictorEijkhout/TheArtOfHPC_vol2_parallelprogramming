@@ -30,6 +30,7 @@ int main(int argc,char **argv) {
   // auto x = make_unique_for_overwrite(N);
   // auto y = make_unique_for_overwrite(N);
 
+  //codesnippet newuninitial
   unique_ptr<double[]> x( new double[N] );
   unique_ptr<double[]> y( new double[N] );
 
@@ -38,6 +39,7 @@ int main(int argc,char **argv) {
     y[i] = x[i] = 0.;
   }
   x[0] = 0; x[N-1] = 1.;
+  //codesnippet end
 
   double s=0;
   double timer = omp_get_wtime();

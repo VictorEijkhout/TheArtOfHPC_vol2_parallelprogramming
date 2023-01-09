@@ -30,6 +30,7 @@ int main(int argc,char **argv) {
   /*
    * Set up a communicator for all the worker ranks
    */
+  //codesnippet groupworker
   MPI_Comm comm_work;
   {
     MPI_Group world_group,work_group;
@@ -39,6 +40,7 @@ int main(int argc,char **argv) {
     MPI_Comm_create( comm_world,work_group,&comm_work );
     MPI_Group_free( &world_group ); MPI_Group_free( &work_group );
   }
+  //codesnippet end
 
   if (world_p==0) {
     /*
@@ -46,6 +48,7 @@ int main(int argc,char **argv) {
      * send its name to world process 1,
      * which is zero in the worker comm.
      */
+    //codesnippet mpiportmanage
     MPI_Comm intercomm;
     char myport[MPI_MAX_PORT_NAME];
     MPI_Open_port( MPI_INFO_NULL,myport );
@@ -54,6 +57,7 @@ int main(int argc,char **argv) {
     printf("Host sent port <<%s>>\n",myport);
     MPI_Comm_accept( myport,MPI_INFO_NULL,0,comm_self,&intercomm );
     printf("host accepted connection\n");
+    //codesnippet end
 
     /*
      * After the workers have accept the connection,
@@ -80,6 +84,7 @@ int main(int argc,char **argv) {
      * (which is 1 in the global)
      * receives the port name and passes it on.
      */
+    //codesnippet mpiportwork
     char myport[MPI_MAX_PORT_NAME];
     if (work_p==0) {
       MPI_Recv( myport,MPI_MAX_PORT_NAME,MPI_CHAR, 
@@ -98,6 +103,7 @@ int main(int argc,char **argv) {
       MPI_Comm_remote_size(intercomm,&manage_n);
       printf("%d workers connected to %d managers\n",work_n,manage_n);
     }
+    //codesnippet end
 
     /*
      * The local leader receives work from the manager

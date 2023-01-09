@@ -32,6 +32,7 @@ int main(int argc,char **argv) {
   for (int i=0; i<count; i++)
     source[i] = i+.5;
 
+  //codesnippet contiguous
   MPI_Datatype newvectortype;
   if (procno==sender) {
     MPI_Type_contiguous(count,MPI_DOUBLE,&newvectortype);
@@ -46,6 +47,7 @@ int main(int argc,char **argv) {
     MPI_Get_count(&recv_status,MPI_DOUBLE,&recv_count);
     ASSERT(count==recv_count);
   }
+  //codesnippet end
   
   if (procno==receiver) {
     for (int i=0; i<count; i++)

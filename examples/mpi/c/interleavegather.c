@@ -53,9 +53,11 @@ int main(int argc,char **argv) {
     printf("Stride type l=%ld e=%ld\n",l,e);
   }
 
+  //codesnippet interleavegather
   MPI_Datatype interleavetype;
   MPI_Type_create_resized(stridetype,0,sizeof(int),&interleavetype);
   MPI_Type_commit(&interleavetype);
+  //codesnippet end
   if (procno==root) {
     MPI_Aint l,e;
     MPI_Type_get_extent(interleavetype,&l,&e);
@@ -70,9 +72,11 @@ int main(int argc,char **argv) {
 	      gathered,1,stridetype, // abut with gaps
 	      root,comm );
 #endif
+  //codesnippet interleavegather
   MPI_Gather( mydata,localsize,MPI_INT,
 	      gathered,1,interleavetype, // shrunk extent
 	      root,comm );
+  //codesnippet end
   if (procno==root) {
     printf("gather %d elements from %d procs:\n",localsize,nprocs);
     for (int i=0; i<nprocs*localsize; i++)

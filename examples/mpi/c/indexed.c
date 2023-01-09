@@ -29,10 +29,12 @@ int main(int argc,char **argv) {
   int *source,*target;
   int *displacements,*blocklengths;
 
+  //codesnippet indexed
   displacements = (int*) malloc(count*sizeof(int));
   blocklengths = (int*) malloc(count*sizeof(int));
   source = (int*) malloc(totalcount*sizeof(int));
   target = (int*) malloc(targetbuffersize*sizeof(int));
+  //codesnippet end
 
   displacements[0] = 2; displacements[1] = 3; displacements[2] = 5;
   displacements[3] = 7; displacements[4] = 11;
@@ -41,6 +43,7 @@ int main(int argc,char **argv) {
   for (int i=0; i<totalcount; ++i)
     source[i] = i;
 
+  //codesnippet indexed
   MPI_Datatype newvectortype;
   if (procno==sender) {
     MPI_Type_indexed(count,blocklengths,displacements,MPI_INT,&newvectortype);
@@ -55,6 +58,7 @@ int main(int argc,char **argv) {
     MPI_Get_count(&recv_status,MPI_INT,&recv_count);
     ASSERT(recv_count==count);
   }
+  //codesnippet end
   
   if (procno==receiver) {
     int i=3,val=7;

@@ -27,6 +27,7 @@ int main(int argc,char **argv) {
 #define N 10
   float buffer[N];
   int target = nprocs-1;
+  //codesnippet mpigetcount
   if (procid==0) {
     int sendcount = (rand()>.5) ? N : N-1;
     MPI_Send( buffer,sendcount,MPI_FLOAT,target,0,comm );
@@ -37,6 +38,7 @@ int main(int argc,char **argv) {
     MPI_Get_count(&status,MPI_FLOAT,&recvcount);
     printf("Received %d elements\n",recvcount);
   }
+  //codesnippet end
 
   MPI_Finalize();
   return 0;

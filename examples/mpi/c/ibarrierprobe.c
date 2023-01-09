@@ -33,15 +33,18 @@ int main(int argc,char **argv) {
 
   float data=1.;
   MPI_Request send_request;
+  //codesnippet ibarrierpost
   if (i_do_send) {
     /*
      * Pick a random process to send to, 
      * not yourself.
      */
     int receiver = rand()%nprocs;
+    //codesnippet end
     while (receiver==procno) receiver = rand()%nprocs;
     printf("[%d] random send performed to %d\n",procno,receiver);
     //MPI_Isend(&data,1,MPI_FLOAT,receiver,0,comm,&send_request);
+    //codesnippet ibarrierpost
     MPI_Ssend(&data,1,MPI_FLOAT,receiver,0,comm);
   }
   /*
@@ -50,6 +53,7 @@ int main(int argc,char **argv) {
    */
   MPI_Request barrier_request;
   MPI_Ibarrier(comm,&barrier_request);
+  //codesnippet end
 
   int step=0;
   /*
@@ -61,6 +65,7 @@ int main(int argc,char **argv) {
   MPI_Barrier(comm);
   double tstart = MPI_Wtime();
 
+  //codesnippet ibarrierpoll
   for ( ; ; step++) {
     int barrier_done_flag=0;
     MPI_Test(&barrier_request,&barrier_done_flag,
@@ -76,6 +81,7 @@ int main(int argc,char **argv) {
           comm, &flag, &status );
       if (flag) {
         // absorb message!
+        //codesnippet end
 	int sender = status.MPI_SOURCE;
 	MPI_Recv(&data,1,MPI_FLOAT,sender,0,comm,MPI_STATUS_IGNORE);
 	printf("[%d] random receive from %d\n",procno,sender);

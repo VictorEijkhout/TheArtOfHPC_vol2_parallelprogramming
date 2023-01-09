@@ -21,6 +21,7 @@ int main(int argc,char **argv) {
 
 #include "globalinit.c"
 
+  //codesnippet anysource
   if (procno==nprocs-1) {
     /*
      * The last process receives from every other process
@@ -52,6 +53,7 @@ int main(int argc,char **argv) {
     sleep(randomwait);
     err = MPI_Send(&randomwait,1,MPI_INT, nprocs-1,0,comm); CHK(err);
   }
+  //codesnippet end
 
   MPI_Finalize();
   return 0;

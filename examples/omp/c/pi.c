@@ -26,12 +26,14 @@ int main(int argc,char **argv) {
 
   float pi4 = 0.;
   double tstart = omp_get_wtime();
+  //codesnippet pi4reduct
 #pragma omp parallel for reduction(+:pi4)
   for (int isample=0; isample<N; isample++) {
     float xsample = isample * h;
     float y = sqrt(1-xsample*xsample);
     pi4 += h*y;
   }
+  //codesnippet end
   double duration = omp_get_wtime()-tstart;
 
   const double pi=3.14159265358979323;

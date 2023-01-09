@@ -16,9 +16,11 @@ Program F90Section
   implicit none
 
   integer :: i,j, nprocs,procno
+  !!codesnippet fsectionsend
   integer,parameter :: siz=20
   real,dimension(siz,siz) :: matrix = [ ((j+(i-1)*siz,i=1,siz),j=1,siz) ]
   real,dimension(2,2) :: submatrix
+  !!codesnippet end
   Type(MPI_Comm) :: comm
 
   call MPI_Init()
@@ -30,6 +32,7 @@ Program F90Section
      print *,"This example really needs 2 processors"
      call MPI_Abort(comm,0)
   end if
+  !!codesnippet fsectionsend
   if (procno==0) then
      call MPI_Send(matrix(1:2,1:2),4,MPI_REAL,1,0,comm)
   else if (procno==1) then
@@ -40,6 +43,7 @@ Program F90Section
         print *,"nay...."
      end if
   end if
+  !!codesnippet end
 
   call MPI_Finalize()
 

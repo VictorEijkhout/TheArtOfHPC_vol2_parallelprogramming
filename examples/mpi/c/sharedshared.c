@@ -46,7 +46,9 @@ int main(int argc,char **argv) {
   }
   
   MPI_Win shared_window; int *shared_baseptr;
+  //codesnippet allocateshared3pt
   MPI_Win_allocate_shared(3,sizeof(int),info,sharedcomm,&shared_baseptr,&shared_window);
+  //codesnippet end
 
   {
     MPI_Aint check_size; int check_unit; int *check_baseptr;
@@ -56,11 +58,13 @@ int main(int argc,char **argv) {
     printf("[%d;%d] size=%ld\n",procno,new_procno,check_size);
   }
 
+  //codesnippet sharedmemptrs
   int *left_ptr,*right_ptr;
   int left_proc = new_procno>0 ? new_procno-1 : MPI_PROC_NULL,
     right_proc = new_procno<new_nprocs-1 ? new_procno+1 : MPI_PROC_NULL;
   MPI_Win_shared_query(shared_window,left_proc,NULL,NULL,&left_ptr);
   MPI_Win_shared_query(shared_window,right_proc,NULL,NULL,&right_ptr);
+  //codesnippet end
 
   if (procno==0)
     printf("Finished\n");

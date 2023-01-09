@@ -15,6 +15,7 @@ Program private
   implicit none
   integer :: x,t
 
+  !!codesnippet privatexf
   x=5
 !$omp parallel private(x,t) num_threads(4)
   t = omp_get_thread_num()
@@ -22,5 +23,6 @@ Program private
   print '("Thread ",i2," sets x to ",i2)',t,x
 !$omp end parallel
   print '("Outer x is still ",i2)',x
+  !!codesnippet end
 
 End Program private

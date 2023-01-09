@@ -33,6 +33,7 @@ int main(int argc,char **argv) {
   sleep(mysleep);
 
   printf("[%d] finished, now posting barrier\n",procid);
+  //codesnippet ibarrierwork
   MPI_Request final_barrier;
   MPI_Ibarrier(comm,&final_barrier);
 
@@ -53,6 +54,7 @@ int main(int argc,char **argv) {
       global_finish++;
     }
   } while (1);
+  //codesnippet end
 
   MPI_Wait(&final_barrier,MPI_STATUS_IGNORE);
   printf("[%d] concluded %d work, total time %d\n",

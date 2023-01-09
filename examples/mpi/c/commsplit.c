@@ -29,6 +29,7 @@ int main(int argc,char **argv) {
   int new_procno;
   MPI_Comm mod2comm,mod4comm;
 
+  //codesnippet commsplit
   int mydata = procno;
   // create sub communicator modulo 2
   color = procno%2;
@@ -42,6 +43,7 @@ int main(int argc,char **argv) {
 
   if (mydata/4!=new_procno)
     printf("Error %d %d %d\n",procno,new_procno,mydata/4);
+  //codesnippet end
 
   if (procno==0)
     printf("Finished\n");

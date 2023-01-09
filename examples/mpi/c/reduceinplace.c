@@ -20,6 +20,7 @@ int main(int argc,char **argv) {
 
 #include "globalinit.c"
 
+  //codesnippet reduceinplace
   float mynumber,result,*sendbuf,*recvbuf;
   mynumber = (float) procno;
   int target_proc = nprocs-1;
@@ -36,6 +37,7 @@ int main(int argc,char **argv) {
   if (procno==target_proc)
     printf("Result %6.3f compared to n(n-1)/2=%5.2f\n",
            result,nprocs*(nprocs-1)/2.);
+  //codesnippet end
 
   MPI_Finalize();
   return 0;

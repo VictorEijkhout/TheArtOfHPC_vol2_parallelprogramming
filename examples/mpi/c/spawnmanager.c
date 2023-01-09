@@ -45,12 +45,14 @@ int main(int argc, char *argv[])
   MPI_Comm_get_attr(MPI_COMM_WORLD, MPI_UNIVERSE_SIZE,
                (void*)&universe_sizep, &flag);
 
+  //codesnippet uverse
   if (!flag) {
     if (manager_rank==0) {
       printf("This MPI does not support UNIVERSE_SIZE.\nHow many processes total?");
       scanf("%d", &universe_size);
     }
     MPI_Bcast(&universe_size,1,MPI_INTEGER,0,MPI_COMM_WORLD);
+    //codesnippet end
   } else {
     universe_size = *universe_sizep;
     if (manager_rank==0)

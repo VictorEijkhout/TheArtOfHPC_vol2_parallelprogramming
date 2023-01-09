@@ -63,6 +63,7 @@ int main(int argc,char **argv) {
    * Create window on the node communicator;
    * it only has nonzero size on the first process
    */
+  //codesnippet mpisharedwindow
   MPI_Win node_window;
   MPI_Aint window_size; double *window_data;
   if (onnode_procid==0)
@@ -72,6 +73,7 @@ int main(int argc,char **argv) {
     ( window_size,sizeof(double),MPI_INFO_NULL,
       nodecomm,
       &window_data,&node_window);
+  //codesnippet end
 
   /*
    * Put data on process zero of the node window
@@ -88,10 +90,12 @@ int main(int argc,char **argv) {
   /*
    * Now get on each process the address of the window of process zero.
    */
+  //codesnippet mpisharedpointer
   MPI_Aint window_size0; int window_unit; double *win0_addr;
   MPI_Win_shared_query
     ( node_window,0,
       &window_size0,&window_unit, &win0_addr );
+  //codesnippet end
 
   /*
    * Check that we can indeed get at the data in the shared memory 

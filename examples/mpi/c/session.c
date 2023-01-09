@@ -21,22 +21,28 @@ int main(int argc,char **argv) {
   //  printf("rank=%s\n",rank);
   int mainproc = !strcmp(rank,"0");
 
+  //codesnippet sessionreq
   MPI_Info session_request_info = MPI_INFO_NULL;
   MPI_Info_create(&session_request_info);
   char thread_key[] = "mpi_thread_support_level";
   MPI_Info_set(session_request_info,
                thread_key,"MPI_THREAD_MULTIPLE");
+  //codesnippet end
 
+  //codesnippet sessioninit
   MPI_Session the_session;
   MPI_Session_init
     ( session_request_info,MPI_ERRORS_ARE_FATAL,
       &the_session );
+  //codesnippet end
 
+  //codesnippet sessioninfohave
   MPI_Info session_actual_info;
   MPI_Session_get_info( the_session,&session_actual_info );
   char thread_level[100]; int info_len = 100, flag;
   MPI_Info_get_string( session_actual_info,
                        thread_key,&info_len,thread_level,&flag );
+  //codesnippet end
   if (flag) {
     if (mainproc) printf("Session has actual thread_level <<%s>>\n",thread_level);
   } else {
@@ -46,6 +52,7 @@ int main(int argc,char **argv) {
   // sanity check: do we find the world set?
   int world_pset=-1; char world_name[] = "mpi://WORLD";
   
+  //codesnippet sessionpsetq
   int npsets;
   MPI_Session_get_num_psets
     ( the_session,MPI_INFO_NULL,&npsets );
@@ -59,6 +66,7 @@ int main(int argc,char **argv) {
     if (mainproc)
       printf("Process set %2d: <<%s>>\n",
              ipset,name_pset);
+    //codesnippet end
     if (!strcmp(name_pset,world_name)) world_pset = ipset;
   }
 
@@ -68,6 +76,7 @@ int main(int argc,char **argv) {
     if (mainproc) printf("Could not find WORLD pset. Fatal.\n"); return 1;
   }
 
+  //codesnippet sessioncommworld
   MPI_Group world_group = MPI_GROUP_NULL;
   MPI_Comm  world_comm  = MPI_COMM_NULL;
   MPI_Group_from_session_pset
@@ -80,10 +89,13 @@ int main(int argc,char **argv) {
   int procid = -1, nprocs = 0;
   MPI_Comm_size(world_comm,&nprocs);
   MPI_Comm_rank(world_comm,&procid);
+  //codesnippet end
   if (procid==0)
     printf("World has %d processes\n",nprocs);
 
+  //codesnippet sessioninit
   MPI_Session_finalize( &the_session );
+  //codesnippet end
 
   return 0;
 }

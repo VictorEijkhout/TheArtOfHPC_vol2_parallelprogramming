@@ -26,11 +26,13 @@ int main(int argc,char **argv) {
   int count = 100000;
   int counter = 0;
 
+  //codesnippet racecounter
 #pragma omp parallel for shared(counter)
   for (int i=0; i<count; i++)
     counter += f(counter,i);
   printf("Counter should be %d, is %d\n",
 	 count,counter);
+  //codesnippet end
 
   
   return 0;

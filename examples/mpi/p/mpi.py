@@ -13,7 +13,9 @@
 
 import numpy as np
 import random # random.randint(1,N), random.random()
+##codesnippet pympiimport
 from mpi4py import MPI
+##codesnippet end
 
 comm = MPI.COMM_WORLD
 procid = comm.Get_rank()

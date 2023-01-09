@@ -23,6 +23,7 @@ int main(int argc,char **argv) {
 #pragma omp master
     nthreads = omp_get_num_threads();
 
+    //codesnippet privatepointer
     int *array =
       (int*) malloc(nthreads*sizeof(int));
     for (int i=0; i<nthreads; i++)
@@ -34,6 +35,7 @@ int main(int argc,char **argv) {
       array += t;
       array[0] = t;
     }
+    //codesnippet end
 
     printf("Pointer\n");
     printf("Array result:\n");
@@ -49,6 +51,7 @@ int main(int argc,char **argv) {
 #pragma omp master
     nthreads = omp_get_num_threads();
 
+    //codesnippet privatearray
     int array[nthreads];
     for (int i=0; i<nthreads; i++)
       array[i] = 0;
@@ -58,6 +61,7 @@ int main(int argc,char **argv) {
       int t = omp_get_thread_num();
       array[t] = t+1;
     }
+    //codesnippet end
 
     printf("Private\n");
     printf("Array result:\n");
@@ -72,15 +76,19 @@ int main(int argc,char **argv) {
   {
     int nthreads=4;
 
+    //codesnippet privatearray2
     int array[nthreads];
+    //codesnippet end
     for (int i=0; i<nthreads; i++)
       array[i] = 0;
 
+    //codesnippet privatearray2
     {
       int t = 2;
       array += t;
       array[0] = t;
     }
+    //codesnippet end
 
     printf("Array result:\n");
     for (int i=0; i<nthreads; i++)

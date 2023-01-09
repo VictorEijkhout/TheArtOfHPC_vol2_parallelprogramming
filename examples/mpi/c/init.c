@@ -21,6 +21,7 @@ int main(int argc,char **argv) {
 
 #include "globalinit.c"
 
+  //codesnippet usage
   if (procno==0) {
     if ( argc==1 || // the program is called without parameter
          ( argc>1 && !strcmp(argv[1],"-h") ) // user asked for help
@@ -31,6 +32,7 @@ int main(int argc,char **argv) {
     input_argument = atoi(argv[1]);
   }
   MPI_Bcast(&input_argument,1,MPI_INT,0,comm);
+  //codesnippet end
   printf("Processor %d gets %d\n",procno,input_argument);
 
   MPI_Finalize();

@@ -20,6 +20,7 @@ int main(int argc,char **argv) {
 
 #include "globalinit.c"
 
+  //codesnippet reduce
   float myrandom = (float) rand()/(float)RAND_MAX,
     result;
   int target_proc = nprocs-1;
@@ -30,6 +31,7 @@ int main(int argc,char **argv) {
   if (procno==target_proc)
     printf("Result %6.3f compared to nprocs/2=%5.2f\n",
            result,nprocs/2.);
+  //codesnippet end
 
   MPI_Finalize();
   return 0;

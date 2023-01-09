@@ -34,6 +34,7 @@ int main(int argc,char **argv) {
     source[i] = i+.5;
 
   if (procno==sender) {
+    //codesnippet paddedblock1
     MPI_Datatype oneblock;
     MPI_Type_vector(1,1,stride,MPI_DOUBLE,&oneblock);
     MPI_Type_commit(&oneblock);
@@ -49,9 +50,11 @@ int main(int argc,char **argv) {
 
     // now send a bunch of these padded blocks
     MPI_Send(source,count,paddedblock,the_other,0,comm);
+    //codesnippet end
     MPI_Type_free(&oneblock);
     MPI_Type_free(&paddedblock);
   } else if (procno==receiver) {
+    //codesnippet paddedblock2
     int blens[2]; MPI_Aint displs[2];
     MPI_Datatype types[2], paddedblock;
     blens[0] = 1; blens[1] = 1;
@@ -61,6 +64,7 @@ int main(int argc,char **argv) {
     MPI_Type_commit(&paddedblock);
     MPI_Status recv_status;
     MPI_Recv(target,count,paddedblock,the_other,0,comm,&recv_status);
+    //codesnippet end
     /* MPI_Recv(target,count,MPI_DOUBLE,the_other,0,comm, */
     /*   &recv_status); */
     int recv_count;

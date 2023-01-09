@@ -16,18 +16,22 @@ Program AnySource
 
 #include "mpif.h"
   integer,dimension(:),allocatable :: recv_buffer
+!!codesnippet anysource-f
   integer :: status(MPI_STATUS_SIZE)
+!!codesnippet end
   real :: randomvalue
   integer :: randomint,sender
 
 #include "globalinit.F90"
 
       if (mytid.eq.ntids-1) then
+!!codesnippet anysource-f
          allocate(recv_buffer(ntids-1))
          do p=0,ntids-2
             call MPI_Recv(recv_buffer(p+1),1,MPI_INTEGER,&
                  MPI_ANY_SOURCE,0,comm,status,err)
             sender = status(MPI_SOURCE)
+!!codesnippet end
             print *,"Message from",sender
          end do
       else

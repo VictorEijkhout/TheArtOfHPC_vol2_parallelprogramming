@@ -19,6 +19,7 @@ using std::cout;
 #include <complex>
 using namespace std;
 
+//codesnippet ompclassop
 class Thing {
 private:
   float x;
@@ -29,6 +30,7 @@ public:
     return Thing( x + other.x );
   };
 };
+//codesnippet end
 
 complex<double> complex_func(vector<complex<double>> x)
 {
@@ -49,11 +51,13 @@ int main() {
   auto red = complex_func(vec);
   cout << red << "\n";
 
+//codesnippet ompreductop
   vector< Thing > things(500,Thing(1.f) );
   Thing result(0.f);
 #pragma omp parallel for reduction( +:result )
   for ( const auto& t : things )
     result = result + t;
+//codesnippet end
   
   return 0;
 }

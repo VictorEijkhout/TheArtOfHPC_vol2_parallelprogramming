@@ -23,12 +23,14 @@ int main(int argc,char **argv) {
   /* 
    * Set up an array of which processes you will receive from
    */
+  //codesnippet reducescatterdata
   int
     // data that we know:
     *i_recv_from_proc = (int*) malloc(nprocs*sizeof(int)),
     *procs_to_recv_from, nprocs_to_recv_from=0,
     // data we are going to determin:
     *procs_to_send_to,nprocs_to_send_to;
+  //codesnippet end
 
   /*
    * Initialize
@@ -65,10 +67,13 @@ int main(int argc,char **argv) {
   /*
    * Now find how many procs will send to you
    */
+  //codesnippet reducescattercall
   MPI_Reduce_scatter_block
     (i_recv_from_proc,&nprocs_to_send_to,1,MPI_INT,
     MPI_SUM,comm);
+  //codesnippet end
 
+  //codesnippet reducescattertest
   /*
    * Send a zero-size msg to everyone that you receive from,
    * just to let them know that they need to send to you.
@@ -95,6 +100,7 @@ int main(int argc,char **argv) {
     procs_to_send_to[iproc] = status.MPI_SOURCE;
   }
   MPI_Waitall(nprocs_to_recv_from,send_requests,MPI_STATUSES_IGNORE);
+  //codesnippet end
 
   printf("[%d] sending to:",procno);
   for (int iproc=0; iproc<nprocs_to_send_to; iproc++)

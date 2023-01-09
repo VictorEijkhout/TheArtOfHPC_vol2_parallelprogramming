@@ -17,7 +17,9 @@ Program PutFence
   Type(MPI_Win) :: the_window
   integer :: window_elt_size
   integer(kind=MPI_ADDRESS_KIND) :: window_size
+  !!codesnippet fdisplacementtype
   integer(kind=MPI_ADDRESS_KIND) :: target_displacement
+  !!codesnippet end
   integer :: my_number=0, window_data(2), other
 
   Type(MPI_Comm) :: comm;
@@ -40,11 +42,13 @@ Program PutFence
   call MPI_Win_fence(0,the_window)
   if (mytid.eq.0) then
 #ifndef F90STYLE
+     !!codesnippet fdisplacementtype
      target_displacement = 1
      call MPI_Put( my_number, 1,MPI_INTEGER, &
           other,target_displacement, &
           1,MPI_INTEGER, &
           the_window)
+     !!codesnippet end
 #else
      call MPI_Put( my_number, 1,MPI_INTEGER, &
           other,1, &

@@ -29,6 +29,7 @@ int main() {
   a = 0;
 
   start = omp_get_wtime();  
+  //codesnippet shareboth
 #pragma omp parallel
   { // not a parallel for: just a bunch of reps
     for (int j = 0; j < reps; j++) {
@@ -40,6 +41,7 @@ int main() {
       
     }
   }
+  //codesnippet end
   stop  = omp_get_wtime();
   delta = ((double)(stop - start))/reps;
   printf("run time = %fusec\n", 1.0e6*delta);

@@ -26,13 +26,17 @@ Program SendRecv
 
 ! We use processors 0,1,2 to set up a ring
 
+!!codesnippet sendrecvring-f
   right = mod(mytid+1,3); left = mod(mytid+2,3);
+!!codesnippet end
   my_data = 10*mytid;
   reference_data = 10*left;
 
+!!codesnippet sendrecvring-f
   call MPI_Sendrecv( my_data,1,MPI_INTEGER, right,0,&
 		other_data,1,MPI_INTEGER, left,0,&
 		comm,MPI_STATUS_IGNORE,err);
+!!codesnippet end
   if (other_data.ne.reference_data) then
     print *,"Error on process",mytid,"; received",other_data,"; expected",reference_data
  end if

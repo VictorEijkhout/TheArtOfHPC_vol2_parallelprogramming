@@ -16,6 +16,7 @@
 
 #include "omp.h"
 
+//codesnippet ompproccount
 void nested_report() {
 #pragma omp parallel
 #pragma omp master
@@ -24,6 +25,7 @@ void nested_report() {
          omp_get_num_threads(),
          omp_get_max_threads());
 }
+//codesnippet end
 
 int main(int argc,char **argv) {
 
@@ -32,6 +34,7 @@ int main(int argc,char **argv) {
          omp_get_num_threads(),
          omp_get_max_threads());
 
+  //codesnippet ompproccount
   int env_num_threads;
 #pragma omp parallel
 #pragma omp master
@@ -56,6 +59,7 @@ int main(int argc,char **argv) {
 #pragma omp parallel
 #pragma omp master
   nested_report();
+//codesnippet end
 
   return 0;
 }

@@ -27,6 +27,7 @@ int main(int argc,char **argv) {
   int *localdata = (int*) malloc( localsize*sizeof(int) );
   for (int i=0; i<localsize; i++)
     localdata[i] = procno+1;
+  //codesnippet gather
   // we assume that each process has a value "localsize"
   // the root process collects these values
 
@@ -36,6 +37,7 @@ int main(int argc,char **argv) {
   // everyone contributes their info
   MPI_Gather(&localsize,1,MPI_INT,
              localsizes,1,MPI_INT,root,comm);
+  //codesnippet end
   if (procno==root) {
     printf("Local sizes: ");
     for (int i=0; i<nprocs; i++)

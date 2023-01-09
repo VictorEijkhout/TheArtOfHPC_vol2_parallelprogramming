@@ -20,6 +20,7 @@ int main(int argc,char **argv) {
 
   int ncores = omp_get_num_procs();
   printf("%%%%%%%% equal thread/core counts %%%%%%%%\n");
+  //codesnippet ompparforthread
 #pragma omp parallel 
   {
     int
@@ -32,6 +33,7 @@ int main(int argc,char **argv) {
       printf("thread %d executing iter %d\n",
              thread_num,iter);
   }
+  //codesnippet end
   
   return 0;
 }

@@ -24,8 +24,10 @@ int main(int argc,char **argv) {
     printf("This program needs at least two processes\n");
     return -1;
   }
+  //codesnippet trueextent
   int sender = 0, receiver = 1, the_other = 1-procno;
   int sizes[2] = {4,6},subsizes[2] = {2,3},starts[2] = {1,2};
+  //codesnippet end
   int
     block = sizes[0]*sizes[1],
     count = subsizes[0]*subsizes[1];
@@ -39,6 +41,7 @@ int main(int argc,char **argv) {
   if (procno==sender) {
     printf("In basic array of %lu bytes\n",block*sizeof(double));
     printf("find sub array of %lu bytes\n",count*sizeof(double));
+    //codesnippet trueextent
     MPI_Datatype subarraytype;
     MPI_Type_create_subarray
       (2,sizes,subsizes,starts,
@@ -55,11 +58,14 @@ int main(int argc,char **argv) {
           ( sizes[1]-starts[1] // first row
             + starts[1]+subsizes[1] // last row
             + ( subsizes[0]>1 ? subsizes[0]-2 : 0 )*sizes[1] );
+     //codesnippet end
     printf("Found lb=%ld, extent=%ld\n",true_lb,true_extent);
     printf("Computing lb=%ld extent=%ld\n",comp_lb,comp_extent);
+    //codesnippet trueextent
     ASSERT(true_lb==comp_lb);
     ASSERT(true_extent==comp_extent);
     MPI_Send(source,1,subarraytype,the_other,0,comm);
+    //codesnippet end
     {
       MPI_Aint lb,extent,
         comp_extent = sizeof(double) *sizes[0]*sizes[1];
@@ -68,7 +74,9 @@ int main(int argc,char **argv) {
              lb,extent,comp_extent);
       ASSERT(extent==comp_extent);
     }
+    //codesnippet trueextent
     MPI_Type_free(&subarraytype);
+    //codesnippet end
  } else if (procno==receiver) {
     MPI_Status recv_status;
     int recv_count;

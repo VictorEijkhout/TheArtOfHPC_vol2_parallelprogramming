@@ -18,6 +18,7 @@ using std::string;
 
 #include <omp.h>
 
+//codesnippet nestclass
 class c {
 public:
   void f() {
@@ -28,6 +29,7 @@ int main() {
   c my_object;
 #pragma omp parallel
   my_object.f();
+//codesnippet end
   
   return 0;
 }

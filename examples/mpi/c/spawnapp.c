@@ -31,6 +31,7 @@ int main(int argc,char **argv) {
   char procname[MPI_MAX_PROCESSOR_NAME]; 
   MPI_Get_processor_name(procname,&len);
 
+  //codesnippet commparentdetect
   MPI_Comm comm_parent;
   MPI_Comm_get_parent(&comm_parent);
   int is_child = (comm_parent!=MPI_COMM_NULL);
@@ -40,17 +41,21 @@ int main(int argc,char **argv) {
     MPI_Comm_rank(MPI_COMM_WORLD,&workerno);
     printf("I detect I am worker %d/%d running on %s\n",
            workerno,nworkers,procname);
+    //codesnippet end
 
+    //codesnippet spawnworker
     int remotesize;
     MPI_Comm_remote_size(comm_parent, &remotesize);
     if (workerno==0) {
       printf("Worker deduces %d workers and %d parents\n",nworkers,remotesize);
     }
+    //codesnippet end
 
   } else {
     /*
      * Detect how many workers we can spawn
      */
+    //codesnippet spawnmanagerq
     int universe_size, *universe_size_attr,uflag;
     MPI_Comm_get_attr
       (comm_world,MPI_UNIVERSE_SIZE,
@@ -67,13 +72,16 @@ int main(int argc,char **argv) {
              universe_size,work_n);
       printf(".. spawning from %s\n",procname);
     }
+    //codesnippet end
 
     if (work_n<=0) 
       MPI_Abort(comm_world,1);
+    //codesnippet spawnmanager
     const char *workerprogram = "./spawnapp";
     MPI_Comm_spawn(workerprogram,MPI_ARGV_NULL,
                    work_n,MPI_INFO_NULL,
                    0,comm_world,&comm_inter,NULL);
+    //codesnippet end
   }
 
   MPI_Finalize();

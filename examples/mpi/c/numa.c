@@ -46,8 +46,10 @@ int main(int argc,char **argv) {
      */
     MPI_Aint window_size; double *window_data; MPI_Win node_window;
     window_size = sizeof(double);
+    //codesnippet winnoncontig
     MPI_Info window_info;
     MPI_Info_create(&window_info);
+    //codesnippet end
     if (strategy==0) {
       if (procno==0)
         printf("Strategy 0 : default behavior of shared window allocation\n");
@@ -55,12 +57,16 @@ int main(int argc,char **argv) {
     } else {
       if (procno==0)
         printf("Strategy 1 : allow non-contiguous shared window allocation\n");
+      //codesnippet winnoncontig
       MPI_Info_set(window_info,"alloc_shared_noncontig","true");
+      //codesnippet end
     }
+    //codesnippet winnoncontig
     MPI_Win_allocate_shared( window_size,sizeof(double),window_info,
                              nodecomm,
                              &window_data,&node_window);
     MPI_Info_free(&window_info);
+    //codesnippet end
     test_window(node_window,nodecomm);
 
     /*
@@ -71,6 +77,7 @@ int main(int argc,char **argv) {
       MPI_Win_shared_query( node_window,0,
                             &window_size0,&window0_unit, &win0_addr );
       size_t dist1,distp;
+      //codesnippet wincontigquery
       for (int p=1; p<onnode_nprocs; p++) {
         MPI_Aint window_sizep; int windowp_unit; double *winp_addr;
         MPI_Win_shared_query( node_window,p,
@@ -78,6 +85,7 @@ int main(int argc,char **argv) {
         distp = (size_t)winp_addr-(size_t)win0_addr;
         if (procno==0)
           printf("Distance %d to zero: %ld\n",p,(long)distp);
+	//codesnippet end
         if (p==1)
           dist1 = distp;
         else {

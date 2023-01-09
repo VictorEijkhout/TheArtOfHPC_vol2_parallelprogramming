@@ -17,6 +17,7 @@
 
 int main(int argc,char **argv) {
 
+  //codesnippet sessionmulti
   MPI_Info info1 = MPI_INFO_NULL, info2 = MPI_INFO_NULL;
   char thread_key[] = "mpi_thread_support_level";
   MPI_Info_create(&info1); MPI_Info_create(&info2);
@@ -25,6 +26,7 @@ int main(int argc,char **argv) {
   MPI_Session session1,session2;
   MPI_Session_init( info1,MPI_ERRORS_ARE_FATAL,&session1 );
   MPI_Session_init( info2,MPI_ERRORS_ARE_FATAL,&session2 );
+  //codesnippet end
 
   char self_name[] = "mpi://SELF";
   MPI_Group self_group1,self_group2;

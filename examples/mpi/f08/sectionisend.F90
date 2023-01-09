@@ -16,9 +16,11 @@ Program F90Section
   implicit none
 
   integer :: i,j, nprocs,procno
+  !!codesnippet fsectionisend
   integer :: siz
   real,dimension(:,:),allocatable :: matrix 
   real,dimension(2,2) :: submatrix
+  !!codesnippet end
   Type(MPI_Comm) :: comm
   Type(MPI_Request) :: request
 
@@ -32,18 +34,22 @@ Program F90Section
      call MPI_Abort(comm,0)
   end if
 
+  !!codesnippet fsectiontest
   if ( .not. MPI_SUBARRAYS_SUPPORTED ) then
      print *,"This code will not work"
      call MPI_Abort(comm,0)
   end if
+  !!codesnippet end
 
   if (procno==0) then
+  !!codesnippet fsectionisend
      siz = 20
      allocate( matrix(siz,siz) )
      matrix = reshape( [ ((j+(i-1)*siz,i=1,siz),j=1,siz) ], (/siz,siz/) )
      call MPI_Isend(matrix(1:2,1:2),4,MPI_REAL,1,0,comm,request)
      call MPI_Wait(request,MPI_STATUS_IGNORE)
      deallocate(matrix)
+     !!codesnippet end
   else if (procno==1) then
      call MPI_IRecv(submatrix,4,MPI_REAL,0,0,comm,request)
      call MPI_Wait(request,MPI_STATUS_IGNORE)

@@ -34,6 +34,7 @@ int main() {
   }
 
   {
+    //codesnippet omprangeloop
 #pragma omp parallel for 
     for ( auto& elt : values ) {
       elt = 5.f;
@@ -43,6 +44,7 @@ int main() {
     for ( auto elt : values ) {
       sum += elt;
     }
+    //codesnippet end
     cout << "sum of fives: " << sum << "\n";
   }
 

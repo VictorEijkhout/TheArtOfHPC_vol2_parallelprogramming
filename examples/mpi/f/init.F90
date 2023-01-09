@@ -13,11 +13,14 @@ Program Init
 
 #include "mpif.h"
 
+!!codesnippet usage-f
   integer :: input_argument;
   character(len=20) :: argstring
+!!codesnippet end
 
 #include "globalinit.F90"
 
+!!codesnippet usage-f
   if (mytid==0) then
     if ( command_argument_count()==0 ) then
        ! the program is called without parameter
@@ -37,6 +40,7 @@ Program Init
     end if
   end if
   call MPI_Bcast(input_argument,1,MPI_INTEGER,0,comm,err)
+!!codesnippet end
   print *,"Processor",mytid,"reports",input_argument
   call MPI_Finalize(err)
 

@@ -25,21 +25,27 @@ int main(int argc,char **argv) {
   srand((int)(procno*(double)RAND_MAX/nprocs));
 
   int sender = 0, receiver = nprocs-1;
+//codesnippet probe
   if (procno==receiver) {
     MPI_Status status;
     MPI_Probe(sender,0,comm,&status);
     int count;
     MPI_Get_count(&status,MPI_FLOAT,&count);
+    //codesnippet end
     printf("Receiving %d floats\n",count);
+    //codesnippet probe
     float recv_buffer[count];
     MPI_Recv(recv_buffer,count,MPI_FLOAT, sender,0,comm,MPI_STATUS_IGNORE);
   } else if (procno==sender) {
+    //codesnippet end
     float randomfraction = (rand() / (double)RAND_MAX);
     int buffer_size = (int) ( 10 * nprocs * randomfraction );
     printf("Sending %d floats\n",buffer_size);
+    //codesnippet probe
     float buffer[buffer_size];
     ierr = MPI_Send(buffer,buffer_size,MPI_FLOAT, receiver,0,comm); CHK(ierr);
   }
+//codesnippet end
 
   MPI_Finalize();
   return 0;

@@ -16,7 +16,9 @@ Program Contiguous
   integer :: sender = 0, receiver = 1, count = 5
   double precision, dimension(:),allocatable :: source,target
 
+!codesnippet contiguous-f90
   integer :: newvectortype
+!codesnippet end
   integer :: recv_status(MPI_STATUS_SIZE),recv_count
 
 #include "globalinit.F90"
@@ -33,6 +35,7 @@ Program Contiguous
      source(i) = i+.5;
   end do
 
+!codesnippet contiguous-f90
   if (mytid==sender) then
      call MPI_Type_contiguous(count,MPI_DOUBLE_PRECISION,newvectortype,err)
      call MPI_Type_commit(newvectortype,err)
@@ -44,6 +47,7 @@ Program Contiguous
      call MPI_Get_count(recv_status,MPI_DOUBLE_PRECISION,recv_count,err)
      !ASSERT(count==recv_count);
   end if
+!codesnippet end
   
   if (mytid==receiver) then
     ! for (i=0; i<count; i++)

@@ -25,18 +25,24 @@ int main(int argc,char **argv) {
   MPI_Comm_rank(comm,&mytid);
 
   if (mytid==0)
+    //codesnippet countsize
     printf("MPI_count: %ld, size_t: %ld\n",sizeof(MPI_Count),sizeof(size_t));
+  //codesnippet end
 
+  //codesnippet reducecount
   MPI_Count buffersize = 1000;
   double *indata,*outdata;
   indata = (double*) malloc( buffersize*sizeof(double) );
   outdata = (double*) malloc( buffersize*sizeof(double) );
+  //codesnippet end
 
   for (size_t i=0; i<buffersize; i++) {
     indata[i] = mytid; outdata[i] = 0;
   }
 
+  //codesnippet reducecount
   MPI_Allreduce_c(indata,outdata,buffersize,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
+  //codesnippet end
   if (mytid==0) printf("sum: %5.1f\n",outdata[0]);
 
   MPI_Finalize();

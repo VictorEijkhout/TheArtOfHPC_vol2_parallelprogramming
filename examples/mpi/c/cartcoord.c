@@ -51,11 +51,13 @@ int main(int argc,char **argv) {
     ( comm,dim,dimensions,periods,
       0,&cart_comm );
   MPI_Comm period_comm;
+  //codesnippet cartperiod0
   for ( int id=0; id<dim; id++)
     periods[id] = id==0 ? 1 : 0;
   MPI_Cart_create
     ( comm,dim,dimensions,periods,
       0,&period_comm );
+  //codesnippet end
 
   /*
    * Translation rank -> coord
@@ -96,6 +98,7 @@ int main(int argc,char **argv) {
       printf("\nCartShift\n");
       print_grid(nprocs,dim,dimensions);
       printf("Shifting process 0.\n");
+      //codesnippet cartshift01
       int pred,succ;
       MPI_Cart_shift
 	(period_comm,/* dim: */ 0,/* up: */ 1,
@@ -107,6 +110,7 @@ int main(int argc,char **argv) {
 	 &pred,&succ);
       printf("non-periodic dimension 1:\n  src=%d, tgt=%d\n",
              pred,succ);
+      //codesnippet end
       printf("cartshift\n\n");
     }
   }
@@ -136,6 +140,7 @@ int main(int argc,char **argv) {
     if (procno==0) printf("hyperplane13\n\n");
 
     if (procno==0) printf("Hyperplane13p\n");
+    //codesnippet hyperplane13p
     MPI_Cart_sub( period_comm,remain,&hyperplane );
     if (procno==0) {
       MPI_Topo_test( hyperplane,&topo_type );
@@ -147,6 +152,7 @@ int main(int argc,char **argv) {
       for (int id=0; id<2; id++)
         printf("%d,",period[id]);
       printf("\n");
+    //codesnippet end
     }
     MPI_Comm_free( &hyperplane );
     if (procno==0) printf("hyperplane13p\n\n");

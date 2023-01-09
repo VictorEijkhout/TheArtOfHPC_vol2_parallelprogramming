@@ -38,12 +38,16 @@ int main(int argc,char **argv) {
   /*
    * Do a loop over sizes, up to 10 billion eleemnts
    */
+  //codesnippet bigpingpong
   assert( sizeof(MPI_Count)>4 );
+  //codesnippet end
   if (procno==0) {
     printf("MPI Count has %lu bytes\n",sizeof(MPI_Count));
   }
+  //codesnippet bigpingpong
   for ( int power=3; power<=10; power++) {
     MPI_Count length=pow(10,power);
+    //codesnippet end
 
     /*
      * Try to tune how many experiments
@@ -56,7 +60,9 @@ int main(int argc,char **argv) {
 
     double *buffer;
     if (procno==processA || procno==processB) {
+      //codesnippet bigpingpong
       buffer = (double*)malloc( length*sizeof(double) );
+      //codesnippet end
       if (!buffer) {
         printf("Could not allocate buffer\n"); MPI_Abort(comm,0);
       }
@@ -70,12 +76,14 @@ int main(int argc,char **argv) {
     if (procno==processA) {
       double t = MPI_Wtime();
       for (int n=0; n<nexperiments; n++) {
+        //codesnippet bigpingpong
         MPI_Ssend_c
           (buffer,length,MPI_DOUBLE,
            processB,0,comm);
         MPI_Recv_c
           (buffer,length,MPI_DOUBLE,
            processB,0,comm,MPI_STATUS_IGNORE);
+        //codesnippet end
       }
       t = MPI_Wtime()-t; t /= nexperiments;
       {

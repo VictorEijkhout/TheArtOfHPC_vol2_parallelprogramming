@@ -22,12 +22,14 @@ int main(int argc,char **argv) {
 
   float myrandom = (float) rand()/(float)RAND_MAX,
     result;
+  //codesnippet iscan
   // add all the random variables together
   MPI_Scan(&myrandom,&result,1,MPI_FLOAT,MPI_SUM,comm);
   // the result should be approaching nprocs/2:
   if (procno==nprocs-1)
     printf("Result %6.3f compared to nprocs/2=%5.2f\n",
            result,nprocs/2.);
+  //codesnippet end
 
   MPI_Finalize();
   return 0;

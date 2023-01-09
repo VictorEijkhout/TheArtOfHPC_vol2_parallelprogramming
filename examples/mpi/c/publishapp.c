@@ -48,11 +48,13 @@ int main(int argc,char **argv) {
      * send its name to world process 1,
      * which is zero in the worker comm.
      */
+    //codesnippet publishmanager
     MPI_Comm intercomm;
     char myport[MPI_MAX_PORT_NAME];
     MPI_Open_port( MPI_INFO_NULL,myport );
     MPI_Publish_name( service_name, MPI_INFO_NULL, myport );
     MPI_Comm_accept( myport,MPI_INFO_NULL,0,comm_self,&intercomm );
+    //codesnippet end
     printf("Manager accepted connection on port <<%s>>\n",myport);
 
     /*
@@ -76,14 +78,18 @@ int main(int argc,char **argv) {
     /*
      * See if we can find the service
      */
+    //codesnippet publishworker
     char myport[MPI_MAX_PORT_NAME];
     MPI_Lookup_name( service_name,MPI_INFO_NULL,myport );
+    //codesnippet end
 
     /*
      * The workers collective connect over the inter communicator
      */
+    //codesnippet publishworker
     MPI_Comm intercomm;
     MPI_Comm_connect( myport,MPI_INFO_NULL,0,comm_work,&intercomm );
+    //codesnippet end
 
     int work_p,work_n;
     MPI_Comm_size( comm_work,&work_n );

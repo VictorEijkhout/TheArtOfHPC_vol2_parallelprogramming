@@ -25,6 +25,7 @@ int main(int argc,char **argv) {
   // Initialize the random number generator
   srand((int)(procno*(double)RAND_MAX/nprocs));
 
+  //codesnippet cancel
   fprintf(stderr,"get set, go!\n");
   if (procno==nprocs-1) {
     MPI_Status status;
@@ -49,6 +50,7 @@ int main(int argc,char **argv) {
       fprintf(stderr,"[%d] canceled\n",procno);
     }
   }
+  //codesnippet end
 
   MPI_Finalize();
   return 0;

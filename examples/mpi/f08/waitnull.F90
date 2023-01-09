@@ -29,7 +29,9 @@ Program Waitnull
   !!
   !! data for this program
   !!
+  !!codesnippet waitany0f
   Type(MPI_Request),dimension(:),allocatable :: requests
+  !!codesnippet end
   integer,dimension(:),allocatable :: recv_buffer
   integer :: index,randomint,success = 1
   real :: randomvalue
@@ -51,7 +53,9 @@ Program Waitnull
   call random_seed(put=randseed)
 
   allocate(recv_buffer(ntids-1))
+  !!codesnippet waitany0f
   allocate(requests(ntids-1))
+  !!codesnippet end
 
   if (mytid==ntids-1) then
      !
@@ -66,9 +70,11 @@ Program Waitnull
      ! then wait to see what comes in
      !
      do p=0,ntids-2
+        !!codesnippet waitany0f
         call MPI_Waitany(ntids-1,requests,index,MPI_STATUS_IGNORE)
         if ( .not. requests(index)==MPI_REQUEST_NULL) then
              print *,"This request should be null:",index
+             !!codesnippet end
              success = 0
           end if
         !write(*,'("Message from",i3,":",i5)') index,recv_buffer(index)

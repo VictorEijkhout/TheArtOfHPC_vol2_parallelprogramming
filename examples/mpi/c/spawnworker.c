@@ -33,9 +33,11 @@ int main(int argc, char *argv[])
   int remotesize,nworkers,workerno;
   MPI_Comm parent;
 
+  //codesnippet spawnworker
   MPI_Comm_size(MPI_COMM_WORLD,&nworkers);
   MPI_Comm_rank(MPI_COMM_WORLD,&workerno);
   MPI_Comm_get_parent(&parent);
+  //codesnippet end
   ASSERTm(parent!=MPI_COMM_NULL,"No parent!");
 
   /*

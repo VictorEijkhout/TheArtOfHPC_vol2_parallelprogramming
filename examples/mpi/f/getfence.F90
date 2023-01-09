@@ -14,8 +14,10 @@ Program GetFence
   use mpi
   implicit none
 
+!!codesnippet getblock-f
   integer :: the_window,window_elt_size
   integer(kind=MPI_ADDRESS_KIND) :: window_size,target_displacement
+!!codesnippet end
   integer :: my_number, window_data(2), other
 
 #include "globalinit.F90"
@@ -23,6 +25,7 @@ Program GetFence
   if (mytid.eq.other) window_data(2) = 37
   target_displacement = 1
 
+!!codesnippet getblock-f
   call MPI_Sizeof(window_data,window_elt_size,err)
   window_size = 2*window_elt_size
   call MPI_Win_create(window_data,&
@@ -36,10 +39,13 @@ Program GetFence
           the_window,err)
  endif
  call MPI_Win_fence(0,the_window,err)
+!!codesnippet end
  if (mytid.eq.0) then
       print *,"I got:",my_number
    end if
+!!codesnippet getblock-f
    call MPI_Win_free(the_window,err)
+!!codesnippet end
 
    call MPI_Finalize(err);
 

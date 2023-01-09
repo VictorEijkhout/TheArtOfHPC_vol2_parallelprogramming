@@ -37,12 +37,15 @@ int main(int argc,char **argv) {
    */
 #if 0
   // reference code:
+  //codesnippet transposescatterref
   for (int iproc=0; iproc<nprocs; iproc++) {
     MPI_Scatter( regular,1,MPI_DOUBLE,
 		 &(transpose[iproc]),1,MPI_DOUBLE,
 		 iproc,comm);
   }
+  //codesnippet end
 #else
+  //codesnippet itransposescatter
   MPI_Request scatter_requests[nprocs];
   for (int iproc=0; iproc<nprocs; iproc++) {
     MPI_Iscatter( regular,1,MPI_DOUBLE,
@@ -50,6 +53,7 @@ int main(int argc,char **argv) {
 		  iproc,comm,scatter_requests+iproc);
   }
   MPI_Waitall(nprocs,scatter_requests,MPI_STATUSES_IGNORE);
+  //codesnippet end
 #endif
 
   /*

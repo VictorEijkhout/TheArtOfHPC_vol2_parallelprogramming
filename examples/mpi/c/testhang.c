@@ -32,6 +32,7 @@ int main(int argc,char **argv) {
 #define SLEEP 1
   int nsleep = SLEEP;
 
+//codesnippet testhang
   if (procno==receiver) {
     // post a receive
     MPI_Request recv_request;
@@ -46,6 +47,7 @@ int main(int argc,char **argv) {
   } else if (procno==sender) {
     ierr = MPI_Send(buffer,count,MPI_FLOAT, receiver,0,comm); CHK(ierr);
   }
+//codesnippet end
 
   MPI_Finalize();
   return 0;

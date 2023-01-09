@@ -14,8 +14,10 @@ Program PutFence
   use mpi
   implicit none
 
+!!codesnippet putblock-f
   integer :: the_window,window_elt_size
   integer(kind=MPI_ADDRESS_KIND) :: window_size,target_displacement
+!!codesnippet end
   integer :: my_number=0, window_data(2), other
 
 #include "globalinit.F90"
@@ -23,6 +25,7 @@ Program PutFence
   if (mytid.eq.0) my_number = 37
   target_displacement = 1
 
+!!codesnippet putblock-f
   call MPI_Sizeof(window_data,window_elt_size,err)
   window_size = 2*window_elt_size
   call MPI_Win_create(window_data,&
@@ -36,10 +39,13 @@ Program PutFence
           the_window,err)
  endif
  call MPI_Win_fence(0,the_window,err)
+!!codesnippet end
  if (mytid.eq.other) then
       print *,"I got:",window_data(1+target_displacement)
    end if
+!!codesnippet putblock-f
    call MPI_Win_free(the_window,err)
+!!codesnippet end
 
    call MPI_Finalize(err);
 

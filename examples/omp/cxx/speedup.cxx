@@ -116,6 +116,7 @@ int main(int argc,char **argv) {
     }
     double tstart = omp_get_wtime();
     for (int step=0; step<STEPS; step++) {
+      //codesnippet ompcxxloop
       #pragma omp parallel for
       for ( auto& v : values ) {
         for (int jp=0; jp<M; jp++) {
@@ -123,6 +124,7 @@ int main(int argc,char **argv) {
           v = f;
         }
       }
+      //codesnippet end
     }
     double elapsed = omp_get_wtime()-tstart;
     double ff=0.;

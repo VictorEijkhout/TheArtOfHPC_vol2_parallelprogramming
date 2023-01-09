@@ -17,7 +17,9 @@ Program Vector
   double precision, dimension(:),allocatable :: source,target
   integer :: sender = 0,receiver = 1, count = 5, stride = 2
 
+  !!codesnippet vector-f08-type
   Type(MPI_Datatype) :: newvectortype
+  !!codesnippet end
   integer :: recv_count
   Type(MPI_Status) :: recv_status
 
@@ -43,6 +45,7 @@ Program Vector
      source(i) = i+.5;
   end do
 
+  !!codesnippet vector-f08
   if (mytid==sender) then
      call MPI_Type_vector(count,1,stride,MPI_DOUBLE_PRECISION,&
           newvectortype)
@@ -59,6 +62,7 @@ Program Vector
           recv_status)
      call MPI_Get_count(recv_status,MPI_DOUBLE_PRECISION,recv_count)
   end if
+  !!codesnippet end
   
   if (mytid==receiver) then
     ! for (i=0; i<count; i++)

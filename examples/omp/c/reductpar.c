@@ -31,6 +31,7 @@ int main(int argc,char **argv) {
   else
     printf("Sequential case succeeded\n");
   
+  //codesnippet reductpar
   m = INT_MIN;
 #pragma omp parallel reduction(max:m) num_threads(ndata)
   {
@@ -38,6 +39,7 @@ int main(int argc,char **argv) {
     int d = data[t];
     m = d>m ? d : m;
   };
+  //codesnippet end
 
   if (m!=5)
     printf("Parallel: wrong reduced value: %d, s/b %d\n",m,2);

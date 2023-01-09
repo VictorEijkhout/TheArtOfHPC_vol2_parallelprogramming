@@ -29,12 +29,14 @@ int main(int argc,char **argv) {
     for (int i=0; i<nthreads; i++)
       data[i] = 0;
 
+    //codesnippet creductstatic
     #pragma omp parallel for schedule(static,1) \
       reduction(+:data[:nthreads])
     for (int it=0; it<nthreads; it++) {
       for (int i=0; i<nthreads; i++)
         data[i]++;
     }
+    //codesnippet end
 
     printf("Data should be ===%d:",nthreads);
     for (int i=0; i<nthreads; i++)
@@ -43,6 +45,7 @@ int main(int argc,char **argv) {
   }
 
   { // C dynamic
+    //codesnippet creductdynamic
     int *alloced = (int*)malloc( nthreads*sizeof(int) );
     for (int i=0; i<nthreads; i++)
       alloced[i] = 0;
@@ -52,6 +55,7 @@ int main(int argc,char **argv) {
       for (int i=0; i<nthreads; i++)
 	alloced[i]++;
     }
+    //codesnippet end
     printf("Data should be ===%d:",nthreads);
     for (int i=0; i<nthreads; i++)
       printf(" %d",alloced[i]);

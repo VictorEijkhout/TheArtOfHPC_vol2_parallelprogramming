@@ -19,18 +19,22 @@ Program AnySource
   implicit none
 
   integer,dimension(:),allocatable :: recv_buffer
+!!codesnippet anysource-f08
   Type(MPI_Status)  :: status
+!!codesnippet end
   real :: randomvalue
   integer :: randomint,sender
 
 #include "globalinit.F90"
 
       if (mytid.eq.ntids-1) then
+!!codesnippet anysource-f08
          allocate(recv_buffer(ntids-1))
          do p=0,ntids-2
             call MPI_Recv(recv_buffer(p+1),1,MPI_INTEGER,&
                  MPI_ANY_SOURCE,0,comm,status)
             sender = status%MPI_SOURCE
+!!codesnippet end
             print *,"Message from",sender
          end do
       else

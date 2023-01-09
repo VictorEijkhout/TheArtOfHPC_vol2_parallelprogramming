@@ -64,6 +64,7 @@ int main(int argc,char **argv) {
 
   // Now persistent communication
   for (int cnt=0,s=1; cnt<NSIZES; s*=10,cnt++) {
+  //codesnippet persist
     if (procno==src) {
       /*
        * Send ping, receive pong
@@ -105,6 +106,7 @@ int main(int argc,char **argv) {
     }
     MPI_Request_free(requests+0);
     MPI_Request_free(requests+1);
+  //codesnippet end
   }
   if (procno==src) {
     for (int cnt=0,s=1; cnt<NSIZES; s*=10,cnt++) {

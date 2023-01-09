@@ -15,13 +15,16 @@ Program Hello
   use omp_lib
   integer :: nthreads,mythread
   
+!!codesnippet hellocallf
 !$omp parallel
   call savehello
   call finehello
 !$omp end parallel
+!!codesnippet end
 
 contains
 
+  !!codesnippet hellosavef
   subroutine savehello
     use omp_lib
     implicit none
@@ -36,6 +39,7 @@ contains
     thread = omp_get_thread_num()
     print *,"World from",thread
   end subroutine finehello
+  !!codesnippet end
 
 
 end Program Hello

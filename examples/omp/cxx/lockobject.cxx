@@ -28,6 +28,7 @@ using std::vector;
 #define omp_unset_lock(x)
 #endif
 
+//codesnippet lockobject
 class atomic_int {
 private:
   omp_lock_t the_lock;
@@ -46,6 +47,7 @@ public:
     omp_destroy_lock(&the_lock);
   };
   int operator +=( int i ) {
+    //codesnippet end
     float s = i;
     if (delay) {
       // let's waste a little time,
@@ -53,6 +55,7 @@ public:
       for (int i=0; i<1000; i++)
         s += sin(i)*sin(i);
     }
+    //codesnippet lockobject
     // atomic increment
     omp_set_lock(&the_lock);
     _value += i; int rv = _value;
@@ -61,6 +64,7 @@ public:
   };
   auto value() { return _value; };
 };
+//codesnippet end
 
 #define NTHREADS 50
 
@@ -80,6 +84,7 @@ int main() {
        */
       atomic_int my_object(delay);
       vector<std::thread> threads;
+      //codesnippet lockobjectuse
       for (int ithread=0; ithread<NTHREADS; ithread++) {
         threads.push_back
           ( std::thread(
@@ -89,15 +94,18 @@ int main() {
       }
       for ( auto &t : threads )
         t.join();
+      //codesnippet end
       result = my_object.value();
 
     } else {
+      //codesnippet atomicintuse
       std::atomic<int> my_object{0};
       #pragma omp parallel for
       for ( size_t update=0; update<NTHREADS*nops; update++) {
         my_object += 1;
       }
       result = my_object;
+      //codesnippet end
     }
     auto duration = omp_get_wtime()-tstart;
     /* 

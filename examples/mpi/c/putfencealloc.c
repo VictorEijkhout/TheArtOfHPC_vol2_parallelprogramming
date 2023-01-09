@@ -20,11 +20,13 @@ int main(int argc,char **argv) {
 
 #include "globalinit.c"
 
+  //codesnippet windowsizeof
   MPI_Win the_window;
   int *window_data;
   MPI_Win_allocate(2*sizeof(int),sizeof(int),
 		   MPI_INFO_NULL,comm,
 		   &window_data,&the_window);
+  //codesnippet end
 
   int my_number=0, other = nprocs-1;
   if (procno==0)
@@ -37,9 +39,12 @@ int main(int argc,char **argv) {
 	     the_window);
   }
   MPI_Win_fence(0,the_window);
+  //codesnippet end
   if (procno==other)
     printf("I got the following: %d\n",window_data[1]);
+  //codesnippet putblock
   MPI_Win_free(&the_window);
+  //codesnippet end
 
   MPI_Finalize();
   return 0;

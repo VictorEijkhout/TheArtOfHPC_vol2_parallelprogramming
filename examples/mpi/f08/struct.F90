@@ -22,11 +22,13 @@ Program StructType
   !!
   !! The Type that we are going to send
   !!
+  !!snippet fstructure
   Type object 
      character :: c
      real*8,dimension(2) :: x
      integer :: i
   end type object
+  !!snippet end
 
 #define MPI_Aint integer(kind=MPI_ADDRESS_KIND)
 
@@ -34,6 +36,7 @@ Program StructType
   !! local data
   !!
   integer :: sender=0,receiver=1
+  !!snippet fstructure
   type(object) :: myobject
   integer,parameter :: structlen = 3
   type(MPI_Datatype) :: newstructuretype
@@ -41,6 +44,7 @@ Program StructType
   type(MPI_Datatype),dimension(structlen) :: types;
   MPI_Aint,dimension(structlen) :: displacements
   MPI_Aint :: base_displacement, next_displacement
+  !!snippet end
 
   !!
   !! Initial setup
@@ -59,11 +63,13 @@ Program StructType
   !!
   !! Fill in meaningful data only on the sender
   !!
+  !!snippet fstructure
   if (procno==sender) then
      myobject%c = 'x'
      myobject%x(0) = 2.7; myobject%x(1) = 1.5
      myobject%i = 37
 
+  !!snippet end
      print '("Set: char=",a1,x,", double0=",x,f9.5,x,"double1=",x,f9.5,x,", int=",i5)', &
           myobject%c,myobject%x(0),myobject%x(1),myobject%i
   else
@@ -76,6 +82,7 @@ Program StructType
   !! Where are the components relative to the structure?
   !!
 
+  !!snippet fstructure
   !! component 1: one character
   blocklengths(1) = 1; types(1) = MPI_CHAR
   call MPI_Get_address(myobject,base_displacement)
@@ -92,6 +99,7 @@ Program StructType
   call MPI_Get_address(myobject%i,next_displacement)
   displacements(3) = next_displacement-base_displacement
 
+  !!snippet end
   if (procno==sender) then
      print '("Displacements:",3(1x,i0))',displacements
   end if
@@ -105,12 +113,14 @@ Program StructType
   !!
   !! Send and receive call, both using the structure type
   !!
+  !!snippet fstructure
   if (procno==sender) then
      call MPI_Send(myobject,1,newstructuretype,receiver,0,comm)
   else if (procno==receiver) then
      call MPI_Recv(myobject,1,newstructuretype,sender,0,comm,MPI_STATUS_IGNORE)
   end if
   call MPI_Type_free(newstructuretype)
+  !!snippet end
 
   !!
   !! Print out what we sent and received

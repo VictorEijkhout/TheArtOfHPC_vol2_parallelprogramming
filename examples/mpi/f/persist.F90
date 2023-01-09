@@ -64,6 +64,7 @@ Program Persist
   ! Now persistent communication
   s = 1
   do cnt=1,NSIZES
+!!codesnippet persist-f
     if (mytid==src) then
         print *,"Size",s
         t(cnt) = MPI_Wtime()
@@ -83,6 +84,7 @@ Program Persist
            call MPI_Send(recv,s,MPI_REAL,src,0,comm,err)
         end do
      end if
+!!codesnippet end
      s = s*10
      if (s>maxsize) goto 30
   end do

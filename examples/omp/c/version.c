@@ -19,6 +19,7 @@
 
 int main(int argc,char **argv) {
 
+  //codesnippet ompstandard
   int standard = _OPENMP;
   printf("Supported OpenMP standard: %d\n",standard);
   switch (standard) {
@@ -37,6 +38,7 @@ int main(int argc,char **argv) {
     printf("Unrecognized version\n");
     break;
   }
+  //codesnippet end
 
   return 0;
 }

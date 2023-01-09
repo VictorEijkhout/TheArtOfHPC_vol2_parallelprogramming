@@ -33,6 +33,7 @@ Program Init
 
 #include "globalinit.F90"
 
+!codesnippet local-f
   nlocalpoints = 10
   ntotal_points = ntids*nlocalpoints
   my_global_start = mytid*nlocalpoints;
@@ -42,6 +43,7 @@ Program Init
   do i=1,nlocalpoints
      array(i) = f( (i+my_global_start)*stepsize )
   end do
+!codesnippet end
 
   deallocate(array)
   call MPI_Finalize(err)

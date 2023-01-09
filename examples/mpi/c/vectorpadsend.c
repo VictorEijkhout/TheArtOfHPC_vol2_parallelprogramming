@@ -38,19 +38,23 @@ int main(int argc,char **argv) {
   int ntypes = 2, max_elements = ntypes*stride*count;
   if (procno==sender) {
     int *sendbuffer = (int*)malloc( max_elements*sizeof(int) );
+    //codesnippet twovectorsend
     for (int i=0; i<max_elements; i++) sendbuffer[i] = i;
     MPI_Type_vector(count,blocklength,stride,MPI_INT,&stridetype);
     MPI_Type_commit(&stridetype);
     MPI_Send( sendbuffer,ntypes,stridetype, receiver,0, comm );
+    //codesnippet end
     free(sendbuffer);
   } else if (procno==receiver) {
     int *recvbuffer = (int*)malloc( max_elements*sizeof(int) );
     MPI_Status status;   
+    //codesnippet twovectorrecv
     MPI_Recv( recvbuffer,max_elements,MPI_INT, sender,0, comm,&status );
     int count; MPI_Get_count(&status,MPI_INT,&count);
     printf("Receive %d elements:",count);
     for (int i=0; i<count; i++) printf(" %d",recvbuffer[i]);
     printf("\n");
+    //codesnippet end
     free(recvbuffer);
   }
   // ntypes*stride
@@ -60,6 +64,7 @@ int main(int argc,char **argv) {
     MPI_Aint l,e;
     int *sendbuffer = (int*)malloc( max_elements*sizeof(int) );
     for (int i=0; i<max_elements; i++) sendbuffer[i] = i;
+    //codesnippet twovectorpad
     MPI_Type_get_extent(stridetype,&l,&e);
     printf("Stride type l=%ld e=%ld\n",l,e);
     e += ( stride-blocklength) * sizeof(int);
@@ -68,6 +73,7 @@ int main(int argc,char **argv) {
     printf("Padded type l=%ld e=%ld\n",l,e);
     MPI_Type_commit(&paddedtype);
     MPI_Send( sendbuffer,ntypes,paddedtype, receiver,0, comm );
+    //codesnippet end
     free(sendbuffer);
   } else if (procno==receiver) {
     int *recvbuffer = (int*)malloc( max_elements*sizeof(int) );

@@ -21,6 +21,7 @@ static double pi = 3.141592653589793238462643383279502884;
 
 void set_sine( MPI_Comm comm,double *vector,int localsize,int freq ) {
   int globalsize;
+  //codesnippet fftsetcoeff
   MPI_Allreduce( &localsize,&globalsize,1,MPI_INT,MPI_SUM, comm );
   globalsize += 1;
   int myfirst=0;
@@ -28,6 +29,7 @@ void set_sine( MPI_Comm comm,double *vector,int localsize,int freq ) {
 
   for (int i=0; i<localsize; i++)
     vector[i] = sin( pi*freq* (i+1+myfirst) / globalsize );
+  //codesnippet end
 };
 
 double inprod( MPI_Comm comm,double *v1,double *v2,int s ) {

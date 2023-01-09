@@ -18,8 +18,10 @@
 
 int main(int argc,char **argv) {
 
+  //codesnippet mpiouterr
   fprintf(stdout,"This goes to std out\n");
   fprintf(stderr,"This goes to std err\n");
+  //codesnippet end
   
   return 0;
 }

@@ -29,11 +29,13 @@ int main(int argc,char **argv) {
   left = procno-1; if (left<0) left = MPI_PROC_NULL;
   right = procno+1; if (right>=nprocs) right = MPI_PROC_NULL;
   for (int try=0; try<1000; try++) {
+    //codesnippet wrongcatchall
     ierr = MPI_Isend(&sdata,1,MPI_INT,right,1,comm,&(request[0])); CHK(ierr);
     function_start(comm,&ctx);
     ierr = MPI_Irecv(&rdata,1,MPI_INT,left,MPI_ANY_TAG,comm,&(request[1])); CHK(ierr);
     ierr = MPI_Waitall(2,request,status); CHK(ierr);
     function_end(comm,ctx);
+    //codesnippet end
     if (status[1].MPI_TAG==2 || status[1].MPI_SOURCE!=left)
       wrong++;
   }
@@ -43,6 +45,7 @@ int main(int argc,char **argv) {
   return 0;
 }
 
+//codesnippet wrongcatchall
 int function_start(MPI_Comm comm,void **ctx) {
   int procno,nprocs,left,right, sdata=6,rdata, ierr;
   MPI_Request *request;
@@ -69,4 +72,5 @@ int function_end(MPI_Comm comm,void *ctx) {
   free(request);
   return 0;
 }
+//codesnippet end
 

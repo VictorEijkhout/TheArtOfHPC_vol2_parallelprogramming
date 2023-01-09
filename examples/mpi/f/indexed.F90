@@ -14,7 +14,9 @@ Program Indexed
   use mpi
   implicit none
 
+!!codesnippet indexed-f
   integer :: newvectortype;
+!!codesnippet end
   integer,dimension(:),allocatable :: indices,blocklengths,&
        source,targt
   integer :: sender = 0, receiver = 1, count = 5,totalcount = 15
@@ -27,10 +29,12 @@ Program Indexed
     stop
   end if
 
+!!codesnippet indexed-f
   ALLOCATE(indices(count))
   ALLOCATE(blocklengths(count))
   ALLOCATE(source(totalcount))
   ALLOCATE(targt(count))
+!!codesnippet end
 
   indices(0) = 2; indices(1) = 3; indices(2) = 5;
   indices(3) = 7; indices(4) = 11;
@@ -41,6 +45,7 @@ Program Indexed
      source(i) = i
   end do
 
+!!codesnippet indexed-f
   if (mytid==sender) then
      call MPI_Type_indexed(count,blocklengths,indices,MPI_INT,&
           newvectortype,err)
@@ -53,6 +58,7 @@ Program Indexed
     call MPI_Get_count(recv_status,MPI_INT,recv_count,err)
     !    ASSERT(recv_count==count);
  end if
+!!codesnippet end
   
   ! if (mytid==receiver) {
   !   int i=3,val=7;

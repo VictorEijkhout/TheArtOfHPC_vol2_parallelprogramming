@@ -27,8 +27,10 @@ Program Tags
   !! local data
   !!
   integer :: sender,receiver
+  !!codesnippet gettagubf
   logical :: flag
   integer(KIND=MPI_ADDRESS_KIND) :: attr_v,tag_upperbound
+  !!codesnippet end
   
   !!
   !! Initial setup
@@ -51,8 +53,10 @@ Program Tags
           nprocs,sender,receiver
   end if
 
+  !!codesnippet gettagubf
   call MPI_Comm_get_attr(comm,MPI_TAG_UB,attr_v,flag,ierr)
   tag_upperbound = attr_v
+  !!codesnippet end
 
   if (ierr/=MPI_SUCCESS) then 
      print '("Error getting attribute: return code=",i4)',ierr
@@ -67,7 +71,9 @@ Program Tags
      call MPI_Abort(comm,0)
   else 
      if (procno==sender) then
+        !!codesnippet gettagubf
         print '("Determined tag upperbound: ",i9)', tag_upperbound
+        !!codesnippet end
      end if
   end if
   

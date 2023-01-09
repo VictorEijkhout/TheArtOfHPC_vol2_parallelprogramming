@@ -22,6 +22,7 @@ using std::stringstream;
 
 int main(int argc,char **argv) {
 
+//codesnippet hello-omp-cxx
 #pragma omp parallel
   {
     int t = omp_get_thread_num();
@@ -29,6 +30,7 @@ int main(int argc,char **argv) {
     proctext << "Hello world from " << t << endl;
     cerr << proctext.str();
   }
+//codesnippet end
 
   return 0;
 }

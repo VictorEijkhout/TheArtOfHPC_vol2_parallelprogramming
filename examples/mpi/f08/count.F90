@@ -27,6 +27,7 @@ Program GetCount
   call MPI_Comm_rank(comm,procid)
   target = nprocs-1
 
+  !!codesnippet mpigetcountf08
   if (procid==0) then
      sendcount = N
      call random_number(fraction)
@@ -39,6 +40,7 @@ Program GetCount
     call MPI_Get_count(status,MPI_FLOAT,recvcount)
     print *,"Received",recvcount,"elements"
  end if
+ !!codesnippet end
 
   call MPI_Finalize()
 

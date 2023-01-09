@@ -34,6 +34,7 @@ int main(int argc,char **argv) {
   for (int i=0; i<sizes[0]*sizes[1]; i++)
     source[i] = i+.5;
 
+  //codesnippet subarray
   MPI_Datatype subarraytype;
   if (procno==sender) {
     MPI_Type_create_subarray
@@ -48,6 +49,7 @@ int main(int argc,char **argv) {
     MPI_Get_count(&recv_status,MPI_DOUBLE,&recv_count);
     ASSERT(recv_count==count);
   }
+  //codesnippet end
   
   if (procno==sender) {
     MPI_Aint true_lb,true_extent;

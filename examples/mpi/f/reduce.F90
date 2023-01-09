@@ -18,6 +18,7 @@ Program Reduce
 
 #include "globalinit.F90"
 
+!!codesnippet reduce-f
   mynumber = mytid
   target_proc = ntids-1;
   ! add all the random variables together
@@ -28,6 +29,7 @@ Program Reduce
     write(*,'("Result ",f5.2," compared to ntids(ntids-1)/2=",f5.2)') &
          result,ntids*(ntids-1)/2.
  end if
+!!codesnippet end
 
   call MPI_Finalize(err)
 

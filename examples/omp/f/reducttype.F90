@@ -11,12 +11,14 @@
 !****************************************************************/
 
 Module Typedef
+  !!codesnippet ftypeopdef
   Type inttype
      integer :: value = 0
   end type inttype
   Interface operator(+)
      module procedure addints
   end Interface operator(+)
+  !!codesnippet end
 contains
   function addints(i1,i2) result(isum)
     implicit none
@@ -31,8 +33,10 @@ Program Reducttype
   implicit none
   Type(inttype) :: i1,i2,i3
   integer,parameter :: nsize = 500
+  !!codesnippet ftypeopuse
   Type(inttype),dimension(nsize) :: intarray
   Type(inttype) :: intsum = inttype(0)
+  !!codesnippet end
   integer :: i
 
   i1 = inttype(1); i2 = inttype(2)
@@ -43,11 +47,13 @@ Program Reducttype
      intarray(i) = inttype(i)
   end do
 
+  !!codesnippet ftypeopuse
   !$OMP parallel do reduction(+:intsum)
   do i=1,nsize
      intsum = intsum + intarray(i)
   end do
   !$OMP end parallel
+  !!codesnippet end
 
   print '("Sum = ",i6,"; should be ",i6)',intsum,nsize*(nsize+1)/2
   

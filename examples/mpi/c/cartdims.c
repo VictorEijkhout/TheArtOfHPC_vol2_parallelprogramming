@@ -26,10 +26,12 @@ int main(int argc,char **argv) {
       printf("CartDims\n");
       printf("Cartesian grid size: %d dim: %d\n",nprocs,dim);
     }
+    //codesnippet dimscreate
     int *dimensions = (int*) malloc(dim*sizeof(int));
     for (int idim=0; idim<dim; idim++)
       dimensions[idim] = 0;
     MPI_Dims_create(nprocs,dim,dimensions);
+      //codesnippet end
 
     int final = ( dimensions[dim-1]==1 );
     //if (procno==0) printf("final: %d \n",final);
@@ -42,13 +44,16 @@ int main(int argc,char **argv) {
       printf("cartdims\n");
     }
 
+    //codesnippet cartcreate
     MPI_Comm cart_comm;
     int *periods = (int*) malloc(dim*sizeof(int));
     for ( int id=0; id<dim; id++ ) periods[id] = 0;
     MPI_Cart_create
       ( comm,dim,dimensions,periods,
         0,&cart_comm );
+    //codesnippet end
 
+    //codesnippet carttypetest
     int world_type,cart_type;
     MPI_Topo_test( comm,&world_type);
     MPI_Topo_test( cart_comm,&cart_type );
@@ -58,14 +63,17 @@ int main(int argc,char **argv) {
       printf("no topo        =%d, cart top      =%d\n",
              MPI_UNDEFINED,MPI_CART);
     }
+    //codesnippet end
 
     if (cart_type==MPI_CART) {
+      //codesnippet cartget
       int dim;
       MPI_Cartdim_get( cart_comm,&dim );
       int *dimensions = (int*) malloc(dim*sizeof(int));
       int *periods    = (int*) malloc(dim*sizeof(int));
       int *coords     = (int*) malloc(dim*sizeof(int));
       MPI_Cart_get( cart_comm,dim,dimensions,periods,coords );
+      //codesnippet end
       printf("process %2d is [",procno);
       for (int id=0; id<dim; id++) printf("%d,",coords[id]);
       printf("]\n");

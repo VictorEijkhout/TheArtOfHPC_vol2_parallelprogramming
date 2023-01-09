@@ -27,10 +27,12 @@ int main(int argc,char **argv) {
     int origin=0, data_proc = nprocs-1;
     int *retrieve=NULL,*window_buffer=NULL;
 
+    //codesnippet winattach
     MPI_Win_create_dynamic(MPI_INFO_NULL,comm,&the_window);
     if (procno==data_proc)
       window_buffer = (int*) malloc( 2*sizeof(int) );
     MPI_Win_attach(the_window,window_buffer,2*sizeof(int));
+    //codesnippet end
 
     test_window( the_window,comm );
 
@@ -42,18 +44,22 @@ int main(int argc,char **argv) {
       retrieve = (int*) malloc( sizeof(int) );
     }
 
+    //codesnippet addrbcast
     MPI_Aint data_address;
     if (procno==data_proc) {
       MPI_Get_address(window_buffer,&data_address);
     }
     MPI_Bcast(&data_address,1,MPI_AINT,data_proc,comm);
+    //codesnippet end
 
     MPI_Win_fence(0,the_window);
     if (procno==origin) {
+      //codesnippet windynamicget
       MPI_Aint disp = data_address+1*sizeof(int);
       MPI_Get( /* data on origin: */           retrieve, 1,MPI_INT,
        /* data on target: */ data_proc,disp,     1,MPI_INT,
        the_window);
+      //codesnippet end
     }
     MPI_Win_fence(0,the_window);
 

@@ -49,6 +49,7 @@ int main(int argc,char **argv) {
     int degree=0;
     int destinations[4]={-1,-1,-1,-1};
     int weights[4] = {1,1,1,1};
+    //codesnippet distgraphsetup
     for ( int i=0; i<=1; i++ ) {
       int neighb_i = proci+i;
       if (neighb_i<0 || neighb_i>=idim)
@@ -67,6 +68,7 @@ int main(int argc,char **argv) {
        MPI_INFO_NULL,0,
        &comm2d
        );
+    //codesnippet end
     printf("Nbors\n");
     printf("[%2d = (%d,%d)] has %2d outbound:",procno,proci,procj,degree);
     for (int n=0; n<degree; n++)
@@ -80,6 +82,7 @@ int main(int argc,char **argv) {
   // statistics gathering
   printf(">> Nbors\n");
   {
+    //codesnippet distgraphreadout
     int indegree,outdegree,
       weighted;
     MPI_Dist_graph_neighbors_count
@@ -93,6 +96,7 @@ int main(int argc,char **argv) {
       ( my_ij,2,MPI_INT,
         other_ij,2,MPI_INT,
         comm2d );
+    //codesnippet end
 
     printf("  %2d inbound:",indegree);
     for (int in=0; in<indegree; in++) {
@@ -106,6 +110,7 @@ int main(int argc,char **argv) {
   //neighbor counting
   printf(">> Count\n");
   {
+    //codesnippet distgraphcount
     int indegree=4, sources[indegree],
       inweights[indegree],weighted;
     int outdegree=4, targets[outdegree],
@@ -119,6 +124,7 @@ int main(int argc,char **argv) {
        indegree,sources,inweights,
        outdegree,targets,outweights
        );
+    //codesnippet end
     printf("  %2d inbound:",indegree);
     for (int in=0; in<indegree; in++) {
       printf(" %d",sources[in]);

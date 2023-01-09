@@ -30,12 +30,14 @@ int main() {
 #pragma omp parallel
 #pragma omp single
   {
+    //codesnippet omptaskreductcxx
     #pragma omp taskgroup task_reduction(+:sum)
     for (int itask=1; itask<=bound; itask++) {
       auto addin = [&sum] (int contrib) { sum += contrib; };
       #pragma omp task in_reduction(+:sum)
       addin(itask);
     }
+    //codesnippet end
     if (sum==result) correct++;
     else {
 	wrong++;

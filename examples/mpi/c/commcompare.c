@@ -20,6 +20,7 @@ int main(int argc,char **argv) {
 
 #include "globalinit.c"
 
+  //codesnippet commcopycompare
   int result;
   MPI_Comm copy = comm;
   MPI_Comm_compare(comm,copy,&result);
@@ -38,6 +39,7 @@ int main(int argc,char **argv) {
          result==MPI_CONGRUENT);
   printf("            not equal: %d \n",
          result==MPI_UNEQUAL);
+  //codesnippet end
 
   MPI_Finalize();
   return 0;

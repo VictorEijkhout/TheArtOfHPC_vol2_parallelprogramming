@@ -17,11 +17,13 @@
 
 int main(int argc,char **argv) {
 
+//codesnippet hello-omp
 #pragma omp parallel
   {
     int t = omp_get_thread_num();
     printf("Hello world from %d!\n",t);
   }
+//codesnippet end
 
   return 0;
 }

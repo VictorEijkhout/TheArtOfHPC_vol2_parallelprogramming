@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <omp.h>
 
+//codesnippet threadprivate
 static int tp;
 #pragma omp threadprivate(tp)
 
@@ -25,6 +26,7 @@ int main(int argc,char **argv) {
 
 #pragma omp parallel num_threads(9)
   printf("Thread %d has %d\n",omp_get_thread_num(),tp);
+//codesnippet end
   
   return 0;
 }

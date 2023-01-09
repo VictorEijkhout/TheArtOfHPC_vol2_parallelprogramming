@@ -27,12 +27,15 @@ int main(int argc,char **argv) {
   int sender = 0, receiver = 1, the_other = 1-procno,
     count = 5,stride=2;
   double *source,*target;
+  //codesnippet vector
   source = (double*) malloc(stride*count*sizeof(double));
   target = (double*) malloc(count*sizeof(double));
+  //codesnippet end
 
   for (int i=0; i<stride*count; i++)
     source[i] = i+.5;
 
+  //codesnippet vector
   MPI_Datatype newvectortype;
   if (procno==sender) {
     MPI_Type_vector(count,1,stride,MPI_DOUBLE,&newvectortype);
@@ -47,6 +50,7 @@ int main(int argc,char **argv) {
     MPI_Get_count(&recv_status,MPI_DOUBLE,&recv_count);
     ASSERT(recv_count==count);
   }
+  //codesnippet end
   
   if (procno==receiver) {
     for (int i=0; i<count; i++)

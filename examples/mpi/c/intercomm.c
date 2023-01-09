@@ -77,6 +77,7 @@ int main(int argc,char **argv) {
   if (i_am_local_leader)
     fprintf(stderr,"[%d] creating intercomm with %d\n",
 	   procno,global_rank_of_other_leader);
+  //codesnippet intercommcreate
   MPI_Comm intercomm;
   MPI_Intercomm_create
     (/* local_comm:       */ split_half_comm,
@@ -85,6 +86,7 @@ int main(int argc,char **argv) {
      /* remote_peer_rank: */ global_rank_of_other_leader,
      /* tag:              */ inter_tag,
      /* newintercomm:     */ &intercomm );
+  //codesnippet end
   if (DEBUG) fprintf(stderr,"[%d] intercomm created.\n",procno);
   
   if (i_am_local_leader) {
@@ -95,6 +97,7 @@ int main(int argc,char **argv) {
   }
 
   double interdata=0.;
+  //codesnippet intercomm-ptp
   if (i_am_local_leader) {
     if (color==0) {
       interdata = 1.2;
@@ -114,8 +117,10 @@ int main(int argc,char **argv) {
 		inter_source,local_number_of_other_leader);
     }
   }
+  //codesnippet end
   
   int root; int bcast_data = procno;
+  //codesnippet intercomm-bcast
   if (color==0) { // sending group: the local leader sends
     if (i_am_local_leader)
       root = MPI_ROOT;
@@ -126,6 +131,7 @@ int main(int argc,char **argv) {
   }
   if (DEBUG) fprintf(stderr,"[%d] using root value %d\n",procno,root);
   MPI_Bcast(&bcast_data,1,MPI_INT,root,intercomm);
+  //codesnippet end
   fprintf(stderr,"[%d] bcast data: %d\n",procno,bcast_data);
 
   if (procno==0)

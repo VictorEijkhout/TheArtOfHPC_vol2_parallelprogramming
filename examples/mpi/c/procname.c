@@ -24,11 +24,13 @@ int main(int argc,char **argv) {
   MPI_Comm_size(comm,&nprocs);
   MPI_Comm_rank(comm,&procid);
 
+  //codesnippet procname
   int name_length = MPI_MAX_PROCESSOR_NAME;
   char proc_name[name_length];
   MPI_Get_processor_name(proc_name,&name_length);
   printf("Process %d/%d is running on node <<%s>>\n",
 	 procid,nprocs,proc_name);
+  //codesnippet end
 
   MPI_Finalize();
   return 0;

@@ -23,6 +23,7 @@ using namespace std;
 #define N 10000000
 #endif
 
+//codesnippet cppuninitial
 template<typename T>
 struct uninitialized {
   uninitialized() {};
@@ -30,15 +31,18 @@ struct uninitialized {
   constexpr operator T() const {return val;};
   T operator=( const T&& v ) { val = v; return val; };
 };
+//codesnippet end
 
 int main(int argc,char **argv) {
 
+  //codesnippet cppuninitialvec
   vector<uninitialized<double>> x(N),y(N);
 
 #pragma omp parallel for
   for (int i=0; i<N; i++)
     y[i] = x[i] = 0.;
   x[0] = 0; x[N-1] = 1.;
+  //codesnippet end
 
   double s=0;
   double timer = omp_get_wtime();

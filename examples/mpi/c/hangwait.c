@@ -27,6 +27,7 @@ int main(int argc,char **argv) {
     mydata=procno;
   int sender = nprocs-1;
 
+  //codesnippet bcastsendwait
   if (procno==sender) {
     for (int p=0; p<nprocs-1; p++) {
       double send = 1.;
@@ -39,6 +40,7 @@ int main(int argc,char **argv) {
     do_some_work();
     MPI_Wait(&request,MPI_STATUS_IGNORE);
   }
+  //codesnippet end
 
   MPI_Finalize();
   return 0;

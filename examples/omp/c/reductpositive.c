@@ -16,6 +16,7 @@
 #include <string.h>
 #include <omp.h>
 
+//codesnippet omprwz
 int reduce_without_zero(int r,int n) {
   // r is the already reduced value, n is the new value
   int m;
@@ -36,11 +37,14 @@ int reduce_without_zero(int r,int n) {
   } else { // new value is more: use r
     m = r;
   };
+  //codesnippet end
 #ifdef DEBUG
   printf("combine %d %d : %d\n",r,n,m);
 #endif
+  //codesnippet omprwz
   return m;
 }
+//codesnippet end
 
 int main(int argc,char **argv) {
 
@@ -50,9 +54,11 @@ int main(int argc,char **argv) {
     if (data[i]<mreduct && data[i]>0)
       mreduct = data[i];
 
+  //codesnippet omprwz
 #pragma omp declare reduction \
   (rwz:int:omp_out=reduce_without_zero(omp_out,omp_in)) \
   initializer(omp_priv=-1)
+  //codesnippet end
 
   m = -2;
   for (int idata=0; idata<ndata; idata++)
@@ -62,10 +68,12 @@ int main(int argc,char **argv) {
   else
     printf("Sequential case succeeded\n");
   
+  //codesnippet omprwz
   m = -1;
 #pragma omp parallel for reduction(rwz:m)
   for (int idata=0; idata<ndata; idata++)
     m = reduce_without_zero(m,data[idata]);
+  //codesnippet end
 
   if (m!=mreduct)
     printf("Parallel: wrong reduced value: %d, s/b %d\n",m,2);

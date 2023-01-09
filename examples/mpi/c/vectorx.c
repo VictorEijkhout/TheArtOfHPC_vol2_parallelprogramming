@@ -29,17 +29,21 @@ int main(int argc,char **argv) {
 
   if (procno==sender) printf("size of size_t = %d\n",sizeof(size_t));
 
+  //codesnippet bigvectoralloc
   float *source=NULL,*target=NULL;
   int mediumsize = 1<<30;
   int nblocks = 8;
   size_t datasize = (size_t)mediumsize * nblocks * sizeof(float);
+  //codesnippet end
 
   if (procno==sender)
     printf("datasize = %lld bytes =%7.3f giga-bytes = %7.3f gfloats\n",
 	   datasize,datasize*1.e-9,datasize*1.e-9/sizeof(float));
 
+  //codesnippet bigvectoralloc
   if (procno==sender) {
     source = (float*) malloc(datasize);
+    //codesnippet end
     if (source) {
       printf("Source allocated\n");
     } else {
@@ -62,17 +66,23 @@ int main(int argc,char **argv) {
   }
 
 
+  //codesnippet bigvectorptp
   MPI_Datatype blocktype;
   MPI_Type_contiguous(mediumsize,MPI_FLOAT,&blocktype);
   MPI_Type_commit(&blocktype);
   if (procno==sender) {
     MPI_Send(source,nblocks,blocktype,receiver,0,comm);
+    //codesnippet end
+    //codesnippet bigvectorrecv
   } else if (procno==receiver) {
     MPI_Status recv_status;
     MPI_Recv(target,nblocks,blocktype,sender,0,comm,
       &recv_status);
+    //codesnippet end
+    //codesnippet bigvectorq
     MPI_Count recv_count;
     MPI_Get_elements_x(&recv_status,MPI_FLOAT,&recv_count);
+    //codesnippet end
     printf("Received %7.3f medium size elements\n",recv_count * 1e-9);
   }
   MPI_Type_free(&blocktype);

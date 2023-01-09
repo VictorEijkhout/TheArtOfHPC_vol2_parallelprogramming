@@ -26,13 +26,17 @@ int main(int argc,char **argv) {
     return -1;
   }
   int sender = 0, receiver = 1, the_other = 1-procno;
+  //codesnippet structure
   struct object {
     char c;
     double x[2];
     int i;
   };
+  //codesnippet end
 
+  //codesnippet structextent
   size_t size_of_struct = sizeof(struct object);
+  //codesnippet end
   if (procno==sender)
     printf("Structure has size %ld, naive size %ld\n",
 	   size_of_struct,
@@ -44,6 +48,7 @@ int main(int argc,char **argv) {
     myobject.i = 37;
   }
 
+  //codesnippet structure
   MPI_Datatype newstructuretype;
   int structlen = 3;
   int blocklengths[structlen]; MPI_Datatype types[structlen];
@@ -68,20 +73,25 @@ int main(int argc,char **argv) {
 
   MPI_Type_create_struct(structlen,blocklengths,displacements,types,&newstructuretype);
   MPI_Type_commit(&newstructuretype);
+  //codesnippet end
 
+  //codesnippet structextent
   MPI_Aint typesize,typelb;
   MPI_Type_get_extent(newstructuretype,&typelb,&typesize);
   assert( typesize==size_of_struct );
+  //codesnippet end
   if (procno==sender) {
     printf("Type extent: %ld bytes; displacements: %ld %ld %ld\n",
 	   typesize,displacements[0],displacements[1],displacements[2]);
   }
+  //codesnippet structure
   if (procno==sender) {
     MPI_Send(&myobject,1,newstructuretype,the_other,0,comm);
   } else if (procno==receiver) {
     MPI_Recv(&myobject,1,newstructuretype,the_other,0,comm,MPI_STATUS_IGNORE);
   }
   MPI_Type_free(&newstructuretype);
+  //codesnippet end
 
   /* if (procno==sender) */
   /*   printf("char x=%ld, l=%ld; double x=%ld, l=%ld, int x=%ld, l=%ld\n", */

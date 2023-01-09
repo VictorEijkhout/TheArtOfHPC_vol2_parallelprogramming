@@ -8,9 +8,11 @@ Program Hello
 
   use omp_lib
   implicit none
+  !!codesnippet ompstandardf
   integer :: standard
 
   standard = openmp_version
+  !!codesnippet end
 
   select case (standard)
   case  (201511)

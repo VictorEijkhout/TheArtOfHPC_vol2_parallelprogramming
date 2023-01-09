@@ -36,10 +36,12 @@ Program matchkind
      print *,"05 positions supported, MPI type size is",s05
   end if
   if (r10>0) then
+     !!codesnippet typematchf
      call MPI_Sizeof(x10,s10,ierr)
      call MPI_Type_match_size(MPI_TYPECLASS_REAL,s10,mpi_x10)
      call MPI_Type_size(mpi_x10,s10)
      print *,"10 positions supported, MPI type size is",s10
+     !!codesnippet end
   end if
   if (r15>0) then
      call MPI_Sizeof(x15,s15,ierr)

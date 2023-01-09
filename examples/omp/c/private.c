@@ -17,6 +17,7 @@
 
 int main(int argc,char **argv) {
 
+  //codesnippet privatex
   int x=5;
 #pragma omp parallel num_threads(4)
   {
@@ -25,6 +26,7 @@ int main(int argc,char **argv) {
     printf("Thread %d sets x to %d\n",t,x);
   }
   printf("Outer x is still %d\n",x);
+  //codesnippet end
 
   return 0;
 }

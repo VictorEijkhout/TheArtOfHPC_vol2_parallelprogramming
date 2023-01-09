@@ -20,6 +20,7 @@ Program Irecv_source
   allocate(recv_buffer(ntids-1))
   allocate(requests(ntids-1))
 
+!!codesnippet waitforany-f
   if (mytid==ntids-1) then
      do p=1,ntids-1
         print *,"post"
@@ -30,6 +31,7 @@ Program Irecv_source
         call MPI_Waitany(ntids-1,requests,index,MPI_STATUS_IGNORE,err)
         write(*,'("Message from",i3,":",i5)') index,recv_buffer(index)
      end do
+!!codesnippet end
   else
      call sleep(6)
      call random_number(randomvalue)

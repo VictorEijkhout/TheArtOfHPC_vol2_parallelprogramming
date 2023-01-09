@@ -42,10 +42,12 @@ int main(int argc,char **argv) {
 	   nprocs,sender,receiver);
   }
 
+  //codesnippet gettagub
   int tag_upperbound;
   void *v; int flag=1;
   ierr = MPI_Comm_get_attr(comm,MPI_TAG_UB,&v,&flag);
   tag_upperbound = *(int*)v;
+  //codesnippet end
   if (ierr!=MPI_SUCCESS) {
     printf("Error getting attribute: return code=%d\n",ierr);
     if (ierr==MPI_ERR_COMM)

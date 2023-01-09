@@ -25,6 +25,7 @@ int main(int argc,char **argv) {
   MPI_Win the_window;
   int my_number, other = nprocs-1;
 
+  //codesnippet winallocate
   int *number_buffer = NULL;
   MPI_Alloc_mem
     ( /* size: */ 2*sizeof(int),
@@ -32,11 +33,13 @@ int main(int argc,char **argv) {
   MPI_Win_create
     ( number_buffer,2*sizeof(int),sizeof(int),
       MPI_INFO_NULL,comm,&the_window);
+  //codesnippet end
 
   if (procno==other)
     number_buffer[1] = 27;
   test_window(the_window,comm);
 
+  //codesnippet getfence
   MPI_Win_fence(0,the_window);
   if (procno==0) {
     MPI_Get( /* data on origin: */   &my_number, 1,MPI_INT,
@@ -44,11 +47,14 @@ int main(int argc,char **argv) {
 	     the_window);
   }
   MPI_Win_fence(0,the_window);
+  //codesnippet end
   if (procno==0)
     printf("I got the following: %d\n",my_number);
 
+  //codesnippet winallocate
   MPI_Win_free(&the_window);
   MPI_Free_mem(number_buffer);
+  //codesnippet end
 
   MPI_Finalize();
   return 0;

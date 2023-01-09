@@ -20,6 +20,7 @@ int main(int argc,char **argv) {
 
 #include "globalinit.c"
 
+  //codesnippet mpifilebasic
   MPI_File mpifile;
   MPI_File_open
     (comm,"filewrite.dat",
@@ -29,6 +30,7 @@ int main(int argc,char **argv) {
     (mpifile,/* offset: */ procno*sizeof(int),
      &procno,1, MPI_INT,MPI_STATUS_IGNORE);
   MPI_File_close(&mpifile);
+  //codesnippet end
 
   if (procno==0) {
     int ncorrect=0;

@@ -20,6 +20,7 @@ Program ReduceInPlace
 
   call random_number(mynumber)
   target_proc = ntids-1;
+!!codesnippet reduceinplace-fptr
   in_place_val = MPI_IN_PLACE
   if (mytid.eq.target_proc) then
      ! set pointers
@@ -36,6 +37,7 @@ Program ReduceInPlace
   end if
   call MPI_Reduce(mynumber_ptr,result_ptr,1,MPI_REAL,MPI_SUM,&
        target_proc,comm,err)
+!!codesnippet end
   ! the result should be ntids*(ntids-1)/2:
   if (mytid.eq.target_proc) then
     write(*,'("Result ",f7.4," compared to n(n-1)/2=",f7.4)') &

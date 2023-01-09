@@ -18,8 +18,10 @@ Program Vector
   integer :: sender = 0,receiver = 1, count = 5, stride = 2
 
   integer :: recv_status(MPI_STATUS_SIZE)
+!!codesnippet vector-f
   integer :: newvectortype
   integer :: recv_count
+!!codesnippet end
 
 #include "globalinit.F90"
 
@@ -36,9 +38,11 @@ Program Vector
   end do
 
   if (mytid==sender) then
+!!codesnippet vector-f
      call MPI_Type_vector(count,1,stride,MPI_DOUBLE_PRECISION,&
           newvectortype,err)
      call MPI_Type_commit(newvectortype,err)
+!!codesnippet end
      call MPI_Send(source,1,newvectortype,receiver,0,comm,err)
      call MPI_Type_free(newvectortype,err)
   else if (mytid==receiver) then

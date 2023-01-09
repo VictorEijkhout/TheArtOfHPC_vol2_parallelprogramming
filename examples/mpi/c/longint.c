@@ -31,11 +31,13 @@ int main(int argc,char **argv) {
 
   if (procno==0) {
     int s;
+    //codesnippet longintsize
     MPI_Type_size( MPI_LONG_INT,&s );
     printf("MPI_LONG_INT size=%d\n",s);
     MPI_Aint ss;
     MPI_Type_extent( MPI_LONG_INT,&ss );
     printf("MPI_LONG_INT extent=%ld\n",ss);
+    //codesnippet end
   }
   
   MPI_Finalize();

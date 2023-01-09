@@ -25,14 +25,17 @@ int main(int argc,char **argv) {
   MPI_Datatype newtype;
 
   count = 3; bs = 2; stride = 5;
+  //codesnippet vectortypesize
   MPI_Type_vector(count,bs,stride,MPI_DOUBLE,&newtype);
   MPI_Type_commit(&newtype);
   MPI_Type_size(newtype,&size);
   ASSERT( size==(count*bs)*sizeof(double) );
+  //codesnippet end
   MPI_Type_free(&newtype);
 
   printf("count=%d, stride=%d, bs=%d, size=%d\n",count,stride,bs,size);
 
+  //codesnippet vectortypeextent
   MPI_Aint lb,asize;
   MPI_Type_vector(count,bs,stride,MPI_DOUBLE,&newtype);
   MPI_Type_commit(&newtype);
@@ -40,6 +43,7 @@ int main(int argc,char **argv) {
   ASSERT( lb==0 );
   ASSERT( asize==((count-1)*stride+bs)*sizeof(double) );
   MPI_Type_free(&newtype);
+  //codesnippet end
 
   printf("count=%d, stride=%d, bs=%d: lb=%ld, extent=%ld\n",count,stride,bs,lb,asize);
 

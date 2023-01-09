@@ -22,8 +22,10 @@ Program PingPong
   integer :: nexperiments = 1,iexperiment
   double precision :: t,s=1.,nanosec
   !! specific for this code
+  !!codesnippet bigdataf
   integer :: power,countbytes
   Integer(KIND=MPI_COUNT_KIND) :: length
+  !!codesnippet end
 
   call MPI_Init()
 
@@ -32,23 +34,29 @@ Program PingPong
   
   processA = 0
   processB = nprocs-1
+  !!codesnippet bigdataf
   call MPI_Sizeof(length,countbytes,ierr)
   if (procno==0) &
        print *,"Bytes in count:",countbytes
+  !!codesnippet end
 
   powerloop:  do power=3,10
      if (procno==processA .or. procno==processB) then
+  !!codesnippet bigdataf
         length = 10**power
         allocate( senddata(length),recvdata(length) )
+  !!codesnippet end
      end if
      if (procno==processA) then
         t = MPI_Wtime()
         do iexperiment=1,nexperiments
            senddata(1) = s
+  !!codesnippet bigdataf
            call MPI_Send(senddata,length,MPI_DOUBLE_PRECISION, &
                 processB,0, comm)
            call MPI_Recv(recvdata,length,MPI_DOUBLE_PRECISION, &
                 processB,0, comm,MPI_STATUS_IGNORE)
+  !!codesnippet end
            s = s + recvdata(1)
         end do
         t = MPI_Wtime()-t

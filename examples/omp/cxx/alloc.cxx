@@ -27,6 +27,7 @@ int main(int argc,char **argv) {
 #pragma omp master
     nthreads = omp_get_num_threads();
 
+    //codesnippet privatevector
     vector<int> array(nthreads);
 
 #pragma omp parallel firstprivate(array)
@@ -34,6 +35,7 @@ int main(int argc,char **argv) {
       int t = omp_get_thread_num();
       array[t] = t+1;
     }
+    //codesnippet end
 
     printf("Private\n");
     printf("Array result:\n");

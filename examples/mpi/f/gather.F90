@@ -21,6 +21,7 @@ Program Gather
   localsize = 10+10*random_value
   root = ntids-1
 
+!!codesnippet gather-f
   ! we assume that each process has a value "localsize"
   ! the root process collectes these values
   if (mytid==root) then
@@ -29,6 +30,7 @@ Program Gather
 
   call MPI_Gather(localsize,1,MPI_INTEGER,&
        localsizes,1,MPI_INTEGER,root,comm,err)
+!!codesnippet end
   if (mytid==root) then
      write(*,'("Local sizes:",10i4)') (localsizes(i),i=1,ntids)
   end if

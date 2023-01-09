@@ -33,6 +33,7 @@ int main(int argc,char **argv) {
   printf("[%d] to: %d, from: %d\n",procno,next,prev);
 
 #define BUFLEN 10000
+  //codesnippet bsendbuf
   int bsize = BUFLEN*sizeof(float);
   float
     *sbuf = (float*) malloc( bsize ),
@@ -46,6 +47,7 @@ int main(int argc,char **argv) {
   err = MPI_Bsend(sbuf,BUFLEN,MPI_FLOAT,next,0,comm);
   MPI_Recv (rbuf,BUFLEN,MPI_FLOAT,prev,0,comm,MPI_STATUS_IGNORE);
   MPI_Buffer_detach( &buffer,&bsize );
+  //codesnippet end
 
   printf("Done on %d\n",procno);
   

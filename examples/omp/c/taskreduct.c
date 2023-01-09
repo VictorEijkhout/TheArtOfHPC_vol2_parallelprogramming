@@ -20,6 +20,7 @@ int main() {
 
   int bound=100, sum=0;
   
+  //codesnippet omptaskreduct
 #pragma omp parallel
 #pragma omp single
   {
@@ -29,6 +30,7 @@ int main() {
     sum += itask;
     }
   }
+  //codesnippet end
 
   printf("Final result=%d, s/b: %d\n",sum,bound*(bound+1)/2);
 

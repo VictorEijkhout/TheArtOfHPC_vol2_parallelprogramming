@@ -20,6 +20,7 @@ int main(int argc,char **argv) {
 
 #include "globalinit.c"
 
+  //codesnippet allreducec
   float myrandom,sumrandom;
   myrandom = (float) rand()/(float)RAND_MAX;
   // add the random variables together
@@ -28,6 +29,7 @@ int main(int argc,char **argv) {
   // the result should be approx nprocs/2:
   if (procno==nprocs-1)
     printf("Result %6.9f compared to .5\n",sumrandom/nprocs);
+  //codesnippet end
 
   MPI_Finalize();
   return 0;

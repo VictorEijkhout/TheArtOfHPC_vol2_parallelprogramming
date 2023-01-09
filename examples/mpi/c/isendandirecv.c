@@ -27,6 +27,7 @@ int main(int argc,char **argv) {
   sender = 0; receiver = nprocs-1;
 
   if (procno==sender) {
+    //codesnippet isendexample
     double send_data = 1.;
     MPI_Request request;
     MPI_Isend
@@ -35,8 +36,10 @@ int main(int argc,char **argv) {
 	/* communicator: */ comm,
 	/* request: */ &request);
     MPI_Wait(&request,MPI_STATUS_IGNORE);
+    //codesnippet end
     printf("[%d] Isend successfully concluded\n",procno);
   } else if (procno==receiver) {
+    //codesnippet irecvexample
     double recv_data;
     MPI_Request request;
     MPI_Irecv
@@ -45,6 +48,7 @@ int main(int argc,char **argv) {
 	/* communicator: */ comm,
 	/* request: */ &request);
     MPI_Wait(&request,MPI_STATUS_IGNORE);
+    //codesnippet end
     printf("[%d] Ireceive successfully concluded\n",procno);
   }
 

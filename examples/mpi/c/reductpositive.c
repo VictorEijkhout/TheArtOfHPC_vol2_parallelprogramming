@@ -17,6 +17,7 @@
 #include "mpi.h"
 
 //int reduce_without_zero(int r,int n);
+//codesnippet mpirwz
 void reduce_without_zero(void *in,void *inout,int *len,MPI_Datatype *type) {
   // r is the already reduced value, n is the new value
   int n = *(int*)in, r = *(int*)inout;
@@ -30,12 +31,15 @@ void reduce_without_zero(void *in,void *inout,int *len,MPI_Datatype *type) {
   } else { // new value is more: use r
     m = r;
   };
+  //codesnippet end
 #ifdef DEBUG
   printf("combine %d %d : %d\n",r,n,m);
 #endif
   // return the new value
+  //codesnippet mpirwz
   *(int*)inout = m;  
 }
+//codesnippet end
 
 int main(int argc,char **argv) {
 
@@ -52,9 +56,11 @@ int main(int argc,char **argv) {
     if (data[i]<mreduct && data[i]>0)
       mreduct = data[i];
 
+  //codesnippet opcreatec
   MPI_Op rwz;
   MPI_Op_create(reduce_without_zero,1,&rwz);
   MPI_Allreduce(data+procno,&positive_minimum,1,MPI_INT,rwz,comm);
+  //codesnippet end
 
   // check that the distributed result is the same as sequential
   if (mreduct!=positive_minimum)

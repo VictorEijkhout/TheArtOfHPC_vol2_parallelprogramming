@@ -31,6 +31,7 @@ int main(int argc,char **argv) {
   if (procno==0) {
     printf("Size\n");
     int s;
+    //codesnippet packsize
     for (int i=1; i<=4; i++) {
       MPI_Pack_size(i,MPI_CHAR,comm,&s);
       printf("%d chars: %d\n",i,s);
@@ -43,6 +44,7 @@ int main(int argc,char **argv) {
       MPI_Pack_size(i,MPI_INT,comm,&s);
       printf("%d ints: %d\n",i,s);
     }
+    //codesnippet end
     printf("size\n");
   }
 
@@ -56,12 +58,15 @@ int main(int argc,char **argv) {
     position;
   char *buffer = malloc(buflen);
   if (procno==0) printf("Packing\n");
+  //codesnippet packunpack
   if (procno==sender) {
+  //codesnippet end
     int len=2*sizeof(int)+nsends*sizeof(double)+MPI_BSEND_OVERHEAD;
     if (len>buflen) {
       printf("Not enough buffer space, need %d\n",len);
       return -4;
     }
+  //codesnippet packunpack
     position = 0;
     MPI_Pack(&nsends,1,MPI_INT,
              buffer,buflen,&position,comm);
@@ -90,7 +95,10 @@ int main(int argc,char **argv) {
     MPI_Unpack(buffer,buflen,&position,
                &irecv_value,1,MPI_INT,comm);
     ASSERT(irecv_value==nsends);
+  //codesnippet end
+  //codesnippet packunpack
   }
+  //codesnippet end
   if (procno==0) printf("packing\n");
 
   MPI_Finalize();

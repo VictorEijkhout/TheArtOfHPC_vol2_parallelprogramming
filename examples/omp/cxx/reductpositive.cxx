@@ -19,6 +19,7 @@ using std::vector;
 
 #include <omp.h>
 
+//codesnippet omprwzcxx
 template<typename T>
 T reduce_without_zero(T r,T n) {
   // r is the already reduced value, n is the new value
@@ -40,9 +41,13 @@ T reduce_without_zero(T r,T n) {
   } else { // new value is more: use r
     m = r;
   };
+  //codesnippet end
+  //codesnippet omprwzcxx
   return m;
 }
+//codesnippet end
 
+//codesnippet ompreducttemplate
 template<typename T>
 T generic_reduction( vector<T> tdata ) {
 #pragma omp declare reduction					\
@@ -55,6 +60,7 @@ T generic_reduction( vector<T> tdata ) {
     tmin = reduce_without_zero<T>(tmin,tdata[id]);
   return tmin;
 };
+//codesnippet end
 
 int main(int argc,char **argv) {
 
@@ -86,10 +92,12 @@ int main(int argc,char **argv) {
   }
 
   {
+  //codesnippet omprwzcxx
     int imin = -1;
 #pragma omp parallel for reduction(rwzi:imin)
     for (int id=0; id<idata.size(); id++)
       imin = reduce_without_zero<int>(imin,idata[id]);
+    //codesnippet end
 
     if (imin!=ireduct)
       cout << "Parallel: wrong reduced value: " << imin << ", s/b " << ireduct << "\n";
@@ -138,7 +146,9 @@ int main(int argc,char **argv) {
    */
   cout << "\nGeneric case\n";
 
+  //codesnippet ompreducttcall
   auto tmin = generic_reduction<float>(fdata);
+  //codesnippet end
   if (tmin!=freduct)
     cout << "Parallel: wrong reduced value: " << tmin << ", s/b " << freduct << "\n";
   else

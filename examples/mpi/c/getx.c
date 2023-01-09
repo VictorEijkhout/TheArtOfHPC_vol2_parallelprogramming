@@ -23,6 +23,7 @@ int main(int argc,char **argv) {
   if (procno==0) {
     printf("size of size_t = %d\n",sizeof(size_t));
 
+    //codesnippet compsizet
     int gig = 1<<30;
     int nblocks = 8;
     size_t big1 = gig * nblocks * sizeof(double);
@@ -31,6 +32,7 @@ int main(int argc,char **argv) {
     size_t big4 = gig * nblocks * (size_t) ( sizeof(double) );
     size_t big5 = sizeof(double) * gig * nblocks;
 ;
+    //codesnippet end
     printf("%lld %lld %lld %lld %lld\n",big1,big2,big3,big4,big5);
   }
 

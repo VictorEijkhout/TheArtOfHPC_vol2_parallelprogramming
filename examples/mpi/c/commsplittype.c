@@ -35,6 +35,7 @@ int main(int argc,char **argv) {
   int new_procno,new_nprocs;
   MPI_Comm sharedcomm;
 
+  //codesnippet commsplittype
   MPI_Info info;
   MPI_Comm_split_type
     (MPI_COMM_WORLD,
@@ -44,6 +45,7 @@ int main(int argc,char **argv) {
     (sharedcomm,&new_nprocs);
   MPI_Comm_rank
     (sharedcomm,&new_procno);
+  //codesnippet end
 
   ASSERT(new_procno<CORES_PER_NODE);    
 

@@ -27,6 +27,7 @@ int main(int argc,char **argv) {
   localdata = (int*) malloc( localsize*sizeof(int) );
   for (int i=0; i<localsize; i++)
     localdata[i] = procno+1;
+  //codesnippet gatherv
   // we assume that each process has an array "localdata"
   // of size "localsize"
 
@@ -39,6 +40,7 @@ int main(int argc,char **argv) {
   // everyone contributes their local size info
   MPI_Gather(&localsize,1,MPI_INT,
 	     localsizes,1,MPI_INT,root,comm);
+  //codesnippet end
 
   if (procno==root) {
     printf("Local sizes: ");
@@ -47,6 +49,7 @@ int main(int argc,char **argv) {
     printf("\n");
   }
 
+  //codesnippet gatherv
   // the root constructs the offsets array
   if (procno==root) {
     int total_data = 0;
@@ -59,6 +62,7 @@ int main(int argc,char **argv) {
   // everyone contributes their data
   MPI_Gatherv(localdata,localsize,MPI_INT,
 	      alldata,localsizes,offsets,MPI_INT,root,comm);
+  //codesnippet end
 
   if (procno==root) {
     int p=0;

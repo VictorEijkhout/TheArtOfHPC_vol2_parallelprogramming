@@ -37,6 +37,7 @@ int main(int argc,char **argv) {
 #pragma omp single
 #pragma omp taskgroup
   {
+    //codesnippet fibotaskdepend
     for (int i=2; i<N; i++)
 #pragma omp task \
   depend(out:fibo_values[i]) \
@@ -44,6 +45,7 @@ int main(int argc,char **argv) {
       {
         fibo_values[i] = fibo_values[i-1]+fibo_values[i-2];
       }
+    //codesnippet end
   }
   printf("F(%d) = %ld\n",N,fibo_values[N-1]);
 

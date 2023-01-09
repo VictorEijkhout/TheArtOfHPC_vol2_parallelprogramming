@@ -41,14 +41,17 @@ int main(int argc,char **argv) {
 
   // Now persistent communication
   for (int nparts=1; nparts<=40; nparts++ ) {
+    //codesnippet psendbufferpart
     int bufsize = nparts*SIZE;
     int *partitions = (int*)malloc((nparts+1)*sizeof(int));
     for (int ip=0; ip<=nparts; ip++)
       partitions[ip] = ip*SIZE;
     if (procno==src) {
       double *sendbuffer = (double*)malloc(bufsize*sizeof(double));
+      //codesnippet end
       fill_buffer(sendbuffer,0,bufsize,1);
       double start = MPI_Wtime();
+      //codesnippet psendsend
       MPI_Request send_request;
       MPI_Psend_init
         (sendbuffer,nparts,SIZE,MPI_DOUBLE,tgt,0,
@@ -60,13 +63,17 @@ int main(int argc,char **argv) {
           MPI_Pready(ip,send_request);
 	}
         MPI_Wait(&send_request,MPI_STATUS_IGNORE);
+        //codesnippet end
         int confirm; MPI_Recv(&confirm,0,MPI_INT,tgt,0,comm,MPI_STATUS_IGNORE);
+        //codesnippet psendsend
       }
       MPI_Request_free(&send_request);
+      //codesnippet end
       double duration = MPI_Wtime() - start;
       report_time(duration/ITERATIONS,bufsize,nparts);
       free(sendbuffer);
     } else if (procno==tgt) {
+      //codesnippet psendrecv
       double *recvbuffer = (double*)malloc(bufsize*sizeof(double));
       MPI_Request recv_request;
       MPI_Precv_init
@@ -83,10 +90,13 @@ int main(int argc,char **argv) {
               break; }
           }
         MPI_Wait(&recv_request,MPI_STATUS_IGNORE);
+        //codesnippet end
         if (!r) printf("buffer problem %d\n",1);
         int confirm; MPI_Send(&confirm,0,MPI_INT,src,0,comm);
+        //codesnippet psendrecv
       }
       MPI_Request_free(&recv_request);
+      //codesnippet end
       free(recvbuffer);
     }
     free(partitions);

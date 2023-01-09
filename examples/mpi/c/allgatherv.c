@@ -28,6 +28,7 @@ int main(int argc,char **argv) {
   int *recv_counts = (int*) malloc(nprocs*sizeof(int));
   int *recv_displs = (int*) malloc(nprocs*sizeof(int));
 
+  //codesnippet allgathervc
   MPI_Allgather
     ( &my_count,1,MPI_INT,
       recv_counts,1,MPI_INT, comm );
@@ -38,6 +39,7 @@ int main(int argc,char **argv) {
   MPI_Allgatherv
     ( my_array,procno+1,MPI_INT,
       global_array,recv_counts,recv_displs,MPI_INT, comm );
+  //codesnippet end
   
   if (procno==0) {
     for (int p=0; p<nprocs; p++)

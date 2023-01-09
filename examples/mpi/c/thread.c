@@ -21,6 +21,7 @@ int main(int argc,char **argv) {
   MPI_Comm comm;
   int procno=-1,nprocs,threading,err;
   
+  //codesnippet thread
   MPI_Init_thread(&argc,&argv,MPI_THREAD_MULTIPLE,&threading);
   comm = MPI_COMM_WORLD;
   MPI_Comm_rank(comm,&procno);
@@ -35,5 +36,6 @@ int main(int argc,char **argv) {
     }
   }
   MPI_Finalize();
+  //codesnippet end
   return 0;
 }

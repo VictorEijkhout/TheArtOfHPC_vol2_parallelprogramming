@@ -19,6 +19,7 @@ int main() {
 
   MPI_Init(0,0);
 
+  //codesnippet typematchc
   float x5;
   double x10;
   int s5,s10;
@@ -34,6 +35,7 @@ int main() {
   MPI_Type_size(mpi_x10,&s10);
   printf("double: size=%d, mpi size=%d\n",
 	 sizeof(x10),s10);
+  //codesnippet end
 
   //  printf("%d, %d\n",s5,s10);
 

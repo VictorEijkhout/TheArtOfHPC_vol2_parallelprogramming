@@ -24,6 +24,7 @@ int main(int argc,char **argv) {
   // Initialize the random number generator
   srand((int)(procno*(double)RAND_MAX/nprocs));
 
+//codesnippet waitforany
   if (procno==nprocs-1) {
     int *recv_buffer;
     MPI_Request *request; MPI_Status status;
@@ -45,12 +46,15 @@ int main(int argc,char **argv) {
              index,recv_buffer[index]);
     }
   } else {
+    //codesnippet end
     float randomfraction = (rand() / (double)RAND_MAX);
     int randomwait = (int) ( 2* nprocs * randomfraction );
     printf("process %d waits %ds before sending\n",procno,randomwait);
     sleep(randomwait);
+    //codesnippet waitforany
     ierr = MPI_Send(&procno,1,MPI_INT, nprocs-1,0,comm);
   }
+//codesnippet end
 
   MPI_Finalize();
   return 0;

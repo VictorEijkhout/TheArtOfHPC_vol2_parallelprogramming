@@ -12,9 +12,11 @@
 
 Program Hello
 
+!!codesnippet hello-omp-f
 !$omp parallel
   print *,"Hello world!"
 !$omp end parallel
+!!codesnippet end
 
     ! int mythread,nthreads;
     ! nthreads = omp_get_num_threads();

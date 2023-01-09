@@ -32,6 +32,7 @@ int main(int argc,char **argv) {
 
     origin = 0; target = nprocs-1;
 
+  //codesnippet postwaittwo
     MPI_Comm_group(comm,&all_group);
     if (procno==origin) {
       MPI_Group_incl(all_group,1,&target,&two_group);
@@ -49,6 +50,7 @@ int main(int argc,char **argv) {
       MPI_Win_post(two_group,0,the_window);
       MPI_Win_wait(the_window);
     }
+  //codesnippet end
     if (procno==target)
       printf("Got the following: %d\n",other_number);
     

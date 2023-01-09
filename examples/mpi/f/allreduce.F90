@@ -17,6 +17,7 @@ Program Allreduce
 
 #include "globalinit.F90"
 
+!!codesnippet allreduce-f
   mynumber = mytid
   ! add the random variables together
   call MPI_Allreduce(mynumber,result,&
@@ -26,6 +27,7 @@ Program Allreduce
     write(*,'("Result ",f5.2," compared to ntids(ntids-1)/2=",f5.2)') &
          result,ntids*(ntids-1)/2.
  end if
+!!codesnippet end
 
   call MPI_Finalize(err)
 

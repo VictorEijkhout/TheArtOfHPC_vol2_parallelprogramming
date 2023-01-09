@@ -33,19 +33,23 @@ int main(int argc,char **argv) {
   sender = 0; receiver = nprocs-1;
 
   if (procno==sender) {
+    //codesnippet sendexample
     double send_data = 1.;
     MPI_Send
       ( /* send buffer/count/type: */ &send_data,1,MPI_DOUBLE,
         /* to: */ receiver, /* tag: */ 0,
         /* communicator: */ comm);
+    //codesnippet end
     printf("[%d] Send successfully concluded\n",procno);
   } else if (procno==receiver) {
+    //codesnippet recvexample
     double recv_data;
     MPI_Recv
       ( /* recv buffer/count/type: */ &recv_data,1,MPI_DOUBLE,
         /* from: */ sender, /* tag: */ 0,
         /* communicator: */ comm,
         /* recv status: */ MPI_STATUS_IGNORE);
+    //codesnippet end
     printf("[%d] Receive successfully concluded\n",procno);
   }
 

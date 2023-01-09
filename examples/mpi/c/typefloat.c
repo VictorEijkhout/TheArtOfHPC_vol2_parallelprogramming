@@ -27,6 +27,7 @@ int main(int argc,char **argv) {
 
   int processA,processB;
   processA = 0; processB = nprocs-1;
+  //codesnippet datatypevar
 #ifdef DOUBLE
   MPI_Datatype buffertype = MPI_DOUBLE;
   double send_buffer,recv_buffer; 
@@ -39,6 +40,7 @@ int main(int argc,char **argv) {
       MPI_Send(&send_buffer,1,buffertype,
 	       processB,0,
 	       comm);
+  //codesnippet end
   } else if (procno==processB) {
       MPI_Recv(&recv_buffer,1,buffertype,
 	       processA,0,

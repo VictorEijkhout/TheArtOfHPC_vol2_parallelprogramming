@@ -25,18 +25,24 @@ int find_min_abs()
   int i;
   int result = LARGENUM;
 
+  //codesnippet ompminabsdef
 #pragma omp declare reduction\
   (minabs : int :							\
    omp_out = abs(omp_in) > omp_out ? omp_out : abs(omp_in) )		\
   initializer (omp_priv=LARGENUM)
+  //codesnippet end
 
+  //codesnippet ompminabsclause
 #pragma omp parallel for reduction(minabs:result)
+  //codesnippet end
 
+  //codesnippet ompminabsloop
   for (i=0; i<N; i++) {
     if (abs(data[i]) < result) {
       result = abs(data[i]);
     }
   }
+  //codesnippet end
 
   return result;
 }

@@ -25,6 +25,7 @@ using std::stringstream;
 int main(int argc,char **argv) {
 
   int p{0};
+//codesnippet linkedlistcxx
 #pragma omp parallel shared(p)
   {
     int n;
@@ -37,6 +38,7 @@ int main(int argc,char **argv) {
       cout << proctext.str();
     }
   }
+//codesnippet end
 
   return 0;
 }

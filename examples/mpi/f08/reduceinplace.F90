@@ -17,6 +17,7 @@ Program ReduceInPlace
 
 #include "globalinit.F90"
 
+!!codesnippet reduceinplace-f
   call random_number(mynumber)
   target_proc = ntids-1;
   ! add all the random variables together
@@ -29,6 +30,7 @@ Program ReduceInPlace
      call MPI_Reduce(mynumber,result,1,MPI_REAL,MPI_SUM,&
           target_proc,comm)
   end if
+!!codesnippet end
   ! the result should be ntids*(ntids-1)/2:
   if (mytid.eq.target_proc) then
     write(*,'("Result ",f5.2," compared to n(n-1)/2=",f5.2)') &

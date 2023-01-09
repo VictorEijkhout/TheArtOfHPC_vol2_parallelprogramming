@@ -43,12 +43,15 @@ Program Pack
      stop
   end if
 
+!!codesnippet packunpack-f
   if (mytid==sender) then
+!!codesnippet end
      len = 2*4+nsends*8 ! 2*sizeof(int)+nsends*sizeof(double)
      if (len>buflen) then
         print *,"Not enough buffer space, need",len
         stop
      end if
+!!codesnippet packunpack-f
      position = 0
      call MPI_Pack(nsends,1,MPI_INTEGER,buffer,buflen,position,comm,err)
      do i=1,nsends
@@ -65,9 +68,12 @@ Program Pack
         call MPI_Unpack(buffer,buflen,position,xrecv_value,1,MPI_DOUBLE_PRECISION,comm,err)
      end do
      call MPI_Unpack(buffer,buflen,position,irecv_value,1,MPI_INTEGER,comm,err)
+!!codesnippet end
      if (.not. irecv_value==nsends) &
         print *,"found",irecv_value,"should have been",nsends
+!!codesnippet packunpack-f
   end if
+!!codesnippet end
 
   call MPI_Finalize(err)
 
