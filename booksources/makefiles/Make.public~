@@ -3,9 +3,9 @@
 ################################################################
 ####
 #### This Makefile belong with the sources
-#### for Parallel Programming
+#### for Introduction to High-Performance Scientific Computing
 #### by Victor Eijkhout
-#### copyright 2010-2022
+#### copyright 2010-2021
 ####
 #### make include file for public repository
 ####
@@ -20,20 +20,13 @@ public :
 	    echo "set DESTDIR variable for public rule" ; exit 1 ; fi
 	@if [ ! -d "${DESTDIR}" ] ; then \
 	    echo "invalid dir DESTDIR=${DESTDIR} for public rule" ; exit 1 ; fi
-	@if [ ! -z "${PUBLICALL}" ] ; then \
-	    echo " .. copying all files" \
-	     && cp * "${DESTDIR}" \
-	 ; fi
 	@if [ ! -z "${PUBLICEXTS}" ] ; then \
 	    echo " .. public files to ${DESTDIR}" \
 	     && for e in ${PUBLICEXTS} ; do \
 	          echo " .. copy *.$$e" \
-	           && if [ $$( ls *.$$e 2>/dev/null | wc -l ) -gt 0 ] ; then \
-	                for f in *.$$e ; do \
-	                  cat "$$f" ${PUBLICPIPE} \
-	                  > "${DESTDIR}/$$f" \
-	                ; done \
-	              ; fi \
+	           && for f in *.$$e ; do \
+	                cp "$$f" ${DESTDIR}/ \
+	              ; done \
 	           && ( cd ${DESTDIR} && git add *.$$e 2>/dev/null ) \
                 ; done \
 	 ; fi
