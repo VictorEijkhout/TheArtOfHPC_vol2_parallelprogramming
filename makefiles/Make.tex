@@ -5,7 +5,7 @@
 #### Victor Eijkhout
 #### eijkhout@tacc.utexas.edu
 ####
-#### copyright Victor Eijkhout 2012-2021
+#### copyright Victor Eijkhout 2012-2023
 ####
 #### Make include file with TeX/LaTeX formatting rules
 ####
@@ -17,8 +17,7 @@ info ::
 	@echo
 	@echo "================ LaTeX"
 
-LOCAL_TEXINPUTS =
-LATEXENGINE = pdflatex
+LATEXENGINE = xelatex
 .PHONY: onepass
 onepass ::
 	@if [ `which ${LATEXENGINE} >/dev/null 2>&1 ; echo $$?` -ne 0 ] ; then \

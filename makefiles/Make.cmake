@@ -19,19 +19,19 @@ cmake :
 	@if [ -z "${PROGRAM}" ] ; then \
 	    echo "Please specify PROGRAM" && exit 1 \
 	 ; fi \
-	 && codedir=`pwd` \
-	 && echo "Start cmake in: $$codedir" \
+	 && cmakelistsdir=`pwd`/.. \
+	 && echo "Start cmake in: `pwd`" \
 	 && installdir=`pwd`/exe && builddir=`pwd`/build \
 	 && rm -rf $$installdir && mkdir -p $$installdir \
 	 && rm -rf $$builddir && mkdir -p $$builddir \
 	 && echo " .. building program : ${PROGRAM}" \
 	 && echo " .. cmake in   : `pwd`" \
-	 && echo " .. with code  : $$codedir" \
+	 && echo " .. with code  : $$cmakelistsdir" \
 	 && echo " .. to prefix  : $$installdir" \
 	 && echo " .. using build: $$builddir" \
 	 && cp ../CMakeLists.txt . \
 	 && cmake \
-	        -S $$codedir -B $$builddir \
+	        -S $$cmakelistsdir -B $$builddir \
 	        -D PROJECT_NAME=${PROGRAM} \
 	        -D CMAKE_INSTALL_PREFIX=$$installdir \
 	        -D CMAKE_VERBOSE_MAKEFILE=ON \
@@ -39,8 +39,8 @@ cmake :
 	 && ( cd $$builddir && make V=1 && make install ) \
 	 && echo && echo " .. installation:" && ls $$installdir && echo
 cmake_multi :
-	@codedir=`pwd` \
-	 && echo "Start cmake in: $$codedir" \
+	@cmakelistsdir=`pwd` \
+	 && echo "Start cmake in: `pwd`" \
 	 && installdir=`pwd`/exe && builddir=`pwd`/build \
 	 && rm -f CMakeLists.{mpi,omp}.txt \
 	     && extension=$$( make --no-print-directory extension ) \
@@ -58,11 +58,11 @@ cmake_multi :
 	 && programs=$$( echo $$programs | tr ' ' ';' ) \
 	 && echo "    $$programs" && echo \
 	 && echo " .. cmake in   : `pwd`" \
-	 && echo " .. with code  : $$codedir" \
+	 && echo " .. with code  : $$cmakelistsdir" \
 	 && echo " .. to prefix  : $$installdir" \
 	 && echo " .. using build: $$builddir" \
 	 && cmake \
-	        -S $$codedir -B $$builddir \
+	        -S $$cmakelistsdir -B $$builddir \
 	        -D CMAKE_CXX_COMPILER=`which clang++` \
 	        -D CMAKE_C_COMPILER=`which clang` \
 	        -D CMAKE_Fortran_COMPILER=/opt/local/bin/gfortran \
