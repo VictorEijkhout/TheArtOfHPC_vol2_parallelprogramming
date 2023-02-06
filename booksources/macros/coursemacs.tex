@@ -12,19 +12,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newdimen\unitindent \unitindent=20pt
-\usepackage[algo2e,noline,noend]{algorithm2e}
-\newenvironment{displayalgorithm}
- {\par
-  \begin{algorithm2e}[H]\leftskip=\unitindent \parskip=0pt\relax
-  \DontPrintSemicolon
-  \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
- }
- {\end{algorithm2e}\par}
-\newenvironment{displayprocedure}[2]
- {\everymath{\strut}
-  \begin{procedure}[H]\leftskip=\unitindent\caption{#1(#2)}}
- {\end{procedure}}
 \def\sublocal{_{\mathrm\scriptstyle local}}
 
 %%%%
