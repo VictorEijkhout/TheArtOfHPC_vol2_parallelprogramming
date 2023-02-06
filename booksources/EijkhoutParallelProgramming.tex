@@ -48,18 +48,6 @@
 %\usepackage[fleqn]{amsmath}
 %\usepackage{amssymb}
 
-% algorithms
-\usepackage[algo2e,noline,noend]{algorithm2e}
-\newenvironment{displayalgorithm}
- {\begin{algorithm2e}[H]\leftskip=\unitindent \DontPrintSemicolon
-  \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
- }
- {\end{algorithm2e}}
-\newenvironment{displayprocedure}[2]
- {\everymath{\strut}
-  \begin{procedure}[H]\leftskip=\unitindent\caption{#1(#2)}}
- {\end{procedure}}
-
 \def\svnrev{428}
 % dashed lines; this may interfere with other table packages
 % \usepackage{arydshln}
@@ -67,121 +55,12 @@
 \edef\revision{\svnrev}
 \def\lulurevision{}
 
-%
-% page layout
-%
-\usepackage{geometry}
-\addtolength{\textwidth}{.5in}
-\addtolength{\textheight}{.5in}
-\addtolength{\evensidemargin}{-.5in}
-\renewcommand\topfraction{.95}
-\renewcommand\floatpagefraction{.75}
-\emergencystretch=1.5in
-
-\usepackage{fancyhdr}
-\pagestyle{fancy}\fancyhead{}\fancyfoot{}
-% remove uppercase from fancy defs
-\makeatletter
-\def\chaptermark#1{\markboth {{\ifnum \c@secnumdepth>\m@ne
- \thechapter. \ \fi #1}}{}}
-\def\sectionmark#1{\markright{{\ifnum \c@secnumdepth >\z@
- \thesection. \ \fi #1}}}
-\makeatother
-% now the fancy specs
-%\fancyhead[LE]{\thepage \hskip.5\unitindent/\hskip.5\unitindent \leftmark}
-%\fancyhead[RO]{\rightmark \hskip.5\unitindent/\hskip.5\unitindent \thepage}
-\fancyhead[LE]{\leftmark}
-\fancyfoot[LE]{\thepage}
-\fancyhead[RO]{\rightmark}
-\fancyfoot[RO]{\thepage}
-\fancyfoot[RE]{\footnotesize\sl Parallel Computing -- r\revision}
-\begin{lulu}
-\fancyfoot[RE]{\footnotesize\sl Parallel Computing}
-\end{lulu}
-\fancyfoot[LO]{\footnotesize\sl Victor Eijkhout}
-\setlength{\headheight}{14pt}
-\addtolength{\topmargin}{-1.6pt}
-
-\newwrite\nx
-\newcommand\CHAPTER[2]{
-  \Level 0 {#1}\label{ch:#2}
-  \def\chapshortname{#2}
-
-  % start scooping up example codes used in this chapter
-  \addchaptersource{header}%kludge because we have a bug for zero sources
-
-  % input the chapter
-  \SetBaseLevel 1 \input chapters/#2
-
-  % include the sources used in this chapter
-  \chaptersourcelisting{\chapshortname}
-
-  % write this chapter to a list of chapters
-  \write\chapterlist{\chapshortname}
-  \openout\nx=exercises/\chapshortname-nx.tex
-  \write\nx{\arabic{excounter}}
-  \closeout\nx
-
-  \SetBaseLevel 0
-}
-
-\includecomment{tutorials}
-\newcommand\TUTORIAL[2]{
-  \Level 0 {#1}\label{tut:#2}
-  \def\chapshortname{#2}
-  \setcounter{excounter}0\relax
-  \SetBaseLevel 1 \input tutorials/#2
-  \write\chapterlist{\chapshortname}
-  \openout\nx=exercises/\chapshortname-nx.tex
-  \write\nx{\arabic{excounter}}
-  \closeout\nx
-  \SetBaseLevel 0
-}
-\newif\ifprojects\projectsfalse
-\newcommand\PROJECT[2]{
-\ifprojects \vfill\pagebreak \else \projectstrue \fi
-\Level 0 {#1}\label{prj:#2}
-\def\chapshortname{#2}
-{\SetBaseLevel 1 \input projects/#2
-\write\chapterlist{\chapshortname}
-\openout\nx=exercises/\chapshortname-nx.tex
-\write\nx{\arabic{excounter}}
-\closeout\nx
-\SetBaseLevel 0
-}}
-\newcommand\APPENDIX[3]{
-  \vfill\pagebreak \Level 1 {#1}\label{app:#3}
-  \def\chapshortname{#3}
-  {\SetBaseLevel 2 {\index{#2|(}}
-   \setcounter{excounter}0
-   \input appendices/#3 {\index{#2|)}}
-   \write\chapterlist{\chapshortname}
-   \openout\nx=exercises/\chapshortname-nx.tex
-   \write\nx{\arabic{excounter}}
-   \closeout\nx
-   \SetBaseLevel 0
-}}
-\newcommand\APPENDIXac[3]{
-  \vfill\pagebreak \Level 1 {#1}\label{app:#3}
-  \def\chapshortname{#3}
-  {\SetBaseLevel 2 {\indexacstart{#2}}
-   \setcounter{excounter}0
-   \input appendices/#3 {\indexacend{#2}}
-   \write\chapterlist{\chapshortname}
-   \openout\nx=exercises/\chapshortname-nx.tex
-   \write\nx{\arabic{excounter}}
-   \closeout\nx
-   \SetBaseLevel 0
-}}
-
 \input commonmacs
 \input acromacs
 \input exmacs
 \input tutmacs
-
 \input idxmacs
 \makeindex
-
 \input bookmacs
 \input snippetmacs
 
