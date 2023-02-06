@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2021
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% mpl_course.tex : course in MPL interface to MPI
 %%%%
@@ -58,7 +58,6 @@
 \specialcomment{tacc}{\stepcounter{tacc}\def\CommentCutFile{tacc\arabic{tacc}.cut}}{}
 \newcounter{tacc}
 %\excludecomment{tacc}
-\includecomment{xsede}
 \includecomment{utonly}
 
 \includecomment{onesided}
@@ -68,9 +67,6 @@
 \def\Location{}% redefine in the inex file
 \def\courseyear{2021}
 \def\Location{TACC APP institute MPI training \courseyear}
-\begin{xsede}
-  \def\Location{TACC/XSEDE MPI training \courseyear}
-\end{xsede}
 \def\TitleExtra{}
 
 \input lang
@@ -89,13 +85,6 @@
 \begin{frame}
   \titlepage
 \end{frame}
-
-\begin{xsede}
-  \input xsede-conduct
-\end{xsede}
-%% \begin{utonly}
-%%   \input tacc-conduct
-%% \end{utonly}
 
 \begin{frame}{Justification}
   While the C API to MPI is usable from C++, it feels very unidiomatic
@@ -230,6 +219,9 @@ which defines \n{TACC_MPL_INC}, \n{TACC_MPL_DIR}
 \end{numberedframe}
 \referenceframe{Send}
 \referenceframe{Recv}
+\begin{numberedframe}{Tag types}
+  \input{mplnote-tag-types.cut}
+\end{numberedframe}
 \begin{numberedframe}{Message tag}
   \input{mplnote-message-tag.cut}
 \end{numberedframe}

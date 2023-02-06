@@ -17,20 +17,20 @@ info::
 	@echo
 
 COURSE = mpi
-COURSES  = mpi mpl mpithree
+COURSES  = mpi mpl mpithree mpibasics
 EXTRATEXINPUTS =
 
 LANGUAGE = all
-LANGUAGES = c f p
+LANGUAGES = c f p x
 course_prep ::
-	@cp lang_${LANGUAGE}.tex lang.tex
+	@cp ../course-support/lang_${LANGUAGE}.tex lang.tex
 include ../course-support/Make.course
 
 info ::
 	@echo "make jordan.pdf"
 .PHONY: jordan.pdf
 jordan.pdf :
-	@TEXINPUTS=../../graphics:../../macros:${TEXINPUTS} ${ENGINE} jordan.tex
+	@TEXINPUTS=../../graphics:../../macros:${TEXINPUTS} ${LATEXENGINE} jordan.tex
 clean ::
 	@rm -f jordan/*~
 
@@ -48,7 +48,6 @@ exercisecheck :
 	        done ; \
 	   done
 
-DROPBOXPATH = Courses
 
 include ../../booksources/makefiles/Make.clean
 total_clean ::

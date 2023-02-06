@@ -1,0 +1,19 @@
+\newenvironment{DoxyParamCaption}
+               {\begingroup
+                 \def\item[##1]{\par\leavevmode\kern10pt{\ttfamily ##1}}%
+                 \let\+\relax}
+               {\par\endgroup\par}
+%               {\begin{itemize}\ttfamily \let\+\relax }{\end{itemize}}
+%% \newenvironment{DoxyTemplParams}[1]{\begin{tabular}{ll}}{\end{tabular}}
+%% \newenvironment{DoxyParams}[1]
+%%                {\begingroup\let\+\relax Parameters\par \begin{tabular}{ll}}
+%%                {\end{tabular}\endgroup}
+\newenvironment{DoxyReturn}{\begingroup \ttfamily}{\endgroup}
+\newenvironment{DoxyVerb}
+               {\begingroup\ttfamily\catcode`\_=12\relax}
+               {\endgroup}
+\newenvironment{DoxyNote}[1]%{\iffalse}{\fi}
+               {\par #1\par}{\par}
+\excludecomment{DoxyNote}
+\excludecomment{DoxyParams}
+\excludecomment{DoxyTemplParams}

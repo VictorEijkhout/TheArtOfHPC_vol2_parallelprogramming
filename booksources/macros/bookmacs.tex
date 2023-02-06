@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Introduction to High-Performance Scientific Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -14,8 +14,17 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newif\ifInBook
-\InBooktrue
+%%
+%% slide/book switches
+%%
+\newif\ifInBook\InBooktrue
+\excludecomment{fullsources}
+\let\slidebreak\relax
+
+\usepackage{listings,xcolor}
+\input listingmacs
+\lstset{style=reviewcode}
+
 
 %% graphics stuff
 \renewcommand\topfraction{.85}

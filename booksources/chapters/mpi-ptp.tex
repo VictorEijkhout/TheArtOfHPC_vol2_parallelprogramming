@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% mpi-ptp.tex : about point-to-point communication
 %%%%
@@ -172,6 +172,17 @@ There are not many cases where this is needed.
   computing: two threads may send messages that do not have an MPI-imposed order.
   See the example in section~\ref{sec:hybrid-order}.
 \end{itemize}
+
+\begin{mplnote}{Tag types}
+  Tag are \lstinline{int} or an \lstinline{enum} typ:
+  \begin{lstlisting}
+    template<typename T >
+ 	tag_t (T t);
+ 	tag_t (int t);
+  \end{lstlisting}
+  Example:
+  \cxxverbatimsnippet{mplinttag}
+\end{mplnote}
 
 \begin{mplnote}{Message tag}
   \ac{MPL} differs from other \acp{API} in its treatment of tags:

@@ -178,10 +178,20 @@ This routine can be used in the simplest implementation of the
 \indextermsub{dense}{matrix-vector product} to give each processor the
 full input; see~\HPSCref{sec:densescaling}.
 
-Some cases look like an all-gather but can be implemented more
-efficiently. Suppose you have two distributed vectors, and you want to
-create a new vector that contains those elements of the one that do
-not appear in the other. You could implement this by gathering the
+The \indexmpishow{MPI_IN_PLACE} keyword can be used with an all-gather:
+\begin{enumerate}
+\item Use \indexmpishow{MPI_IN_PLACE} for the send buffer;
+\item send count and datetype are ignored by MPI;
+\item each process needs to put its `send content' in the correct
+  location of the gather buffer.
+\end{enumerate}
+
+Some cases look like an all-gather but can be implemented more efficiently.
+Let's consider as an example the set difference of two distributed vectors.
+That is, you have two distributed vectors, and you want to
+create a new vector, again distributed,
+that contains those elements of the one that do not appear in the other.
+You could implement this by gathering the
 second vector on each processor, but this may be prohibitive in memory
 usage.
 

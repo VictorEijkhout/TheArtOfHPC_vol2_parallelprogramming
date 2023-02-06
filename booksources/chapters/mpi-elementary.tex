@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% mpi-elementary.tex : predefined datatypes
 %%%%
@@ -232,6 +232,8 @@ CALL MPI_Bcast ( array , 100 , &
 ! error parameter optional in f08, both routines.
 \end{lstlisting}
 
+\fsnippetwithoutput{kindsend}{examples/mpi/f08}{kindsend}
+
 Example of a real kind:
 \begin{lstlisting}
 REAL ( KIND = SELECTED_REAL_KIND(15 ,300) ) , &
@@ -245,6 +247,11 @@ COMPLEX ( KIND = SELECTED_REAL_KIND(15 ,300) ) , &
  DIMENSION(100) :: array 
 CALL MPI_Type_create_f90_complex( 15 , 300 , complextype , error )
 \end{lstlisting}
+
+\begin{remark}
+  The MPI types thus created are predefined data types,
+  so there is no need to commit or free them.
+\end{remark}
 
 \lstset{style=reviewcode,language=C} %pyskip
 

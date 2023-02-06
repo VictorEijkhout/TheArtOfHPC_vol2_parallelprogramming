@@ -1,3 +1,19 @@
+! -*- f90 -*-
+!  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+!  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+!  %%%%
+!  %%%% This program file is part of the book and course
+!  %%%% "Parallel Computing"
+!  %%%% by Victor Eijkhout, copyright 2020-2022
+!  %%%% 
+!  %%%% kindreduce.F90 : reductino on kind-defined type
+!  %%%%
+!  %%%% WRONG: YOU CAN NOT REDUCE KIND-DEFINED TYPES
+!  %%%%
+!  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+!  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 Module testsum
   implicit none
   Integer, Parameter :: dp = Selected_Real_Kind(15,307)

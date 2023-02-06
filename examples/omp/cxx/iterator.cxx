@@ -24,11 +24,13 @@ class NewVector {
 protected:
   int *storage;
   int s;
+//codesnippet classwithiterdata
 public:
   NewVector( int s )
     : s(s){
     storage = new int[s]; };
   ~NewVector() { delete storage; };
+//codesnippet classwithiterdata
   int at(int i) const { if (i<0 or i>=s) throw;
     return storage[i]; };
   int& at(int i) { if (i<0 or i>=s) throw;
@@ -44,8 +46,10 @@ public:
 };
 //codesnippet end
 
+//codesnippet classwithiteriter
 class NewVector::iter {
 private: int *searcher;
+//codesnippet end
 public:
   iter( int *searcher );
   //codesnippet omprandaccess
@@ -86,12 +90,20 @@ int main() {
   return 0;
 }
 
-NewVector::iter::iter( int *searcher ) : searcher(searcher) {};
-NewVector::iter NewVector::begin() { return NewVector::iter(storage); };
-NewVector::iter NewVector::end()   { return NewVector::iter(storage+NewVector::s); };
+//codesnippet classwithiteriter
+NewVector::iter::iter( int *searcher )
+  : searcher(searcher) {};
+NewVector::iter NewVector::begin() {
+  return NewVector::iter(storage); };
+NewVector::iter NewVector::end()   {
+  return NewVector::iter(storage+NewVector::s); };
+//codesnippet end
 
-NewVector::iter& NewVector::iter::operator++() { searcher++; return *this; };
-int&  NewVector::iter::operator*() { return *searcher; };
+//answersnippet classwithitersoln
+NewVector::iter& NewVector::iter::operator++() {
+  searcher++; return *this; };
+int&  NewVector::iter::operator*() {
+  return *searcher; };
 bool  NewVector::iter::operator==( const NewVector::iter &other ) const {
   return searcher==other.searcher; };
 bool  NewVector::iter::operator!=( const NewVector::iter &other ) const {
@@ -99,4 +111,6 @@ bool  NewVector::iter::operator!=( const NewVector::iter &other ) const {
 // needed to OpenMP
 int   NewVector::iter::operator-( const NewVector::iter& other ) const {
   return searcher-other.searcher; };
-NewVector::iter& NewVector::iter::operator+=( int add ) { searcher += add; return *this; };
+NewVector::iter& NewVector::iter::operator+=( int add ) {
+  searcher += add; return *this; };
+//answersnippet end

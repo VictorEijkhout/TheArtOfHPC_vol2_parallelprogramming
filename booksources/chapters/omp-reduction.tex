@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% omp-reduction.tex : reduction loops
 %%%%
@@ -67,9 +67,18 @@ reduction(+:x,y,z)
 \end{lstlisting}
 For multiple reduction with different operators, use more than one clause.
 
-A reduction is one of those cases where the parallel execution can have a slightly different
-value from the one that is computed sequentially, because floating point operations
-are not associative. See~\HPSCref{sec:roundoff-parallel} for more explanation.
+\begin{remark}
+  A reduction is one of those cases where the parallel execution can have a slightly different
+  value from the one that is computed sequentially, because floating point operations
+  are not associative, so \emph{roundoff}{omp!reduction!roundoff}
+  will lead to differing results.
+  See~\HPSCref{sec:roundoff-parallel} for more explanation.
+
+  The OpenMP standard does not even specify that two runs with the same number of threads,
+  and the same scheduling, have to give identical results.
+  Some runtimes may have a setting to enforce this;
+  for instance \indextermtt{KMP_DETERMINISTIC_REDUCTION} for the Intel runtime.
+\end{remark}
 
 \Level 1 {Code your own solution}
 

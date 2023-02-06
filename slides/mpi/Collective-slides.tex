@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the lecture slides for
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% Collective-slides.tex : slides about collective operations
 %%%%
@@ -184,6 +184,7 @@ A couple more.
 \end{c}
 
 \begin{fortran}
+  \addtocounter{slidecount}{-1}
 \begin{numberedframe}{Buffers in Fortran}
   General principle: buffer argument is address in memory of the data.
   \begin{itemize}
@@ -224,6 +225,7 @@ MPI_Send( &xx.front(),25,MPI_FLOAT, .... );
 \end{numberedframe}
 
 \begin{python}
+  \addtocounter{slidecount}{-1}
 \begin{numberedframe}{Buffers in Python}
   For many routines there are two variants:
   \begin{itemize}
@@ -260,6 +262,7 @@ randomfraction = (rand() / (double)RAND_MAX);
 \end{numberedframe}
 
 \begin{fortran}
+  \addtocounter{slidecount}{-1}
 \begin{numberedframe}{Random numbers in Fortran}
 \lstset{language=Fortran}
 \begin{lstlisting}
@@ -279,6 +282,7 @@ call random_seed(put=randseed)
 \end{fortran}
 
 \begin{python}
+  \addtocounter{slidecount}{-1}
 \begin{numberedframe}{Random numbers in Python}
 \lstset{language=Python}
 \begin{lstlisting}
@@ -594,6 +598,7 @@ int MPI_Op_free(MPI_Op *op)
 \end{numberedframe}
 
 \begin{fortran}
+  \addtocounter{slidecount}{-1}
 \begin{numberedframe}{User defined operators, Fortran}
 \lstset{language=Fortran}
 \begin{lstlisting}
@@ -648,6 +653,16 @@ INTEGER :: length, mpitype
   \item How about the case of really long buffers?
   \end{itemize}
 
+\end{numberedframe}
+
+\begin{numberedframe}{Implementation of Reduce}
+  \footnotesize
+  \input reducetree
+\end{numberedframe}
+
+\begin{numberedframe}{Implementation of Allreduce}
+  \footnotesize
+  \input allreducetree
 \end{numberedframe}
 
 \begin{reviewframe}

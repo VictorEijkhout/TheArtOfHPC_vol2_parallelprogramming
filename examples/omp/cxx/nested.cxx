@@ -22,7 +22,9 @@ using std::string;
 class c {
 public:
   void f() {
-    cout << omp_get_num_threads() << '\n';
+    cout
+      << omp_get_num_threads()
+      << '\n';
   };
 };
 int main() {

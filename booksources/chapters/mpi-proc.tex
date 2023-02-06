@@ -52,6 +52,29 @@ your multi-tasking operating system (which is some variant of Unix for
 almost everyone) will use \indexterm{time-slicing} to start the
 spawned processes, but you will not gain any performance.
 
+\Level 1 {Commandline arguments}
+\label{sec:mpi-spawn-args}
+
+The \lstinline{argv} argument contains the 
+\emph{commandline arguments}\index{commandline arguments!of spawned process}
+passed to the spawned process.
+\begin{itemize}
+\item
+  This array needs to be
+  \emph{null-terminated}\index{null-terminator},
+  so that its length can be determined.
+\item
+  If the spawned process takes no commandline arguments,
+  a~value of \indexmpidef{MPI_ARGV_NULL} can be used,
+  in both C and Fortran.
+  In~C this is the same as \lstinline{NULL}.
+\item
+  Unline the \lstinline{argv} argument of a main program,
+  the \lstinline{argv} argument passed in the spawn call
+  does not contain the name of the executable.
+\end{itemize}
+\Level 1 {Example: work manager}
+
 Here is an example of a work manager.
 %
 First we query how much space we have for new processes,
@@ -140,6 +163,16 @@ the attribute
 \indexmpidef{MPI_APPNUM}
 which of the executables it is;
 section~\ref{sec:mpi_attr}.
+
+Commandline arguments are handled similarly to \indexmpishow{MPI_Comm_spawn}
+(section~\ref{sec:mpi-spawn-args}),
+except that that there is now an array of arrays of strings.
+If not executables take
+\emph{commandline arguments}{commandline arguments!of multiple spawns},
+the value \indexmpidef{MPI_ARGVS_NULL} can be passed.
+If only certain executables take no arguments,
+for them an array of length~1 needs to be passed containing only the
+\indexterm{null-terminator}.
 
 \Level 0 {Socket-style communications}
 

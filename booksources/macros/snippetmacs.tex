@@ -27,23 +27,26 @@
 \newcommand{\pverbatimsnippet}[2][XX]{
   \languageVerbatimSnippet{#1}{#2}{Python}
 }
-% #1 file name (or XX if not given)
-% #2 snippet name
-% #3 language
+
+% the slide/book macs set the `fullsources' environment
 \newif\ifincludesources\includesourcesfalse
 \begin{fullsources}
 \includesourcestrue
 \end{fullsources}
+
+% #1 file name (or XX if not given)
+% #2 snippet name
+% #3 language
 \newcommand{\languageVerbatimSnippet}[3]{
   % record this file as bracketed name
   \def\xx{XX}\def\yy{#1}
   % typeset as nice Python code
-  \lstset{style=reviewcode,language=#3}
+  \lstset{language=#3}
   \IfFileExists
       {#2}
       {\lstinputlisting{#2}}
       {\hbox{\textbf{missing snippet #2}\message{missing snippet #2}}}
-  \lstset{style=reviewcode,language=C}
+  \lstset{language=C}
   \ifInBook
   \nobreak
   \ifincludesources
@@ -58,20 +61,17 @@
 }
 
 \newenvironment{clisting}
-    {\lstset{style=reviewcode,language=C}\begin{lstlisting}}
+    {\lstset{language=C}\begin{lstlisting}}
     {\end{lstlisting}}
 \newenvironment{cxxlisting}
-    {\lstset{style=reviewcode,language=C++}\begin{lstlisting}}
+    {\lstset{language=C++}\begin{lstlisting}}
     {\end{lstlisting}}
 \newenvironment{flisting}
-    {\lstset{style=reviewcode,language=Fortran}\begin{lstlisting}}
+    {\lstset{language=Fortran}\begin{lstlisting}}
     {\end{lstlisting}}
 \newenvironment{plisting}
-    {\lstset{style=reviewcode,language=Python}\begin{lstlisting}}
+    {\lstset{language=Python}\begin{lstlisting}}
     {\end{lstlisting}}
-
-\def\snippetcodefraction{.6}
-\def\snippettextfraction{.35}
 
 % #1 snippet #2 dir #3 output
 \newcommand{\csnippetwithoutput}[3]{
@@ -111,8 +111,9 @@
       \IfFileExists
           {#2/#3.runout}
           { \snippetoutputsize
-            \def\verbatim@startline{\verbatim@line{\leavevmode\relax}}
-            \verbatiminput{#2/#3.runout}
+            \lstset{basicstyle=\snippetoutputsize\ttfamily,
+              columns=flexible,breaklines=true}
+            \lstinputlisting{#2/#3.runout}
           }
           { \textbf{Missing output for #3}
             \message{Missing output for #3}

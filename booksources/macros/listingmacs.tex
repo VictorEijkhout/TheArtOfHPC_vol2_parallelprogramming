@@ -11,13 +11,25 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\usepackage{listings,xcolor}
+%% this is in slide/book macs: \usepackage{listings,xcolor}
 \newcommand\lstineline{LST TYPO\n}
 \newcommand\finline[1]{{\lstset{language=Fortran}\lstinline{#1}}}
 
 \def\codefontsize{\footnotesize}
 \lstdefinestyle{reviewcode}{
   belowcaptionskip=1\baselineskip, frame=L,
+  breaklines=true, breakatwhitespace=true,
+  postbreak=\hbox{{$\hookrightarrow$}}, % \textcolor{green}
+  xleftmargin=.5\unitindent, showstringspaces=false,
+  basicstyle=\codefontsize\ttfamily,
+  keywordstyle=\bfseries\color{blue},
+  commentstyle=\color{red!60!black},
+  identifierstyle=\slshape\color{black},
+  stringstyle=\color{green!60!black}, columns=fullflexible,
+  keepspaces=true,tabsize=8,
+}
+\lstdefinestyle{slidecode}{
+  belowcaptionskip=1\baselineskip, frame=none, numbers=left,numberstyle=\tiny,
   breaklines=true, breakatwhitespace=true,
   postbreak=\hbox{{$\hookrightarrow$}}, % \textcolor{green}
   xleftmargin=.5\unitindent, showstringspaces=false,

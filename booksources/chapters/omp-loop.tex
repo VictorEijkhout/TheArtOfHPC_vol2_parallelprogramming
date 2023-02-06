@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% omp-loop.tex : the OpenMP loop construct
 %%%%
@@ -329,6 +329,15 @@ For reference, the commandlines executed were:
   \cxxverbatimsnippet{omprangeloop}
   %
   Tests not reported here show exactly the same speedup as the C~code.
+\end{cppnote}
+
+\begin{cppnote}{C++20 ranges header}
+  The \cppstandard{20} \indextermtt{ranges} library is also supported:
+  \cxxverbatimsnippet{omprangelib}
+\end{cppnote}
+
+\begin{cppnote}{C++20 ranges speedup}
+  \lstinputlisting{code/omp/cxx/range-ls6.runout}
 \end{cppnote}
 
 \Level 0 {Loop schedules}

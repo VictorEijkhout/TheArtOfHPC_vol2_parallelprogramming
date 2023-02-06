@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2021
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% mpi-commsplit.tex : about splitting communicators
 %%%%
@@ -19,17 +19,20 @@ communicators that have a subset of the processes of another communicator.
 There is a more general mechanism, using \indexmpidef{MPI_Group}
 objects.
 
-Using groups, it takes three steps to create a new communicator:
+Using groups, it takes the following steps to create a new communicator:
 \begin{enumerate}
 \item Access the \indexmpishow{MPI_Group} of a communicator
   object using \indexmpiref{MPI_Comm_group}.
 \item Use various routines, discussed next, to form a new group.
-\item Make a new communicator object from the group with
-  \indexmpishow{MPI_Group}, using
-  \indexmpiref{MPI_Comm_create}
+
+  Note: you would form that group even on the processes that will not
+  be come part of the new communicator.
+\item Make a new communicator object from the group with using
+  \indexmpiref{MPI_Comm_create}, collective on the old communicator.
+\item On the ranks that were not in the subgroup, the resulting
+  communicator value will be \indexmpishow{MPI_COMM_NULL}.
 \end{enumerate}
 
-Creating a new communicator from a group is collective on the old communicator.
 There is also a routine \indexmpidef{MPI_Comm_create_group} that only
 needs to be called on the group that constitutes the new communicator.
 
@@ -76,9 +79,25 @@ or the result of \indexmpishow{MPI_Group_free}.
   there is an access function \indexmplshow{native_handle}.
 \end{mplnote}
 
-\Level 1 {Example}
+\Level 1 {Examples}
 
 Suppose you want to split the world communicator into
 one manager process, with the remaining processes workers.
 %
 \cverbatimsnippet{groupworker}
+
+\begin{exercise}[subgroup]
+  \label{ex:comm-saling}
+  Write a code that does a scaling study: your code needs to
+  contain a loop over increasingly sized subsets of \indexmpishow{MPI_COMM_WORLD}.
+  \begin{lstlisting}
+    for (int subsize=1; subsize<=worldsize; subsize++) {
+      MPI_Comm subcomm;
+      // form `subcomm' to be of size `subsize'
+      MPI_Allreduce( /* stuff */ subcomm );
+      }
+  \end{lstlisting}
+  Carefully address which process do the various communicator and group calls;
+  in particular do \indexmpishow{MPI_Comm_free} and \indexmpishow{MPI_Group_free}
+  on the right processes.
+\end{exercise}

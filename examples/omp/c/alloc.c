@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%% "Parallel Computing"
-   %%%% by Victor Eijkhout, copyright 2013-2022
+   %%%% by Victor Eijkhout, copyright 2013-2023
    %%%%
    %%%% alloc.c : dealing with allocated data
    %%%%
@@ -35,6 +35,7 @@ int main(int argc,char **argv) {
       array += t;
       array[0] = t;
     }
+    // ... print the array
     //codesnippet end
 
     printf("Pointer\n");

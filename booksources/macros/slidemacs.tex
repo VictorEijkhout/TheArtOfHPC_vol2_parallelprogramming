@@ -4,19 +4,27 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Introduction to High-Performance Scientific Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
 %%%% The Saylor Foundation \url{http://www.saylor.org}.
 %%%%
+%%%% slidemacs.tex : goes after snippetmacs
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\newif\ifInBook
-\InBookfalse
+%%
+%% slide/book switches
+%%
+\newif\ifInBook\InBookfalse
 \excludecomment{fullsources}
+\let\slidebreak=\\
+
+\usepackage{listings,xcolor}
+\input listingmacs
+\lstset{style=slidecode}
 
 %%%%
 %%%% Outlining
@@ -134,53 +142,6 @@
 }
 
 %%%%
-%%%% snippets
-%%%%
-\begin{comment}
-  %%
-  %% why is this commented out?
-  %% we are always icludng snippetmacs?
-  %%
-\newcommand\cxxverbatimsnippet[2][XX]{
-  \lstset{style=reviewcode,language=C++}
-  \lstinputlisting{#2}
-  \lstset{style=reviewcode,language=C}
-}
-\def\verbatimsnippet#1{\verbatiminput{#1}} % snippets/
-\newcommand{\cverbatimsnippet}[2][XX]{
-  % record this file as bracketed name
-  \addchaptersource{{#1}}
-  % typeset as nice C code
-  \lstset{style=reviewcode,language=C}\lstinputlisting{#2}}
-\newcommand{\csnippetwithoutput}[3]{
-  \begin{multicols}{2}
-    \lstset{style=reviewcode,language=C}\lstinputlisting{#1}
-    \vfill\hbox{}\columnbreak
-    \footnotesize
-    \verbatiminput{#2/#3.runout}
-    \vfill\hbox{}\columnbreak
-  \end{multicols}
-  }
-\show\cxxverbatimsnippet
-\def\fverbatimsnippet#1{
-  \lstset{style=reviewcode,language=Fortran}\lstinputlisting{#1}
-  \lstset{style=reviewcode,language=C}
-}
-\def\pverbatimsnippet#1{
-  \lstset{style=reviewcode,language=Python}\lstinputlisting{#1}
-  \lstset{style=reviewcode,language=C}
-}
-\newenvironment{clisting}
-    {\lstset{style=reviewcode,language=C}\begin{lstlisting}}
-    {\end{lstlisting}
-}
-\newenvironment{cxxlisting}
-    {\lstset{style=reviewcode,language=C++}\begin{lstlisting}}
-    {\end{lstlisting}
-}
-\end{comment}
-
-%%%%
 %%%% Prototypes
 %%%%
 \def\underscore{_}
@@ -206,6 +167,27 @@
           \IfFileExists
               {mpireference/\protoname.tex}
               {\verbatiminput{mpireference/\protoname}}{}}
+        %\expandafter\mpiRoutineRef\expandafter{\protoname}
+  \end{frame}\egroup
+}
+%%
+%% MPL protos
+%%
+\def\mplprotoslide#{\bgroup \catcode`\_=12
+  \afterassignment\mplprotoslideinclude \def\protoname}
+\def\mplprotoslideinclude{%
+  \begin{frame}[containsverbatim]\frametitle{\texttt{MPL: \protoname}}
+      % doxy standard macros
+    \def\hyperlink##1##2{##2}
+    \def\href##1{}
+    \def\hypertarget##1{}
+    \let\+\relax
+    \tiny
+    \edef\tmp{\lowercase{\def\noexpand\standardroutine{\protoname}}}\tmp
+    \IfFileExists
+        {standardx/\standardroutine.tex}
+        {\input{standardx/\standardroutine}}
+        {Missing MPL proto: \standardroutine}
         %\expandafter\mpiRoutineRef\expandafter{\protoname}
   \end{frame}\egroup
 }
@@ -308,11 +290,12 @@
 %%%% Environments
 %%%%
 \newcounter{slidecount}
-\setcounter{slidecount}{1}
+\setcounter{slidecount}{0}
 \newenvironment
-    {numberedframe}[1]
-    {\begin{frame}[containsverbatim]{\arabic{slidecount}.\ #1}
-        \refstepcounter{slidecount}
+    {numberedframe}[2][]
+    {%% if there is an optional tag, reuse the previous slide number
+      \def\empty{}\def\opt{#1}\ifx\empty\opt \refstepcounter{slidecount} \fi
+      \begin{frame}[containsverbatim]{\arabic{slidecount}#1.\ #2}
     }
     {\end{frame}}
 \newenvironment{question}{\begin{quotation}\textbf{Question.\ }}{\end{quotation}}

@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% mpi_sweden_course.tex : master file for an MPI lecture in Uppsala
 %%%%
@@ -42,7 +42,6 @@
 \specialcomment{tacc}{\stepcounter{tacc}\def\CommentCutFile{tacc\arabic{tacc}.cut}}{}
 \newcounter{tacc}
 %\excludecomment{tacc}
-\excludecomment{xsede}
 
 \includecomment{download}
 \excludecomment{lab}
@@ -54,7 +53,7 @@
 \def\Location{}% redefine in the inex file
 \def\courseyear{2021}
 \def\Location{TACC APP institute MPI training \courseyear}
-\def\Location{TACC/XSEDE MPI training \courseyear}
+\def\Location{TACC MPI training \courseyear}
 \def\Location{Uppsala MPI course}
 \iffalse
   \small
@@ -89,10 +88,6 @@
 \begin{frame}
   \titlepage
 \end{frame}
-
-\begin{xsede}
-  \input xsede-conduct
-\end{xsede}
 
 \begin{frame}{Table of Contents}
   \def\contentsline####1####2####3####4{\item ####2}
