@@ -3,7 +3,7 @@
 ####
 #### This makefile is part of the source of 
 #### "Parallel Computing for Science and Engineering"
-#### by Victor Eijkhout, copyright 2013-2022
+#### by Victor Eijkhout, copyright 2013-2023
 ####
 #### This is the makefile for the C examples
 ####     in examples/petsc/c
@@ -20,7 +20,7 @@ info ::
 	@echo "available rules:"
 
 APPS = init backtrace sizes split vecarray \
-    optionsbegin  \
+    optionsbegin viewhdf5 \
     average fftsine oddeven power transpose\
     dmrhs grid1d grid2d quintic1 \
     kspcg ksplu twoksps direct

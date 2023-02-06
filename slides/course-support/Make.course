@@ -2,7 +2,7 @@
 ################################################################
 ####
 #### This makefile is part of `Parallel Programming in MPI and OpenMP'
-#### by Victor Eijkhout, copyright 2013-2022
+#### by Victor Eijkhout, copyright 2013-2023
 #### eijkhout@tacc.utexas.edu
 ####
 #### include Makefile for course slides MPI/OpenMP/hybrid
@@ -12,16 +12,16 @@
 ####
 ################################################################
 
-ENGINE =  xelatex -shell-escape
+LATEXENGINE =  xelatex -shell-escape
 # pdflatex
 
 info::
-	@echo "make course COURSE=... (in: ${COURSES})"
+	@echo "make course COURSE=... (in: ${COURSES}, default=${COURSE})"
 	@echo "make courses : all courses;"
 	@if [ ! -z "${LANGUAGES}" ] ; then \
-	    echo "    also languages: ${LANGUAGES}" \
+	    echo "make languages (using LANGUAGES=${LANGUAGES}) [ COURSE=... ]" \
 	 ; fi
-.PHONY: course courses course_prep
+.PHONY: course courses languages course_prep
 courses ::
 	@if [ ! -z "${COURSES}" ] ; then \
 	    cp ../course-support/lang_all.tex lang.tex \
@@ -30,6 +30,7 @@ courses ::
 	        ; done \
 	    ; \
 	 fi
+languages :
 	@if [ ! -z "${LANGUAGES}" ] ; then \
 	    for l in ${LANGUAGES} ; do \
 	        cp ${COURSE}_course.tex ${COURSE}_$${l}_course.tex \
@@ -54,16 +55,10 @@ no_acro_rule :
 	      && make --no-print-directory pdf FILE=${COURSE}_course \
 	    ; fi
 
-.PHONY: onepass pdf filename onepassformat
+.PHONY: onepass pdf onepassformat
 info ::
 	@echo "make onepass COURSE=... / FILE=..."
 TEXROOTDIR = ../../booksources
-onepass ::
-	@export file=$$( make --no-print-directory filename COURSE="${COURSE}" FILE="${FILE}" ) \
-	 && make --no-print-directory onepassformat FILE=$$file
-onepassformat :
-	@echo && echo "One pass over file: ${FILE}" && echo \
-	 && TEXINPUTS=.:..:../..//:${TEXROOTDIR}:../taccstyle:../taccstyle/figures:${TEXROOTDIR}/chapters:${TEXROOTDIR}/exercises:${TEXROOTDIR}/graphics//:${TEXROOTDIR}/plots//:${TEXROOTDIR}/macros:${TEXROOTDIR}/hwloc:${TEXROOTDIR}/mpireference:${TEXROOTDIR}/snippets:../course-support:${TEXINPUTS}${EXTRATEXINPUTS} ${ENGINE} ${FILE}
 pdf :: 
 	@export file=$$( make --no-print-directory filename COURSE="${COURSE}" FILE="${FILE}" ) \
 	 && make --no-print-directory onepassformat FILE=$${file} \
@@ -82,16 +77,7 @@ pdf ::
 	 && if [ $${index} -eq 1 -o $${bib} -eq 1 -o $${ref} -eq 1 ] ; then \
 	        make onepassformat FILE=$${file} \
 	    ; fi
-filename :
-	@if [ ! -z "${COURSE}" ] ; then \
-	    export file=${COURSE}_course \
-	; elif [ ! -z "${FILE}" ] ; then \
-	    export file=${FILE} \
-	; else \
-	    echo "Please set FILE or COURSE" && exit 1 \
-	; fi \
-	 && echo $$file
-
+LOCALTEXINPUTS = .:../..//
 include ../../makefiles/Make.tex
 
 .PHONY: listextra extrafiles

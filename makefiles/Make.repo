@@ -41,8 +41,7 @@ dropbox:
 ## base directory, not the lectures directory
 ## DO NoT escape any spaces!
 ##
-STUDENTREPO =
-## ${HOME}/Current/SSC/STC/2021 Fall/sds335fall2021repo
+STUDENTREPO = ${HOME}/Current/SSC/PCSE/PCSE2023/sds374394spring2023
 studentrepo :
 	@if [ -d "${STUDENTREPO}" ] ; then \
 	    dir="${STUDENTREPO}/${TARGETDIR}" \

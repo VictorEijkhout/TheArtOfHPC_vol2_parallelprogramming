@@ -2,7 +2,7 @@
 ################################################################
 ####
 #### This makefile is part of `Parallel Programming in MPI and OpenMP'
-#### by Victor Eijkhout, copyright 2013-2022
+#### by Victor Eijkhout, copyright 2013-2023
 #### eijkhout@tacc.utexas.edu
 ####
 #### Make include file for omp test runs
@@ -31,15 +31,19 @@ info ::
 	@echo "make omp_scaling [ NP=... ] [ NDIV=... ] [ PROGRAM=... ]"
 	@echo "    [ SCRIPT_OPTIONS=.... (options for run rule) ]"
 
-.PHONY: omp_scaling
 BIND = true
 ACTIVE = 1
 ECHO = 0
+TWOLEVEL =
 .PHONY: omp_run omp_scaling
 omp_run :
 	@command="./${PROGRAM}" \
 	 && np=`make --no-print-directory num_cores NP=${NP}` \
-	 && command="OMP_NUM_THREADS=$$np $$command" \
+	 && if [ ! -z "${TWOLEVEL}" ] ; then \
+	        command="OMP_NUM_THREADS=${TWOLEVEL},$$(( $$np / ${TWOLEVEL} )) $$command" \
+	    ; else \
+	        command="OMP_NUM_THREADS=$$np $$command" \
+	    ; fi \
 	 && command="OMP_PROC_BIND=${BIND} $$command" \
 	 && if [ ${ACTIVE} -gt 1 ] ; then \
 	         command="OMP_MAX_ACTIVE_LEVELS=${ACTIVE} $$command" ; fi \
@@ -60,8 +64,8 @@ omp_scaling :
 	    for t in $$ompthreads ; do \
 	        echo "==== Run ${PROGRAM} on $$t threads ====" \
 	         && make --no-print-directory omp_run NP=$$t PROGRAM=${PROGRAM} \
-	                ECHO=${ECHO} NEST=${NEST} \
-	                RUN_OPTIONS="${RUN_OPTIONS}" \
+	                ECHO=${ECHO} NEST=${NEST} TWOLEVEL=${TWOLEVEL} \
+	                RUN_OPTIONS="${RUN_OPTIONS}" RUNOUTID=${TACC_SYSTEM} \
 	    ; done \
 	    ) | tee $$results \
 	 && cat $$results | awk '/threads/ { t = $$4 } /speedup=/ { print t " " $$6 }' \

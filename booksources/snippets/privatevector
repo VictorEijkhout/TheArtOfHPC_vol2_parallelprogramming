@@ -6,3 +6,4 @@ vector<int> array(nthreads);
   int t = omp_get_thread_num();
   array[t] = t+1;
 }
+// ... print the array

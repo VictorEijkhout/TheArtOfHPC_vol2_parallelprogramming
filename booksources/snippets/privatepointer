@@ -10,3 +10,4 @@ for (int i=0; i<nthreads; i++)
   array += t;
   array[0] = t;
 }
+// ... print the array

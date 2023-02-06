@@ -5,7 +5,7 @@
 #### Victor Eijkhout
 #### eijkhout@tacc.utexas.edu
 ####
-#### copyright Victor Eijkhout 2012-2022
+#### copyright Victor Eijkhout 2012-2023
 ####
 #### Make include file with general compile rules
 ####
@@ -49,7 +49,7 @@ FFLAGS =
 CSTANDARD = 99
 ifeq "${MODE}" "cuda"
     C_STD_FLAGS = 
-else ifeq "${TACC_FAMILY_COMPILER}" "nvhpc"
+else ifeq "${LMOD_FAMILY_COMPILER}" "nvhpc"
     C_STD_FLAGS = 
 else
     C_STD_FLAGS = -std=c99
@@ -62,7 +62,7 @@ CXXFLAGS += ${CXX_STD_FLAGS}
 
 OPTFLAGS = -O${OPTLEVEL} -g
 
-ifdef TACC_TAU_DIR
+ifdef LMOD_TAU_DIR
   C_COMPILER = tau_cc.sh -optCompInst -optPreProcess
   CXX_COMPILER = tau_cxx.sh -optCompInst -optPreProcess
   F_COMPILER = tau_f90.sh -optCompInst -optPreProcess
@@ -90,8 +90,8 @@ else
     else ifeq "${MODE}" "1api"
       ifeq "${TACC_SYSTEM}" "frontera"
         CXX_COMPILER = syclcc
-        CXXFLAGS += -I${TACC_BOOST_INC}
-        LINK_FLAGS += -L${TACC_BOOST_LIB}
+        CXXFLAGS += -I${LMOD_BOOST_INC}
+        LINK_FLAGS += -L${LMOD_BOOST_LIB}
       else
         CXX_COMPILER = dpcpp
       endif
@@ -141,10 +141,10 @@ else
       F_COMPILER   = /bin/false
 
       F_HOST_COMPILER   = no_such_f_compiler
-      ifeq "${TACC_FAMILY_COMPILER}" "intel"
+      ifeq "${LMOD_FAMILY_COMPILER}" "intel"
         C_HOST_COMPILER   = icc
         CXX_HOST_COMPILER = icpc
-      else ifeq "${TACC_FAMILY_COMPILER}" "gcc"
+      else ifeq "${LMOD_FAMILY_COMPILER}" "gcc"
         C_HOST_COMPILER   = gcc
         CXX_HOST_COMPILER = g++
       else 
@@ -155,35 +155,35 @@ else
     else # other modes use the regular compilers
 
 	ifeq "not" "true"
-	else ifeq "${TACC_FAMILY_COMPILER}" "intel"
+	else ifeq "${LMOD_FAMILY_COMPILER}" "intel"
 	  C_COMPILER   = icc
 	  CXX_COMPILER = icpc
 	  F_COMPILER   = ifort
-	else ifeq "${TACC_FAMILY_COMPILER}" "intelx"
+	else ifeq "${LMOD_FAMILY_COMPILER}" "intelx"
 	  C_COMPILER   = icx
 	  CXX_COMPILER = icpx
 	  F_COMPILER   = ifx
-	else ifeq "${TACC_FAMILY_COMPILER}" "oneapi"
+	else ifeq "${LMOD_FAMILY_COMPILER}" "oneapi"
 	  C_COMPILER   = icx
 	  CXX_COMPILER = icpx
 	  F_COMPILER   = ifort
-	else ifeq "${TACC_FAMILY_COMPILER}" "gcc"
+	else ifeq "${LMOD_FAMILY_COMPILER}" "gcc"
 	  C_COMPILER   = gcc
 	  CXX_COMPILER = g++
 	  F_COMPILER   = gfortran
-	else ifeq "${TACC_FAMILY_COMPILER}" "clang"
+	else ifeq "${LMOD_FAMILY_COMPILER}" "clang"
 	  C_COMPILER   = clang
 	  CXX_COMPILER = clang++
 	  F_COMPILER   = gfortran
-        else ifeq "${TACC_FAMILY_COMPILER}" "nvhpc"
+        else ifeq "${LMOD_FAMILY_COMPILER}" "nvhpc"
           C_COMPILER   = nvcc
           CXX_COMPILER = nvcc
           F_COMPILER   = /bin/false
-	else ifeq "${TACC_FAMILY_COMPILER}" "xl"
+	else ifeq "${LMOD_FAMILY_COMPILER}" "xl"
 	  C_COMPILER   = xlc
 	  CXX_COMPILER = xlc++
 	  F_COMPILER   = xlf
-	else ifeq "${TACC_FAMILY_COMPILER}" "devcloud"
+	else ifeq "${LMOD_FAMILY_COMPILER}" "devcloud"
 	  CXX_COMPILER = dpcpp
 	endif # end of non-mpi compiler setting
 
@@ -196,7 +196,7 @@ OMPFLAGS_clang    = -fopenmp
 OMPFLAGS_cuda     = -mp=gpu
 OMPFLAGS_nvhpc    = -fopenmp
 OMPFLAGS_xl       = -qsmp=omp -qoffload
-OMPFLAGS = ${OMPFLAGS_${TACC_FAMILY_COMPILER}}
+OMPFLAGS = ${OMPFLAGS_${LMOD_FAMILY_COMPILER}}
 
 ifeq "${MODE}" "omp"
   CFLAGS   += ${OMPFLAGS}
@@ -228,6 +228,9 @@ FFLAGS   += ${EXTRA_OPTIONS}
 	 && if [ "${ECHO}" = "1" ] ; then \
 	        echo "Compiling: $$cmdline" \
 	         && echo "with ${C_COMPILER}=$$( which ${C_COMPILER} )" \
+	         && if [ "${MODE}" = "mpi" ] ; then \
+	                echo "where ${C_COMPILER}=$$( ${C_COMPILER} -show )" \
+	            ; fi \
 	    ; fi \
 	 && eval $$cmdline
 %.o : %.cxx
@@ -236,6 +239,9 @@ FFLAGS   += ${EXTRA_OPTIONS}
 	 && if [ "${ECHO}" = "1" ] ; then \
 	        echo "Compiling: $$cmdline" \
 	         && echo "with ${CXX_COMPILER}=$$( which ${CXX_COMPILER} )" \
+	         && if [ "${MODE}" = "mpi" ] ; then \
+	                echo "where ${CXX_COMPILER}=$$( ${CXX_COMPILER} -show )" \
+	            ; fi \
 	    ; fi \
 	 && eval $$cmdline
 ##
@@ -270,6 +276,9 @@ FFLAGS   += ${EXTRA_OPTIONS}
 	 && if [ "${ECHO}" = "1" ] ; then \
 	        echo "Compiling: $$cmdline" \
 	         && echo "with ${F_COMPILER}=$$( which ${F_COMPILER} )" \
+	         && if [ "${MODE}" = "mpi" ] ; then \
+	                echo "where ${F_COMPILER}=$$( ${F_COMPILER} -show )" \
+	            ; fi \
 	    ; fi \
 	 && eval $$cmdline
 %.o : %.f90
@@ -306,7 +315,7 @@ else ifeq "${MODE}" "hybrid"
 else ifeq "${MODE}" "omp"
   LINK_FLAGS += ${OMPFLAGS}
 endif
-ifeq "${TACC_FAMILY_COMPILER}" "gcc"
+ifeq "${LMOD_FAMILY_COMPILER}" "gcc"
   LINK_FLAGS += -lm
 endif
 
