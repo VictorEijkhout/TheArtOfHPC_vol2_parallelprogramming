@@ -1,0 +1,8 @@
+class NewVector::iter {
+private: int *searcher;
+NewVector::iter::iter( int *searcher )
+  : searcher(searcher) {};
+NewVector::iter NewVector::begin() {
+  return NewVector::iter(storage); };
+NewVector::iter NewVector::end()   {
+  return NewVector::iter(storage+NewVector::s); };

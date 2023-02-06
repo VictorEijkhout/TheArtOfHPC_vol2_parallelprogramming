@@ -1,0 +1,11 @@
+!! kindsend.F90
+  Integer,parameter :: digits=16 
+  Integer,parameter :: ip = Selected_Int_Kind(digits)
+  Integer (kind=ip) :: data
+  Type(MPI_Datatype) :: mpi_ip
+  Call MPI_Type_create_f90_integer(digits,mpi_ip)
+  if (rank==0) then
+     print *,"Fortran type has range",range(data)
+     call MPI_Send( data,1,mpi_ip, 1,0,comm )
+  else if (rank==1) then
+     call MPI_Recv( data,1,mpi_ip, 0,0,comm, MPI_STATUS_IGNORE )

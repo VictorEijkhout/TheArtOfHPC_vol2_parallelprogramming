@@ -1,0 +1,13 @@
+// range.cxx
+#   pragma omp parallel for reduction(+:count)
+    for ( auto e : data )
+      count += e;
+#   pragma omp parallel for reduction(+:count)
+    for ( auto e : data
+            | std::ranges::views::drop(1) )
+      count += e;
+#   pragma omp parallel for reduction(+:count)
+    for ( auto e : data
+            | std::ranges::views::transform
+                ( []( auto e ) { return 2*e; } ) )
+      count += e;

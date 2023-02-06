@@ -1,0 +1,13 @@
+NewVector::iter& NewVector::iter::operator++() {
+  searcher++; return *this; };
+int&  NewVector::iter::operator*() {
+  return *searcher; };
+bool  NewVector::iter::operator==( const NewVector::iter &other ) const {
+  return searcher==other.searcher; };
+bool  NewVector::iter::operator!=( const NewVector::iter &other ) const {
+  return searcher!=other.searcher; };
+// needed to OpenMP
+int   NewVector::iter::operator-( const NewVector::iter& other ) const {
+  return searcher-other.searcher; };
+NewVector::iter& NewVector::iter::operator+=( int add ) {
+  searcher += add; return *this; };

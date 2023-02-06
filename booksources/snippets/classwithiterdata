@@ -1,0 +1,12 @@
+public:
+  NewVector( int s )
+    : s(s){
+    storage = new int[s]; };
+  ~NewVector() { delete storage; };
+//codesnippet classwithiterdata
+  int at(int i) const { if (i<0 or i>=s) throw;
+    return storage[i]; };
+  int& at(int i) { if (i<0 or i>=s) throw;
+    return storage[i]; };
+
+//codesnippet classwithiter
