@@ -1,0 +1,21 @@
+==== Run range on 1 threads ====
+Executing: OMP_PROC_BIND=true OMP_NUM_THREADS=1 ./range
+sum of vector: 50000005000000 in 6.441
+sum w/ drop 1: 50000004999999 in 6.584
+sum times 2  : 100000010000000 in 6.896
+==== Run range on 2 threads ====
+Executing: OMP_PROC_BIND=true OMP_NUM_THREADS=2 ./range
+sum of vector: 50000005000000 in 3.351
+sum w/ drop 1: 50000004999999 in 3.052
+sum times 2  : 100000010000000 in 3.205
+==== Run range on 8 threads ====
+Executing: OMP_PROC_BIND=true OMP_NUM_THREADS=8 ./range
+sum of vector: 50000005000000 in 2.843
+sum w/ drop 1: 50000004999999 in 1.607
+sum times 2  : 100000010000000 in 1.438
+==== Run range on 40 threads ====
+Executing: OMP_PROC_BIND=true OMP_NUM_THREADS=40 ./range
+sum of vector: 50000005000000 in 2.366
+sum w/ drop 1: 50000004999999 in 0.316
+sum times 2  : 100000010000000 in 0.308
+ scaling results in: range-scaling-ls6.out
