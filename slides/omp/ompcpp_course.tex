@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2022
+%%%% by Victor Eijkhout, copyright 2022-2023
 %%%%
 %%%% ompcpp_course.tex : course in C++ aspects of OpenMP
 %%%%
@@ -36,10 +36,11 @@
 
 \input commonmacs
 \input acromacs
+
 \input slidemacs
-\input coursemacs
-\input listingmacs
 \input snippetmacs
+
+\input coursemacs
 
 \newcounter{tacc}
 \specialcomment{tacc}{\stepcounter{tacc}\def\CommentCutFile{tacc\arabic{tacc}.cut}}{}
@@ -49,7 +50,7 @@
 
 \title{Using OpenMP from C++}
 \author{Victor Eijkhout}
-\date{} %{SSiASC 2016}
+\date{TACC training 2023}
 
 \begin{frame}
   \titlepage
@@ -58,10 +59,15 @@
 \begin{frame}{Justification}
   OpenMP has the opportunity to exploit features of modern~C++
   that are not present in C.
-  In this course we will explore
-  range-based iteration,
-  differences in treatment between vectors and arrays,
-  and various sophisticated reduction schemes.
+  In this course we will explore:
+  \begin{itemize}
+  \item
+    range-based iteration,
+  \item
+    differences in treatment between vectors and arrays,
+    and various sophisticated reduction schemes.
+  \end{itemize}
+
 \end{frame}
 
 \sectionframe{Basic stuff}
@@ -75,6 +81,7 @@
 \end{numberedframe}
 
 \begin{numberedframe}{Dynamic scope for class methods}
+  \def\snippetoutputsize{\footnotesize}
   \input{cppnote-dynamic-scope-for-class-methods.cut}
 \end{numberedframe}
 
@@ -97,6 +104,14 @@
   \input{cppnote-range-syntax.cut}
 \end{numberedframe}
 
+\begin{numberedframe}{C++ ranges header}
+  \input{cppnote-c++20-ranges-header.cut}
+\end{numberedframe}
+
+\begin{numberedframe}{C++ ranges speedup}
+  \input{cppnote-c++20-ranges-speedup.cut}
+\end{numberedframe}
+
 \begin{numberedframe}{Custom iterators, 1}
   OpenMP can parallelize any range-based loop with a random-access iterator.
   \begin{multicols}{2}
@@ -114,6 +129,16 @@
   \cxxverbatimsnippet{omprandaccess}  
 \end{numberedframe}
 
+\begin{numberedframe}{Custom iterators, exercise}
+  Write the missing iterator methods.\\
+  Here's something to get you started.
+  \cxxverbatimsnippet{classwithiteriter}  
+\end{numberedframe}
+
+\begin{numberedframe}{Custom iterators, solution}
+  \cxxverbatimsnippet{classwithitersoln}
+\end{numberedframe}
+
 \sectionframe{Reductions}
 
 \begin{numberedframe}{Reductions on vectors}
@@ -124,16 +149,12 @@
   \input{cppnote-reduction-on-class-objects.cut}
 \end{numberedframe}
 
-\begin{numberedframe}{reduction illustrated}
+\begin{numberedframe}{Reduction illustrated}
   \label{fig:omp-reduct}
 
   Reduction of four items on two threads, taking into account
   initial values.
   \includegraphics[scale=.1]{omp-reduct}
-\end{numberedframe}
-
-\begin{numberedframe}{Reduction over iterators}
-  \input{cppnote-reduction-over-iterators.cut}
 \end{numberedframe}
 
 \begin{numberedframe}{User-defined reductions, syntax}
@@ -142,6 +163,10 @@
     ( identifier : typelist : combiner )
     [initializer(initializer-expression)]
   \end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Reduction over iterators}
+  \input{cppnote-reduction-over-iterators.cut}
 \end{numberedframe}
 
 \begin{numberedframe}{Lambda expressions in declared reductions}
@@ -297,12 +322,25 @@ Native C++ atomics:
             / sizeof(datatype);
     #else
     const int spread = 8;
+    #endif
 
     vector<datatype> k(nthreads*spread);
     #pragma omp parallel for schedule( static, 1 )
     for ( datatype i = 0; i < loops; i++ ) {
       k[ (i%nthreads) * spread ] += 2;
   \end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Beware vector-of-bool!}
+  Does not compile:
+  \cxxverbatimsnippet{boolrange}
+  More subtle:
+  \cxxsnippetwithoutput{booliter}{code/omp/cxx}{booliter}
+  Different \lstinline{bits[i]} are falsely shared.
+\end{numberedframe}
+
+\begin{numberedframe}{CMake}
+  \lstinputlisting{../../examples/omp/CMakeLists.CXX.txt}
 \end{numberedframe}
 
 \end{document}
