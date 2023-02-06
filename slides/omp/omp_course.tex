@@ -34,15 +34,15 @@
 
 \usepackage{morewrites}
 
+\usepackage{comment}
+\input tacc-full.inex
+
+\newdimen\unitindent \unitindent=20pt % needed in algorithm environments
 \input commonmacs
 \input acromacs
 \input slidemacs
 \input coursemacs
-\input listingmacs
 \input snippetmacs
-
-\newcounter{tacc}
-\specialcomment{tacc}{\stepcounter{tacc}\def\CommentCutFile{tacc\arabic{tacc}.cut}}{}
 
 \begin{document}
 \parskip=10pt plus 5pt minus 3pt
