@@ -1,0 +1,12 @@
+% include lulu means _ex_clude stuff that is specific for the class
+% or not ready for prime time yet
+\includecomment{lulu}
+\excludecomment{fullsources}
+\includecomment{download}
+\excludecomment{istc}
+\excludecomment{pcse}
+\excludecomment{notready}
+\includecomment{gpu}
+\excludecomment{notlulu}
+\includecomment{montecarlo}
+\excludecomment{fmm}

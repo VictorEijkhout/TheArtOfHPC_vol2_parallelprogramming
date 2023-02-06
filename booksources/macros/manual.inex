@@ -1,0 +1,14 @@
+% -*- latex -*-
+\excludecomment{lulu}
+\includecomment{download}
+\includecomment{fullsources}
+\includecomment{istc}
+\includecomment{notready}
+\includecomment{gpu}
+\includecomment{notlulu}
+\includecomment{montecarlo}
+\includecomment{fmm}
+\excludecomment{pcse}
+
+\newif\ifIncludeAnswers
+\IncludeAnswerstrue
