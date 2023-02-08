@@ -35,6 +35,8 @@
 \newcolumntype{R}{>{\hbox to 1.2em\bgroup\hss}{r}<{\egroup}}
 \newcolumntype{T}{>{\hbox to 8em\bgroup}{c}<{\hss\egroup}}
 
+\usepackage{comment}
+\input inex
 \input commonmacs
 \input acromacs
 \input slidemacs
@@ -54,9 +56,6 @@
   \end{numberedframe}\endgroup}
 \endgroup
 
-\specialcomment{tacc}{\stepcounter{tacc}\def\CommentCutFile{tacc\arabic{tacc}.cut}}{}
-\newcounter{tacc}
-%\excludecomment{tacc}
 \includecomment{utonly}
 
 \includecomment{onesided}

@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%% "Parallel Computing"
-   %%%% by Victor Eijkhout, copyright 2013-2021
+   %%%% by Victor Eijkhout, copyright 2013-2023
    %%%%
    %%%% reducecount.c : use of allreduce_c and MPI_Count
    %%%%
@@ -41,7 +41,8 @@ int main(int argc,char **argv) {
   }
 
   //codesnippet reducecount
-  MPI_Allreduce_c(indata,outdata,buffersize,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
+  MPI_Allreduce_c(indata,outdata,buffersize,
+                  MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
   //codesnippet end
   if (mytid==0) printf("sum: %5.1f\n",outdata[0]);
 

@@ -165,12 +165,13 @@ Result:
 
 \begin{numberedframe}{Motivation (continued)}
   Equations
-  \[
-  \begin{cases}
-    -u_{i-1} + 2u_i - u_{i+1} = h^2f(x_i)&1<i<n \\
-    2u_1-u_2=h^2f(x_1)+u_0\\
-    2u_n-u_{n-1}=h^2f(x_{n})+u_{n+1}.
-  \end{cases}
+  \[ \left\{
+  \begin{array}{rll}
+    -u_{i-1} + 2u_i - u_{i+1} &= h^2f(x_i)&1<i<n \\
+    2u_1-u_2                  &=h^2f(x_1)+u_0\\
+    2u_n-u_{n-1}              &=h^2f(x_{n})+u_{n+1}.
+  \end{array}
+  \right.
   \]
   \begin{equation}
     \begin{pmatrix}

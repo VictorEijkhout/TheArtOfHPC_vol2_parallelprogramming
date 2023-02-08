@@ -27,6 +27,8 @@
 %% \newcolumntype{R}{>{\hbox to 1.2em\bgroup\hss}{r}<{\egroup}}
 %% \newcolumntype{T}{>{\hbox to 8em\bgroup}{c}<{\hss\egroup}}
 
+\usepackage{comment}
+\input inex
 \input commonmacs
 \input acromacs
 \input slidemacs
@@ -48,9 +50,6 @@
 \excludecomment{condensed}
 \excludecomment{online}
 
-\specialcomment{tacc}{\stepcounter{tacc}\def\CommentCutFile{tacc\arabic{tacc}.cut}}{}
-\newcounter{tacc}
-%\excludecomment{tacc}
 \includecomment{utonly}
 
 \includecomment{onesided}
@@ -75,13 +74,6 @@
 \begin{frame}
   \titlepage
 \end{frame}
-
-\begin{xsede}
-  \input xsede-conduct
-\end{xsede}
-%% \begin{utonly}
-%%   \input tacc-conduct
-%% \end{utonly}
 
 \begin{frame}[containsverbatim]{Materials}
     Textbooks and repositories:\\

@@ -186,7 +186,7 @@ A couple more.
 \begin{fortran}
   \addtocounter{slidecount}{-1}
 \begin{numberedframe}{Buffers in Fortran}
-  General principle: buffer argument is address in memory of the data.
+  General principle: buffer is address in memory of the data.
   \begin{itemize}
   \item Fortran always passes by reference:
   \item write \lstinline{x} for scalar
@@ -454,7 +454,7 @@ buffer; instead, it is the amount of data to/from each process.
 \end{numberedframe}
 
 \begin{numberedframe}{Popular application of gather}
-  Matrix is constructed distributed, but needs to be brougt to one
+  Matrix is constructed distributed, but needs to be brought to one
   process:
   
   \includegraphics[scale=.4]{allgathermatrix}
