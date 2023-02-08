@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% omp_course.tex : master file for an OpenMP course
 %%%%
@@ -17,13 +17,13 @@
 \usetheme{Madrid}%{Montpellier}
 \usecolortheme{seahorse}
 \setcounter{tocdepth}{1}
-\AtBeginSection[]
-{
-  \begin{frame}
-    \frametitle{Table of Contents}
-    \tableofcontents[currentsection]
-  \end{frame}
-}
+%% \AtBeginSection[]
+%% {
+%%   \begin{frame}
+%%     \frametitle{Table of Contents}
+%%     \tableofcontents[currentsection]
+%%   \end{frame}
+%% }
 
 %Global Background must be put in preamble
 %\usebackgroundtemplate{\includegraphics[width=\paperwidth,height=\paperheight]{newton.jpg}}
@@ -35,9 +35,8 @@
 \usepackage{morewrites}
 
 \usepackage{comment}
-\input tacc-full.inex
+\input inex
 
-\newdimen\unitindent \unitindent=20pt % needed in algorithm environments
 \input commonmacs
 \input acromacs
 \input slidemacs

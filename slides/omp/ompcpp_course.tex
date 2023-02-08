@@ -34,6 +34,8 @@
 
 \usepackage{morewrites}
 
+\usepackage{comment}
+\input inex
 \input commonmacs
 \input acromacs
 
@@ -41,9 +43,6 @@
 \input snippetmacs
 
 \input coursemacs
-
-\newcounter{tacc}
-\specialcomment{tacc}{\stepcounter{tacc}\def\CommentCutFile{tacc\arabic{tacc}.cut}}{}
 
 \begin{document}
 \parskip=10pt plus 5pt minus 3pt
@@ -83,6 +82,10 @@
 \begin{numberedframe}{Dynamic scope for class methods}
   \def\snippetoutputsize{\footnotesize}
   \input{cppnote-dynamic-scope-for-class-methods.cut}
+\end{numberedframe}
+
+\begin{numberedframe}{Privatizing class members}
+  \input{cppnote-privatizing-class-members.cut}
 \end{numberedframe}
 
 \begin{numberedframe}{Vectors are copied, unlike arrays, 1}
