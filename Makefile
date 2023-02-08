@@ -19,16 +19,20 @@ info ::
 	&& echo \
 	&& echo "Available rules:"
 
-.PHONY: pdf slides
+.PHONY: pdf book slides
 info ::
-	@echo "make pdf : compile the book"
+	@echo "make book : compile the book"
 	@echo "make slides : compile courses ${COURSES}"
 COURSES = mpi omp
-pdf :
+book pdf :
 	@cd booksources && make --no-print-directory pdf
 slides :
 	@for c in ${COURSES} ; do \
-	    ( cd slides/$$c && make --no-print-directory course ) \
+	    ( \
+	    cd slides/$$c && make --no-print-directory course \
+	     && course=$$( echo $$c | tr a-z A-Z ) \
+	     && cp $${c}_course.pdf ../../Eijkhout$${course}course.pdf \
+	    ) \
 	; done
 
 .PHONY: clean
