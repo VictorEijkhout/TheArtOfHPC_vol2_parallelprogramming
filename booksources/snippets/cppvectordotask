@@ -2,11 +2,11 @@
 #   pragma omp task \
       shared(filtered,ithread)
     {
-// wait your turn
+      // wait your turn
       while (threadnum>ithread) {
 #       pragma omp taskyield
       }
-// merge
+      // merge
       filtered += local;
       ithread++;
     }

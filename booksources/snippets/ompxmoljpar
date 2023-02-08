@@ -1,10 +1,10 @@
-for (int ip=0; ip<N; ip++) {
-  force sumforce;
-  #pragma omp parallel for reduction(+:sumforce)
-  for (int jp=0; jp<N; jp++) { 
-    if (ip==jp) continue;
-    force f = points[ip].force_calc(points[jp]);
-    sumforce += f;
-  } // end parallel jp loop
-  forces[ip] += sumforce;
-} // end ip loop
+      for (int ip=0; ip<N; ip++) {
+        force sumforce;
+        #pragma omp parallel for reduction(+:sumforce)
+        for (int jp=0; jp<N; jp++) { 
+          if (ip==jp) continue;
+          force f = points[ip].force_calc(points[jp]);
+          sumforce += f;
+        } // end parallel jp loop
+        forces[ip] += sumforce;
+      } // end ip loop

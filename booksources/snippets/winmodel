@@ -1,6 +1,6 @@
 // window.c
-int *modelstar,flag;
-MPI_Win_get_attr(the_window,MPI_WIN_MODEL,&modelstar,&flag);
-int model = *modelstar;
-if (procno==0)
-  printf("Window model is unified: %d\n",model==MPI_WIN_UNIFIED);
+  int *modelstar,flag;
+  MPI_Win_get_attr(the_window,MPI_WIN_MODEL,&modelstar,&flag);
+  int model = *modelstar;
+  if (procno==0)
+    printf("Window model is unified: %d\n",model==MPI_WIN_UNIFIED);

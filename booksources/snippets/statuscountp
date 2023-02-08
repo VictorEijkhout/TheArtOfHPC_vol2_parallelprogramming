@@ -1,4 +1,4 @@
 ## pingpongbig.py
-status = MPI.Status()
-comm.Recv( rdata,source=0,status=status)
-count = status.Get_count(MPI.DOUBLE)
+        status = MPI.Status()
+        comm.Recv( rdata,source=0,status=status)
+        count = status.Get_count(MPI.DOUBLE)

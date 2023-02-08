@@ -1,5 +1,5 @@
 // typesize.c
-MPI_Type_vector(count,bs,stride,MPI_DOUBLE,&newtype);
-MPI_Type_commit(&newtype);
-MPI_Type_size(newtype,&size);
-ASSERT( size==(count*bs)*sizeof(double) );
+  MPI_Type_vector(count,bs,stride,MPI_DOUBLE,&newtype);
+  MPI_Type_commit(&newtype);
+  MPI_Type_size(newtype,&size);
+  ASSERT( size==(count*bs)*sizeof(double) );

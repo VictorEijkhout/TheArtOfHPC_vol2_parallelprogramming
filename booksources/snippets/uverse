@@ -1,7 +1,7 @@
 // spawnmanager.c
-if (!flag) {
-  if (manager_rank==0) {
-    printf("This MPI does not support UNIVERSE_SIZE.\nHow many processes total?");
-    scanf("%d", &universe_size);
-  }
-  MPI_Bcast(&universe_size,1,MPI_INTEGER,0,MPI_COMM_WORLD);
+  if (!flag) {
+    if (manager_rank==0) {
+      printf("This MPI does not support UNIVERSE_SIZE.\nHow many processes total?");
+      scanf("%d", &universe_size);
+    }
+    MPI_Bcast(&universe_size,1,MPI_INTEGER,0,MPI_COMM_WORLD);

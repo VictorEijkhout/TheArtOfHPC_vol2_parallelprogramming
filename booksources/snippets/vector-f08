@@ -1,16 +1,16 @@
-if (mytid==sender) then
-   call MPI_Type_vector(count,1,stride,MPI_DOUBLE_PRECISION,&
-        newvectortype)
-   call MPI_Type_commit(newvectortype)
-   call MPI_Send(source,1,newvectortype,receiver,0,comm)
-   call MPI_Type_free(newvectortype)
-   if ( .not. newvectortype==MPI_DATATYPE_NULL) then
-      print *,"Trouble freeing datatype"
-   else
-      print *,"Datatype successfully freed"
-   end if
-else if (mytid==receiver) then
-   call MPI_Recv(target,count,MPI_DOUBLE_PRECISION,sender,0,comm,&
-        recv_status)
-   call MPI_Get_count(recv_status,MPI_DOUBLE_PRECISION,recv_count)
-end if
+  if (mytid==sender) then
+     call MPI_Type_vector(count,1,stride,MPI_DOUBLE_PRECISION,&
+          newvectortype)
+     call MPI_Type_commit(newvectortype)
+     call MPI_Send(source,1,newvectortype,receiver,0,comm)
+     call MPI_Type_free(newvectortype)
+     if ( .not. newvectortype==MPI_DATATYPE_NULL) then
+        print *,"Trouble freeing datatype"
+     else
+        print *,"Datatype successfully freed"
+     end if
+  else if (mytid==receiver) then
+     call MPI_Recv(target,count,MPI_DOUBLE_PRECISION,sender,0,comm,&
+          recv_status)
+     call MPI_Get_count(recv_status,MPI_DOUBLE_PRECISION,recv_count)
+  end if

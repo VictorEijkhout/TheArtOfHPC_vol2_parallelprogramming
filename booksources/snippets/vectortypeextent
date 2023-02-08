@@ -1,7 +1,7 @@
-MPI_Aint lb,asize;
-MPI_Type_vector(count,bs,stride,MPI_DOUBLE,&newtype);
-MPI_Type_commit(&newtype);
-MPI_Type_get_extent(newtype,&lb,&asize);
-ASSERT( lb==0 );
-ASSERT( asize==((count-1)*stride+bs)*sizeof(double) );
-MPI_Type_free(&newtype);
+  MPI_Aint lb,asize;
+  MPI_Type_vector(count,bs,stride,MPI_DOUBLE,&newtype);
+  MPI_Type_commit(&newtype);
+  MPI_Type_get_extent(newtype,&lb,&asize);
+  ASSERT( lb==0 );
+  ASSERT( asize==((count-1)*stride+bs)*sizeof(double) );
+  MPI_Type_free(&newtype);

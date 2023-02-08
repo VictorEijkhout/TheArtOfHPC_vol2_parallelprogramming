@@ -1,6 +1,6 @@
 // sendandrecv.c
-double send_data = 1.;
-MPI_Send
-  ( /* send buffer/count/type: */ &send_data,1,MPI_DOUBLE,
-    /* to: */ receiver, /* tag: */ 0,
-    /* communicator: */ comm);
+    double send_data = 1.;
+    MPI_Send
+      ( /* send buffer/count/type: */ &send_data,1,MPI_DOUBLE,
+        /* to: */ receiver, /* tag: */ 0,
+        /* communicator: */ comm);

@@ -1,5 +1,5 @@
 // plexsphere.c
-ierr = DMPlexGetDepthStratum(dm, 0, &vStart, &vEnd);
-ierr = PetscSectionCreate(PetscObjectComm((PetscObject) dm), &s);
-ierr = DMSetLocalSection(dm, s);
-ierr = PetscSectionDestroy(&s);
+  ierr = DMPlexGetDepthStratum(dm, 0, &vStart, &vEnd);
+  ierr = PetscSectionCreate(PetscObjectComm((PetscObject) dm), &s);
+  ierr = DMSetLocalSection(dm, s);
+  ierr = PetscSectionDestroy(&s);

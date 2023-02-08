@@ -1,4 +1,4 @@
-MPI_Aint disp = data_address+1*sizeof(int);
-MPI_Get( /* data on origin: */           retrieve, 1,MPI_INT,
- /* data on target: */ data_proc,disp,     1,MPI_INT,
- the_window);
+      MPI_Aint disp = data_address+1*sizeof(int);
+      MPI_Get( /* data on origin: */           retrieve, 1,MPI_INT,
+       /* data on target: */ data_proc,disp,     1,MPI_INT,
+       the_window);

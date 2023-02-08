@@ -1,13 +1,13 @@
 // queenfinal.cxx
-if (feasible(next)) {
-  if (iqueen==N-1) {
+    if (feasible(next)) {
+      if (iqueen==N-1) {
 	result = next;
-    #pragma omp cancel taskgroup
-  } else { // do next level
+        #pragma omp cancel taskgroup
+      } else { // do next level
 	auto attempt = place_queen(iqueen+1,next);
 	if (attempt.has_value()) {
 	  result = attempt;
-      #pragma omp cancel taskgroup
+          #pragma omp cancel taskgroup
 	}
-  } // end if (iqueen==N-1)
-} // end if (feasible)
+      } // end if (iqueen==N-1)
+    } // end if (feasible)

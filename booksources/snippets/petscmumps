@@ -1,10 +1,10 @@
 // direct.c
-PetscCall( KSPCreate(comm,&Solver) );
-PetscCall( KSPSetOperators(Solver,A,A) );
-PetscCall( KSPSetType(Solver,KSPPREONLY) );
-{
-  PC Prec;
-  PetscCall( KSPGetPC(Solver,&Prec) );
-  PetscCall( PCSetType(Prec,PCLU) );
-  PetscCall( PCFactorSetMatSolverType(Prec,MATSOLVERMUMPS) );
-}
+  PetscCall( KSPCreate(comm,&Solver) );
+  PetscCall( KSPSetOperators(Solver,A,A) );
+  PetscCall( KSPSetType(Solver,KSPPREONLY) );
+  {
+    PC Prec;
+    PetscCall( KSPGetPC(Solver,&Prec) );
+    PetscCall( PCSetType(Prec,PCLU) );
+    PetscCall( PCFactorSetMatSolverType(Prec,MATSOLVERMUMPS) );
+  }

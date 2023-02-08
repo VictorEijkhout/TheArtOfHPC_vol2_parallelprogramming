@@ -1,6 +1,6 @@
 // eageri.c
-printf("Sending %lu elements\n",n);
-MPI_Request request;
-MPI_Isend(buffer,n,MPI_DOUBLE,processB,0,comm,&request);
-MPI_Wait(&request,MPI_STATUS_IGNORE);
-printf(".. concluded\n");
+      printf("Sending %lu elements\n",n);
+      MPI_Request request;
+      MPI_Isend(buffer,n,MPI_DOUBLE,processB,0,comm,&request);
+      MPI_Wait(&request,MPI_STATUS_IGNORE);
+      printf(".. concluded\n");

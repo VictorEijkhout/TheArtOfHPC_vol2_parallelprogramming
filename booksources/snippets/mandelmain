@@ -1,16 +1,16 @@
-if (mytid==ntids-1)  {
-  this->set_image( new Image(workcircle->pixels,workcircle->pixels,
+  if (mytid==ntids-1)  {
+    this->set_image( new Image(workcircle->pixels,workcircle->pixels,
 			       "mandelpicture") );
-  for (;;) {
-    struct coordinate xy;
-    workcircle->next_coordinate(xy);
-    if (workcircle->is_valid_coordinate(xy)) {
+    for (;;) {
+      struct coordinate xy;
+      workcircle->next_coordinate(xy);
+      if (workcircle->is_valid_coordinate(xy)) {
 	this->total_tasks += 1;
 	this->addtask(xy);
+      }
+      else break;
     }
-    else break;
+    this->complete();
+  } else {
+    this->wait_for_work(comm,workcircle);
   }
-  this->complete();
-} else {
-  this->wait_for_work(comm,workcircle);
-}

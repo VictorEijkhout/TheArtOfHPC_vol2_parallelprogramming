@@ -1,4 +1,4 @@
 // bitsetrange.cxx
-std::bitset<1000000> bits;
-for ( auto& b : bits )
-  b = true;
+  std::bitset<1000000> bits;
+  for ( auto& b : bits )
+    b = true;

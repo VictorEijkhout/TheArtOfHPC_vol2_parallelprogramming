@@ -1,12 +1,12 @@
-using CharCounter = bincounter<char>;
+  using CharCounter = bincounter<char>;
 #pragma omp declare reduction\
-(	\
+  (	\
 	+:CharCounter:omp_out += omp_in	\
 	) \
-initializer( omp_priv = CharCounter{} )
+  initializer( omp_priv = CharCounter{} )
 
-string text{"the quick brown fox jumps over the lazy dog"};
-CharCounter charcount;
+  string text{"the quick brown fox jumps over the lazy dog"};
+  CharCounter charcount;
 #pragma omp parallel for reduction(+ : charcount)
-for ( int i=0; i<text.size(); i++ )
-  charcount.inc( text[i] );
+  for ( int i=0; i<text.size(); i++ )
+    charcount.inc( text[i] );

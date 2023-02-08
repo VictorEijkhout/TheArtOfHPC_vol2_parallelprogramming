@@ -1,5 +1,5 @@
-Vec xy;
-PetscCall( VecCreate(comm,&xy) );
-PetscCall( VecSetType(xy,VECMPI) );
-PetscInt nlocal = info.xm*info.ym, nglobal = info.mx*info.my;
-PetscCall( VecSetSizes(xy,nlocal,nglobal) );
+  Vec xy;
+  PetscCall( VecCreate(comm,&xy) );
+  PetscCall( VecSetType(xy,VECMPI) );
+  PetscInt nlocal = info.xm*info.ym, nglobal = info.mx*info.my;
+  PetscCall( VecSetSizes(xy,nlocal,nglobal) );

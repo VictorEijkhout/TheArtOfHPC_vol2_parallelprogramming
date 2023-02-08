@@ -1,7 +1,7 @@
 // reductpositive.cxx
 template<typename T>
 T reduce_without_zero(T r,T n) {
-// r is the already reduced value, n is the new value
+  // r is the already reduced value, n is the new value
   T m;
   if (r<0){ // initializer
     if (n!=0)

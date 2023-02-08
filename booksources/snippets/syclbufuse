@@ -1,3 +1,3 @@
-myqueue.submit( [&] (handler &h) {
-    auto deviceAccessorA =
-      bufferA.get_access<access::mode::read_write>(h);
+    myqueue.submit( [&] (handler &h) {
+        auto deviceAccessorA =
+          bufferA.get_access<access::mode::read_write>(h);

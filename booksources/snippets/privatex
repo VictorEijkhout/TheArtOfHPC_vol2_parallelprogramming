@@ -1,9 +1,9 @@
 // private.c
-int x=5;
+  int x=5;
 #pragma omp parallel num_threads(4)
-{
-  int t = omp_get_thread_num(),
-    x = t+1;
-  printf("Thread %d sets x to %d\n",t,x);
-}
-printf("Outer x is still %d\n",x);
+  {
+    int t = omp_get_thread_num(),
+      x = t+1;
+    printf("Thread %d sets x to %d\n",t,x);
+  }
+  printf("Outer x is still %d\n",x);

@@ -1,11 +1,11 @@
 // shellvector.c
-PetscInt its; KSPConvergedReason reason; 
-Vec Res; PetscReal norm;
-ierr = KSPGetConvergedReason(Solve,&reason); 
-ierr = KSPConvergedReasonView(Solve,PETSC_VIEWER_STDOUT_WORLD); 
-if (reason<0) {
-  PetscPrintf(comm,"Failure to converge: reason=%d\n",reason);
-} else {
-  ierr = KSPGetIterationNumber(Solve,&its); 
-  PetscPrintf(comm,"Number of iterations: %d\n",its);
-}
+    PetscInt its; KSPConvergedReason reason; 
+    Vec Res; PetscReal norm;
+    ierr = KSPGetConvergedReason(Solve,&reason); 
+    ierr = KSPConvergedReasonView(Solve,PETSC_VIEWER_STDOUT_WORLD); 
+    if (reason<0) {
+      PetscPrintf(comm,"Failure to converge: reason=%d\n",reason);
+    } else {
+      ierr = KSPGetIterationNumber(Solve,&its); 
+      PetscPrintf(comm,"Number of iterations: %d\n",its);
+    }

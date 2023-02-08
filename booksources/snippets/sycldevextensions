@@ -1,5 +1,5 @@
-for (const auto &dev : devices) {
-  std::cout << "-- Device: "
-            << dev.get_info<sycl::info::device::name>()
+    for (const auto &dev : devices) {
+      std::cout << "-- Device: "
+                << dev.get_info<sycl::info::device::name>()
 		<< dev.get_info<sycl::info::device::aspects>() 
 		<< '\n';

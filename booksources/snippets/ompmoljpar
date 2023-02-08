@@ -1,11 +1,11 @@
-for (int ip=0; ip<N; ip++) {
+      for (int ip=0; ip<N; ip++) {
 	struct force sumforce;
 	sumforce.x=0.; sumforce.y=0.; sumforce.f=0.;
 #pragma omp parallel for reduction(+:sumforce)
-  for (int jp=0; jp<N; jp++) { 
-    if (ip==jp) continue;
-    struct force f = force_calc(points[ip],points[jp]);
-    sumforce.x += f.x; sumforce.y += f.y; sumforce.f += f.f;
-  } // end parallel jp loop
-  add_force( forces+ip, sumforce );
-} // end ip loop
+        for (int jp=0; jp<N; jp++) { 
+          if (ip==jp) continue;
+          struct force f = force_calc(points[ip],points[jp]);
+          sumforce.x += f.x; sumforce.y += f.y; sumforce.f += f.f;
+        } // end parallel jp loop
+        add_force( forces+ip, sumforce );
+      } // end ip loop

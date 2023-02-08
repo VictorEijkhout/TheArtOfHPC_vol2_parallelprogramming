@@ -1,2 +1,2 @@
 // halfbandwidth.cxx
-int sender = procid - procid%2, receiver = sender+1;
+        int sender = procid - procid%2, receiver = sender+1;

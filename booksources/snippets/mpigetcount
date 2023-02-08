@@ -1,11 +1,11 @@
 // count.c
-if (procid==0) {
-  int sendcount = (rand()>.5) ? N : N-1;
-  MPI_Send( buffer,sendcount,MPI_FLOAT,target,0,comm );
-} else if (procid==target) {
-  MPI_Status status;
-  int recvcount;
-  MPI_Recv( buffer,N,MPI_FLOAT,0,0, comm, &status );
-  MPI_Get_count(&status,MPI_FLOAT,&recvcount);
-  printf("Received %d elements\n",recvcount);
-}
+  if (procid==0) {
+    int sendcount = (rand()>.5) ? N : N-1;
+    MPI_Send( buffer,sendcount,MPI_FLOAT,target,0,comm );
+  } else if (procid==target) {
+    MPI_Status status;
+    int recvcount;
+    MPI_Recv( buffer,N,MPI_FLOAT,0,0, comm, &status );
+    MPI_Get_count(&status,MPI_FLOAT,&recvcount);
+    printf("Received %d elements\n",recvcount);
+  }

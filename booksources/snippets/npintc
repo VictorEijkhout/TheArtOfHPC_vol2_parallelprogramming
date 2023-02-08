@@ -1,5 +1,5 @@
 ## inttype.py
-sizeofint = np.dtype('int32').itemsize
-print("Size of numpy int32: {}".format(sizeofint))
-sizeofint = np.dtype('intc').itemsize
-print("Size of C int: {}".format(sizeofint))
+    sizeofint = np.dtype('int32').itemsize
+    print("Size of numpy int32: {}".format(sizeofint))
+    sizeofint = np.dtype('intc').itemsize
+    print("Size of C int: {}".format(sizeofint))

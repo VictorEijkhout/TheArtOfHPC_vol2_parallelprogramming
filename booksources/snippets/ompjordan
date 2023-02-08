@@ -1,14 +1,14 @@
-for (int col=0; col<nsize; col++) {
+  for (int col=0; col<nsize; col++) {
 #   pragma omp parallel for
-  for (int row=0; row<nsize; row++)
-    scaling[row] =
-      matrix[ INDEX(row,col,nsize) ] / matrix[ INDEX(col,col,nsize) ] ; // column-major
+    for (int row=0; row<nsize; row++)
+      scaling[row] =
+        matrix[ INDEX(row,col,nsize) ] / matrix[ INDEX(col,col,nsize) ] ; // column-major
 #   pragma omp parallel for
-  for (int update=0; update<nsize; update++) {
-    if (update==col) continue;
-    for (int row=0; row<nsize; row++) {
-      matrix[ INDEX(row,update,nsize) ] -=
-        scaling[row] * matrix[ INDEX(col,update,nsize) ] ;
+    for (int update=0; update<nsize; update++) {
+      if (update==col) continue;
+      for (int row=0; row<nsize; row++) {
+        matrix[ INDEX(row,update,nsize) ] -=
+          scaling[row] * matrix[ INDEX(col,update,nsize) ] ;
+      }
     }
   }
-}

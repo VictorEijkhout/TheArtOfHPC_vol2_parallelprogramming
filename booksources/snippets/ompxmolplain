@@ -1,7 +1,7 @@
-for (int ip=0; ip<N; ip++) {
-  for (int jp=ip+1; jp<N; jp++) {
-    force f = points[ip].force_calc(points[jp]);
-    forces[ip] += f;
-    forces[jp] -= f;
-  }
-}   
+      for (int ip=0; ip<N; ip++) {
+        for (int jp=ip+1; jp<N; jp++) {
+          force f = points[ip].force_calc(points[jp]);
+          forces[ip] += f;
+          forces[jp] -= f;
+        }
+      }   

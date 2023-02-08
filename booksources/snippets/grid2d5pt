@@ -1,19 +1,19 @@
 // grid2d.c
-for (int j=info.ys; j<info.ys+info.ym; j++) {
-  for (int i=info.xs; i<info.xs+info.xm; i++) {
-    MatStencil  row,col[5];
-    PetscScalar v[5];
-    PetscInt    ncols = 0;
-    row.j        = j; row.i = i;
-    /**** local connection: diagonal element ****/
-    col[ncols].j = j; col[ncols].i = i; v[ncols++] = 4.;
-    /* boundaries: top and bottom row */
-    if (i>0)         {col[ncols].j = j;   col[ncols].i = i-1; v[ncols++] = -1.;}
-    if (i<info.mx-1) {col[ncols].j = j;   col[ncols].i = i+1; v[ncols++] = -1.;}
-    /* boundary left and right */
-    if (j>0)         {col[ncols].j = j-1; col[ncols].i = i;   v[ncols++] = -1.;}
-    if (j<info.my-1) {col[ncols].j = j+1; col[ncols].i = i;   v[ncols++] = -1.;}
+  for (int j=info.ys; j<info.ys+info.ym; j++) {
+    for (int i=info.xs; i<info.xs+info.xm; i++) {
+      MatStencil  row,col[5];
+      PetscScalar v[5];
+      PetscInt    ncols = 0;
+      row.j        = j; row.i = i;
+      /**** local connection: diagonal element ****/
+      col[ncols].j = j; col[ncols].i = i; v[ncols++] = 4.;
+      /* boundaries: top and bottom row */
+      if (i>0)         {col[ncols].j = j;   col[ncols].i = i-1; v[ncols++] = -1.;}
+      if (i<info.mx-1) {col[ncols].j = j;   col[ncols].i = i+1; v[ncols++] = -1.;}
+      /* boundary left and right */
+      if (j>0)         {col[ncols].j = j-1; col[ncols].i = i;   v[ncols++] = -1.;}
+      if (j<info.my-1) {col[ncols].j = j+1; col[ncols].i = i;   v[ncols++] = -1.;}
 
-    PetscCall( MatSetValuesStencil(A,1,&row,ncols,col,v,INSERT_VALUES) );
+      PetscCall( MatSetValuesStencil(A,1,&row,ncols,col,v,INSERT_VALUES) );
+    }
   }
-}

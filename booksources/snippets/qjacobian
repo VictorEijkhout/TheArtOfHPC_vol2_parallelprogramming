@@ -1,5 +1,5 @@
-PetscCall( MatCreate(comm,&J) );
-PetscCall( MatSetType(J,MATSEQDENSE) );
-PetscCall( MatSetSizes(J,1,1,1,1) );
-PetscCall( MatSetUp(J) );
-PetscCall( SNESSetJacobian(solver,J,J,&Jacobian,NULL) );
+    PetscCall( MatCreate(comm,&J) );
+    PetscCall( MatSetType(J,MATSEQDENSE) );
+    PetscCall( MatSetSizes(J,1,1,1,1) );
+    PetscCall( MatSetUp(J) );
+    PetscCall( SNESSetJacobian(solver,J,J,&Jacobian,NULL) );

@@ -1,13 +1,13 @@
-int indegree=4, sources[indegree],
-  inweights[indegree],weighted;
-int outdegree=4, targets[outdegree],
-  outweights[outdegree];
-MPI_Dist_graph_neighbors_count
-  (comm2d,
-   &indegree,&outdegree,
-   &weighted);
-MPI_Dist_graph_neighbors
-  (comm2d,
-   indegree,sources,inweights,
-   outdegree,targets,outweights
-   );
+    int indegree=4, sources[indegree],
+      inweights[indegree],weighted;
+    int outdegree=4, targets[outdegree],
+      outweights[outdegree];
+    MPI_Dist_graph_neighbors_count
+      (comm2d,
+       &indegree,&outdegree,
+       &weighted);
+    MPI_Dist_graph_neighbors
+      (comm2d,
+       indegree,sources,inweights,
+       outdegree,targets,outweights
+       );

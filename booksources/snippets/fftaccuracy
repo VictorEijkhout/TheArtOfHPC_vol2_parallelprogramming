@@ -1,8 +1,8 @@
-Vec confirm;
-PetscCall( VecDuplicate(signal,&confirm) );
-PetscCall( MatMultTranspose(transform,frequencies,confirm) );
-PetscCall( VecAXPY(confirm,-1,signal) );
-PetscReal nrm;
-PetscCall( VecNorm(confirm,NORM_2,&nrm) );
-PetscPrintf(MPI_COMM_WORLD,"FFT accuracy %e\n",nrm);
-PetscCall( VecDestroy(&confirm) );
+    Vec confirm;
+    PetscCall( VecDuplicate(signal,&confirm) );
+    PetscCall( MatMultTranspose(transform,frequencies,confirm) );
+    PetscCall( VecAXPY(confirm,-1,signal) );
+    PetscReal nrm;
+    PetscCall( VecNorm(confirm,NORM_2,&nrm) );
+    PetscPrintf(MPI_COMM_WORLD,"FFT accuracy %e\n",nrm);
+    PetscCall( VecDestroy(&confirm) );

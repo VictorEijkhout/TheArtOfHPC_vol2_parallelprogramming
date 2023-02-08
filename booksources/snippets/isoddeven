@@ -1,7 +1,7 @@
 // oddeven.c
-IS oddeven;
-if (procid==0) {
-  PetscCall( ISCreateStride(comm,Nglobal/2,0,2,&oddeven) );
-} else {
-  PetscCall( ISCreateStride(comm,Nglobal/2,1,2,&oddeven) );
-}
+  IS oddeven;
+  if (procid==0) {
+    PetscCall( ISCreateStride(comm,Nglobal/2,0,2,&oddeven) );
+  } else {
+    PetscCall( ISCreateStride(comm,Nglobal/2,1,2,&oddeven) );
+  }

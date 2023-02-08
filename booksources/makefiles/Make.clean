@@ -4,7 +4,7 @@
 ####
 #### This makefile is part of the source of 
 #### "Parallel Computing for Science and Engineering"
-#### by Victor Eijkhout, copyright 2013-2022
+#### by Victor Eijkhout, copyright 2013-2023
 ####
 #### Make include file for clean rules
 ####
@@ -38,7 +38,7 @@ MAKEFILESDIR = makefiles
 MAKETRACESTRING = 
 recursive_clean  : localclean
 	@for d in * ; do \
-	  if [ -d $${d} ] ; then \
+	  if [ -d $${d} -a "$$d" != "build" ] ; then \
 	    echo "${MAKETRACESTRING} cleaning in $${d}" \
 	    && ( \
 	       cd $${d} \

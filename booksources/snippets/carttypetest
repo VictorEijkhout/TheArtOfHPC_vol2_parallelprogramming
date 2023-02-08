@@ -1,9 +1,9 @@
-int world_type,cart_type;
-MPI_Topo_test( comm,&world_type);
-MPI_Topo_test( cart_comm,&cart_type );
-if (procno==0) {
-  printf("World comm type=%d, Cart comm type=%d\n",
-         world_type,cart_type);
-  printf("no topo        =%d, cart top      =%d\n",
-         MPI_UNDEFINED,MPI_CART);
-}
+    int world_type,cart_type;
+    MPI_Topo_test( comm,&world_type);
+    MPI_Topo_test( cart_comm,&cart_type );
+    if (procno==0) {
+      printf("World comm type=%d, Cart comm type=%d\n",
+             world_type,cart_type);
+      printf("no topo        =%d, cart top      =%d\n",
+             MPI_UNDEFINED,MPI_CART);
+    }

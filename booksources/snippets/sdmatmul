@@ -1,7 +1,7 @@
-!$omp parallel do simd
-do i=1,dim
-   do j=1,dim
-      C(i,j) = C(i,j) + A(i,j) * B(i,j)
-   end do
-end do
-!$omp end parallel do simd
+           !$omp parallel do simd
+           do i=1,dim
+              do j=1,dim
+                 C(i,j) = C(i,j) + A(i,j) * B(i,j)
+              end do
+           end do
+           !$omp end parallel do simd

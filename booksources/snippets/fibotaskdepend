@@ -1,8 +1,8 @@
 // taskgroup2.c
-  for (int i=2; i<N; i++)
+    for (int i=2; i<N; i++)
 #pragma omp task \
-depend(out:fibo_values[i]) \
-depend(in:fibo_values[i-1],fibo_values[i-2])
-    {
-      fibo_values[i] = fibo_values[i-1]+fibo_values[i-2];
-    }
+  depend(out:fibo_values[i]) \
+  depend(in:fibo_values[i-1],fibo_values[i-2])
+      {
+        fibo_values[i] = fibo_values[i-1]+fibo_values[i-2];
+      }

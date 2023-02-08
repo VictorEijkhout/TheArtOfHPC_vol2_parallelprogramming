@@ -17,7 +17,7 @@ public:
     omp_destroy_lock(&the_lock);
   };
   int operator +=( int i ) {
-// atomic increment
+    // atomic increment
     omp_set_lock(&the_lock);
     _value += i; int rv = _value;
     omp_unset_lock(&the_lock);

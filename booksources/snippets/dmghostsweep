@@ -1,5 +1,5 @@
-for (int j=info.ys; j<info.ys+info.ym; j++) {
-  for (int i=info.xs; i<info.xs+info.xm; i++) {
+    for (int j=info.ys; j<info.ys+info.ym; j++) {
+      for (int i=info.xs; i<info.xs+info.xm; i++) {
 	if (info.gxs<info.xs && info.gys<info.ys)
 	  if (i-1>=info.gxs && i+1<=info.gxs+info.gxm &&
 	      j-1>=info.gys && j+1<=info.gys+info.gym )

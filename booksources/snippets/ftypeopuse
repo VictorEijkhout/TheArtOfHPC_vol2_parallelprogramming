@@ -1,7 +1,7 @@
-Type(inttype),dimension(nsize) :: intarray
-Type(inttype) :: intsum = inttype(0)
-!$OMP parallel do reduction(+:intsum)
-do i=1,nsize
-   intsum = intsum + intarray(i)
-end do
-!$OMP end parallel
+  Type(inttype),dimension(nsize) :: intarray
+  Type(inttype) :: intsum = inttype(0)
+  !$OMP parallel do reduction(+:intsum)
+  do i=1,nsize
+     intsum = intsum + intarray(i)
+  end do
+  !$OMP end parallel

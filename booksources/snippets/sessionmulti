@@ -1,9 +1,9 @@
 // sessionmulti.c
-MPI_Info info1 = MPI_INFO_NULL, info2 = MPI_INFO_NULL;
-char thread_key[] = "mpi_thread_support_level";
-MPI_Info_create(&info1); MPI_Info_create(&info2);
-MPI_Info_set(info1,thread_key,"MPI_THREAD_SINGLE");
-MPI_Info_set(info2,thread_key,"MPI_THREAD_MULTIPLE");
-MPI_Session session1,session2;
-MPI_Session_init( info1,MPI_ERRORS_ARE_FATAL,&session1 );
-MPI_Session_init( info2,MPI_ERRORS_ARE_FATAL,&session2 );
+  MPI_Info info1 = MPI_INFO_NULL, info2 = MPI_INFO_NULL;
+  char thread_key[] = "mpi_thread_support_level";
+  MPI_Info_create(&info1); MPI_Info_create(&info2);
+  MPI_Info_set(info1,thread_key,"MPI_THREAD_SINGLE");
+  MPI_Info_set(info2,thread_key,"MPI_THREAD_MULTIPLE");
+  MPI_Session session1,session2;
+  MPI_Session_init( info1,MPI_ERRORS_ARE_FATAL,&session1 );
+  MPI_Session_init( info2,MPI_ERRORS_ARE_FATAL,&session2 );

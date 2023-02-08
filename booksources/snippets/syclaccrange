@@ -1,9 +1,9 @@
-  sycl::accessor c = c_buf.get_access<sycl::access::mode::write>(h);
-
-  sycl::range<2> c_range = c.get_range();
-  if (a_range==c_range) {
-    h.parallel_for
-      ( a_range,
-        [=]( sycl::id<2> idx ) {
-        c[idx] = a[idx] + b[idx];
-      } );
+          sycl::accessor c = c_buf.get_access<sycl::access::mode::write>(h);
+        
+          sycl::range<2> c_range = c.get_range();
+          if (a_range==c_range) {
+            h.parallel_for
+              ( a_range,
+                [=]( sycl::id<2> idx ) {
+                c[idx] = a[idx] + b[idx];
+              } );

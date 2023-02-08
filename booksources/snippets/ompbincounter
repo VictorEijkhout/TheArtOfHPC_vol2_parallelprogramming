@@ -2,7 +2,7 @@
 template<typename key>
 class bincounter : public map<key,int> {
 public:
-// merge this with other map
+  // merge this with other map
   void operator+=( const bincounter<key>& other ) {
     for ( auto [k,v] : other )
       if ( map<key,int>::contains(k) ) // c++20
@@ -10,7 +10,7 @@ public:
       else
 	this->insert( {k,v} );
   };
-// insert one char in this map
+  // insert one char in this map
   void inc(char k) {
     if ( map<key,int>::contains(k) )
       this->at(k) += 1;

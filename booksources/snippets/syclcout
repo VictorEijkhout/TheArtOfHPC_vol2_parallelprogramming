@@ -1,9 +1,9 @@
 // hello.cxx
-[&](sycl::handler &cgh) {
-  sycl::stream sout(1024, 256, cgh);
-  cgh.parallel_for<class hello_world>
-    (
-     sycl::range<1>(global_range), [=](sycl::id<1> idx) {
-       sout << "Hello, World: World rank " << idx << sycl::endl;
-     }); // End of the kernel function
-}
+     [&](sycl::handler &cgh) {
+       sycl::stream sout(1024, 256, cgh);
+       cgh.parallel_for<class hello_world>
+         (
+          sycl::range<1>(global_range), [=](sycl::id<1> idx) {
+            sout << "Hello, World: World rank " << idx << sycl::endl;
+          }); // End of the kernel function
+     }

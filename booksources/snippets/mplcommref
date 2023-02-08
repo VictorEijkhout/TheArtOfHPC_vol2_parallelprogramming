@@ -1,2 +1,2 @@
-const mpl::communicator &comm_world =
-  mpl::environment::comm_world();
+  const mpl::communicator &comm_world =
+    mpl::environment::comm_world();

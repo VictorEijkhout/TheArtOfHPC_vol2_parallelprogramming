@@ -1,4 +1,4 @@
 // grid1d.c
-PetscInt i_first,i_local;
-PetscCall( DMDAGetCorners(grid,&i_first,NULL,NULL,&i_local,NULL,NULL) );
-for (PetscInt i_index=i_first; i_index<i_first+i_local; i_index++) {
+  PetscInt i_first,i_local;
+  PetscCall( DMDAGetCorners(grid,&i_first,NULL,NULL,&i_local,NULL,NULL) );
+  for (PetscInt i_index=i_first; i_index<i_first+i_local; i_index++) {

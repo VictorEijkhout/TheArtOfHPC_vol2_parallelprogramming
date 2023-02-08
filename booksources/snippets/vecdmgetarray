@@ -1,9 +1,9 @@
-PetscReal **xyarray;
-PetscCall( DMDAVecGetArray(grid,xy,&xyarray) );
-for (int j=info.ys; j<info.ys+info.ym; j++) {
-  for (int i=info.xs; i<info.xs+info.xm; i++) {
+    PetscReal **xyarray;
+    PetscCall( DMDAVecGetArray(grid,xy,&xyarray) );
+    for (int j=info.ys; j<info.ys+info.ym; j++) {
+      for (int i=info.xs; i<info.xs+info.xm; i++) {
 	PetscReal x = i*hx, y = j*hy;
 	xyarray[j][i] = x*y;
-  }
-}
-PetscCall( DMDAVecRestoreArray(grid,xy,&xyarray) );
+      }
+    }
+    PetscCall( DMDAVecRestoreArray(grid,xy,&xyarray) );

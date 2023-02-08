@@ -1,11 +1,11 @@
 // cudamatself.c
-Mat cuda_matrix;
-PetscScalar *matdata;
-ierr = PetscMallocSetCUDAHost(); 
-ierr = PetscMalloc1(global_size*global_size,&matdata); 
-ierr = PetscMallocResetCUDAHost(); 
-ierr = MatCreateDenseCUDA
-  (comm,
-   global_size,global_size,global_size,global_size,
-   matdata,
-   &cuda_matrix); 
+  Mat cuda_matrix;
+  PetscScalar *matdata;
+  ierr = PetscMallocSetCUDAHost(); 
+  ierr = PetscMalloc1(global_size*global_size,&matdata); 
+  ierr = PetscMallocResetCUDAHost(); 
+  ierr = MatCreateDenseCUDA
+    (comm,
+     global_size,global_size,global_size,global_size,
+     matdata,
+     &cuda_matrix); 

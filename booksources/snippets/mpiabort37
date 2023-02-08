@@ -1,3 +1,3 @@
 // abort.c
-if (procno==nprocs-1)
-  MPI_Abort(comm,37);
+  if (procno==nprocs-1)
+    MPI_Abort(comm,37);

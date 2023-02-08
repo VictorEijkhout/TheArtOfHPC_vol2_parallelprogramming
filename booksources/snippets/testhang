@@ -1,15 +1,15 @@
 // testhang.c
-if (procno==receiver) {
-// post a receive
-  MPI_Request recv_request;
-  MPI_Irecv(buffer,count,MPI_FLOAT, MPI_ANY_SOURCE,MPI_ANY_TAG,comm,&recv_request);
-// test completion
-  int recv_completed = 0;
-  while (!recv_completed) {
-    printf("sleep %d\n",nsleep); sleep(nsleep);
-    MPI_Test(&recv_request,&recv_completed,MPI_STATUS_IGNORE);
+  if (procno==receiver) {
+    // post a receive
+    MPI_Request recv_request;
+    MPI_Irecv(buffer,count,MPI_FLOAT, MPI_ANY_SOURCE,MPI_ANY_TAG,comm,&recv_request);
+    // test completion
+    int recv_completed = 0;
+    while (!recv_completed) {
+      printf("sleep %d\n",nsleep); sleep(nsleep);
+      MPI_Test(&recv_request,&recv_completed,MPI_STATUS_IGNORE);
+    }
+    printf("recv completed\n");
+  } else if (procno==sender) {
+    ierr = MPI_Send(buffer,count,MPI_FLOAT, receiver,0,comm); CHK(ierr);
   }
-  printf("recv completed\n");
-} else if (procno==sender) {
-  ierr = MPI_Send(buffer,count,MPI_FLOAT, receiver,0,comm); CHK(ierr);
-}

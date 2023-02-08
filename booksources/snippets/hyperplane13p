@@ -1,11 +1,11 @@
-MPI_Cart_sub( period_comm,remain,&hyperplane );
-if (procno==0) {
-  MPI_Topo_test( hyperplane,&topo_type );
-  MPI_Cartdim_get( hyperplane,&hyperdim );
-  printf("hyperplane has dimension %d, type %d\n",
-         hyperdim,topo_type);
-  MPI_Cart_get( hyperplane,dim,dims,period,coords );    
-  printf("  periodic: ");
-  for (int id=0; id<2; id++)
-    printf("%d,",period[id]);
-  printf("\n");
+    MPI_Cart_sub( period_comm,remain,&hyperplane );
+    if (procno==0) {
+      MPI_Topo_test( hyperplane,&topo_type );
+      MPI_Cartdim_get( hyperplane,&hyperdim );
+      printf("hyperplane has dimension %d, type %d\n",
+             hyperdim,topo_type);
+      MPI_Cart_get( hyperplane,dim,dims,period,coords );    
+      printf("  periodic: ");
+      for (int id=0; id<2; id++)
+        printf("%d,",period[id]);
+      printf("\n");

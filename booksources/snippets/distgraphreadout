@@ -1,13 +1,13 @@
-int indegree,outdegree,
-  weighted;
-MPI_Dist_graph_neighbors_count
-  (comm2d,
-   &indegree,&outdegree,
-   &weighted);
-int
-  my_ij[2] = {proci,procj},
-  other_ij[4][2];
-MPI_Neighbor_allgather
-  ( my_ij,2,MPI_INT,
-    other_ij,2,MPI_INT,
-    comm2d );
+    int indegree,outdegree,
+      weighted;
+    MPI_Dist_graph_neighbors_count
+      (comm2d,
+       &indegree,&outdegree,
+       &weighted);
+    int
+      my_ij[2] = {proci,procj},
+      other_ij[4][2];
+    MPI_Neighbor_allgather
+      ( my_ij,2,MPI_INT,
+        other_ij,2,MPI_INT,
+        comm2d );

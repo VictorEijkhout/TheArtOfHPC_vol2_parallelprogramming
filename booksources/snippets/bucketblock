@@ -1,7 +1,7 @@
 // bucketblock.c
-if (procno>0)
-  MPI_Recv(leftdata, N, MPI_DOUBLE,recvfrom,0, comm, MPI_STATUS_IGNORE);
-for (int i=0; i<N; i++)
-  myvalue[i] = (procno+1)*(procno+1) + leftdata[i];
-if (procno<nprocs-1)
-  MPI_Send(myvalue,N, MPI_DOUBLE,sendto,0, comm);
+  if (procno>0)
+    MPI_Recv(leftdata, N, MPI_DOUBLE,recvfrom,0, comm, MPI_STATUS_IGNORE);
+  for (int i=0; i<N; i++)
+    myvalue[i] = (procno+1)*(procno+1) + leftdata[i];
+  if (procno<nprocs-1)
+    MPI_Send(myvalue,N, MPI_DOUBLE,sendto,0, comm);

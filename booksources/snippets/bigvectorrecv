@@ -1,4 +1,4 @@
-} else if (procno==receiver) {
-  MPI_Status recv_status;
-  MPI_Recv(target,nblocks,blocktype,sender,0,comm,
-    &recv_status);
+  } else if (procno==receiver) {
+    MPI_Status recv_status;
+    MPI_Recv(target,nblocks,blocktype,sender,0,comm,
+      &recv_status);

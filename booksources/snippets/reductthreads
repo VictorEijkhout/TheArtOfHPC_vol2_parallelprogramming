@@ -1,7 +1,7 @@
 // reduct.c
-int tsum=0;
+    int tsum=0;
 #pragma omp parallel
-{
-  tsum += // expression
-}
-printf("Sum is %d\n",tsum);
+    {
+      tsum += // expression
+    }
+    printf("Sum is %d\n",tsum);

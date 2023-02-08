@@ -1,4 +1,4 @@
-auto extensions_vector =
-  plat.get_info<sycl::info::platform::extensions>();
-for ( const auto& ext : extensions_vector ) 
-  std::cout << "Extension: " << ext << 'n';
+    auto extensions_vector =
+      plat.get_info<sycl::info::platform::extensions>();
+    for ( const auto& ext : extensions_vector ) 
+      std::cout << "Extension: " << ext << 'n';

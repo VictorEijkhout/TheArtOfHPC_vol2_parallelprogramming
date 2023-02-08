@@ -1,4 +1,4 @@
 // transposeblock.cxx
-MPI_Datatype sourceblock;
-MPI_Type_vector( blocksize_j,blocksize_i,isize,MPI_INT,&sourceblock);
-MPI_Type_commit( &sourceblock);
+  MPI_Datatype sourceblock;
+  MPI_Type_vector( blocksize_j,blocksize_i,isize,MPI_INT,&sourceblock);
+  MPI_Type_commit( &sourceblock);

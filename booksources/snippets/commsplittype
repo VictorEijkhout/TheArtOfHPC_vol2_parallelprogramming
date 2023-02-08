@@ -1,10 +1,10 @@
 // commsplittype.c
-MPI_Info info;
-MPI_Comm_split_type
-  (MPI_COMM_WORLD,
-   MPI_COMM_TYPE_SHARED,
-   procno,info,&sharedcomm);
-MPI_Comm_size
-  (sharedcomm,&new_nprocs);
-MPI_Comm_rank
-  (sharedcomm,&new_procno);
+  MPI_Info info;
+  MPI_Comm_split_type
+    (MPI_COMM_WORLD,
+     MPI_COMM_TYPE_SHARED,
+     procno,info,&sharedcomm);
+  MPI_Comm_size
+    (sharedcomm,&new_nprocs);
+  MPI_Comm_rank
+    (sharedcomm,&new_procno);

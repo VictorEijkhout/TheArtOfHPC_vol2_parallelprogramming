@@ -1,19 +1,19 @@
-if (i_am_local_leader) {
-  if (color==0) {
-    interdata = 1.2;
-    int inter_target = local_number_of_other_leader;
-    printf("[%d] sending interdata %e to %d\n",
+  if (i_am_local_leader) {
+    if (color==0) {
+      interdata = 1.2;
+      int inter_target = local_number_of_other_leader;
+      printf("[%d] sending interdata %e to %d\n",
 	     procno,interdata,inter_target);
-    MPI_Send(&interdata,1,MPI_DOUBLE,inter_target,0,intercomm);
-  } else {
-    MPI_Status status;
-    MPI_Recv(&interdata,1,MPI_DOUBLE,MPI_ANY_SOURCE,MPI_ANY_TAG,intercomm,&status);
-    int inter_source = status.MPI_SOURCE;
-    printf("[%d] received interdata %e from %d\n",
+      MPI_Send(&interdata,1,MPI_DOUBLE,inter_target,0,intercomm);
+    } else {
+      MPI_Status status;
+      MPI_Recv(&interdata,1,MPI_DOUBLE,MPI_ANY_SOURCE,MPI_ANY_TAG,intercomm,&status);
+      int inter_source = status.MPI_SOURCE;
+      printf("[%d] received interdata %e from %d\n",
 	     procno,interdata,inter_source);
-    if (inter_source!=local_number_of_other_leader)
+      if (inter_source!=local_number_of_other_leader)
 	fprintf(stderr,
 		"Got inter communication from unexpected %d; s/b %d\n",
 		inter_source,local_number_of_other_leader);
+    }
   }
-}

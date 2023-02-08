@@ -1,10 +1,10 @@
 // reduct1d.cxx
-auto input_values = array_buffer.get_access<sycl::access::mode::read>(h);
-auto sum_reduction = sycl::reduction( scalar_buffer,h,std::plus<>() );
-h.parallel_for
-  ( array_range,sum_reduction,
-    [=]( sycl::id<1> index,auto& sum ) 
-    {
-      sum += input_values[index];
-    }
-    ); // end of parallel for
+        auto input_values = array_buffer.get_access<sycl::access::mode::read>(h);
+        auto sum_reduction = sycl::reduction( scalar_buffer,h,std::plus<>() );
+        h.parallel_for
+          ( array_range,sum_reduction,
+            [=]( sycl::id<1> index,auto& sum ) 
+            {
+              sum += input_values[index];
+            }
+            ); // end of parallel for
