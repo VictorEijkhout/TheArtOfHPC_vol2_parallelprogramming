@@ -3,7 +3,7 @@
 ####
 #### This makefile is part of the source of 
 #### "Parallel Programming in MPI and OpenMP"
-#### by Victor Eijkhout, copyright 2013-2022
+#### by Victor Eijkhout, copyright 2013-2023
 ####
 #### Makefile for MPI course slides
 ####
@@ -17,7 +17,7 @@ info::
 	@echo
 
 COURSE = mpi
-COURSES  = mpi mpl mpithree mpibasics
+COURSES  = mpi mpl mpithree mpibasics mpiintermediate
 EXTRATEXINPUTS =
 
 LANGUAGE = all

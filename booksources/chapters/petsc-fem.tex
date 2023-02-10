@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% petsc-fem.tex : FEM through DMPLEX
 %%%%
@@ -55,8 +55,10 @@ plexprogram -dm_view :outputfile.tex:ascii_latex \
 \end{verbatim}
 
 \hbox to \textwidth {
+\tikzsetnextfilename{mesh-plex7-p1}
 \input mesh-plex7-p1
 \hfil
+\tikzsetnextfilename{mesh-plex7-p2}
 \input mesh-plex7-p2
 }
 
