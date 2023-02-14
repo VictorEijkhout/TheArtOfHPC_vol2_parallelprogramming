@@ -266,9 +266,11 @@ With a task it becomes possible to have a spin-wait loop:
   This does not work with
   \begin{lstlisting}
     std::vector<double> x(N);
-    for ( ... same loop ... )
+    #pragma omp parallel for
+    for (int i=0; i<N; i++)
+      x[i] = f(i);
   \end{lstlisting}
-  because of value initialization.
+  because of value initialization in the \lstinline{vector} container.
 \end{numberedframe}
 
 \begin{numberedframe}{Uninitialized containers, 2}
@@ -287,15 +289,18 @@ With a task it becomes possible to have a spin-wait loop:
   Can you atomically do more complicated updates?
   \begin{itemize}
   \item Make an object that has data plus a lock;
+  \item Disable copy and copy-assignment operators;
+  \item Destructor does \indexompshow{omp_destroy_lock};
   \item Overload arithmetic operator.
   \end{itemize}
 \end{numberedframe}
 
 \begin{numberedframe}{Atomic updates: class with OMP lock}
-  \begin{multicols}{2}
-    \cverbatimsnippet[examples/omp/cxx/lockobject.cxx]{lockobject}
-  \end{multicols}
-  %%\input{cppnote-lock-inside-overloaded-operator.cut}
+  \cverbatimsnippet[examples/omp/cxx/lockobject.cxx]{lockobject}
+\end{numberedframe}
+
+\begin{numberedframe}{Atomic updates: atomic ops}
+  \cverbatimsnippet[examples/omp/cxx/lockobject.cxx]{lockobjectops}
 \end{numberedframe}
 
 \begin{numberedframe}{Atomic updates: usage}
@@ -305,6 +310,7 @@ With a task it becomes possible to have a spin-wait loop:
 \begin{numberedframe}{Atomic updates, comparison to native}
   Timing comparison on simplest case:
 \begin{multicols}{2}
+  \lstset{basicstyle=\scriptsize}
   Object with built-in lock:
 \cxxverbatimsnippet{lockobjectuse}
 \columnbreak
@@ -329,7 +335,7 @@ Native C++ atomics:
 
     vector<datatype> k(nthreads*spread);
     #pragma omp parallel for schedule( static, 1 )
-    for ( datatype i = 0; i < loops; i++ ) {
+    for ( datatype i = 0; i < N; i++ ) {
       k[ (i%nthreads) * spread ] += 2;
   \end{lstlisting}
 \end{numberedframe}
