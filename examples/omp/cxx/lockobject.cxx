@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%% "Parallel Computing"
-   %%%% by Victor Eijkhout, copyright 2013-2022
+   %%%% by Victor Eijkhout, copyright 2013-2023
    %%%%
    %%%% lockobject.cxx : objects with a safe update method
    %%%%
@@ -33,10 +33,8 @@ class atomic_int {
 private:
   omp_lock_t the_lock;
   int _value{0};
-  bool delay;
 public:
-  atomic_int(bool delay=false)
-    : delay(delay) {
+  atomic_int() {
     omp_init_lock(&the_lock);
   };
   atomic_int( const atomic_int& )
@@ -46,6 +44,8 @@ public:
   ~atomic_int() {
     omp_destroy_lock(&the_lock);
   };
+//codesnippet end
+//codesnippet lockobjectops
   int operator +=( int i ) {
     //codesnippet end
     float s = i;
@@ -55,16 +55,23 @@ public:
       for (int i=0; i<1000; i++)
         s += sin(i)*sin(i);
     }
-    //codesnippet lockobject
+    //codesnippet lockobjectops
     // atomic increment
     omp_set_lock(&the_lock);
     _value += i; int rv = _value;
     omp_unset_lock(&the_lock);
     return rv;
   };
+  //codesnippet end
   auto value() { return _value; };
+private:
+  bool delay;
+public:
+  atomic_int(bool delay)
+    : delay(delay) {
+    omp_init_lock(&the_lock);
+  };
 };
-//codesnippet end
 
 #define NTHREADS 50
 
@@ -82,15 +89,15 @@ int main() {
        * Create a bunch of threads, that
        * each do a bunch of updates
        */
-      atomic_int my_object(delay);
-      vector<std::thread> threads;
       //codesnippet lockobjectuse
+      atomic_int my_object;
+      vector<std::thread> threads;
       for (int ithread=0; ithread<NTHREADS; ithread++) {
         threads.push_back
           ( std::thread(
-                   [=,&my_object] () {
-                     for (int iop=0; iop<nops; iop++)
-                       my_object += 1; } ) );
+            [=,&my_object] () {
+              for (int iop=0; iop<nops; iop++)
+                my_object += 1; } ) );
       }
       for ( auto &t : threads )
         t.join();
@@ -101,7 +108,9 @@ int main() {
       //codesnippet atomicintuse
       std::atomic<int> my_object{0};
       #pragma omp parallel for
-      for ( size_t update=0; update<NTHREADS*nops; update++) {
+      for ( size_t update=0;
+            update<NTHREADS*nops;
+            update++) {
         my_object += 1;
       }
       result = my_object;
