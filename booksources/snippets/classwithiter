@@ -1,7 +1,7 @@
 // iterator.cxx
 class NewVector {
 public:
-  // iterator stuff
+// iterator stuff
   class iter;
   iter begin();
   iter end();

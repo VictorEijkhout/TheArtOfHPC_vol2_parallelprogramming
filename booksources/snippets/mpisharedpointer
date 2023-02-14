@@ -1,4 +1,4 @@
-  MPI_Aint window_size0; int window_unit; double *win0_addr;
-  MPI_Win_shared_query
-    ( node_window,0,
-      &window_size0,&window_unit, &win0_addr );
+MPI_Aint window_size0; int window_unit; double *win0_addr;
+MPI_Win_shared_query
+  ( node_window,0,
+    &window_size0,&window_unit, &win0_addr );

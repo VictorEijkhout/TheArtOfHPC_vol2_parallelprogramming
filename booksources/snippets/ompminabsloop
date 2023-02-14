@@ -1,5 +1,5 @@
-  for (i=0; i<N; i++) {
-    if (abs(data[i]) < result) {
-      result = abs(data[i]);
-    }
+for (i=0; i<N; i++) {
+  if (abs(data[i]) < result) {
+    result = abs(data[i]);
   }
+}

@@ -1,9 +1,9 @@
-  ierr = PetscSectionSetNumFields(s, 1);
-  ierr = PetscSectionSetFieldComponents(s, 0, 1);
-  ierr = PetscSectionSetChart(s, vStart, vEnd);
-  //  printf("start-end: %d -- %d\n",vStart,vEnd);
-  for (v = vStart; v < vEnd; ++v) {
-    ierr = PetscSectionSetDof(s, v, 1);
-    ierr = PetscSectionSetFieldDof(s, v, 0, 1);
-  }
-  ierr = PetscSectionSetUp(s);
+ierr = PetscSectionSetNumFields(s, 1);
+ierr = PetscSectionSetFieldComponents(s, 0, 1);
+ierr = PetscSectionSetChart(s, vStart, vEnd);
+//  printf("start-end: %d -- %d\n",vStart,vEnd);
+for (v = vStart; v < vEnd; ++v) {
+  ierr = PetscSectionSetDof(s, v, 1);
+  ierr = PetscSectionSetFieldDof(s, v, 0, 1);
+}
+ierr = PetscSectionSetUp(s);

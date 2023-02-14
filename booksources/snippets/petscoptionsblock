@@ -1,9 +1,9 @@
 // optionsbegin.c
-  PetscOptionsBegin(comm,NULL,"Parameters",NULL);
-  PetscCall( PetscOptionsInt("-i","i value",__FILE__,i_value,&i_value,&i_flag) );
-  PetscCall( PetscOptionsInt("-j","j value",__FILE__,j_value,&j_value,&j_flag) );
-  PetscOptionsEnd();
-  if (i_flag)
-    PetscPrintf(comm,"Option `-i' was used\n");
-  if (j_flag)
-    PetscPrintf(comm,"Option `-j' was used\n");
+PetscOptionsBegin(comm,NULL,"Parameters",NULL);
+PetscCall( PetscOptionsInt("-i","i value",__FILE__,i_value,&i_value,&i_flag) );
+PetscCall( PetscOptionsInt("-j","j value",__FILE__,j_value,&j_value,&j_flag) );
+PetscOptionsEnd();
+if (i_flag)
+  PetscPrintf(comm,"Option `-i' was used\n");
+if (j_flag)
+  PetscPrintf(comm,"Option `-j' was used\n");

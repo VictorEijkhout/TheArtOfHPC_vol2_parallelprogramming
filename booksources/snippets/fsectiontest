@@ -1,4 +1,4 @@
-  if ( .not. MPI_SUBARRAYS_SUPPORTED ) then
-     print *,"This code will not work"
-     call MPI_Abort(comm,0)
-  end if
+if ( .not. MPI_SUBARRAYS_SUPPORTED ) then
+   print *,"This code will not work"
+   call MPI_Abort(comm,0)
+end if

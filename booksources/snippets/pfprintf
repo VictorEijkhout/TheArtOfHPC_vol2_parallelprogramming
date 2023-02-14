@@ -1,4 +1,4 @@
-  Character*80 :: message
-  write(message,10) xnorm,ynorm
+Character*80 :: message
+write(message,10) xnorm,ynorm
 10 format("Norm x: ",f6.3,", y: ",f6.3,"\n")
-  call PetscPrintf(comm,message,ierr)
+call PetscPrintf(comm,message,ierr)

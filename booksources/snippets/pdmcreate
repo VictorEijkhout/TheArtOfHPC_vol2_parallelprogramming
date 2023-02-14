@@ -1,2 +1,2 @@
-  ierr = DMCreate(PETSC_COMM_WORLD, &dm);
-  ierr = DMSetType(dm, DMPLEX);
+ierr = DMCreate(PETSC_COMM_WORLD, &dm);
+ierr = DMSetType(dm, DMPLEX);

@@ -1,10 +1,10 @@
 // filewrite.c
-  MPI_File mpifile;
-  MPI_File_open
-    (comm,"filewrite.dat",
-     MPI_MODE_CREATE | MPI_MODE_WRONLY,MPI_INFO_NULL,
-     &mpifile);
-  MPI_File_write_at
-    (mpifile,/* offset: */ procno*sizeof(int),
-     &procno,1, MPI_INT,MPI_STATUS_IGNORE);
-  MPI_File_close(&mpifile);
+MPI_File mpifile;
+MPI_File_open
+  (comm,"filewrite.dat",
+   MPI_MODE_CREATE | MPI_MODE_WRONLY,MPI_INFO_NULL,
+   &mpifile);
+MPI_File_write_at
+  (mpifile,/* offset: */ procno*sizeof(int),
+   &procno,1, MPI_INT,MPI_STATUS_IGNORE);
+MPI_File_close(&mpifile);

@@ -22,7 +22,7 @@ info ::
 EXERCISES = hello \
     commrank prime randommax onenorm sumsquares \
     pingpong sendrecv scangather transposeblock \
-    isendirecv isendirecvarray setdiff \
+    isendirecv isendirecvarray setdiff setdiffprobe \
     bucketblock bucketpipenonblock \
     stridesend cubegather procgrid procgridnonblock \
     randomput countdown onesidedbuild lockall lockfetch lockfetchshared \

@@ -1,10 +1,10 @@
 // spawnapp.c
-  MPI_Comm comm_parent;
-  MPI_Comm_get_parent(&comm_parent);
-  int is_child = (comm_parent!=MPI_COMM_NULL);
-  if (is_child) {
-    int nworkers,workerno;
-    MPI_Comm_size(MPI_COMM_WORLD,&nworkers);
-    MPI_Comm_rank(MPI_COMM_WORLD,&workerno);
-    printf("I detect I am worker %d/%d running on %s\n",
-           workerno,nworkers,procname);
+MPI_Comm comm_parent;
+MPI_Comm_get_parent(&comm_parent);
+int is_child = (comm_parent!=MPI_COMM_NULL);
+if (is_child) {
+  int nworkers,workerno;
+  MPI_Comm_size(MPI_COMM_WORLD,&nworkers);
+  MPI_Comm_rank(MPI_COMM_WORLD,&workerno);
+  printf("I detect I am worker %d/%d running on %s\n",
+         workerno,nworkers,procname);

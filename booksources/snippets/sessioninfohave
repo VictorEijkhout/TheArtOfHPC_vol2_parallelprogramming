@@ -1,5 +1,5 @@
-  MPI_Info session_actual_info;
-  MPI_Session_get_info( the_session,&session_actual_info );
-  char thread_level[100]; int info_len = 100, flag;
-  MPI_Info_get_string( session_actual_info,
-                       thread_key,&info_len,thread_level,&flag );
+MPI_Info session_actual_info;
+MPI_Session_get_info( the_session,&session_actual_info );
+char thread_level[100]; int info_len = 100, flag;
+MPI_Info_get_string( session_actual_info,
+                     thread_key,&info_len,thread_level,&flag );

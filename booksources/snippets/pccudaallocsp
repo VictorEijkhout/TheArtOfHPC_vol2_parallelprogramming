@@ -1,7 +1,7 @@
 // cusparse.c
-  Mat cuda_matrix;
-  ierr = MatCreate(comm,&cuda_matrix); 
-  ierr = MatSetType(cuda_matrix,MATAIJCUSPARSE); 
-  ierr = MatSetSizes
-    (cuda_matrix,global_size,global_size,global_size,global_size); 
-  ierr = MatSeqAIJSetPreallocation(cuda_matrix,5,PETSC_NULL); 
+Mat cuda_matrix;
+ierr = MatCreate(comm,&cuda_matrix); 
+ierr = MatSetType(cuda_matrix,MATAIJCUSPARSE); 
+ierr = MatSetSizes
+  (cuda_matrix,global_size,global_size,global_size,global_size); 
+ierr = MatSeqAIJSetPreallocation(cuda_matrix,5,PETSC_NULL); 

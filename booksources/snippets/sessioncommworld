@@ -1,12 +1,12 @@
-  MPI_Group world_group = MPI_GROUP_NULL;
-  MPI_Comm  world_comm  = MPI_COMM_NULL;
-  MPI_Group_from_session_pset
-    ( the_session,world_name,&world_group );
-  MPI_Comm_create_from_group
-    ( world_group,"victor-code-session.c",
-      MPI_INFO_NULL,MPI_ERRORS_ARE_FATAL,
-      &world_comm );
-  MPI_Group_free( &world_group );
-  int procid = -1, nprocs = 0;
-  MPI_Comm_size(world_comm,&nprocs);
-  MPI_Comm_rank(world_comm,&procid);
+MPI_Group world_group = MPI_GROUP_NULL;
+MPI_Comm  world_comm  = MPI_COMM_NULL;
+MPI_Group_from_session_pset
+  ( the_session,world_name,&world_group );
+MPI_Comm_create_from_group
+  ( world_group,"victor-code-session.c",
+    MPI_INFO_NULL,MPI_ERRORS_ARE_FATAL,
+    &world_comm );
+MPI_Group_free( &world_group );
+int procid = -1, nprocs = 0;
+MPI_Comm_size(world_comm,&nprocs);
+MPI_Comm_rank(world_comm,&procid);

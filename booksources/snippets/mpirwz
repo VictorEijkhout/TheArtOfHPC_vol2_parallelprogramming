@@ -1,2 +1,2 @@
-  *(int*)inout = m;  
+*(int*)inout = m;  
 }

@@ -1,8 +1,8 @@
-  if (iteration==0)
-    memset(colour,0,3*sizeof(float));
-  else {
-    float rfloat = ((float) iteration) / workcircle->infty;
-    colour[0] = rfloat;
-    colour[1] = MAX((float)0,(float)(1-2*rfloat));
-    colour[2] = MAX((float)0,(float)(2*(rfloat-.5)));
-  }
+if (iteration==0)
+  memset(colour,0,3*sizeof(float));
+else {
+  float rfloat = ((float) iteration) / workcircle->infty;
+  colour[0] = rfloat;
+  colour[1] = MAX((float)0,(float)(1-2*rfloat));
+  colour[2] = MAX((float)0,(float)(2*(rfloat-.5)));
+}

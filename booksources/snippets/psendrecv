@@ -1,18 +1,18 @@
-      double *recvbuffer = (double*)malloc(bufsize*sizeof(double));
-      MPI_Request recv_request;
-      MPI_Precv_init
-        (recvbuffer,nparts,SIZE,MPI_DOUBLE,src,0,
-         comm,MPI_INFO_NULL,&recv_request);
-      for (int it=0; it<ITERATIONS; it++) {
-        MPI_Start(&recv_request); int r=1,flag;
-        for (int ip=0; ip<nparts; ip++) // cycle this many times
-          for (int ap=0; ap<nparts; ap++) { // check specific part
-            MPI_Parrived(recv_request,ap,&flag);
-            if (flag) {
-              r *= chck_buffer
-                (recvbuffer,partitions[ap],partitions[ap+1],ap);
-              break; }
-          }
-        MPI_Wait(&recv_request,MPI_STATUS_IGNORE);
-      }
-      MPI_Request_free(&recv_request);
+double *recvbuffer = (double*)malloc(bufsize*sizeof(double));
+MPI_Request recv_request;
+MPI_Precv_init
+  (recvbuffer,nparts,SIZE,MPI_DOUBLE,src,0,
+   comm,MPI_INFO_NULL,&recv_request);
+for (int it=0; it<ITERATIONS; it++) {
+  MPI_Start(&recv_request); int r=1,flag;
+  for (int ip=0; ip<nparts; ip++) // cycle this many times
+    for (int ap=0; ap<nparts; ap++) { // check specific part
+      MPI_Parrived(recv_request,ap,&flag);
+      if (flag) {
+        r *= chck_buffer
+          (recvbuffer,partitions[ap],partitions[ap+1],ap);
+        break; }
+    }
+  MPI_Wait(&recv_request,MPI_STATUS_IGNORE);
+}
+MPI_Request_free(&recv_request);

@@ -1,6 +1,6 @@
-  ierr = MatCreate(comm,&A); 
+ierr = MatCreate(comm,&A); 
 #ifdef PETSC_HAVE_CUDA
-  ierr = MatSetType(A,MATMPIAIJCUSPARSE); 
+ierr = MatSetType(A,MATMPIAIJCUSPARSE); 
 #else
-  ierr = MatSetType(A,MATMPIAIJ); 
+ierr = MatSetType(A,MATMPIAIJ); 
 #endif

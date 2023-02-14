@@ -1,4 +1,4 @@
 // jordan.cxx
-  vector<double> matrix(vecsize*vecsize);
-  sycl::range<2> mat_range{vecsize,vecsize};
-  sycl::buffer<double,2> matrix_buffer( matrix.data(),mat_range );
+vector<double> matrix(vecsize*vecsize);
+sycl::range<2> mat_range{vecsize,vecsize};
+sycl::buffer<double,2> matrix_buffer( matrix.data(),mat_range );

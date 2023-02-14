@@ -1,4 +1,53 @@
-    print("Test 2: create a pool and process an array on it")
-    ##codesnippet pymulpoolmap
-    print(results)
-    
+
+  /*
+   * Each continguous source block becomes a strided column in the transpose:
+   * - number of blocks      : blocksize_i
+   * - size of block         : 1
+   * - stride between blocks : jsize ( = line length of the transpose )
+   */
+//codesnippet transposetarlinetype
+  MPI_Datatype skinnycolumn;
+  /*
+   * Exercise: 
+   * - resize the targetcolumn type to make its extent smaller
+   */
+  MPI_Type_create_resized( targetcolumn,0,
+			   sizeof(int),
+			   &skinnycolumn );
+  MPI_Type_commit( &skinnycolumn );
+
+  /*
+   * Exercise:
+   * - make the `targetblock' type that packs a number of `skinnycolumn's together
+   */
+  MPI_Datatype targetblock;
+  MPI_Type_contiguous( blocksize_j,
+		       skinnycolumn, // old type
+		       &targetblock  // new type
+		       );
+  MPI_Type_commit( &targetblock );
+
+  /*
+   * Every rank initiates a gather
+   */
+  for (int p=0; p<nprocs; p++) {
+    MPI_Gather( data_0+p*blocksize_i,1,sourceblock,
+		data_1,              1,targetblock,
+		p,comm );
+    if (p==procno) {
+      printf("Output data:\n");
+      for (int row=0; row<blocksize_i; row++) {
+	printf("Row %3d:",procno*blocksize_i+row);
+	for (int col=0; col<jsize; col++)
+	  printf(" %3d",data_1[ row*jsize + col ]);
+	printf("\n");
+      }
+    }
+  }
+
+  if (procno==0)
+    printf("Finished\n");
+
+  MPI_Finalize();
+  return 0;
+}

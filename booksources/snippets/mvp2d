@@ -1,4 +1,4 @@
-    MPI_Allgather(&my_x,1,MPI_DOUBLE,
-       	  local_x,1,MPI_DOUBLE,environ.col_comm);
-    MPI_Reduce_scatter(local_y,&my_y,&ione,MPI_DOUBLE,
+MPI_Allgather(&my_x,1,MPI_DOUBLE,
+   	  local_x,1,MPI_DOUBLE,environ.col_comm);
+MPI_Reduce_scatter(local_y,&my_y,&ione,MPI_DOUBLE,
 	  MPI_SUM,environ.row_comm);

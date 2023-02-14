@@ -2,7 +2,7 @@
 ################################################################
 ####
 #### This makefile is part of `Parallel Programming in MPI and OpenMP'
-#### by Victor Eijkhout, copyright 2013-2022
+#### by Victor Eijkhout, copyright 2013-2023
 #### eijkhout@tacc.utexas.edu
 ####
 #### Make include file for MPI programs
@@ -73,7 +73,8 @@ mpirun :
 	@program=${PROGRAM} \
 	 && if [ ! -z "${RUNNER}" ] ; then \
 	      progargs="${RUNNER} $${progargs}" ; fi \
-	 && np=`make --no-print-directory mpi_nprocs PROGRAM=${PROGRAM} NP=${NP}` \
+	 && np=$$( make --no-print-directory mpi_nprocs \
+	                PROGRAM=${PROGRAM} NP=${NP} NPMULT=${NPMULT} ) \
 	 && invoke=$$( make --no-print-directory proginvocation \
 	                PROGRAM="${PROGRAM}" \
 	                LANGUAGE="${LANGUAGE}" OPTIONS="${OPTIONS}" PYTHON="${PYTHON}" \
@@ -106,19 +107,23 @@ clean ::
 info ::
 	@echo && echo "================ Scaling"
 	@echo "make mpi_scaling"
-	@echo "    [ NDIV= (default: ${NDIV})]"
+	@echo "    [ NDIV= (default: ${NDIV})] [ NPLOW= (default: ${NPLOW}) ]"
 	@echo "    [ SCALETAG= (default: ${SCALETAG})]"
 mpi_scaling :
 	@export np=$$( make --no-print-directory mpi_nprocs ) \
-	 && export mpiprocs="$$( make --no-print-directory mpi_procs NP=$$np )" \
+	 && export mpiprocs="$$( make --no-print-directory mpi_procs \
+	                         NP=$$np NPLOW=${NPLOW} NPMULTI=${NPMULT} )" \
 	 && if [ -z "${PROGRAM}" ] ; then \
 	        echo "Set PROGRAM variable" && exit 1 \
 	    ; fi \
 	 && results=${PROGRAM}-scaling${SCALETAG}.runout \
 	 && ( \
 	    for t in $$mpiprocs ; do \
-	        echo "Procs: $$t" \
-	         && make --no-print-directory mpirun NP=$$t PROGRAM=${PROGRAM} \
+	        ppn=$$(( $$t / ${SLURM_NNODES} )) \
+	         && echo "Procs: $$t ppn=$$ppn" \
+	         && make --no-print-directory mpirun \
+	                NP=$$t PROGRAM=${PROGRAM} \
+	                ENVOPTIONS="IBRUN_TASKS_PER_NODE=$$ppn" \
 	         && echo \
 	    ; done \
 	    ) | tee $$results
@@ -128,17 +133,19 @@ mpi_procs :
 	    echo "${MPIPROCS}" \
 	    ; \
 	else \
-	    if [ ! -z "${NDIV}" ] ; then \
-	        ndiv=${NDIV} \
-	    ; else \
-	        ndiv=3 \
-	    ; fi \
+	    if [ ! -z "${NDIV}" ] ; then ndiv=${NDIV} ; else ndiv=3 ; fi \
+	     && if [ -z "${NPLOW}" ] ; then nplow=1 ; else nplow=${NPLOW} ; fi \
+	     && if [ -z "${NPMULT}" ] ; then npmult=1 ; else npmult=${NPMULT} ; fi \
 	     && if [ -z ${NP} ] ; then \
 	            np=$$( make --no-print-directory mpi_nprocs ) \
 	        ; else np=${NP} ; fi \
 	     && div=`seq 1 $$ndiv` \
-	     && frac=`for d in $$div ; do echo "$$(( $$d * $${np} / $$ndiv ))" ; done` \
-	     && echo "1 $$frac" \
+	     && frac=$$( for d in $$div ; do \
+	                    p=$$(( $$d * $${np} / $$ndiv )) \
+	                     && p=$$(( ( $$p/$$npmult ) * $$npmult )) \
+	                     && echo "$$p" \
+	                 ; done ) \
+	     && echo "$$nplow $$frac" \
 	    ; \
 	fi
 
@@ -147,7 +154,7 @@ info ::
 	@echo && echo "================ Output and regression "
 	@echo "make runs : compile and run everything"
 	@echo "make runouts :same, and generate output files"
-	@echo "    ${RUNS}"
+	@echo "    RUNS=${RUNS}"
 	@echo "    [ RUNOUTID= .... (extra id, default blank) ]"
 	@echo "    [ NP= .... (default=${NP}) ]"
 	@echo "    [ MPIRUN= .... (default=${MPIRUN}) ]"

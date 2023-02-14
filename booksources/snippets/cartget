@@ -1,6 +1,6 @@
-      int dim;
-      MPI_Cartdim_get( cart_comm,&dim );
-      int *dimensions = (int*) malloc(dim*sizeof(int));
-      int *periods    = (int*) malloc(dim*sizeof(int));
-      int *coords     = (int*) malloc(dim*sizeof(int));
-      MPI_Cart_get( cart_comm,dim,dimensions,periods,coords );
+int dim;
+MPI_Cartdim_get( cart_comm,&dim );
+int *dimensions = (int*) malloc(dim*sizeof(int));
+int *periods    = (int*) malloc(dim*sizeof(int));
+int *coords     = (int*) malloc(dim*sizeof(int));
+MPI_Cart_get( cart_comm,dim,dimensions,periods,coords );

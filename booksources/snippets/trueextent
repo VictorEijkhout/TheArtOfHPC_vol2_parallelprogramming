@@ -1,23 +1,23 @@
 // trueextent.c
-  int sender = 0, receiver = 1, the_other = 1-procno;
-  int sizes[2] = {4,6},subsizes[2] = {2,3},starts[2] = {1,2};
-    MPI_Datatype subarraytype;
-    MPI_Type_create_subarray
-      (2,sizes,subsizes,starts,
-       MPI_ORDER_C,MPI_DOUBLE,&subarraytype);
-    MPI_Type_commit(&subarraytype);
+int sender = 0, receiver = 1, the_other = 1-procno;
+int sizes[2] = {4,6},subsizes[2] = {2,3},starts[2] = {1,2};
+  MPI_Datatype subarraytype;
+  MPI_Type_create_subarray
+    (2,sizes,subsizes,starts,
+     MPI_ORDER_C,MPI_DOUBLE,&subarraytype);
+  MPI_Type_commit(&subarraytype);
 
-    MPI_Aint true_lb,true_extent,extent;
-     MPI_Type_get_true_extent
-      (subarraytype,&true_lb,&true_extent);
-    MPI_Aint
-      comp_lb = sizeof(double) *
-          ( starts[0]*sizes[1]+starts[1] ),
-      comp_extent = sizeof(double) *
-          ( sizes[1]-starts[1] // first row
-            + starts[1]+subsizes[1] // last row
-            + ( subsizes[0]>1 ? subsizes[0]-2 : 0 )*sizes[1] );
-    ASSERT(true_lb==comp_lb);
-    ASSERT(true_extent==comp_extent);
-    MPI_Send(source,1,subarraytype,the_other,0,comm);
-    MPI_Type_free(&subarraytype);
+  MPI_Aint true_lb,true_extent,extent;
+   MPI_Type_get_true_extent
+    (subarraytype,&true_lb,&true_extent);
+  MPI_Aint
+    comp_lb = sizeof(double) *
+        ( starts[0]*sizes[1]+starts[1] ),
+    comp_extent = sizeof(double) *
+        ( sizes[1]-starts[1] // first row
+          + starts[1]+subsizes[1] // last row
+          + ( subsizes[0]>1 ? subsizes[0]-2 : 0 )*sizes[1] );
+  ASSERT(true_lb==comp_lb);
+  ASSERT(true_extent==comp_extent);
+  MPI_Send(source,1,subarraytype,the_other,0,comm);
+  MPI_Type_free(&subarraytype);

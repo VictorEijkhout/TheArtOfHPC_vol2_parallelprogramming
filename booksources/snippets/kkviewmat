@@ -1,4 +1,4 @@
 // matsum.cxx
-    int m=10,n=100;
-    Kokkos::View<double**> matrix("flat",m,n);
-    assert( matrix.extent(0)==10 );
+int m=10,n=100;
+Kokkos::View<double**> matrix("flat",m,n);
+assert( matrix.extent(0)==10 );

@@ -1,6 +1,6 @@
-      if (procno==root)
-        MPI_Reduce(MPI_IN_PLACE,myrandoms,
+if (procno==root)
+  MPI_Reduce(MPI_IN_PLACE,myrandoms,
 		   nrandoms,MPI_FLOAT,MPI_SUM,root,comm);
-      else
-        MPI_Reduce(myrandoms,MPI_IN_PLACE,
+else
+  MPI_Reduce(myrandoms,MPI_IN_PLACE,
 		   nrandoms,MPI_FLOAT,MPI_SUM,root,comm);

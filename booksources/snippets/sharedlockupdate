@@ -1,8 +1,8 @@
 // lockfetchshared.c
-  MPI_Win_lock
-    (MPI_LOCK_SHARED,
-     repo, 0, the_window);
-      MPI_Fetch_and_op(&mone, &readout, MPI_INT, repo,zero_disp, MPI_SUM, the_window);
-      if (readout>0) my_work++;
-      MPI_Win_flush_local
+MPI_Win_lock
+  (MPI_LOCK_SHARED,
+   repo, 0, the_window);
+    MPI_Fetch_and_op(&mone, &readout, MPI_INT, repo,zero_disp, MPI_SUM, the_window);
+    if (readout>0) my_work++;
+    MPI_Win_flush_local
 	(repo,the_window);

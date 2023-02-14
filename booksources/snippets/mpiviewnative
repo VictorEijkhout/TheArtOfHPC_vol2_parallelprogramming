@@ -1,5 +1,5 @@
 // scatterwrite.c
-  MPI_File_set_view
-    (mpifile,
-     offset,MPI_INT,scattertype,
-     "native",MPI_INFO_NULL);
+MPI_File_set_view
+  (mpifile,
+   offset,MPI_INT,scattertype,
+   "native",MPI_INFO_NULL);

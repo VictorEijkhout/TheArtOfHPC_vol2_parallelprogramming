@@ -1,4 +1,4 @@
 ## anysource.py
-        rstatus = MPI.Status()
-        comm.Recv(rbuf,source=MPI.ANY_SOURCE,status=rstatus)
-        print("Message came from %d" % rstatus.Get_source())
+rstatus = MPI.Status()
+comm.Recv(rbuf,source=MPI.ANY_SOURCE,status=rstatus)
+print("Message came from %d" % rstatus.Get_source())

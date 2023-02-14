@@ -1,26 +1,26 @@
-  /*
-   * Send a zero-size msg to everyone that you receive from,
-   * just to let them know that they need to send to you.
-   */
-  MPI_Request send_requests[nprocs_to_recv_from];
-  for (int iproc=0; iproc<nprocs_to_recv_from; iproc++) {
-    int proc=procs_to_recv_from[iproc];
-    double send_buffer=0.;
-    MPI_Isend(&send_buffer,0,MPI_DOUBLE, /*to:*/ proc,0,comm,
+/*
+ * Send a zero-size msg to everyone that you receive from,
+ * just to let them know that they need to send to you.
+ */
+MPI_Request send_requests[nprocs_to_recv_from];
+for (int iproc=0; iproc<nprocs_to_recv_from; iproc++) {
+  int proc=procs_to_recv_from[iproc];
+  double send_buffer=0.;
+  MPI_Isend(&send_buffer,0,MPI_DOUBLE, /*to:*/ proc,0,comm,
 	      &(send_requests[iproc]));
-  }
+}
 
-  /*
-   * Do as many receives as you know are coming in;
-   * use wildcards since you don't know where they are coming from.
-   * The source is a process you need to send to.
-   */
-  procs_to_send_to = (int*)malloc( nprocs_to_send_to * sizeof(int) );
-  for (int iproc=0; iproc<nprocs_to_send_to; iproc++) {
-    double recv_buffer;
-    MPI_Status status;
-    MPI_Recv(&recv_buffer,0,MPI_DOUBLE,MPI_ANY_SOURCE,MPI_ANY_TAG,comm,
+/*
+ * Do as many receives as you know are coming in;
+ * use wildcards since you don't know where they are coming from.
+ * The source is a process you need to send to.
+ */
+procs_to_send_to = (int*)malloc( nprocs_to_send_to * sizeof(int) );
+for (int iproc=0; iproc<nprocs_to_send_to; iproc++) {
+  double recv_buffer;
+  MPI_Status status;
+  MPI_Recv(&recv_buffer,0,MPI_DOUBLE,MPI_ANY_SOURCE,MPI_ANY_TAG,comm,
 	     &status);
-    procs_to_send_to[iproc] = status.MPI_SOURCE;
-  }
-  MPI_Waitall(nprocs_to_recv_from,send_requests,MPI_STATUSES_IGNORE);
+  procs_to_send_to[iproc] = status.MPI_SOURCE;
+}
+MPI_Waitall(nprocs_to_recv_from,send_requests,MPI_STATUSES_IGNORE);

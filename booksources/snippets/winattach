@@ -1,5 +1,5 @@
 // windynamic.c
-    MPI_Win_create_dynamic(MPI_INFO_NULL,comm,&the_window);
-    if (procno==data_proc)
-      window_buffer = (int*) malloc( 2*sizeof(int) );
-    MPI_Win_attach(the_window,window_buffer,2*sizeof(int));
+MPI_Win_create_dynamic(MPI_INFO_NULL,comm,&the_window);
+if (procno==data_proc)
+  window_buffer = (int*) malloc( 2*sizeof(int) );
+MPI_Win_attach(the_window,window_buffer,2*sizeof(int));

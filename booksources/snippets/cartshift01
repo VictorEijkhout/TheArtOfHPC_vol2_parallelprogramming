@@ -1,11 +1,11 @@
-      int pred,succ;
-      MPI_Cart_shift
+int pred,succ;
+MPI_Cart_shift
 	(period_comm,/* dim: */ 0,/* up: */ 1,
 	 &pred,&succ);
-      printf("periodic dimension 0:\n  src=%d, tgt=%d\n",
-             pred,succ);
-      MPI_Cart_shift
+printf("periodic dimension 0:\n  src=%d, tgt=%d\n",
+       pred,succ);
+MPI_Cart_shift
 	(period_comm,/* dim: */ 1,/* up: */ 1,
 	 &pred,&succ);
-      printf("non-periodic dimension 1:\n  src=%d, tgt=%d\n",
-             pred,succ);
+printf("non-periodic dimension 1:\n  src=%d, tgt=%d\n",
+       pred,succ);

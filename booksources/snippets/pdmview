@@ -1,3 +1,3 @@
-  ierr = DMSetFromOptions(dm);
-  ierr = PetscObjectSetName((PetscObject) dm, "Sphere");
-  ierr = DMViewFromOptions(dm, NULL, "-dm_view");
+ierr = DMSetFromOptions(dm);
+ierr = PetscObjectSetName((PetscObject) dm, "Sphere");
+ierr = DMViewFromOptions(dm, NULL, "-dm_view");

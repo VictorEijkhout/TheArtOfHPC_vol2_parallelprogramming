@@ -1,24 +1,24 @@
 // irecvsource.c
-  if (procno==nprocs-1) {
-    int *recv_buffer;
-    MPI_Request *request; MPI_Status status;
-    recv_buffer = (int*) malloc((nprocs-1)*sizeof(int));
-    request = (MPI_Request*) malloc
-      ((nprocs-1)*sizeof(MPI_Request));
+if (procno==nprocs-1) {
+  int *recv_buffer;
+  MPI_Request *request; MPI_Status status;
+  recv_buffer = (int*) malloc((nprocs-1)*sizeof(int));
+  request = (MPI_Request*) malloc
+    ((nprocs-1)*sizeof(MPI_Request));
 
-    for (int p=0; p<nprocs-1; p++) {
-      ierr = MPI_Irecv(recv_buffer+p,1,MPI_INT, p,0,comm,
+  for (int p=0; p<nprocs-1; p++) {
+    ierr = MPI_Irecv(recv_buffer+p,1,MPI_INT, p,0,comm,
 		      request+p); CHK(ierr);
-    }
-    for (int p=0; p<nprocs-1; p++) {
-      int index,sender;
-      MPI_Waitany(nprocs-1,request,&index,&status);
-      if (index!=status.MPI_SOURCE)
-        printf("Mismatch index %d vs source %d\n",
-               index,status.MPI_SOURCE);
-      printf("Message from %d: %d\n",
-             index,recv_buffer[index]);
-    }
-  } else {
-    ierr = MPI_Send(&procno,1,MPI_INT, nprocs-1,0,comm);
   }
+  for (int p=0; p<nprocs-1; p++) {
+    int index,sender;
+    MPI_Waitany(nprocs-1,request,&index,&status);
+    if (index!=status.MPI_SOURCE)
+      printf("Mismatch index %d vs source %d\n",
+             index,status.MPI_SOURCE);
+    printf("Message from %d: %d\n",
+           index,recv_buffer[index]);
+  }
+} else {
+  ierr = MPI_Send(&procno,1,MPI_INT, nprocs-1,0,comm);
+}

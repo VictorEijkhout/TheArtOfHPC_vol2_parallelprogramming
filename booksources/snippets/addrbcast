@@ -1,5 +1,5 @@
-    MPI_Aint data_address;
-    if (procno==data_proc) {
-      MPI_Get_address(window_buffer,&data_address);
-    }
-    MPI_Bcast(&data_address,1,MPI_AINT,data_proc,comm);
+MPI_Aint data_address;
+if (procno==data_proc) {
+  MPI_Get_address(window_buffer,&data_address);
+}
+MPI_Bcast(&data_address,1,MPI_AINT,data_proc,comm);

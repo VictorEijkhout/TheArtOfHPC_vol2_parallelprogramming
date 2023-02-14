@@ -1,7 +1,7 @@
 // reducescatter.c
-  int
-    // data that we know:
-    *i_recv_from_proc = (int*) malloc(nprocs*sizeof(int)),
-    *procs_to_recv_from, nprocs_to_recv_from=0,
-    // data we are going to determin:
-    *procs_to_send_to,nprocs_to_send_to;
+int
+// data that we know:
+  *i_recv_from_proc = (int*) malloc(nprocs*sizeof(int)),
+  *procs_to_recv_from, nprocs_to_recv_from=0,
+// data we are going to determin:
+  *procs_to_send_to,nprocs_to_send_to;

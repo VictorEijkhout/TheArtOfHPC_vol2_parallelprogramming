@@ -1,12 +1,12 @@
-    PetscInt its; KSPConvergedReason reason; 
-    PetscCall( KSPGetConvergedReason(solver,&reason) );
-    PetscCall( KSPGetIterationNumber(solver,&its) );
-    if (reason<0) {
-      PetscPrintf
+PetscInt its; KSPConvergedReason reason; 
+PetscCall( KSPGetConvergedReason(solver,&reason) );
+PetscCall( KSPGetIterationNumber(solver,&its) );
+if (reason<0) {
+  PetscPrintf
 	(comm,"Failure to converge after %d iterations; reason %s\n",
 	 its,KSPConvergedReasons[reason]);
-    } else {
-      PetscPrintf
+} else {
+  PetscPrintf
 	(comm,"Number of iterations to convergence: %d\n",
 	 its);
-    }
+}

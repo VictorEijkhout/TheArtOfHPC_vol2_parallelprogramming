@@ -1,1 +1,1 @@
-    comm_world.reduce(lcm<int>(), 0, v, result);
+comm_world.reduce(lcm<int>(), 0, v, result);

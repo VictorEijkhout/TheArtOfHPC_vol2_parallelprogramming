@@ -1,10 +1,10 @@
 // inttag.cxx
-  enum class tag : int { ping=1, pong=2 };
-  int pinger = 0, ponger = world.size()-1;
-  if (world.rank()==pinger) {
-    world.send(x, 1, tag::ping);
-    world.recv(x, 1, tag::pong);
-  } else if (world.rank()==ponger) {
-    world.recv(x, 0, tag::ping);
-    world.send(x, 0, tag::pong);
-  }
+enum class tag : int { ping=1, pong=2 };
+int pinger = 0, ponger = world.size()-1;
+if (world.rank()==pinger) {
+  world.send(x, 1, tag::ping);
+  world.recv(x, 1, tag::pong);
+} else if (world.rank()==ponger) {
+  world.recv(x, 0, tag::ping);
+  world.send(x, 0, tag::pong);
+}

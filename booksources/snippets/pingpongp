@@ -1,16 +1,16 @@
 ## pingpong.py
-    if mytid==0:
-        data = [ 2.*i for i in range(s) ]
-        starttime = MPI.Wtime()
-        for test in range(ntests):
-            comm.send(data,dest=ntids-1)
-            rdata = comm.recv(source=ntids-1)
-        elapsed = MPI.Wtime()-starttime
-        print("Size=%d, elapsed time: %e" % (s,elapsed))
-        c = data==rdata
-        if not c:
-            print("oops",data,rdata)
-    elif mytid==ntids-1:
-        for test in range(ntests):
-            zdata = comm.recv(source=0)
-            comm.send(zdata,dest=0)
+if mytid==0:
+    data = [ 2.*i for i in range(s) ]
+    starttime = MPI.Wtime()
+    for test in range(ntests):
+        comm.send(data,dest=ntids-1)
+        rdata = comm.recv(source=ntids-1)
+    elapsed = MPI.Wtime()-starttime
+    print("Size=%d, elapsed time: %e" % (s,elapsed))
+    c = data==rdata
+    if not c:
+        print("oops",data,rdata)
+elif mytid==ntids-1:
+    for test in range(ntests):
+        zdata = comm.recv(source=0)
+        comm.send(zdata,dest=0)

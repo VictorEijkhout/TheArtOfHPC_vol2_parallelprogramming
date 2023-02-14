@@ -1,5 +1,5 @@
 // cartdims.c
-    int *dimensions = (int*) malloc(dim*sizeof(int));
-    for (int idim=0; idim<dim; idim++)
-      dimensions[idim] = 0;
-    MPI_Dims_create(nprocs,dim,dimensions);
+int *dimensions = (int*) malloc(dim*sizeof(int));
+for (int idim=0; idim<dim; idim++)
+  dimensions[idim] = 0;
+MPI_Dims_create(nprocs,dim,dimensions);

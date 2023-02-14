@@ -1,4 +1,4 @@
 // spawnworker.c
-  MPI_Comm_size(MPI_COMM_WORLD,&nworkers);
-  MPI_Comm_rank(MPI_COMM_WORLD,&workerno);
-  MPI_Comm_get_parent(&parent);
+MPI_Comm_size(MPI_COMM_WORLD,&nworkers);
+MPI_Comm_rank(MPI_COMM_WORLD,&workerno);
+MPI_Comm_get_parent(&parent);

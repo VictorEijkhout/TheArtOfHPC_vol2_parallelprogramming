@@ -1,24 +1,24 @@
 // powerpersist1.c
-  double localnorm,globalnorm=1.;
-  MPI_Request reduce_request;
-  MPI_Allreduce_init
-    ( &localnorm,&globalnorm,1,MPI_DOUBLE,MPI_SUM,
-      comm,MPI_INFO_NULL,&reduce_request);
-  for (int it=0; ; it++) {
-    /*
-     * Matrix vector product
-     */
-    matmult(indata,outdata,buffersize);
+double localnorm,globalnorm=1.;
+MPI_Request reduce_request;
+MPI_Allreduce_init
+  ( &localnorm,&globalnorm,1,MPI_DOUBLE,MPI_SUM,
+    comm,MPI_INFO_NULL,&reduce_request);
+for (int it=0; ; it++) {
+  /*
+   * Matrix vector product
+   */
+  matmult(indata,outdata,buffersize);
 
-    // start computing norm of output vector
-    localnorm = local_l2_norm(outdata,buffersize);
-    double old_globalnorm = globalnorm;
-    MPI_Start( &reduce_request );
+// start computing norm of output vector
+  localnorm = local_l2_norm(outdata,buffersize);
+  double old_globalnorm = globalnorm;
+  MPI_Start( &reduce_request );
 
-    // end computing norm of output vector
-    MPI_Wait( &reduce_request,MPI_STATUS_IGNORE );
-    globalnorm = sqrt(globalnorm);
-    // now `globalnorm' is the L2 norm of `outdata'
-    scale(outdata,indata,buffersize,1./globalnorm);
-  }
-  MPI_Request_free( &reduce_request );
+// end computing norm of output vector
+  MPI_Wait( &reduce_request,MPI_STATUS_IGNORE );
+  globalnorm = sqrt(globalnorm);
+// now `globalnorm' is the L2 norm of `outdata'
+  scale(outdata,indata,buffersize,1./globalnorm);
+}
+MPI_Request_free( &reduce_request );

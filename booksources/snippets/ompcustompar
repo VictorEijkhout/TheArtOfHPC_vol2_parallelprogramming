@@ -1,4 +1,4 @@
-  NewVector v(s);
-  #pragma omp parallel for
-  for ( auto e : v )
-    cout << e << " ";
+NewVector v(s);
+#pragma omp parallel for
+for ( auto e : v )
+  cout << e << " ";

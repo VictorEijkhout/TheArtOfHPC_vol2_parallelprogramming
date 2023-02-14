@@ -1,6 +1,8 @@
-      std::atomic<int> my_object{0};
-      #pragma omp parallel for
-      for ( size_t update=0; update<NTHREADS*nops; update++) {
-        my_object += 1;
-      }
-      result = my_object;
+std::atomic<int> my_object{0};
+#pragma omp parallel for
+for ( size_t update=0;
+      update<NTHREADS*nops;
+      update++) {
+  my_object += 1;
+}
+result = my_object;

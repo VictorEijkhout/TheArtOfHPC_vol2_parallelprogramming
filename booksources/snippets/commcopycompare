@@ -1,19 +1,19 @@
 // commcompare.c
-  int result;
-  MPI_Comm copy = comm;
-  MPI_Comm_compare(comm,copy,&result);
-  printf("assign:    comm==copy: %d \n",
-         result==MPI_IDENT);
-  printf("            congruent: %d \n",
-         result==MPI_CONGRUENT);
-  printf("            not equal: %d \n",
-         result==MPI_UNEQUAL);
+int result;
+MPI_Comm copy = comm;
+MPI_Comm_compare(comm,copy,&result);
+printf("assign:    comm==copy: %d \n",
+       result==MPI_IDENT);
+printf("            congruent: %d \n",
+       result==MPI_CONGRUENT);
+printf("            not equal: %d \n",
+       result==MPI_UNEQUAL);
 
-  MPI_Comm_dup(comm,&copy);
-  MPI_Comm_compare(comm,copy,&result);
-  printf("duplicate: comm==copy: %d \n",
-         result==MPI_IDENT);
-  printf("            congruent: %d \n",
-         result==MPI_CONGRUENT);
-  printf("            not equal: %d \n",
-         result==MPI_UNEQUAL);
+MPI_Comm_dup(comm,&copy);
+MPI_Comm_compare(comm,copy,&result);
+printf("duplicate: comm==copy: %d \n",
+       result==MPI_IDENT);
+printf("            congruent: %d \n",
+       result==MPI_CONGRUENT);
+printf("            not equal: %d \n",
+       result==MPI_UNEQUAL);

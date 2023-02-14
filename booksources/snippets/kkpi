@@ -1,11 +1,11 @@
-  double pi{0.};
-  int n{100};
-  Kokkos::parallel_reduce
-    ( "PI",
-      n,
-      KOKKOS_LAMBDA ( int i, double& partial ) {
-      double h = 1./n, x = i*h;
-      partial += h * sqrt( 1-x*x );
-    },
-      pi
-      );
+double pi{0.};
+int n{100};
+Kokkos::parallel_reduce
+  ( "PI",
+    n,
+    KOKKOS_LAMBDA ( int i, double& partial ) {
+    double h = 1./n, x = i*h;
+    partial += h * sqrt( 1-x*x );
+  },
+    pi
+    );

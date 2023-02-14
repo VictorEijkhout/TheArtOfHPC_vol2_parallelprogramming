@@ -1,4 +1,4 @@
-    double recv_data;
-    mpl::irequest recv_request =
-      comm_world.irecv( recv_data,sender );
-    recv_request.wait();
+double recv_data;
+mpl::irequest recv_request =
+  comm_world.irecv( recv_data,sender );
+recv_request.wait();

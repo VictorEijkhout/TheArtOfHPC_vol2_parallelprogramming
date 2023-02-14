@@ -3,10 +3,8 @@ class atomic_int {
 private:
   omp_lock_t the_lock;
   int _value{0};
-  bool delay;
 public:
-  atomic_int(bool delay=false)
-    : delay(delay) {
+  atomic_int() {
     omp_init_lock(&the_lock);
   };
   atomic_int( const atomic_int& )
@@ -16,12 +14,3 @@ public:
   ~atomic_int() {
     omp_destroy_lock(&the_lock);
   };
-  int operator +=( int i ) {
-    // atomic increment
-    omp_set_lock(&the_lock);
-    _value += i; int rv = _value;
-    omp_unset_lock(&the_lock);
-    return rv;
-  };
-  auto value() { return _value; };
-};

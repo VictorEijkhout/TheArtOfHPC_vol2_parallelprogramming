@@ -1,7 +1,7 @@
-  if (procid==1) then
-     sync images( (/procid+1/) )
-  else if (procid==nprocs) then
-     sync images( (/procid-1/) )
-  else
-     sync images( (/procid-1,procid+1/) )
-  end if
+if (procid==1) then
+   sync images( (/procid+1/) )
+else if (procid==nprocs) then
+   sync images( (/procid-1/) )
+else
+   sync images( (/procid-1,procid+1/) )
+end if

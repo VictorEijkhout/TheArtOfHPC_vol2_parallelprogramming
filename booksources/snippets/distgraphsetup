@@ -1,19 +1,19 @@
 // graph.c
-    for ( int i=0; i<=1; i++ ) {
-      int neighb_i = proci+i;
-      if (neighb_i<0 || neighb_i>=idim)
-        continue;
-      int j = 1-i;
-      int neighb_j = procj+j;
-      if (neighb_j<0 || neighb_j>=jdim)
+for ( int i=0; i<=1; i++ ) {
+  int neighb_i = proci+i;
+  if (neighb_i<0 || neighb_i>=idim)
+    continue;
+  int j = 1-i;
+  int neighb_j = procj+j;
+  if (neighb_j<0 || neighb_j>=jdim)
 	continue;
-      destinations[ degree++ ] = 
+  destinations[ degree++ ] = 
 	PROC(neighb_i,neighb_j,idim,jdim);
-    }
-    MPI_Dist_graph_create
-      (comm,
-       /* I specify just one proc: me */ 1,
-       &procno,&degree,destinations,weights,
-       MPI_INFO_NULL,0,
-       &comm2d
-       );
+}
+MPI_Dist_graph_create
+  (comm,
+   /* I specify just one proc: me */ 1,
+   &procno,&degree,destinations,weights,
+   MPI_INFO_NULL,0,
+   &comm2d
+   );

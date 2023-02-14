@@ -1,6 +1,6 @@
-    int array[nthreads];
-    {
-      int t = 2;
-      array += t;
-      array[0] = t;
-    }
+int array[nthreads];
+{
+  int t = 2;
+  array += t;
+  array[0] = t;
+}

@@ -1,6 +1,6 @@
 // cartcoord.c
-  for ( int id=0; id<dim; id++)
-    periods[id] = id==0 ? 1 : 0;
-  MPI_Cart_create
-    ( comm,dim,dimensions,periods,
-      0,&period_comm );
+for ( int id=0; id<dim; id++)
+  periods[id] = id==0 ? 1 : 0;
+MPI_Cart_create
+  ( comm,dim,dimensions,periods,
+    0,&period_comm );

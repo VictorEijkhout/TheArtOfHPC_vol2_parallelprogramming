@@ -1,7 +1,7 @@
 // partition.c
-    int bufsize = nparts*SIZE;
-    int *partitions = (int*)malloc((nparts+1)*sizeof(int));
-    for (int ip=0; ip<=nparts; ip++)
-      partitions[ip] = ip*SIZE;
-    if (procno==src) {
-      double *sendbuffer = (double*)malloc(bufsize*sizeof(double));
+int bufsize = nparts*SIZE;
+int *partitions = (int*)malloc((nparts+1)*sizeof(int));
+for (int ip=0; ip<=nparts; ip++)
+  partitions[ip] = ip*SIZE;
+if (procno==src) {
+  double *sendbuffer = (double*)malloc(bufsize*sizeof(double));

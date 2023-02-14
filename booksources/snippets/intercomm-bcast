@@ -1,10 +1,10 @@
-  if (color==0) { // sending group: the local leader sends
-    if (i_am_local_leader)
-      root = MPI_ROOT;
-    else
-      root = MPI_PROC_NULL;
-  } else { // receiving group: everyone indicates leader of other group
-    root = local_number_of_other_leader;
-  }
-  if (DEBUG) fprintf(stderr,"[%d] using root value %d\n",procno,root);
-  MPI_Bcast(&bcast_data,1,MPI_INT,root,intercomm);
+if (color==0) { // sending group: the local leader sends
+  if (i_am_local_leader)
+    root = MPI_ROOT;
+  else
+    root = MPI_PROC_NULL;
+} else { // receiving group: everyone indicates leader of other group
+  root = local_number_of_other_leader;
+}
+if (DEBUG) fprintf(stderr,"[%d] using root value %d\n",procno,root);
+MPI_Bcast(&bcast_data,1,MPI_INT,root,intercomm);

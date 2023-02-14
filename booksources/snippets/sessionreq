@@ -1,6 +1,6 @@
 // session.c
-  MPI_Info session_request_info = MPI_INFO_NULL;
-  MPI_Info_create(&session_request_info);
-  char thread_key[] = "mpi_thread_support_level";
-  MPI_Info_set(session_request_info,
-               thread_key,"MPI_THREAD_MULTIPLE");
+MPI_Info session_request_info = MPI_INFO_NULL;
+MPI_Info_create(&session_request_info);
+char thread_key[] = "mpi_thread_support_level";
+MPI_Info_set(session_request_info,
+             thread_key,"MPI_THREAD_MULTIPLE");

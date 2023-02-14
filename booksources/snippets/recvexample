@@ -1,6 +1,6 @@
-    double recv_data;
-    MPI_Recv
-      ( /* recv buffer/count/type: */ &recv_data,1,MPI_DOUBLE,
-        /* from: */ sender, /* tag: */ 0,
-        /* communicator: */ comm,
-        /* recv status: */ MPI_STATUS_IGNORE);
+double recv_data;
+MPI_Recv
+  ( /* recv buffer/count/type: */ &recv_data,1,MPI_DOUBLE,
+    /* from: */ sender, /* tag: */ 0,
+    /* communicator: */ comm,
+    /* recv status: */ MPI_STATUS_IGNORE);

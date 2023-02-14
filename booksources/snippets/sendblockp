@@ -1,10 +1,10 @@
 ## sendblock.py
-    size = 1
-    while size<2000000000:
-        sendbuf = np.empty(size, dtype=int)
-        recvbuf = np.empty(size, dtype=int)
-        comm.Send(sendbuf,dest=other)
-        comm.Recv(sendbuf,source=other)
-        if procid<other:
-            print("Send did not block for",size)
-        size *= 10
+size = 1
+while size<2000000000:
+    sendbuf = np.empty(size, dtype=int)
+    recvbuf = np.empty(size, dtype=int)
+    comm.Send(sendbuf,dest=other)
+    comm.Recv(sendbuf,source=other)
+    if procid<other:
+        print("Send did not block for",size)
+    size *= 10

@@ -1,9 +1,9 @@
 // init.c
-  PetscCall( PetscInitialize
-    (&argc,&argv,(char*)0,help) );
-  int flag;
-  MPI_Initialized(&flag);
-  if (flag)
-    printf("MPI was initialized by PETSc\n");
-  else
-    printf("MPI not yet initialized\n");
+PetscCall( PetscInitialize
+  (&argc,&argv,(char*)0,help) );
+int flag;
+MPI_Initialized(&flag);
+if (flag)
+  printf("MPI was initialized by PETSc\n");
+else
+  printf("MPI not yet initialized\n");

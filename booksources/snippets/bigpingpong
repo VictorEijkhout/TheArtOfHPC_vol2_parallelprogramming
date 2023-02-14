@@ -1,11 +1,11 @@
 // pingpongbig.c
-  assert( sizeof(MPI_Count)>4 );
-  for ( int power=3; power<=10; power++) {
-    MPI_Count length=pow(10,power);
-      buffer = (double*)malloc( length*sizeof(double) );
-        MPI_Ssend_c
-          (buffer,length,MPI_DOUBLE,
-           processB,0,comm);
-        MPI_Recv_c
-          (buffer,length,MPI_DOUBLE,
-           processB,0,comm,MPI_STATUS_IGNORE);
+assert( sizeof(MPI_Count)>4 );
+for ( int power=3; power<=10; power++) {
+  MPI_Count length=pow(10,power);
+    buffer = (double*)malloc( length*sizeof(double) );
+      MPI_Ssend_c
+        (buffer,length,MPI_DOUBLE,
+         processB,0,comm);
+      MPI_Recv_c
+        (buffer,length,MPI_DOUBLE,
+         processB,0,comm,MPI_STATUS_IGNORE);

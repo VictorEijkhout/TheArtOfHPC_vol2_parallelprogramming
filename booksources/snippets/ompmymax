@@ -1,7 +1,7 @@
 // ireduct.c
 int mymax(int r,int n) {
-  // r is the already reduced value
-  // n is the new value
+// r is the already reduced value
+// n is the new value
   int m;
   if (n>r) {
     m = n;

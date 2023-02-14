@@ -1,10 +1,10 @@
 // getfence.c
-  int *number_buffer = NULL;
-  MPI_Alloc_mem
-    ( /* size: */ 2*sizeof(int),
-      MPI_INFO_NULL,&number_buffer);
-  MPI_Win_create
-    ( number_buffer,2*sizeof(int),sizeof(int),
-      MPI_INFO_NULL,comm,&the_window);
-  MPI_Win_free(&the_window);
-  MPI_Free_mem(number_buffer);
+int *number_buffer = NULL;
+MPI_Alloc_mem
+  ( /* size: */ 2*sizeof(int),
+    MPI_INFO_NULL,&number_buffer);
+MPI_Win_create
+  ( number_buffer,2*sizeof(int),sizeof(int),
+    MPI_INFO_NULL,comm,&the_window);
+MPI_Win_free(&the_window);
+MPI_Free_mem(number_buffer);

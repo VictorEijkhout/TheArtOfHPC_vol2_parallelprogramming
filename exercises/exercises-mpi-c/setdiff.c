@@ -99,7 +99,7 @@ int main(int argc,char **argv) {
    * -- compute the global set difference 
    *    by passing the filter around the ring in a bucket brigade
    */
-  for (int p=0; p<nprocs; p++) {
+  for (int stage=0; stage<nprocs; stage++) {
 /**** your code here ****/
     setdiff( result,filter,N );
 /**** your code here ****/

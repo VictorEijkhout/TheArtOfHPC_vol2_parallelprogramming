@@ -1,7 +1,7 @@
 // pseek.c
-  FILE *pfile;
-  pfile = fopen("pseek.dat","w");
-  fseek(pfile,procid*sizeof(int),SEEK_CUR);
-  //  fseek(pfile,procid*sizeof(char),SEEK_CUR);
-  fprintf(pfile,"%d\n",procid);
-  fclose(pfile);
+FILE *pfile;
+pfile = fopen("pseek.dat","w");
+fseek(pfile,procid*sizeof(int),SEEK_CUR);
+//  fseek(pfile,procid*sizeof(char),SEEK_CUR);
+fprintf(pfile,"%d\n",procid);
+fclose(pfile);

@@ -2,7 +2,7 @@
 ################################################################
 ####
 #### This makefile is part of `Parallel Programming in MPI and OpenMP'
-#### Victor Eijkhout
+#### copyright 2015-2023 Victor Eijkhout
 #### eijkhout@tacc.utexas.edu
 ####
 #### Makefile for course exercises in Python
@@ -23,8 +23,8 @@ info ::
 
 EXERCISES = \
     hello commrank prime randommax pingpong setdiff \
-    rightsend isendirecv ibarrierupdate \
-    onenorm bucketblock stridesend cubegather \
+    rightsend isendirecv ibarrierupdate scangather \
+    onenorm bucketblock stridesend cubegather transposeblock \
     randomput rightput countdown onesidedbuild \
     lockfetch \
     procgrid blockwrite scatterwrite viewwrite

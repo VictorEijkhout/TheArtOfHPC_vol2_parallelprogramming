@@ -1,11 +1,11 @@
 // reduxmax.cxx
-    double max=0.;
-    Kokkos::parallel_reduce
-      ( npoints,
-        KOKKOS_LAMBDA (int i,double& m) {
-        if (x(i)>m)
-          m = x(i);
-      },
-        Kokkos::Max<double>(max)
-        );
-    cout << "max: " << max << "\n";
+double max=0.;
+Kokkos::parallel_reduce
+  ( npoints,
+    KOKKOS_LAMBDA (int i,double& m) {
+    if (x(i)>m)
+      m = x(i);
+  },
+    Kokkos::Max<double>(max)
+    );
+cout << "max: " << max << "\n";
