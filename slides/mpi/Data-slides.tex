@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the lecture slides for
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% Data-slides.tex : slides about data types
 %%%%
@@ -251,18 +251,6 @@ CALL MPI_Type_create_f90_real( 15 , 300 , realtype , error )
   \includegraphics{extentvector}
 \end{numberedframe}
 
-\begin{numberedframe}{Extent computation}
-  \cverbatimsnippet{vectortypeextent}
-\end{numberedframe}
-
-\begin{numberedframe}{Extent of subarray type}
-  The `subarray' type: \\
-  data does not start at the start of the type.
-
-  \indexmpiref{MPI_Type_get_true_extent} returns
-  non-zero lower bound.
-\end{numberedframe}
-
 \begin{numberedframe}{Extent resizing: enlarging}
   Multiple derived types may not be what you intended\\
   extent resizing makes it artificually larger:
@@ -270,10 +258,22 @@ CALL MPI_Type_create_f90_real( 15 , 300 , realtype , error )
   \includegraphics[scale=.8]{extentpad}  
 \end{numberedframe}
 
+\begin{numberedframe}{Extent computation}
+  Use \indexmpishow{MPI_Type_get_extent} to query extent\\
+  note: parameters are measured in bytes.
+
+  \cverbatimsnippet{vectortypeextent}
+\end{numberedframe}
+
 \begin{numberedframe}{Naive code}
-  Send:
-  \cverbatimsnippet{twovectorsend}
-  Recv:
+  Send multiple derived types
+  from
+\begin{verbatim}
+0 1 2 3 4 5 6 7 8 9 10
+\end{verbatim}
+
+\cverbatimsnippet{twovectorsend}
+  Receive as single block:
   \cverbatimsnippet{twovectorrecv}
 giving an output of:
 \begin{verbatim}
@@ -282,6 +282,7 @@ Receive 6 elements: 0 2 4 5 7 9
 \end{numberedframe}
 
 \begin{numberedframe}{Resizing code}
+  Extend the vector type with padding:
 \cverbatimsnippet{twovectorpad}
 giving:
 \begin{verbatim}
@@ -297,9 +298,18 @@ Receive 6 elements: 0 2 4 6 8 10
   \includegraphics[scale=.35]{stride-extent}
 \end{numberedframe}
 
-\begin{exerciseframe}[stridesend]
- \input{ex:stridesendsized}
+\begin{exerciseframe}[stridescatter]
+  Change the \n{stridesend} code to use a scatter call,
+  rather than a sequence of sends.
 \end{exerciseframe}
+
+\begin{numberedframe}{Extent of subarray type}
+  The `subarray' type: \\
+  data does not start at the start of the type.
+
+  \indexmpiref{MPI_Type_get_true_extent} returns
+  non-zero lower bound.
+\end{numberedframe}
 
 \sectionframe{Packed data}
 

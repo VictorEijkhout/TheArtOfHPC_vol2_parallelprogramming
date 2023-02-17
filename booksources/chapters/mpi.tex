@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% mpi.tex : leftover MPI topics
 %%%%
@@ -24,8 +24,11 @@ for windows, see section~\ref{sec:win-attr}.)
 These contain key-value pairs that can offer system or implementation
 dependent information.
 
-Create an info object with \indexmpiref{MPI_Info_create}
-and delete it with \indexmpiref{MPI_Info_free}.
+Info objects can be created with \indexmpiref{MPI_Info_create}
+and deleted with \indexmpiref{MPI_Info_free};
+there is one info object, named \indexmpishow{MPI_INFO_ENV},
+which is created by \indexmpishow{MPI_Init} or \indexmpishow{MPI_Init_thread};
+see section~\ref{sec:mpi-info-env}.
 
 Keys are then set with \indexmpiref{MPI_Info_set},
 and they can be queried with \indexmpiref{MPI_Info_get}.

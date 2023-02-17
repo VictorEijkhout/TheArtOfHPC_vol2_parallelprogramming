@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% mpi-moredata.tex : more about data
 %%%%
@@ -122,29 +122,14 @@ Somewhat miraculously, you can actually change these to achieve special effects.
 This is needed for:
 \begin{itemize}
 \item
-  some cases of gather/scatter operations;
-
-The problem here is that MPI uses the extent of the send type in a scatter,
-or the receive type in a gather: if that type is 20 bytes big from
-its first to its last element, then
-data will be read out 20 bytes apart in a scatter, or written 20 bytes apart
-in a gather. This ignores the `gaps' in the type!
-(See exercise~\ref{ex:stridesend}.)
+  Some cases of gather/scatter operations;
+  see the example in section~\ref{sec:extent-ex2}.
 
 \item When the count
   of derived items in a buffer is more than one.
-
-Consider the vector type from the previous section.
-It is clear that
-\begin{lstlisting}
-MPI_Type_vector( 2*count,bs,stride,oldtype,&two_n_type );
-\end{lstlisting}
-will not give the same result as
-\begin{lstlisting}
-MPI_Type_vector( count,bs,stride,oldtype,&one_n_type );
-MPI_Type_contiguous( 2,&one_n_type,&two_n_type );
-\end{lstlisting}
+  See the example in section~\ref{sec:extent-ex1}.
 \end{itemize}
+
 
 The technicality on which the solution hinges is that you can `resize' a type
 with \indexmpiref{MPI_Type_create_resized}
@@ -152,6 +137,25 @@ to give it a different extent, while not affecting how much data there
 actually is in it.
 
 \Level 2 {Example 1}
+\label{sec:extent-ex1}
+
+In the examples of derived types so far
+we always used a send count of~1.
+What happens if you use a larger count?
+
+Consider a vector type, with a send count of~2.
+\begin{lstlisting}
+MPI_Type_vector( count,bs,stride,oldtype,&one_n_type );
+MPI_Type_contiguous( 2,&one_n_type,&two_n_type );
+\end{lstlisting}
+Contrast this with a twice-as-large vector type:
+It is clear that
+\begin{lstlisting}
+MPI_Type_vector( 2*count,bs,stride,oldtype,&two_n_type );
+\end{lstlisting}
+The difference is pictured in figure~\ref{fig:extentpad},
+where the two illustrates the result of using a send count of~2,
+and the bottom the desired effect.
 
 \begin{figure}[ht]
   \includegraphics{extentpad}
@@ -160,7 +164,9 @@ actually is in it.
   \label{fig:extentpad}
 \end{figure}
 
-First consider sending more than one derived type,
+To show how this problem can be solved by resizing the extent,
+let's look at a specific example, and
+consider sending more than one derived type,
 from a buffer containing consecutive integers:
 %
 \cverbatimsnippet[examples/mpi/c/vectorpadsend.c]{twovectorsend}
@@ -189,7 +195,16 @@ Padded  type l=0 e=24
 Receive 6 elements: 0 2 4 6 8 10
 \end{verbatim}
 
+About the extent routines we make two observations:
+\begin{enumerate}
+\item the lower bound and extent parameters are of type \indexmpishow{MPI_Aint},
+  meaning that they measure in bytes; and
+\item the lower bound is typically left unchanged: we give no examples
+  in this book where it is changed.
+\end{enumerate}
+
 \Level 2 {Example 2}
+\label{sec:extent-ex2}
 
 For another example, let's revisit exercise~\ref{ex:stridesend}
 (and  figure~\ref{fig:stridesend})
@@ -198,6 +213,13 @@ buffer of integers that will be interleaved in a gather call:
 Strided data was sent in individual transactions.
 Would it be possible to address all these interleaved packets in one
 gather or scatter call?
+
+The problem here is that MPI uses the extent of the send type in a scatter,
+or the receive type in a gather: if that type is 20 bytes big from
+its first to its last element, then
+data will be read out 20 bytes apart in a scatter, or written 20 bytes apart
+in a gather. This ignores the `gaps' in the type!
+(See exercise~\ref{ex:stridesend}.)
 
 \begin{lstlisting}
 int *mydata = (int*) malloc( localsize*sizeof(int) );
