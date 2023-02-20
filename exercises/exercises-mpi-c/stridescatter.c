@@ -39,6 +39,7 @@ int main(int argc,char **argv) {
   MPI_Datatype scattertype,interleavetype;
 
   if (procno==sender) {
+
     /*
      * Create big data array to be sent
      */
@@ -48,6 +49,7 @@ int main(int argc,char **argv) {
       printf("Out of memory\n"); MPI_Abort(comm,0); }
     for (int i=0; i<ndata; i++)
       data[i] = i;
+
     /*
      * Exercise
      * - you need a vector datatype for sending data.
