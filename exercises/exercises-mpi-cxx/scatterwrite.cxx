@@ -13,7 +13,9 @@
 
 #include <iostream>
 #include <sstream>
+#include <vector>
 using namespace std;
+
 #include <mpi.h>
 
 int main(int argc,char **argv) {
@@ -32,7 +34,7 @@ int main(int argc,char **argv) {
    * containing consecutive integers
    */
   int nwords = 3;
-  int *output_data = (int*) malloc(nwords*sizeof(int));
+  vector<int> output_data(nwords);
   for (int iw=0; iw<nwords; iw++)
     output_data[iw] = procno*nwords + iw+1;
   
@@ -62,7 +64,7 @@ int main(int argc,char **argv) {
   int nwriters = nprocs;
   if (procno<nwriters) {
     MPI_File_write // no offset, because that is taken care of by the view
-      (mpifile,output_data,nwords,MPI_INT,MPI_STATUS_IGNORE);
+      (mpifile,output_data.data(),nwords,MPI_INT,MPI_STATUS_IGNORE);
   }
 
   MPI_Type_free(&scattertype);

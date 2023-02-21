@@ -4,7 +4,7 @@
  **** `Parallel programming for Science and Engineering'
  **** by Victor Eijkhout, eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-2020
+ **** copyright Victor Eijkhout 2012-2023
  ****
  **** sumsquares.cxx
  ****
@@ -13,7 +13,9 @@
 #include <cmath>
 #include <iostream>
 #include <sstream>
+#include <vector>
 using namespace std;
+
 #include "mpi.h"
 
 int main(int argc,char **argv) {
@@ -42,7 +44,7 @@ int main(int argc,char **argv) {
   nglobal = nprocs*nlocal;
 
   // Allocate local data. We use doubles rather than integers (why?)
-  double *local_squares = (double*)malloc(nlocal*sizeof(double));
+  vector<double> local_squares(nlocal);
 
   /*
    * Exercise part 1:

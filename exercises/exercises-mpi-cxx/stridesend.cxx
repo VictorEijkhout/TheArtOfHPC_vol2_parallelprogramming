@@ -13,7 +13,9 @@
 
 #include <iostream>
 #include <sstream>
+#include <vector>
 using namespace std;
+
 #include "mpi.h"
 
 int main(int argc,char **argv) {
@@ -38,11 +40,7 @@ int main(int argc,char **argv) {
      * Create big data array to be sent
      */
     int ndata = localsize*nprocs;
-    int *data = (int*) malloc(ndata*sizeof(int));
-    if (!data) {
-      proctext << "Out of memory" << endl; 
-      cerr << proctext.str(); proctext.clear();
-      MPI_Abort(comm,0); }
+    vector<int> data(ndata);
     for (int i=0; i<ndata; i++)
       data[i] = i;
     /*
@@ -63,8 +61,8 @@ int main(int argc,char **argv) {
     }
 /**** your code here ****/
   } else {
-    int *mydata = (int*) malloc(localsize*sizeof(int));
-    MPI_Recv(mydata,localsize,MPI_INT,sender,0,comm,MPI_STATUS_IGNORE);
+    vector<int> mydata(localsize);
+    MPI_Recv(mydata.data(),localsize,MPI_INT,sender,0,comm,MPI_STATUS_IGNORE);
     for (int i=0; i<localsize; i++)
       if (mydata[i]%nprocs!=procno) {
 	proctext << "[" << procno << "] received element=" << mydata[i]

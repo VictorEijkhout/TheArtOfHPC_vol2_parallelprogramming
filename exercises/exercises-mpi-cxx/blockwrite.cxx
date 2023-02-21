@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%%   "Parallel Computing for Science and Engineering"
-   %%%% by Victor Eijkhout, copyright 2013-7
+   %%%% by Victor Eijkhout, copyright 2013-2023
    %%%%
    %%%% blockwrite.cxx : MPI IO example
    %%%%
@@ -13,6 +13,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <vector>
 using namespace std;
 #include <mpi.h>
 
@@ -32,7 +33,7 @@ int main(int argc,char **argv) {
    * containing consecutive integers
    */
   int nwords = 3;
-  int *output_data = (int*) malloc(nwords*sizeof(int));
+  vector<int> output_data(nwords);
   for (int iw=0; iw<nwords; iw++)
     output_data[iw] = procno*nwords+iw+1;
   
@@ -58,7 +59,7 @@ int main(int argc,char **argv) {
 /**** your code here ****/
       ;
     MPI_File_write_at
-      (mpifile,offset,output_data,nwords,MPI_INT,MPI_STATUS_IGNORE);
+      (mpifile,offset,output_data.data(),nwords,MPI_INT,MPI_STATUS_IGNORE);
   }
 
   MPI_File_close(&mpifile);

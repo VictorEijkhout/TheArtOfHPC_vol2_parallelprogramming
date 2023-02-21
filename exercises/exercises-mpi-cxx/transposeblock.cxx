@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%%   "Parallel Computing for Science and Engineering"
-   %%%% by Victor Eijkhout, copyright 2020
+   %%%% by Victor Eijkhout, copyright 2020-2023
    %%%%
    %%%% MPI example for transposing an array, cxx version
    %%%%
@@ -14,6 +14,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include <vector>
 using namespace std;
 #include <mpi.h>
 
@@ -32,9 +33,9 @@ int main(int argc,char **argv) {
   int blocksize_i = BLOCKSIZE, blocksize_j = BLOCKSIZE;
 
   int isize = nprocs * blocksize_i, jsize = nprocs * blocksize_j;
-  int
-    *data_0 = (int*) malloc( blocksize_j*isize*sizeof(int) ),
-    *data_1 = (int*) malloc( blocksize_i*jsize*sizeof(int) );
+  vector<int>
+    data_0( blocksize_j*isize ),
+    data_1( blocksize_i*jsize );
   for (int col=0; col<blocksize_j; col++)
     for (int row=0; row<isize; row++)
       data_0[ col*isize + row ] =
@@ -99,8 +100,8 @@ int main(int argc,char **argv) {
    */
   stringstream proctext;
   for (int p=0; p<nprocs; p++) {
-    MPI_Gather( data_0+p*blocksize_i,1,sourceblock,
-		data_1,              1,targetblock,
+    MPI_Gather( data_0.data()+p*blocksize_i,1,sourceblock,
+		data_1.data(),              1,targetblock,
 		p,comm );
     if (p==procno) {
       proctext << "Output data:\n";
@@ -117,6 +118,11 @@ int main(int argc,char **argv) {
     proctext << "Finished\n";
     cout << proctext.str();
   }
+
+  MPI_Type_free(&sourceblock);
+  MPI_Type_free(&targetcolumn);
+  MPI_Type_free(&skinnycolumn);
+  MPI_Type_free(&targetblock);
 
   MPI_Finalize();
   return 0;
