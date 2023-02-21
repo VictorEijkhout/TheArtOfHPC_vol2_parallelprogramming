@@ -107,6 +107,26 @@ call MPI_Type_free(newvectortype)
   and freeing is done in the destructor.
 \end{mplnote}
 
+\begin{mplnote}{Layouts}
+  \begin{lstlisting}
+namespace mpl {
+  template <typename T> class layout; // Basisklasse
+  template <typename T> class null_layout; // MPI_DATATYPE_NULL
+  template <typename T> class empty_layout; // leere Nachricht
+  template <typename T> class contiguous_layout; // MPI_Type_contiguous
+  template <typename T> class vector_layout; // MPI_Type_contiguous
+  template <typename T> class strided_vector_layout; // MPI_Type_vector
+  template <typename T> class indexed_layout; // MPI_Type_indexed
+  template <typename T> class hindexed_layout; // MPI_Type_create_hindexed
+  template <typename T> class indexed_block_layout; // MPI_Type_create_indexed_block
+  template <typename T> class hindexed_block_layout;  // MPI_Type_create_hindexed_block 
+  template <typename T> class iterator_layout; // MPI_Type_create_hindexed_block 
+  template <typename T> subarray_layout; // MPI_Type_create_subarray
+  class heterogeneous_layout; // MPI_Type_create_struct
+}
+  \end{lstlisting}
+\end{mplnote}
+
 \Level 2 {Create calls}
 
 The \indexmpishow{MPI_Datatype} variable gets its value by a call to

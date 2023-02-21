@@ -278,6 +278,13 @@ at starting points equal to the shrunk extent:
 
 This is illustrated in figure~\ref{fig:stride-extent}.
 
+\begin{fortrannote}{Extent as Aint}
+  The lowerbound and extent parameters are of type
+  \indexmpishow{Integer(kind=MPI_Address_kind)}:
+  %
+  \fverbatimsnippet{resizedextentf}
+\end{fortrannote}
+
 \begin{exercise}[stridesend]
   \label{ex:stridesendsized}
   Rewrite exercise~\ref{ex:stridesend} to use a gather,

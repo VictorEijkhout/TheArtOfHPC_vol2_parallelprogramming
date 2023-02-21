@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% mpi-blocksend.tex : blocking sends
 %%%%
@@ -172,6 +172,13 @@ Finally, in common with the vast majority of MPI calls,
 there is a communicator argument that provides a context for the send transaction.
 In order to match a send and receive operation,
 they need to be in the same communicator.
+
+\begin{mplnote}{Buffer type safety}
+  \begin{itemize}
+  \item Data type is templated: derived by the compiler.
+  \item Count $>1$ is declared in the datatype.
+  \end{itemize}
+\end{mplnote}
 
 \begin{mplnote}{Blocking send and receive}
   \ac{MPL} uses a default value for the tag, and it can deduce the type
