@@ -45,19 +45,19 @@ Groups are manipulated with
 \indexmpishow{MPI_Group_difference} and a few more.
 
 \begin{lstlisting}
-MPI_Comm_group (comm, group, ierr)
-MPI_Comm_create (MPI_Comm comm,MPI_Group group, MPI_Comm newcomm, ierr)
+MPI_Comm_group (comm, group)
+MPI_Comm_create (MPI_Comm comm,MPI_Group group, MPI_Comm newcomm)
 \end{lstlisting}
 
 \begin{lstlisting}
-MPI_Group_union(group1, group2, newgroup, ierr)
-MPI_Group_intersection(group1, group2, newgroup, ierr)
-MPI_Group_difference(group1, group2, newgroup, ierr)
+MPI_Group_union(group1, group2, newgroup)
+MPI_Group_intersection(group1, group2, newgroup)
+MPI_Group_difference(group1, group2, newgroup)
 \end{lstlisting}
 
 \begin{lstlisting}
-MPI_Group_size(group, size, ierr)
-MPI_Group_rank(group, rank, ierr)
+MPI_Group_size(group, size)
+MPI_Group_rank(group, rank)
 \end{lstlisting}
 
 Certain MPI types, \indexmpishow{MPI_Win} and \indexmpishow{MPI_File},

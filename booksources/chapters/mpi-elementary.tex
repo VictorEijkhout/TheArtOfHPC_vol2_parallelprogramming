@@ -430,9 +430,13 @@ allowing you to write:
 \label{sec:mpi-type-match-f}
 
 In Fortran, the size of the datatype in the language can be obtained with
-\indexmpidef{MPI_Sizeof} (note the nonoptional error parameter!).
-This routine is deprecated in \mpistandard{4}: use of
-\indextermtt{storage_size} and/or \indextermtt{c_sizeof} is recommended.
+\indexmpiref{MPI_Sizeof} (note the nonoptional error parameter!).
+This routine is deprecated in \mpistandard{4}:
+use of
+\indextermtt{storage_size} (which reports the number of bits)
+and/or \indextermtt{c_sizeof}
+(from the \indextermtt{iso_c_binding} module, which reports bytes)
+is recommended.
 
 \fverbatimsnippet[examples/mpi/c/typematch.c]{typematchf}
 

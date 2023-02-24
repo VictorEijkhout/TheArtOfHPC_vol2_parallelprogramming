@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the lecture slides for
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% Subcomm-slides.tex : slides about communicator manipulation
 %%%%
@@ -84,11 +84,12 @@ int MPI_Comm_split(MPI_Comm comm, int color, int key,
 
 \begin{numberedframe}{Row/column example}
   Simulate a processor grid\\
-  create subcommunicator per column (or row):
+  create subcommunicator per column (or row)\\
+  assume processes numbered by rows
 \begin{lstlisting}
 MPI_Comm_rank( MPI_COMM_WORLD, &procno );
-proc_i = procno % proc_column_length;
-proc_j = procno / proc_column_length;
+proc_i = procno / proc_column_length;
+proc_j = procno % proc_column_length;
 
 MPI_Comm column_comm;
 MPI_Comm_split( MPI_COMM_WORLD, proc_j, procno, &column_comm );
@@ -118,8 +119,10 @@ but only one \n{column_comm} variable. Why?
   \begin{itemize}
   \item
     \indexmpishow{MPI_Comm_split_type} splits into communicators of same type.
-  \item Only supported type: \indexmpishow{MPI_COMM_TYPE_SHARED} splitting by
+  \item \mpistandard{3}: only \indexmpishow{MPI_COMM_TYPE_SHARED} splitting by
     shared memory.
+  \item \mpistandard{4}: \indexmpishow{MPI_COMM_TYPE_HW_GUIDED}
+    split using an \n{info} value from \indexmpishow{MPI_Get_hw_resource_types}.
   \end{itemize}
 
   \cverbatimsnippet{commsplittype}

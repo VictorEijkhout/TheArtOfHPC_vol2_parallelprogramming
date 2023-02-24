@@ -93,7 +93,6 @@ There doesn't seem to be an equivalent of \indexmpishow{MPI_COMM_NULL}.
   Should you need the \indexmpishow{MPI_Comm} object
   contained in an MPL \indexmplshow{communicator},
   there is an access function \indexmplshow{native_handle}.
-  \csnippetwithoutput{mplcommraw}{examples/mpi/mpl}{rawcompare}
 \end{mplnote}
 
 You can name your communicators with \indexmpidef{MPI_Comm_set_name}, which
@@ -113,7 +112,7 @@ However, your job may have two or more parts that can be considered as
 jobs by themselves. In that case it makes sense to divide your processors
 into subgroups accordingly.
 
-Suppose for instance that you are running a simulation where inputs are generated,
+Suppose that you are running a simulation where inputs are generated,
 a~computation is performed on them, and the results of this computation
 are analyzed or rendered graphically. You could then consider dividing your
 processors in three groups corresponding to generation, computation, rendering.
@@ -130,8 +129,9 @@ taking a subset of \indexmpishow{MPI_COMM_WORLD}
 and turning that subset into a new communicator.
 
 Now you understand why the MPI collective calls had an argument for the
-communicator: a~collective involves all processes of that communicator.
-By making a communicator that contains a subset of all available processes,
+communicator. A~collective involves all processes of that communicator.
+If only the world communicator existed, no such argument would be needed, but
+by making a communicator that contains a subset of all available processes,
 you can do a collective on that subset.
 
 The usage is as follows:
@@ -187,7 +187,7 @@ Finally, newly created communicators do not always need to be subset
 of the initial \indexmpishow{MPI_COMM_WORLD}.
 MPI can dynamically spawn new processes (see chapter~\ref{ch:mpi-proc})
 which start in a \indexmpishow{MPI_COMM_WORLD} of their own.
-However, another communicator will be created that spawns the old and new worlds
+Additionally, another communicator will be created that spawns the old and new worlds
 so that you can communicate with the new processes.
 
 \input chapters/mpi-commsplit
