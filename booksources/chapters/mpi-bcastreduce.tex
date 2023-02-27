@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% mpi-bcastreduce.tex : about broadcast & reduce collectives
 %%%%
@@ -107,6 +107,11 @@ Each of these needs some elucidation.
   %
   Note the parentheses after the operator.
   Also note that the operator comes first, not last.
+
+  Available: \lstinline{max}, \lstinline{min}, \lstinline{plus}, \lstinline{multiplies},
+  \lstinline{logical_and}, \lstinline{logical_or}, \lstinline{logical_xor},
+  \lstinline{bit_and}, \lstinline{bit_or}, \lstinline{bit_xor}.
+
   \begin{mplimpl}
     The reduction operator has to be compatible with
     \lstinline+T(T,T)>+
@@ -299,6 +304,11 @@ part of a buffer specification.
   Not available for collectives.
 \end{mplnote}
 
+\begin{mplnote}{Send vs recv buffer}
+  There is a separate variant for non-root usage of rooted collectives:
+  \cxxverbatimsnippet{mplreduceroot}
+\end{mplnote}
+
 \Level 0 {Rooted collectives: broadcast, reduce}
 \label{sec:rooted}
 
@@ -439,16 +449,6 @@ but you can also solve this with pointers:
   %
   Note that the buffers are of type \lstinline+T *+, so it is necessary
   to take the \lstinline+data()+ of any \lstinline+std::vector+ and such.
-\end{mplnote}
-
-%% \begin{mplnote}{Rooted reduce}
-%%   Same story for the rooted reduce:
-%%   %
-%%   \cxxverbatimsnippet[examples/mpi/mpl/collectscalar.cxx]{mplrootreduce}
-%% \end{mplnote}
-\begin{mplnote}{Reduce on non-root}
-  There is a separate variant for non-root usage of rooted collectives:
-  \cxxverbatimsnippet{mplreduceroot}
 \end{mplnote}
 
 \Level 1 {Broadcast}

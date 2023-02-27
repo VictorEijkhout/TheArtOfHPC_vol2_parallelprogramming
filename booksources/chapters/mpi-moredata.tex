@@ -124,7 +124,6 @@ This is needed for:
 \item
   Some cases of gather/scatter operations;
   see the example in section~\ref{sec:extent-ex2}.
-
 \item When the count
   of derived items in a buffer is more than one.
   See the example in section~\ref{sec:extent-ex1}.
@@ -135,6 +134,18 @@ The technicality on which the solution hinges is that you can `resize' a type
 with \indexmpiref{MPI_Type_create_resized}
 to give it a different extent, while not affecting how much data there
 actually is in it.
+
+We can describe the space taken by a data type (the `true extent') and the `extent'
+as follows. If the send count is more than~1, or if you scatter some data type:
+\begin{enumerate}
+\item A pointer is set at the first data item; then
+\item For each instance of the datatype to be sent:
+  \begin{enumerate}
+  \item data is sent as described by the data type; and
+  \item the pointer is advanced by the extent of the data type
+  \end{enumerate}
+\end{enumerate}
+(Receiving and gathering behave similarly, but with data going in the opposite direction.)
 
 \Level 2 {Example 1}
 \label{sec:extent-ex1}
