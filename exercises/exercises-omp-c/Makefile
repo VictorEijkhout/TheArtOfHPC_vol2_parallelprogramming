@@ -26,6 +26,12 @@ LANGUAGE = C
 include ../course-support/Make.compile
 EXTRA_LIBS = -lm
 
+##
+## CMake support
+##
+CMAKEFILESDIR = ../course-support
+include ../course-support/Make.cmake
+
 ####
 #### Regression tests
 ####
