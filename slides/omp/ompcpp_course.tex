@@ -115,6 +115,31 @@
   \input{cppnote-c++20-ranges-speedup.cut}
 \end{numberedframe}
 
+\begin{numberedframe}{Custom iterators, 0}
+  Recall that
+  \begin{multicols}{2}
+    Short hand:
+    \begin{lstlisting}
+      vector<float> v;
+      for ( auto e : v )
+       ... e ...
+    \end{lstlisting}
+    \columnbreak for:
+    \begin{lstlisting}
+      for ( vector<float>::iterator e=v.begin();
+      e!=v.end(); e++ )
+      ... *e ...
+    \end{lstlisting}
+  \end{multicols}
+  If we want 
+  \begin{lstlisting}
+    for ( auto e : my_object )
+    ... e ...
+  \end{lstlisting}
+  we need an iterator class with methods such as
+  \lstinline|*| and \lstinline|++|.
+\end{numberedframe}
+
 \begin{numberedframe}{Custom iterators, 1}
   OpenMP can parallelize any range-based loop with a random-access iterator.
   \begin{multicols}{2}
