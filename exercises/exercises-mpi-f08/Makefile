@@ -38,7 +38,13 @@ EXTRA_OBJS = tools.o
 ${OBJS} : tools.mod
 tools.mod : tools.o
 include ../course-support/Make.compile
-shareddata : contents.o
+shareddata,stridescatter : contents.o
+
+##
+## CMake support
+##
+CMAKEFILESDIR = ../course-support
+include ../course-support/Make.cmake
 
 ####
 #### Regression tests

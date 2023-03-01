@@ -37,6 +37,12 @@ ${OBJS} : tools.mod
 tools.mod : tools.o
 include ../course-support/Make.compile
 
+##
+## CMake support
+##
+CMAKEFILESDIR = ../course-support
+include ../course-support/Make.cmake
+
 ####
 #### Regression tests
 ####

@@ -38,6 +38,11 @@ EXTRA_OBJS = tools.o
 ${OBJS} tools.o : tools.h
 include ../course-support/Make.compile
 
+##
+## CMake support
+##
+CMAKEFILESDIR = ../course-support
+include ../course-support/Make.cmake
 
 ####
 #### Regression tests

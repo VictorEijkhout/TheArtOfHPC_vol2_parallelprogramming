@@ -43,6 +43,12 @@ ifdef TACC_TAU_DIR
 include ../course-support/Make.tau
 endif
 
+##
+## CMake support
+##
+CMAKEFILESDIR = ../course-support
+include ../course-support/Make.cmake
+
 ####
 #### Regression tests
 ####

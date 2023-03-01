@@ -37,6 +37,8 @@ EXT_c = c
 EXT_C = c
 EXT_F = F90
 EXT_f = F90
+EXT_F08 = F90
+EXT_f08 = F90
 EXT_cxx = cxx
 EXT_CXX = cxx
 EXT_mpl = cxx
@@ -66,27 +68,33 @@ ifdef LMOD_TAU_DIR
   C_COMPILER = tau_cc.sh -optCompInst -optPreProcess
   CXX_COMPILER = tau_cxx.sh -optCompInst -optPreProcess
   F_COMPILER = tau_f90.sh -optCompInst -optPreProcess
+  F08_COMPILER = tau_f90.sh -optCompInst -optPreProcess
   MPI_C_COMPILER = tau_cc.sh  -optCompInst -optPreProcess
   MPI_CXX_COMPILER = tau_cxx.sh -optCompInst -optPreProcess
   MPI_F_COMPILER = tau_f90.sh -optCompInst -optPreProcess
+  MPI_F08_COMPILER = tau_f90.sh -optCompInst -optPreProcess
 else
 
     MPI_C_COMPILER = mpicc
     MPI_CXX_COMPILER = mpicxx
     MPI_F_COMPILER = mpif90
+    MPI_F08_COMPILER = mpif90
 
     ifeq "${MODE}" "mpi"
       C_COMPILER   = ${MPI_C_COMPILER}
       CXX_COMPILER = ${MPI_CXX_COMPILER}
       F_COMPILER   = ${MPI_F_COMPILER}
+      F08_COMPILER   = ${MPI_F08_COMPILER}
     else ifeq "${MODE}" "hybrid"
       C_COMPILER   = ${MPI_C_COMPILER}
       CXX_COMPILER = ${MPI_CXX_COMPILER}
       F_COMPILER   = ${MPI_F_COMPILER}
+      F08_COMPILER   = ${MPI_F08_COMPILER}
     else ifeq "${MODE}" "mpl"
       C_COMPILER   = ${MPI_C_COMPILER}
       CXX_COMPILER = ${MPI_CXX_COMPILER}
       F_COMPILER   = ${MPI_F_COMPILER}
+      F08_COMPILER   = ${MPI_F08_COMPILER}
     else ifeq "${MODE}" "1api"
       ifeq "${TACC_SYSTEM}" "frontera"
         CXX_COMPILER = syclcc
@@ -106,10 +114,12 @@ else
       CXX_COMPILER = mpicxx
       #${PETSC_DIR}/${PETSC_ARCH}/bin/mpicxx
       F_COMPILER = mpif90
+      F08_COMPILER = mpif90
       #${PETSC_DIR}/${PETSC_ARCH}/bin/mpif90
       MPI_C_COMPILER   = ${C_COMPILER}
       MPI_CXX_COMPILER = ${CXX_COMPILER}
       MPI_F_COMPILER   = ${F_COMPILER}
+      MPI_F08_COMPILER   = ${F08_COMPILER}
 
       CFLAGS += ${PETSC_CC_INCLUDES} 
       CXXFLAGS += ${PETSC_CXX_INCLUDES} 
@@ -126,10 +136,12 @@ else
       CXX_COMPILER = mpicxx
       #${PETSC_DIR}/${PETSC_ARCH}/bin/mpicxx
       F_COMPILER = mpif90
+      F08_COMPILER = mpif90
       #${PETSC_DIR}/${PETSC_ARCH}/bin/mpif90
       MPI_C_COMPILER   = ${C_COMPILER}
       MPI_CXX_COMPILER = ${CXX_COMPILER}
       MPI_F_COMPILER   = ${F_COMPILER}
+      MPI_F08_COMPILER   = ${F08_COMPILER}
 
       CFLAGS += ${PETSC_CC_INCLUDES} 
       CXXFLAGS += ${PETSC_CXX_INCLUDES} 
@@ -139,8 +151,10 @@ else
       C_COMPILER   = nvcc
       CXX_COMPILER = nvcc
       F_COMPILER   = /bin/false
+      F08_COMPILER   = /bin/false
 
       F_HOST_COMPILER   = no_such_f_compiler
+      F08_HOST_COMPILER   = no_such_f_compiler
       ifeq "${LMOD_FAMILY_COMPILER}" "intel"
         C_HOST_COMPILER   = icc
         CXX_HOST_COMPILER = icpc
@@ -159,30 +173,37 @@ else
 	  C_COMPILER   = icc
 	  CXX_COMPILER = icpc
 	  F_COMPILER   = ifort
+	  F08_COMPILER   = ifort
 	else ifeq "${LMOD_FAMILY_COMPILER}" "intelx"
 	  C_COMPILER   = icx
 	  CXX_COMPILER = icpx
 	  F_COMPILER   = ifx
+	  F08_COMPILER   = ifx
 	else ifeq "${LMOD_FAMILY_COMPILER}" "oneapi"
 	  C_COMPILER   = icx
 	  CXX_COMPILER = icpx
 	  F_COMPILER   = ifort
+	  F08_COMPILER   = ifort
 	else ifeq "${LMOD_FAMILY_COMPILER}" "gcc"
 	  C_COMPILER   = gcc
 	  CXX_COMPILER = g++
 	  F_COMPILER   = gfortran
+	  F08_COMPILER   = gfortran
 	else ifeq "${LMOD_FAMILY_COMPILER}" "clang"
 	  C_COMPILER   = clang
 	  CXX_COMPILER = clang++
 	  F_COMPILER   = gfortran
+	  F08_COMPILER   = gfortran
         else ifeq "${LMOD_FAMILY_COMPILER}" "nvhpc"
           C_COMPILER   = nvcc
           CXX_COMPILER = nvcc
           F_COMPILER   = /bin/false
+          F08_COMPILER   = /bin/false
 	else ifeq "${LMOD_FAMILY_COMPILER}" "xl"
 	  C_COMPILER   = xlc
 	  CXX_COMPILER = xlc++
 	  F_COMPILER   = xlf
+	  F08_COMPILER   = xlf
 	else ifeq "${LMOD_FAMILY_COMPILER}" "devcloud"
 	  CXX_COMPILER = dpcpp
 	endif # end of non-mpi compiler setting
@@ -288,14 +309,17 @@ ifeq "${MODE}" "mpi"
 C_LINKER   := ${MPI_C_COMPILER}
 CXX_LINKER := ${MPI_CXX_COMPILER}
 F_LINKER   := ${MPI_F_COMPILER}
+F08_LINKER   := ${MPI_F08_COMPILER}
 else ifeq "${MODE}" "hybrid"
 C_LINKER   := ${MPI_C_COMPILER}
 CXX_LINKER := ${MPI_CXX_COMPILER}
 F_LINKER   := ${MPI_F_COMPILER}
+F08_LINKER   := ${MPI_F08_COMPILER}
 else ifeq "${MODE}" "1api"
 C_LINKER   := ${C_COMPILER}
 CXX_LINKER := ${CXX_COMPILER}
 F_LINKER   := ${F_COMPILER}
+F08_LINKER   := ${F08_COMPILER}
 else ifeq "${MODE}" "cuda"
 C_LINKER   := ${C_COMPILER} -ccbin ${C_HOST_COMPILER}
 CXX_LINKER := ${CXX_COMPILER} -ccbin ${CXX_HOST_COMPILER}
@@ -303,6 +327,7 @@ else
 C_LINKER   := ${C_COMPILER}
 CXX_LINKER := ${CXX_COMPILER}
 F_LINKER   := ${F_COMPILER}
+F08_LINKER   := ${F08_COMPILER}
 endif
 LINKER     := ${${LANGUAGE}_LINKER}
 

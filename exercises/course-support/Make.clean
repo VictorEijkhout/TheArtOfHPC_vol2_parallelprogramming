@@ -4,29 +4,42 @@
 ####
 #### This makefile is part of the source of 
 #### "Parallel Computing for Science and Engineering"
-#### by Victor Eijkhout, copyright 2013-2020
+#### by Victor Eijkhout, copyright 2013-2023
 ####
 #### Make include file for clean rules
 ####
 ################################################################
 ################################################################
 
-.PHONY: clean local_clean total_clean recursive_clean
+.PHONY: clean codeclean texclean local_clean localclean total_clean recursive_clean
 info ::
+	@echo
+	@echo "================ Cleaning:"
 	@echo "make clean, total_clean"
 clean :: local_clean
-local_clean ::
-	@/bin/rm -rf *.o *~ *.gch *.inst.c a.out *.dSYM MULTI__* events.* *.mod \
-	    *.{a,aux,blg,cut,idx,ilg,ind,log,mod,o,out,svn,toc} \
-	    idev[0-9]*.o[0-9]* ddt.o[0-9]* jobtest.o* tautrace_* \
+codeclean :
+	@/bin/rm -rf \
+	    *.a *.o *~ *.gch *.inst.c *.pp.F90 *.mod *.optrpt events.* *.mod a.out *.pyc \
+	    ${APPS} ${EXERCISES} \
+	    *.dSYM MULTI__*  __pycache__ fort.[0-9]* \
+	    core.[0-9]* idev[0-9]*.o[0-9]* ddt.o[0-9]* *.out[0-9]* jobtest.o* tautrace_* \
+	    *~ *.o *.pyc *.dSYM ddt.o* *.o[0-9]* *.dat *.log *.out *.out[0-9]* *.out_total \
+	    tautrace_* dcvserver.out
+texclean :
+	@/bin/rm -rf \
+	    *.{aux,blg,idx,ilg,ind,log,mod,mw,nav,out,snm,svn,toc,vrb,wrt} *.cut texput.*
+localclean local_clean :: codeclean texclean
+	@/bin/rm -rf \
+	    ddt.o[0-9]* jobtest.o* tautrace_* __pycache__ \
 	    dcvserver.out \
 	    ${APPS}
 INDENT =
-MAKEFILESDIR = ../makefiles
-recursive_clean  : local_clean
+MAKEFILESDIR = makefiles
+MAKETRACESTRING = 
+recursive_clean  : localclean
 	@for d in * ; do \
-	  if [ -d $${d} ] ; then \
-	    echo "${INDENT}cleaning in $${d}" \
+	  if [ -d $${d} -a "$$d" != "build" ] ; then \
+	    echo "${MAKETRACESTRING} cleaning in $${d}" \
 	    && ( \
 	       cd $${d} \
 	       && if [ -f Makefile ] ; then \

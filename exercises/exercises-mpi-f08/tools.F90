@@ -36,6 +36,7 @@ contains
 
   !!
   !! print overall error result
+  !! input: cond, boolean if error occurred
   !!
   subroutine print_final_result( cond,comm )
     use mpi_f08

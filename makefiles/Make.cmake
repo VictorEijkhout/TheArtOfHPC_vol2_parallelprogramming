@@ -42,7 +42,9 @@ cmake :
 	 && echo " .. cxx        : $${CXX}" \
 	 && echo " .. script: $$cmakeliststxt" \
 	 \
-	 && cp ../../../makefiles/$$cmakeliststxt ./CMakeLists.txt \
+	 && if [ -z "${CMAKEFILESDIR}" ] ; then \
+	      echo "Please set variable CMAKEFILESDIR" && exit 1 ; fi \
+	 && cp ${CMAKEFILESDIR}/$$cmakeliststxt ./CMakeLists.txt \
 	 && cmake \
 	        -B $$builddir \
 	        -D PROJECT_NAME=${PROGRAM} \
@@ -57,7 +59,7 @@ cmake_multi :
 	 && echo "Start cmake in: `pwd`" \
 	 && installdir=`pwd`/exe && builddir=`pwd`/build \
 	 && rm -f CMakeLists.{mpi,omp}.txt \
-	     && extension=$$( make --no-print-directory extension ) \
+	 && extension=$$( make --no-print-directory extension ) \
 	     && cp ../../../Makefiles/CMakeLists.${MODE}.$${extension}.txt CMakeLists.txt \
 	 && rm -rf $$installdir && mkdir -p $$installdir \
 	 && rm -rf $$builddir && mkdir -p $$builddir \
