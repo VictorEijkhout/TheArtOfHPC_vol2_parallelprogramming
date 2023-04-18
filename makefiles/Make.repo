@@ -4,7 +4,7 @@
 ####
 #### This makefile is part of the source of 
 #### "Parallel Computing for Science and Engineering"
-#### by Victor Eijkhout, copyright 2013-2022
+#### by Victor Eijkhout, copyright 2013-2023
 ####
 #### Make include file for upload locations
 ####
@@ -15,7 +15,7 @@ BOOKNAME = EijkhoutParallelProgramming
 
 
 .PHONY: taccrepo dropbox studentrepo
-PUBLICDIR = ${HOME}/Current/istc/pdf/pcse
+PUBLICDIR = ${HOME}/Current/istc/TheArtofHPC_pdfs/vol2
 taccrepo:
 	@if [ -d "${PUBLICDIR}" ] ; then \
 	    dir=${PUBLICDIR}/${TARGETDIR} \
@@ -24,6 +24,7 @@ taccrepo:
 	        else \
 	            echo "copying <<${FILE}.pdf>> to public pdfs dir <<$$dir>>" \
 	            && cp ${FILE}.pdf "$$dir"/ \
+	            && ( cd "$$dir" && git add "${FILE}.pdf" ) \
 	        ; fi \
 	    ; fi
 DROPBOX = ${HOME}/Dropbox/Scicomp/${DROPBOXPATH}

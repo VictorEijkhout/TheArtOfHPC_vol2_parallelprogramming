@@ -20,7 +20,7 @@ info ::
 	    echo "Please set MODE variable" && echo \
 	 ; else \
 	    case ${MODE} in \
-	        ( cuda | mpi | mpl | omp | hybrid | petsc | slepc | 1api ) \
+	        ( cuda | mpi | mpl | omp | hybrid | petsc | slepc | tbb | 1api ) \
 	            echo "using mode=${MODE}" ;; \
 	        ( * ) echo && echo "Unknown MODE=${MODE}" && echo ;; \
 	    esac \
@@ -30,6 +30,7 @@ info ::
 	@echo "    [ EXTRA_OPTIONS=... ]"
 	@echo "    [ EXTRA_INCLUDES=... ]"
 	@echo "    [ EXTRA_LIBS=... ]"
+	@echo "    [ EXTRA_LINK_FLAGS=... ]"
 	@echo "    [ ECHO=0/1 : echo commandline ]"
 OPTLEVEL = 2
 
@@ -223,6 +224,10 @@ ifeq "${MODE}" "omp"
   CFLAGS   += ${OMPFLAGS}
   CXXFLAGS += ${OMPFLAGS}
   FFLAGS   += ${OMPFLAGS}
+else ifeq "${MODE}" "tbb"
+  CFLAGS   += ${OMPFLAGS}
+  CXXFLAGS += ${OMPFLAGS}
+  FFLAGS   += ${OMPFLAGS}
 else ifeq "${MODE}" "hybrid"
   CFLAGS   += ${OMPFLAGS}
   CXXFLAGS += ${OMPFLAGS}
@@ -339,6 +344,8 @@ else ifeq "${MODE}" "hybrid"
   LINK_FLAGS += ${OMPFLAGS}
 else ifeq "${MODE}" "omp"
   LINK_FLAGS += ${OMPFLAGS}
+else ifeq "${MODE}" "tbb"
+  LINK_FLAGS += ${OMPFLAGS}
 endif
 ifeq "${LMOD_FAMILY_COMPILER}" "gcc"
   LINK_FLAGS += -lm
@@ -352,7 +359,11 @@ ${APPS} ${EXERCISES} ${PROGRAMS} ${WRONGS} : $$@.o ${EXTRA_OBJS}
 	    ; fi
 	@if [ -z "${LINKER}" ] ; then \
 	    echo "No linker defined for LANGUAGE=${LANGUAGE}" && exit 1 ; fi
-	@cmd="${LINKER} -o $@ $^ ${LINK_FLAGS} ${EXTRA_LIBS}" \
+	@if [ "${MODE}" = "tbb" ] ; then \
+	    tbblibs=$$( pkg-config --libs tbb ) ; fi \
+	 && cmd="${LINKER} -o $@ $^ \
+	        ${LINK_FLAGS} ${EXTRA_LINK_FLAGS} \
+	        ${EXTRA_LIBS} $$tbblibs " \
 	 && if [ "${ECHO}" = "1" ] ; then echo "Linking: $$cmd" ; fi \
 	 && eval $$cmd
 	@if [ "${ECHO}" = "1" -a ! -z "${LINK_EXTRA_COMMANDS}" ] ; then \

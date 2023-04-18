@@ -41,6 +41,11 @@ cmake :
 	 && echo " .. cc         : $${CC}" \
 	 && echo " .. cxx        : $${CXX}" \
 	 && echo " .. script: $$cmakeliststxt" \
+	 && if [ ! -z "${CMAKE_CXX_FLAGS}" ] ; then \
+	      export CMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS}" \
+	       && export CMAKE_LINKER_FLAGS="${CMAKE_CXX_FLAGS}" \
+	       && echo " .. extra flags: $${CMAKE_CXX_FLAGS}" \
+	    ; fi \
 	 \
 	 && if [ -z "${CMAKEFILESDIR}" ] ; then \
 	      echo "Please set variable CMAKEFILESDIR" && exit 1 ; fi \
@@ -89,5 +94,5 @@ cmake_multi :
 	 && ( cd $$builddir && make V=1 && make install ) \
 	 && echo && echo " .. installation:" && ls $$installdir && echo
 
-clean ::
+localclean ::
 	@rm -rf build exe CMake*

@@ -13,19 +13,18 @@ info ::
 	@echo "================ OMP running"
 	@echo "make run_xxx in: ${RUNS}"
 
-ifeq "${TACC_SYSTEM}" "frontera"
-  OMPTHREADS = 1 2 4 8 12 26 38 56 
-else
-  OMPTHREADS = 1 2 4 8 12
-endif
-OMPSCHEDULE = static
+# ifeq "${TACC_SYSTEM}" "frontera"
+#   OMPTHREADS = 1 2 4 8 12 26 38 56 
+# else
+#   OMPTHREADS = 1 2 4 8 12
+# endif
 
 info ::
 	@echo "make omp_run [ NP=... ] PROGRAM=program"
 	@echo "    [ RUNOUTID= .... (extra id, default blank) ]"
 	@echo "    [ RUN_OPTIONS=... (run options for executable) ]"
 	@echo "    OMPTHREADS= core range (default=${OMPTHREADS})"
-	@echo "    OMPSCHEDULE= core range (default=${OMPSCHEDULE})"
+	@echo "    OMPSCHEDULE= schedule (default=${OMPSCHEDULE})"
 	@echo "    BIND=true/false/cores/... (OMP_PROC_BIND, default=${BIND})"
 	@echo "    ACTIVE=... (default=${ACTIVE}) for OMP_MAX_ACTIVE_LEVELS"
 	@echo "make omp_scaling [ NP=... ] [ NDIV=... ] [ PROGRAM=... ]"
@@ -35,8 +34,14 @@ BIND = true
 ACTIVE = 1
 ECHO = 0
 TWOLEVEL =
+OMPSCHEDULE = 
+
 .PHONY: omp_run omp_scaling
 omp_run :
+	@if [ -z "${PROGRAM}" ] ; then \
+	    echo "Please set variable PROGRAM" >2 && exit 1 ; fi 
+	@if [ ! -f "${PROGRAM}" ] ; then \
+	    echo "Could not find executable PROGRAM=${PROGRAM}" && exit 1 ; fi 
 	@command="./${PROGRAM}" \
 	 && np=`make --no-print-directory num_cores NP=${NP}` \
 	 && if [ ! -z "${TWOLEVEL}" ] ; then \
@@ -47,13 +52,17 @@ omp_run :
 	 && command="OMP_PROC_BIND=${BIND} $$command" \
 	 && if [ ${ACTIVE} -gt 1 ] ; then \
 	         command="OMP_MAX_ACTIVE_LEVELS=${ACTIVE} $$command" ; fi \
+	 && if [ ! -z "${OMPSCHEDULE}" ] ; then \
+	         command="OMP_SCHEDULE=${OMPSCHEDULE} $$command" ; fi \
 	 && if [ ! -z "${RUN_OPTIONS}" ] ; then \
 	        command="$$command ${RUN_OPTIONS}" ; fi \
 	 && if [ "${ECHO}" = "1" ] ; then echo "Executing: $$command" ; fi \
 	 && eval $$command
 omp_scaling :
 	@export np=$$( make --no-print-directory num_cores ) \
-	 && export ompthreads="$$( make --no-print-directory omp_threads )" \
+	 && export ompthreads="$$( make --no-print-directory omp_threads NP=$$np NDIV=5 )" \
+	 && if [ "${ECHO}" = "1" ] ; then \
+	        echo "Using threads: $$ompthreads out of cores: $$np" ; fi \
 	 && if [ -z "${PROGRAM}" ] ; then \
 	        echo "Set PROGRAM variable" && exit 1 \
 	    ; fi \
@@ -79,8 +88,8 @@ omp_scaling :
 num_cores :
 	@if [ ! -z ${NP} ] ; then \
 	        echo ${NP} \
-	    ; elif [ ! -z ${SLURM_TASKS_PER_NODE} ] ; then \
-	        echo ${SLURM_TASKS_PER_NODE} \
+	    ; elif [ ! -z ${SLURM_CPUS_ON_NODE} ] ; then \
+	        echo ${SLURM_CPUS_ON_NODE} \
 	    ; else \
 	        echo "Specify number of processors with NP=..." \
 	         && exit 1 \
@@ -96,6 +105,8 @@ omp_threads :
 	    ; else \
 	        ndiv=3 \
 	    ; fi \
+	     && if [ -z "${NP}" ] ; then \
+	            np=8 ; else np=${NP} ; fi \
 	     && div=`seq 1 $$ndiv` \
 	     && frac=`for d in $$div ; do echo "$$(( $$d * $$np / $$ndiv ))" ; done` \
 	     && echo "1 $$frac" \

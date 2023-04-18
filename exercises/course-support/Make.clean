@@ -36,6 +36,8 @@ localclean local_clean :: codeclean texclean
 INDENT =
 MAKEFILESDIR = makefiles
 MAKETRACESTRING = 
+info ::
+	@echo "make recursive_clean"
 recursive_clean  : localclean
 	@for d in * ; do \
 	  if [ -d $${d} -a "$$d" != "build" ] ; then \

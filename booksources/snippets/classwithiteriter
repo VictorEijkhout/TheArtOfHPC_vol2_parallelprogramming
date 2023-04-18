@@ -1,8 +1,13 @@
-class NewVector::iter {
-private: int *searcher;
-NewVector::iter::iter( int *searcher )
+template<typename T>
+class NewVector<T>::iter {
+private: T *searcher;
+};
+template<typename T>
+NewVector<T>::iter::iter( T* searcher )
   : searcher(searcher) {};
-NewVector::iter NewVector::begin() {
-  return NewVector::iter(storage); };
-NewVector::iter NewVector::end()   {
-  return NewVector::iter(storage+NewVector::s); };
+template<typename T>
+NewVector<T>::iter NewVector<T>::begin() {
+  return NewVector<T>::iter(storage); };
+template<typename T>
+NewVector<T>::iter NewVector<T>::end()   {
+  return NewVector<T>::iter(storage+NewVector<T>::s); };

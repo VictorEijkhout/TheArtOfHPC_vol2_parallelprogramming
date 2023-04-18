@@ -1,9 +1,12 @@
 // iterator.cxx
+template<typename T>
 class NewVector {
+protected:
+  T *storage;
+  int s;
 public:
 // iterator stuff
   class iter;
   iter begin();
   iter end();
-
 };

@@ -4,8 +4,6 @@ using CharCounter = bincounter<char>;
 	+:CharCounter:omp_out += omp_in	\
 	) \
 initializer( omp_priv = CharCounter{} )
-
-string text{"the quick brown fox jumps over the lazy dog"};
 CharCounter charcount;
 #pragma omp parallel for reduction(+ : charcount)
 for ( int i=0; i<text.size(); i++ )
