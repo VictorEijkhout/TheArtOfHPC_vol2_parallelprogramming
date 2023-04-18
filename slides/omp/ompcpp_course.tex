@@ -69,7 +69,9 @@
 
 \end{frame}
 
+%%%%%%%%%%%%%%%%
 \sectionframe{Basic stuff}
+%%%%%%%%%%%%%%%%
 
 \begin{numberedframe}{Output streams in parallel}
   \input{cppnote-output-streams-in-parallel.cut}
@@ -101,10 +103,25 @@
   \cxxsnippetwithoutput{privatevector}{examples/omp/cxx}{privvector}
 \end{numberedframe}
 
+%%%%%%%%%%%%%%%%
 \sectionframe{Parallel loops}
+%%%%%%%%%%%%%%%%
+
+\begin{numberedframe}{Questions}
+  \begin{enumerate}
+  \item Do regular OpenMP loops look different in C++?
+  \item Is there a relation between OpenMP parallel loops and iterators?
+  \item OpenMP parallel loops vs parallel execution policies on algorithms.
+  \end{enumerate}
+\end{numberedframe}
 
 \begin{numberedframe}{Range syntax}
   \input{cppnote-range-syntax.cut}
+\end{numberedframe}
+
+\begin{numberedframe}{General idea}
+  OpenMP can parallelize any loop over a C++ construct
+  that has a `random-access' iterator.
 \end{numberedframe}
 
 \begin{numberedframe}{C++ ranges header}
@@ -117,26 +134,28 @@
 
 \begin{numberedframe}{Custom iterators, 0}
   Recall that
-  \begin{multicols}{2}
-    Short hand:
-    \begin{lstlisting}
-      vector<float> v;
-      for ( auto e : v )
-       ... e ...
-    \end{lstlisting}
-    \columnbreak for:
-    \begin{lstlisting}
-      for ( vector<float>::iterator e=v.begin();
+\begin{multicols}{2}
+Short hand:
+\begin{lstlisting}
+vector<float> v;
+for ( auto e : v )
+   ... e ...
+\end{lstlisting}
+\columnbreak for:
+\begin{lstlisting}
+for ( vector<float>::iterator 
+      e=v.begin();
       e!=v.end(); e++ )
-      ... *e ...
-    \end{lstlisting}
-  \end{multicols}
-  If we want 
-  \begin{lstlisting}
-    for ( auto e : my_object )
+  ... *e ...
+\end{lstlisting}
+\end{multicols}
+If we want 
+\begin{lstlisting}
+for ( auto e : my_object )
     ... e ...
-  \end{lstlisting}
-  we need an iterator class with methods such as
+\end{lstlisting}
+we need a sub-class for the iterator with methods such as
+\lstinline{begin}, \lstinline{end},
   \lstinline|*| and \lstinline|++|.
 \end{numberedframe}
 
@@ -155,6 +174,8 @@
 \begin{numberedframe}{Custom iterators, 2}
   Required iterator methods:
   \cxxverbatimsnippet{omprandaccess}  
+  This is a little short of a full random-access iterator;
+  the difference depends on the OpenMP implementation.
 \end{numberedframe}
 
 \begin{numberedframe}{Custom iterators, exercise}
@@ -164,16 +185,65 @@
 \end{numberedframe}
 
 \begin{numberedframe}{Custom iterators, solution}
-  \cxxverbatimsnippet{classwithitersoln}
+  \cxxverbatimsnippet{classwithitersol1}
 \end{numberedframe}
 
+\begin{numberedframe}{Custom iterators, solution}
+  \cxxverbatimsnippet{classwithitersol2}
+\end{numberedframe}
+
+\begin{numberedframe}{OpenMP vs standard parallelism}
+  Application: prime number marking
+  (load unbalanced)
+
+  \cxxverbatimsnippet{markprimeomp}
+  \cxxverbatimsnippet{markprimecpp}
+
+  Standard parallelism uses \ac{TBB} as backend
+\end{numberedframe}
+
+\begin{numberedframe}{Timing}
+  \lstinputlisting{examples/tbb/cxx/primepolicy-scaling-ls6.runout}
+\end{numberedframe}
+
+\begin{numberedframe}{Reductions vs standard parallelism}
+  Application: prime number counting
+  (load unbalanced)
+
+  \cxxverbatimsnippet{reduceprimeomp}
+  \cxxverbatimsnippet{reduceprimecpp}
+
+\end{numberedframe}
+
+\begin{numberedframe}{Timing}
+  \lstinputlisting{examples/tbb/cxx/reducepolicy-scaling-ls6.runout}
+\end{numberedframe}
+
+%%%%%%%%%%%%%%%%
 \sectionframe{Reductions}
+%%%%%%%%%%%%%%%%
+
+\begin{numberedframe}{Questions}
+  \begin{enumerate}
+  \item Are simple reductions the same as in C?
+  \item Can you reduce \lstinline{std::vector} like an array?
+  \item Precisely \emph{what} can you reduce?
+  \item Any interesting examples?
+  \item Compare reductions to native C++ mechanisms.
+  \end{enumerate}
+\end{numberedframe}
+
+\begin{numberedframe}{Scalar reductions}
+  Same as in C,\\
+  you can now use range syntax for the loop.
+\end{numberedframe}
 
 \begin{numberedframe}{Reductions on vectors}
   \input{cppnote-reductions-on-vectors.cut}
 \end{numberedframe}
 
 \begin{numberedframe}{Reduction on class objects}
+  \footnotesize
   \input{cppnote-reduction-on-class-objects.cut}
 \end{numberedframe}
 
@@ -206,6 +276,7 @@
 %% \end{numberedframe}
 
 \begin{numberedframe}{Example category: histograms}
+  Count which elements fall into what bin:
   \begin{lstlisting}
     for ( auto e : some_range )
       histogram[ value(e)]++;
@@ -214,12 +285,26 @@
 \end{numberedframe}
 
 \begin{numberedframe}{Histogram: intended main program}
+  Declare a reduction on a history gram object:
   \cxxverbatimsnippet{ompbinreduce}
   Q: why does the \lstinline{inc} not have to be atomic?
 \end{numberedframe}
 
 \begin{numberedframe}{Histogram: reduction operator}
+  Give the class a \lstinline{+=} operator to do the combining:
+  \footnotesize
   \cxxverbatimsnippet{ompbincounter}
+\end{numberedframe}
+
+\begin{numberedframe}{Histogram in native C++}
+  Use atomics because there is no reduction mechanism:
+  \cxxverbatimsnippet{atomicbincounter}
+\end{numberedframe}
+
+\begin{numberedframe}{Histogram in native C++, comparison}
+  OpenMP reduction on \lstinline{array<int,26>}:
+  \footnotesize
+  \lstinputlisting{code/omp/cxx/mapatomic-frontera.runout}
 \end{numberedframe}
 
 \begin{numberedframe}{Example category: list filtering}
@@ -272,7 +357,9 @@ With a task it becomes possible to have a spin-wait loop:
   \input{cppnote-templated-reductions.cut}
 \end{numberedframe}
 
+%%%%%%%%%%%%%%%%
 \sectionframe{More topics}
+%%%%%%%%%%%%%%%%
 
 \begin{numberedframe}{Threadprivate random number generators}
   \input{cppnote-threadprivate-random-number-generators.cut}
@@ -374,7 +461,7 @@ Native C++ atomics:
 \end{numberedframe}
 
 \begin{numberedframe}{CMake}
-  \lstinputlisting{../../examples/omp/CMakeLists.CXX.txt}
+  \lstinputlisting{../../makefiles/CMakeLists.omp.cxx.txt}
 \end{numberedframe}
 
 \end{document}
