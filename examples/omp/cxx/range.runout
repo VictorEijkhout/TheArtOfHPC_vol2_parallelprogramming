@@ -1,0 +1,25 @@
+==== Run range on 1 threads ====
+sum of vector: 49999995000000 in 6.623
+sum w/ drop 1: 49999995000000 in 6.65
+sum times 2  : 99999990000000 in 6.863
+==== Run range on 25 threads ====
+sum of vector: 49999995000000 in 0.485
+sum w/ drop 1: 49999995000000 in 0.488
+sum times 2  : 99999990000000 in 0.475
+==== Run range on 51 threads ====
+sum of vector: 49999995000000 in 0.252
+sum w/ drop 1: 49999995000000 in 0.244
+sum times 2  : 99999990000000 in 0.247
+==== Run range on 76 threads ====
+sum of vector: 49999995000000 in 0.186
+sum w/ drop 1: 49999995000000 in 0.185
+sum times 2  : 99999990000000 in 0.183
+==== Run range on 102 threads ====
+sum of vector: 49999995000000 in 0.147
+sum w/ drop 1: 49999995000000 in 0.145
+sum times 2  : 99999990000000 in 0.134
+==== Run range on 128 threads ====
+sum of vector: 49999995000000 in 0.125
+sum w/ drop 1: 49999995000000 in 0.121
+sum times 2  : 99999990000000 in 0.11
+ scaling results in: range-scaling.out

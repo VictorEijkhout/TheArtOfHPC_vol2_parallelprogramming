@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% mpi-bigdata.tex : discussion of MPI big datatypes
 %%%%
@@ -106,8 +106,11 @@ The \mpistandard{3} standard has addressed this
 through the introduction of an \indexmpishow{MPI_Count} datatype,
 and new routines with an \lstinline{_x} extension,
 that return that type of count.
-(In view of the `embiggened' routines, this solution
-is no longer needed, and will probably be deprecated in later standards.)
+
+\begin{mpifournote}{No more x routines}
+  In view of the `embiggened' routines, this solution
+  is no longer needed, and is deprecated as of \mpistandard{4.1}.
+\end{mpifournote}
 
 Let us consider an example.
 

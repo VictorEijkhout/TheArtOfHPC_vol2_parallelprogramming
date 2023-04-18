@@ -108,6 +108,30 @@ mpirun -np 4 hostfile ... yourprogram arguments
 \end{verbatim}
 \end{numberedframe}
 
+\begin{c}
+  \begin{numberedframe}{CMake for C}
+    \lstinputlisting{makefiles/CMakeLists.mpi.c.txt}
+  \end{numberedframe}
+\end{c}
+
+\begin{cxx}
+  \begin{numberedframe}{CMake for C++}
+    \lstinputlisting{makefiles/CMakeLists.mpi.cxx.txt}
+  \end{numberedframe}
+\end{cxx}
+
+\begin{fortran}
+\begin{numberedframe}{CMake for F90}
+\lstinputlisting{makefiles/CMakeLists.mpi.f.txt}
+\end{numberedframe}
+\end{fortran}
+
+\begin{fortran}
+\begin{numberedframe}{CMake for F2008}
+\lstinputlisting{makefiles/CMakeLists.mpi.f08.txt}
+\end{numberedframe}
+\end{fortran}
+
 \begin{numberedframe}{Do I need a supercomputer?}
   \begin{itemize}
   \item With \n{mpiexec} and such, you start a bunch of processes that

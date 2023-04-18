@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% hybrid.tex : about hybrid computing
 %%%%
@@ -47,6 +47,10 @@ no longer holds if the messages originated in different threads.
   \cverbatimsnippet{mpithreadsend}
   \cverbatimsnippet{mpithreadrecv}
 \end{multicols}
+
+Messages from simultaneous threads are said to be
+\emph{concurrent}\index{concurrency!and MPI|see{MPI, concurrency and}}\index{MPI!concurrency and}:
+there is no temporal or causal relationship between them.
 
 \Level 0 {Affinity}
 

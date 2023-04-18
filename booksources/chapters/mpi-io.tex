@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2021
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% mpi-io.tex : MPI/O
 %%%%
@@ -103,6 +103,19 @@ This routine is collective, even if only certain processes will access
 the file with a read or write call.
 Similarly, \indexmpidef{MPI_File_close} is collective.
 
+\begin{mplnote}{File opening}
+  Files are objects of type \lstinline{mpl::file}.
+  You can use the default constructor, and the \lstinline{open} method,
+  or open the file in the constructor:
+  \cxxverbatimsnippet{mplfilebasic}
+  \begin{itemize}
+  \item Failure to open throws an \lstinline{mpl::io_failure} exception;
+    the \lstinline{what} method of this exception gives an error string.
+    The copy and copy-assignment constructors have been deleted.
+  \end{itemize}
+
+\end{mplnote}
+
 \begin{pythonnote}{File open is class method}
   Note the slightly unusual syntax for opening a file:
 \begin{lstlisting}
@@ -122,8 +135,9 @@ File access modes:
 \item  \indexmpidef{MPI_MODE_CREATE}: create the file if it does not exist,
 \item  \indexmpidef{MPI_MODE_EXCL}: error if creating file that already exists,
 \item  \indexmpidef{MPI_MODE_DELETE_ON_CLOSE}: delete file on close,
-\item  \indexmpidef{MPI_MODE_UNIQUE_OPEN}: file will not be concurrently opened
-  elsewhere,
+\item  \indexmpidef{MPI_MODE_UNIQUE_OPEN}: file will not be
+  \emph{concurrently}\index{MPI!concurrent file operations}
+  opened elsewhere,
 \item  \indexmpidef{MPI_MODE_SEQUENTIAL}: file will only be accessed sequentially,
 \item  \indexmpidef{MPI_MODE_APPEND}: set initial position of all file pointers to end
   of file.
@@ -191,6 +205,31 @@ sending a receiving:
 \item But you can also set a `file view' to describe explicitly what
   elements in the file will be involved.
 \end{itemize}
+
+\begin{mplnote}{File writing}
+  Routines with the obvious names exist:
+  %
+  \cxxverbatimsnippet{mplfilewrite}
+  Also
+  \lstinline{read}, \lstinline{write},
+  \lstinline{iread}, \lstinline{iwrite},
+  \lstinline{read_at}, \lstinline{write_at},
+  \lstinline{iread_at}, \lstinline{iwrite_at},
+  \lstinline{read_all}, \lstinline{write_all},
+  \lstinline{iread_all}, \lstinline{iwrite_all},
+  \lstinline{read_ordered}, \lstinline{write_ordered},
+  \lstinline{iread_ordered}, \lstinline{iwrite_ordered},
+  \lstinline{read_shared}, \lstinline{write_shared},
+  \lstinline{iread_shared}, \lstinline{iwrite_shared},
+  \lstinline{read_at_all}, \lstinline{write_at_all},
+  \lstinline{iread_at_all}, \lstinline{iwrite_at_all}, 
+  \lstinline{read_all_begin}, \lstinline{write_all_begin},
+  \lstinline{read_all_end}, \lstinline{write_all_end},
+  \lstinline{read_at_all_begin}, \lstinline{write_at_all_begin},
+  \lstinline{read_at_all_end}, \lstinline{write_at_all_end},
+  \lstinline{read_ordered_begin}, \lstinline{write_ordered_begin},
+  \lstinline{read_ordered_end}, \lstinline{write_ordered_end},
+\end{mplnote}
 
 \Level 1 {Nonblocking read/write}
 

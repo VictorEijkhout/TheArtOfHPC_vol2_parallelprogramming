@@ -1,0 +1,56 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2023
+%%%%
+%%%% otherblurb.tex : about other programming models
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+There are many other programming systems for parallelism.
+In particular threading models are a dime a dozen.
+
+Here we discussion:
+\begin{itemize}
+\item \acf{CAF}: a distributed parallel mode for Fortran arrays;
+  chapter~\ref{ch:caf}.
+\item Kokkos and Sycl, two heterogeneous programming models that target
+  both multicore and accelerator programming (and \acp{FPGA} in the case of Sycl);
+  chapters \ref{ch:kokkos} and~\ref{ch:dpcpp} respectively.
+\item Python multiprocessing; chapter~\ref{ch:multiprocessing}.
+\end{itemize}
+
+Comparing these to the systems already discussed above we can remark:
+\begin{itemize}
+\item \ac{CAF} is one of the very few alternatives to MPI where it
+  comes to distributed memory programming.
+  Its treatment of Cartesian arrays is more elegant; otherwise it lacks much MPI functionality.
+\item Kokkos and Sycl are competitors to OpenMP offloading; chapter~\ref{ch:omp-gpu}.
+  Switching between CPU and GPU modes is easier in these systems than in OpenMP.
+\item The python multiprocessing toolbox is more task-base
+  then the \indexterm{mpi4py} module in Python.
+\end{itemize}
+
+Among the various threading models in existence we mention
+\begin{itemize}
+\item \indexterm{pthreads}, which is more geared to systems programming than
+  scientific computing; see \HPSCref{sec:thread-example}.
+\item C++ has a native thread library; see \ISPref{sec:cpp-thread}.
+  There is also the execution policy mechanism for the C++ standard library `algorithms'.
+\item \indextermbus{Intel}{TBB}\index{TBB|see{Intel, TBB}} is often used as a
+  lower layer for other threading implementations, such as the native C++
+  parallel execution policies.
+\end{itemize}
+
+Parallelism models we do not discuss include
+\begin{itemize}
+\item \indexacf{CUDA} which targets \acp{GPU}.
+\item \indexacf{NCCL}, which optimized MPI collectives for \acp{GPU}.
+\item Chapel, a completely independent language for parallel computing;
+  see \HPSCref{sec:Chapel}.
+  On the topic of parallel languages, see more generally \HPSCref{sec:pgas}.
+\end{itemize}

@@ -47,7 +47,7 @@ Here is a very simple example where each thread
 outputs its number:
 \csnippetwithoutput{hello-omp}{examples/omp/c}{hello}
 or in Fortran
-\fsnippetwithoutput{hello-omp-f}{examples/omp/f}{hellof}
+\fsnippetwithoutput{hello-omp-f}{examples/omp/f}{helloompf}
 
 \begin{cppnote}{Output streams in parallel}
   \label{sl:par-stringstream}
@@ -100,7 +100,7 @@ This code corresponds to the model we just discussed:
 \begin{remark}
   In future versions of OpenMP, the master thread will be called
   the \indextermsubdef{primary}{thread}.
-  In 5.1 the master construct will be deprecated, and masked (with
+  In 5.1 the master construct will be deprecated, and \indexompshow{masked} (with
   added functionality) will take its place.  In 6.0 master will
   disappear from the Spec, including \indextermtt{proc_bind} master “variable”
   and combined master constructs (master taskloop, etc.)
@@ -135,7 +135,15 @@ void func(...) {
 }
 \end{lstlisting}
 
-By default, the nested parallel region will have only one thread.
+Since any thread can create a team, you may expect that every thread,
+in its call to \lstinline{func},
+will create its own new team.
+This is called \indextermsub{nested}{parallelism}
+and it works as described.
+
+However, by default, the nested parallel region will have only one thread.
+You need to allow non-trivial nested parallelism explicitly.
+
 To allow nested thread creation,
 use the environment variable
 \indexompdef{OMP_MAX_ACTIVE_LEVELS} (default:~1)
@@ -176,9 +184,13 @@ means that initially a parallel region will have four threads, and
 each thread can create two more threads.
 It is still necessary that set the number of active levels.
 
+The total number of threads active simultaneously
+(technically: in a \indexterm{contention group})
+can be limited with:
 \begin{verbatim}
   OMP_THREAD_LIMIT=123
 \end{verbatim}
+Its value can be queried with \indexompshow{omp_get_thread_limit}.
 
 More functions: \indexompshow{omp_get_level}, \indexompshow{omp_get_active_level},
 \indexompshow{omp_get_ancestor_thread_num}, \indexompshow{omp_get_team_size}\lstinline{(level)}.

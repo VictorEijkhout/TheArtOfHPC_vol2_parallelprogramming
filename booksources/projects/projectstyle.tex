@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% projectstyle.tex : guidelins for project writeup
 %%%%
@@ -16,9 +16,29 @@ As a general rule, consider programming as an experimental science,
 and your writeup as a report on some tests you have done: explain
 the problem you're addressing, your strategy, your results.
 
+\Level 0 {General approach}
+
+As a general rule, consider programming as an experimental science,
+and your writeup as a report on some tests you have done: explain
+the problem you're addressing, your strategy, your results.
+
 Turn in a writeup in pdf form (Word and text documents are not acceptable)
 that was generated from a text processing program such 
-(preferably) \LaTeX\ (for a tutorial, see~\CARPref{tut:latex}).
+(preferably) \LaTeX.
+For a tutorial, see~\CARPref{tut:latex}.
+
+\Level 0 {Style}
+
+Your report should obey the rules of proper English.
+\begin{itemize}
+\item Observing correct spelling and grammar goes without saying.
+\item Use full sentences.
+\item Try to avoid verbiage that is disparaging
+  or otherwise inadvisable.
+  The
+  \indextermbus{Google}{developer documentation style guide}~\cite{googlestyle}
+  is a great resource.
+\end{itemize}
 
 \Level 0 {Structure of your writeup}
 
@@ -32,7 +52,7 @@ Start with the obvious stuff.
   but something like 'Parallelization of Chronosynclastic Enfundibula in MPI'.
 \item Author and contact information. This differs per publication.
   Here it is: your name, EID, TACC username, and email.
-\item Introductory section that is extremely high level: what is the problem,
+\item Introductory section that is high level: what is the problem,
   what did you do, what did you find.
 \item Conclusion: what do your findings mean, what are limitations, opportunities
   for future extensions.
@@ -60,12 +80,14 @@ Write an article.
 
 \Level 1 {Observe, measure, hypothesize, deduce}
 
-Your project may be a scientific investigation of some
+Treat 
+your project as if it is a scientific investigation of some
 phenomenon. Formulate hypotheses as to what you expect to observe,
 report on your observations, and draw conclusions.
 
-Quite often your program will display unexpected behaviour. It is important to observe
-this, and hypothesize what the reason might be for your observed behaviour.
+Quite often your program will display unexpected behaviour.
+It is important to note this,
+and hypothesize what the reason might be for your observed behaviour.
 
 In most applications of computing machinery we care about the efficiency with which
 we find the solution. Thus, make sure that you do measurements. In general, make
@@ -74,7 +96,8 @@ would expect it to.
 
 \Level 1 {Reporting}
 
-Include both code snippets and graphs.
+Your report should
+include both code snippets and graphs.
 
 Screenshots of code snippets are not acceptable.
 Use at least a verbatim/monospace mode in your text processor,
@@ -82,8 +105,8 @@ but better, use the \LaTeX\ \indextermtt{listings} package or equivalent.
 
 Graphs can be generated any number of ways.
 Kudos if you can figure out the \LaTeX\ \indextermtt{tikz} package,
-but Matlab or Excel are acceptable too.
-No screenshots though.
+but Matlab, gnuplot, Excel, or Google Sheets are all  acceptable.
+Again: no screenshots.
 
 For parallel runs you can, but are not required to,
 use TAU plots; see~\CARPref{tut:tau}.
@@ -102,21 +125,52 @@ The parallelization part is the most important of your writeup.
 So don't write 3 pages about your application and 1~about the parallel code.
 Discuss in detail:
 \begin{itemize}
+\item What is the parallel structure of your problem?
+  Relate the code structure to the application structure.
 \item Did you use MPI or OpenMP? Why?
-\item What is the parallel structure of your problem? What does the parallel work correspond
-  to in terms of your application?
 \item What kind of parallelism did you use? Mostly MPI collectives or point-to-point operations?
   OpenMP loop parallelism or tasks? Why?
 \end{itemize}
+
+\Level 1 {Performance}
+
+The most important reason for parallel programming
+is to achieve faster performance.
+
+To measure the efficiency of your code, 
+run for a range of processor/core counts.
+Do you aim for strong or weak scaling?
+
+Make sure your problem is large enough to overcome
+the overhead of parallelization.
+Can you run several problem sizes at a given core/process count?
+
+How much speedup are you expecting for your application,
+given its structure?
+How much are you getting?
+If your speedup is low, reason where the problem might lie.
 
 \Level 1 {Running your code}
 
 A single run doesn't prove anything. For a good report, you need to
 run your code for more than one input dataset (if available) and in
-more than one processor configuration. When you choose problem sizes,
-be aware that an average processor can do a billion operations per
-second: you need to make your problem large enough for the timings to
-rise above the level of random variations and startup phenomena.
+more than one processor configuration.
+When you choose problem a size,
+bear the following factors in mind.
+\begin{itemize}
+\item Parallelism introduces overhead, hundreds of cycles for an OpenMP barrier,
+  or a few microseconds for an MPI message. So the amount of work in a parallel region,
+  or between messages, probably needs to be in the thousands of operations.
+\item Various things in the system introduce random fluctuations,
+  timings that are too small may be meaningless.
+  As a rule of thumb, a~timed sections needs to take
+  at least on the order of a second.
+\item There are various startup phenomena in a parallel code,
+  such as OpenMP thread creation, or allocation of dynamic memory.
+  Make sure you only time the relevant bit of your code;
+  if in doubt, put a loop around it to take multiple measurements,
+  and use an average time.
+\end{itemize}
 
 When you run a code in parallel, beware that on clusters the behaviour
 of a parallel code will always be different between one node and
@@ -133,13 +187,15 @@ In parallel programming, speedup and scaling are the test of
 how good your work is.
 So it's up to you to report this as well as you can.
 
-If you do a scaling analysis, a graph reporting runtimes should not
-have a linear time axis.
-(Curved graphs are hard to read. Can you see the difference between
-$O(\sqrt n)$ and $O(\log n)$ behavior in a graph?)
+The numbers are not the point of a graph: the point is
+the conclusions you can draw from them.
+Thus, if you do a scaling analysis,
+a graph reporting runtimes should make this point visible.
+In particular, do not use a linear time axis, as
+curved graphs are hard to read. 
 Try to find a way
 to compare your results to a straight line, such as constant time, or
-linearly increasing performance.
+linearly increasing speedup.
 
 It is up to you to decide what quantity to report.
 This may depend on your application.
@@ -147,7 +203,7 @@ This may depend on your application.
 Use enough data points! Writing a short script to run
 your program multiple times takes very little time.
 
-\Level 0 {Helpful remarks}
+\Level 0 {Remarks}
 
 \Level 1 {Parallel performance or the lack thereof}
 
@@ -181,6 +237,8 @@ for (int i=0; i<N; i++)
   s += 1;
 \end{lstlisting}
 \end{verbatim}
+
+With output:
 \lstset{language=C++} % or Fortran or so
 \begin{lstlisting}
 for (int i=0; i<N; i++)

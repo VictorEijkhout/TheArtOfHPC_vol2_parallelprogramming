@@ -173,7 +173,7 @@ Attributes are:
 \item \indexmpidepr{MPI_HOST}
   Host process rank, if such exists, \indexmpishow{MPI_PROC_NULL}, otherwise.
   The standard does not define what it means to be a host, or even whether
-  there should be one to begin with.
+  there should be one to begin with. This is deprecated as of \mpistandard{4.1}.
 \item \indexmpishow{MPI_IO}
   rank of a node that has regular I/O facilities.
   Nodes in the same communicator may return different values
@@ -967,6 +967,9 @@ sender-receiver pair will arrive in sequence.
 Actually, they may not arrive in sequence: they are \emph{matched}\index{matching}
 in sequence in the user program. If the second message is much smaller than the first,
 it may actually arrive earlier in the lower transport layer.
+
+Another source of non-determinism comes from hybrid computing;
+see section~\ref{sec:hybrid-order}.
 
 \index{MPI!semantics|)}
 

@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% mpi-onesided.tex : about onesided communication
 %%%%
@@ -206,6 +206,8 @@ part of \indexmpishow{MPI_Win_allocate}, after which you need to
   \item 
     Allocated memory can be aligned by specifying an \indexmpishow{MPI_Info} key
     of \indexmpishow{mpi_minimum_memory_alignment}.
+  \item The type of memory allocated can be controlled by info keys;
+    see section~\ref{sec:mpi-alloc-kind}.
 \end{mpifournote}
 \end{itemize}
 
@@ -987,6 +989,54 @@ with possible values:
 \end{itemize}
 For more on attributes, see section~\ref{sec:win-attr}.
 
+\begin{mpifournote}{Memory allocation kinds}
+\Level 1 {Allocation kinds}
+\label{sec:mpi-alloc-kind}
+
+It may be desirable to indicate the type of memory returned
+by \indexmpishow{MPI_Win_allocate} or \indexmpishow{MPI_Alloc_mem},
+especially if
+\emph{accelerators}\index{MPI!accelerator memory allocation}
+are involved.
+This functionality was added in \mpistandard{4.1}.
+
+Two info keys are used to query/request support, or assert usage,
+of memory allocation kinds:
+\begin{itemize}
+\item \indextermtt{mpi_memory_alloc_kinds}:
+  the value of this a comma-separated list of memory allocation kinds
+  supported by the MPI implementation.
+  It can be used in the input \indexmpishow{MPI_Info} object of
+  \indexmpishow{MPI_Session_init}, \indexmpishow{MPI_Comm_spawn},
+  or \indexmpishow{MPI_Comm_spawn_multiple},
+  to request support for certain allocation kinds.
+  If used as a query, it reports the allocation kinds supported
+  in the given session, et cetera. This may include kinds not requested by the user.
+\item \indextermtt{mpi_assert_memory_alloc_kinds}:
+  by setting this, the user tells MPI that all buffers
+  (on the given communicator, session, et cetera)
+  use only memory of the indicated type.
+\end{itemize}
+
+Some info values for the allocation kinds are predefined: 
+\begin{itemize}
+\item \indextermtt{mpi}: Memory allocated by the MPI library.
+\item \indextermtt{system}: Memory returned by standard system allocators.
+\item \indextermtt{default}: Memory from one of the supported allocators.
+\end{itemize}
+Info values can have restrictors:
+\begin{verbatim}
+  kind1:restrict1,kind2:restrict2
+\end{verbatim}
+Restrict values are:
+\begin{itemize}
+\item \indextermtt{alloc_mem}
+\item \indextermtt{win_allocate}
+\item \indextermtt{win_allocate_shared}
+\end{itemize}
+
+\end{mpifournote}
+
 \Level 1 {Dynamically attached memory}
 \label{sec:win-dynamic}
 
@@ -1053,7 +1103,9 @@ The following keys can be passed as info argument:
   \indexmpishow{MPI_Get_accumulate} can be reordered, subject to
   certain constraints.
 \item \indexmpishow{accumulate_ops}: the value \indexmpishow{same_op}
-  indicates that concurrent Accumulate calls use the same operator;
+  indicates that
+  \emph{concurrent Accumulate}\index{MPI!concurrent Accumulate calls}
+   calls use the same operator;
   \indexmpishow{same_op_no_op} indicates the same operator or
   \indexmpishow{MPI_NO_OP}.
 \end{itemize}

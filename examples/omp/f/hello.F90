@@ -16,7 +16,7 @@ Program Hello
 
   integer :: mythread,nthreads
 
-!!codesnippet hello-omp-f
+!!codesnippet helloompf
 !$omp parallel private(mythread)
   mythread = omp_get_thread_num()
   print *,"Hello world from",mythread

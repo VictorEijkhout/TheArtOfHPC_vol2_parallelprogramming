@@ -42,10 +42,13 @@ each thread executes the block of code,
 and based on its thread number finds a unique block of work to do.
 
 \begin{exercise}
-  What is an important difference between the resulting OpenMP and MPI code?
+  What are some important differences between the resulting OpenMP and MPI code?
 \end{exercise}
 
-A more natural option is to use the
+\Level 1 {The loop directive}
+
+The natural way to parallelize a loop in OpenMP
+is to use the
 \indexpragma{for} pragma
 where OpenMP does the above chopping of the loop
 for you:
@@ -56,12 +59,24 @@ for (int i=0; i<N; i++) {
   // do something with i
 }
 \end{lstlisting}
-(In this example the loop variable is declared in the loop header,
-as is the preferred practice, but if you don't do it this way,
-the loop variable is automatically made private to the threads.)
+
+This fragment combines two OpenMP idioms:
+\begin{enumerate}
+\item First the \indexpragma{parallel} directive
+  creates a \indexterm{team} of threads; after which
+\item The \indexpragma{for} directive is a
+  \indextermbus{worksharing}{construct}:
+  it divides the available work over the available threads.
+\end{enumerate}
+
+\begin{remark}
+  In this example the loop variable is declared in the loop header,
+  as is the preferred practice, but if you don't do it this way,
+  the loop variable is automatically made private to the threads.
+\end{remark}
 
 Leaving the work distribution to OpenMP has several advantages.
-For one, you don't have to calculate the loop bounds
+For one, you don't have to calculate the loop segments
 for the threads yourself, but you can also tell OpenMP to assign the loop
 iterations according to different schedules (section~\ref{sec:schedule}).
 
@@ -79,7 +94,16 @@ $!omp end parallel
 \end{lstlisting}
 \end{fortrannote}
 
-Figure~\ref{fig:omp-par-do} shows the execution on four threads of
+\Level 2 {About parallelism and worksharing}
+
+It is important to realize that the \indexpragma{parallel}
+directive does not immediately distribute any work:
+all threads start out executing the same code.
+As an illustration, 
+figure~\ref{fig:omp-par-do} shows the execution on four threads of
+code that has instructions between the \indexpragma{parallel}
+and \indexpragma{for} directives:
+
 \begin{lstlisting}
 #pragma omp parallel
 {
@@ -91,6 +115,7 @@ Figure~\ref{fig:omp-par-do} shows the execution on four threads of
   code3();
 }
 \end{lstlisting}
+
 The code before and after the loop is executed identically
 in each thread; the loop iterations are spread over the four threads.
 \begin{figure}[ht]
@@ -99,15 +124,18 @@ in each thread; the loop iterations are spread over the four threads.
   \label{fig:omp-par-do}
 \end{figure}
 
-Note that the \n{do} and \n{for}
-pragmas do not create a team of threads: they
-take the team of threads that is active,
+The \n{do} and \n{for}
+pragmas do not themselves create parallelism:
+they take the team of threads that is active,
 and divide the loop iterations over them.
 This means that the \n{omp for} or \n{omp do} directive needs to be
 inside a parallel region.
+Outside of a parallel region they would execute sequentially.
 
 As an illustration:
+\begingroup \def\snippetcodefraction{.52} \def\snippetlistfraction{.48} %pyskip
 \csnippetwithoutput{ompparforthread}{examples/omp/c}{parfor}
+\endgroup %pyskip
 
 \begin{exercise}
   What would happen in the above example if you increase the number of threads
@@ -161,6 +189,48 @@ able to determine in advance how many iterations there will be.
   for the loop to be parallelizable.
   Unsigned values are allowed as of \ompstandard{3}.
 \end{remark}
+
+\Level 1 {When is a loop parallel?}
+
+OpenMP parallelism is not magic. You can not take a sequential loop,
+even when it satisfies the restrictions above,
+put an \lstinline{omp parallel for} on it,
+and hope you get the same result, only faster.
+The speed issue is something we will go into later;
+for now let's consider the issue of whether the parallel
+code computes the right result to begin with.
+
+The trivial case of a loop that is executed correctly in parallel,
+is one where iteration~\lstinline{i} writes in location~\lstinline{i}
+of some array:
+\begin{lstlisting}
+  for (int i=low; i<hi; i++)
+     x[i] = // expression
+\end{lstlisting}
+The iterations of this loop are independent,
+and hence can be computed in parallel in any order,
+if the right-hand-side expression does not contain
+any references to~\lstinline{x},
+or at best~\lstinline{x[i]}.
+
+Leaving considerations of the right-hand-side expression aside,
+we can more generally say that a loop is parallelizable if in
+\begin{lstlisting}
+  for (int i=low; i<hi; i++)
+     x[ f(i) ] = // expression
+\end{lstlisting}
+the function \lstinline{f} satisfies:
+\[ i\not=j \Rightarrow f(i)\not=f(j). \]
+
+\begin{exercise}
+  Consider the code
+  \begin{lstlisting}
+    for (int i=0; i<n; i++)
+      x[i/2] += f(i)
+  \end{lstlisting}
+  Argue that this does not satisfy the above consition.
+  Can you rewrite this loop to be parallelizable?
+\end{exercise}
 
 \Level 1 {Exercises}
 
@@ -425,6 +495,13 @@ leave it to the runtime library by specifying
 \indexclauseoption{schedule}{auto}
 
 \begin{exercise}
+  Write a simple prime number tester and a loop that counts primes:
+  \cxxverbatimsnippet{primecountloop}
+  Do you expect a dynamic schedule to be better than a static one?
+  Finish the program and test with different schedules.
+\end{exercise}
+
+\begin{exercise}
   \label{ex:omp-pi-adapt}
   %
   We continue with exercise~\ref{ex:omp-pi}.
@@ -505,7 +582,7 @@ The schedule can be declared explicitly, set at runtime
 through the \indexompshow{OMP_SCHEDULE} environment variable, or left up to the runtime system
 by specifying \lstinline{auto}. Especially in the last two cases  you may want to enquire
 what schedule is currently being used with
-\indexompshow{omp_get_schedule}.
+\indexompshow{omp_get_schedule} (since \ompstandard{5.1}):
 \begin{lstlisting}
 int omp_get_schedule(omp_sched_t * kind, int * modifier );
 \end{lstlisting}
@@ -549,6 +626,31 @@ Here are the various schedules you can set with the
     environment variable. Set by using value
     \indexompshow{omp_sched_runtime}
 \end{description}
+
+\Level 0 {OpenMP loops vs C++ standard algorithms}
+\label{sec:omp-vs-cpp-tbb}
+
+\begin{cppnote}{Parallel standard algorithms}
+  The \cppstandard{17}/\cppstandard{20} standards have introduced the
+  notion of \indexterm{execution policy} to the `standard algorithms',
+  meaning the operations on containers that are in the \lstinline{algorithm}
+  library.
+
+  This parallelization is often done through \ac{TBB}.
+\end{cppnote}
+
+As an example, let's consider prime number marking:
+create an array where \lstinline{p[i]} is one
+if \lstinline{i} is prime, zero otherwise.
+
+\cxxverbatimsnippet{markprimeomp}
+\cxxverbatimsnippet{markprimecpp}
+
+As a result we find that the parallel algorithm
+is competitive with OpenMP loop parallelization
+for low thread counts, but not higher.
+
+\lstinputlisting{examples/tbb/cxx/primepolicy-scaling-ls6.runout}
 
 \Level 0 {Reductions}
 

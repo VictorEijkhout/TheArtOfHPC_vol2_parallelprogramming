@@ -339,8 +339,11 @@ For instance, recreating the maximum reduction would look like this:
   Support for
   \emph{C++ iterators}\index{C++ iterators!in OMP reduction}
 \begin{lstlisting}
-#pragma omp declare reduction (merge : std::vector<int>
-    : omp_out.insert(omp_out.end(), omp_in.begin(), omp_in.end())) 
+#pragma omp declare reduction \
+    (merge             // identifier 
+    : std::vector<int> // typelist
+    : omp_out.insert(omp_out.end(), omp_in.begin(), omp_in.end()) // combiner
+    ) 
 \end{lstlisting}
 \end{cppnote}
 
@@ -433,6 +436,20 @@ see~\HPSCref{sec:round-compile}. OpenMP ignores this issue: it is the
 programmer's job to ensure proper rounding behavior.
 
 \index{omp!reduction|)}
+
+\Level 0 {Reductions in C++ standard algorithms}
+
+\begin{cppnote}{Reductions on parallel standard algorithms}
+  In section~\ref{sec:omp-vs-cpp-tbb} you saw how certain loop constructs
+  can be realized in C++ through the \indexterm{execution policy} argument
+  of the standard algorithms. The same holds for reductions.
+\end{cppnote}
+
+\cxxverbatimsnippet{reduceprimeomp}
+\cxxverbatimsnippet{reduceprimecpp}
+
+\lstinputlisting{examples/tbb/cxx/reducepolicy-scaling-ls6.runout}
+
 
 \endinput
 

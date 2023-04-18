@@ -335,16 +335,39 @@ Here is the correspondence between the value of OpenMP versions
 (given by the \indexompshow{_OPENMP} macro)
 and the \emph{standard versions}:
 
-\begin{multicols}{2}
+\begin{itemize}
+\item \ompstandard{3.1}
   \begin{itemize}
-  \item \n{201511} \ompstandard{4.5},
-  \item \n{201611} Technical report 4: information about the \ompstandard{5.0}
-    but not yet mandated.
-  \item \n{201811} \ompstandard{5.0}
-  \item \n{202011} \ompstandard{5.1},
-  \item \n{202111} \ompstandard{5.2}.
+  \item proc bind environment variable
+  \item extensions to tasks
   \end{itemize}
-  \columnbreak
+\item \ompstandard{4.0}
+  \begin{itemize}
+  \item procbind clause, places environment variable
+  \item simd directives
+  \item device directives for GPUs
+  \item taskgroups
+  \item depend clause on tasks
+  \item cancel
+  \item user-defined reductions
+  \end{itemize}
+\item \n{201511} \ompstandard{4.5},
+  Many extensions of existing constructs.
+\item \n{201611} Technical report 4: information about the \ompstandard{5.0}
+  but not yet mandated.
+\item \n{201811} \ompstandard{5.0}
+  \begin{itemize}
+  \item Better support for C11, C++11/14/18, Fortran2008
+  \item Non-rectangular loop nests.
+  \item \indexpragma{scan} extended to have in/exclusive versions
+  \item reduction on tasks, taskloops.
+  \item memory spaces.
+  \end{itemize}
+\item \n{202011} \ompstandard{5.1},
+\item \n{202111} \ompstandard{5.2}.
+\end{itemize}
+
+\begin{multicols}{2}
   \cverbatimsnippet{ompstandard}
 \end{multicols}
 

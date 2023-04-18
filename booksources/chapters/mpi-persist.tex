@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% mpi-persist.tex : persistent communication and such
 %%%%
@@ -179,6 +179,18 @@ and in different order among the processes.
   \indexmpidef{MPI_Exscan_init}
 \end{raggedlist} %pyskip
 
+\begin{remark}
+  Persistent operations can be started in any order.
+  However, system-dependent optimizations are possible
+  if all processes start persistent collectives in the same order.
+  This can be declared in \mpistandard{4.1} by setting the info key
+  \indexmpishow{mpi_assert_strict_persistent_collective_ordering}
+  to \lstinline{true}.
+  (See section~\ref{sec:mpi-info} for info objects.)
+  This value needs to be set identically on all processes
+  of the communicator.
+\end{remark}
+
 \index{persistent!collectives|)}
 \end{mpifournote}
 
@@ -350,6 +362,9 @@ way of managing buffer space.
   buffer space used inside the MPI library or on the network card;
   figure~\ref{fig:bufattach}. If high-bandwidth memory is available,
   you could create your buffer there.
+\begin{mpifournote}{Buffer per communicator/session}
+\item A buffer can also be attached directly to a communicator or session; see below.
+\end{mpifournote}
 \item You use the \indexmpiref{MPI_Bsend}
   (or its \emph{local}\index{local!operation} variant \indexmpishow{MPI_Ibsend})
   call for sending, using
@@ -367,9 +382,23 @@ We illustrate the use of buffered sends:
 
 \Level 1 {Buffer treatment}
 
-There can be only one buffer per process, attached with
-\indexmpiref{MPI_Buffer_attach}.
-Its size should be enough
+If you attach the buffer directly to the MPI process
+with \indexmpiref{MPI_Buffer_attach}
+there can be only one buffer per process.
+
+\begin{mpifournote}{Buffer on communicator}
+  The calls \indexmpiref{MPI_Comm_attach_buffer}
+  and \indexmpiref{MPI_Comm_detach_buffer}
+  (as of \mpistandard{4.1})
+  can be used to have a buffer per communicator.
+  Likewise \indexmpidef{MPI_Session_attach_buffer}
+  and \indexmpidef{MPI_Session_detach_buffer}
+
+  Also: \indexmpidef{MPI_Comm_flush_buffer}, \indexmpidef{MPI_Session_flush_buffer},
+  and a global function \indexmpidef{MPI_Buffer_flush}.
+\end{mpifournote}
+
+The buffer size should be enough
 for all \indexmpishow{MPI_Bsend} calls that are simultaneously
 outstanding.
 You can compute the needed size of the buffer with \indexmpishow{MPI_Pack_size};

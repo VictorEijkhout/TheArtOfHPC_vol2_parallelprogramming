@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% mpi-shared.tex : about shared memory in MPI
 %%%%
@@ -36,7 +36,7 @@ This relies on the \indexmpishow{MPI_Win} windows concept, but
 otherwise uses direct access of other processes' memory.
 
 \Level 0 {Recognizing shared memory}
-\label{mpi-comm-split-type}
+\label{mpi-comm-split-shared}
 
 MPI's one-sided routines take a very symmetric view of processes:
 each process can access the window of every other process (within a communicator).
@@ -44,23 +44,10 @@ Of course, in practice there will be a difference in performance
 depending on whether the origin and target are actually
 on the same shared memory, or whether they can only communicate through the network.
 For this reason MPI makes it easy to group processes by shared memory domains
-using \indexmpiref{MPI_Comm_split_type}.
+using \indexmpishow{MPI_Comm_split_type}
+(see section~\ref{mpi-comm-split-type})
+with the type \indexmpishow{MPI_COMM_TYPE_SHARED}.
 
-Here the \n{split_type} parameter has to be from the following (short) list:
-\begin{itemize}
-\item \indexmpishow{MPI_COMM_TYPE_SHARED}: split the communicator into subcommunicators
-  of processes sharing a memory area.
-\begin{mpifournote}{Split by guided types}
-  \item \indexmpishow{MPI_COMM_TYPE_HW_GUIDED} (\mpistandard{4}):
-    split using an \n{info} value from \indexmpidef{MPI_Get_hw_resource_types}.
-    % https://github.com/mpi-forum/mpi-issues/issues/132
-  \item \indexmpishow{MPI_COMM_TYPE_HW_UNGUIDED} (\mpistandard{4}):
-    similar to \indexmpishow{MPI_COMM_TYPE_HW_GUIDED}, but the resulting communicators
-    should be a strict subset of the original communicator.
-    On processes where this condition can not be fullfilled,
-    \indexmpishow{MPI_COMM_NULL} will be returned.
-\end{mpifournote}
-\end{itemize}
 
 Splitting by shared memory:
 %
@@ -82,12 +69,6 @@ Splitting by shared memory:
   say 10~processes on 3~nodes, what distribution do you find?
   \lstinputlisting{examples/mpi/c/nodecount.runout}
 \end{exercise}
-
-\begin{remark}
-  The \indexterm{OpenMPI} implementation of MPI has a number of
-  non-standard split types, such as \indexmpishow{OMPI_COMM_TYPE_SOCKET};
-  see \url{https://www.open-mpi.org/doc/v4.1/man3/MPI_Comm_split_type.3.php}
-\end{remark}
 
 \begin{mplnote}{Split by shared memory}
   Similar to ordinary communicator splitting~\ref{mpl::split}:

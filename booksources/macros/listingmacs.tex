@@ -67,6 +67,7 @@
     MPI_Intercomm_create,MPI_Intercomm_merge,MPI_Comm_test_inter,MPI_Comm_remote_group,
     MPI_Group_size,MPI_Group_rank,MPI_Group_free,MPI_Group_incl,MPI_Group_excl,
     MPI_Group_union,MPI_Group_intersection,MPI_Group_difference,
+    MPI_Comm_flush_buffer,MPI_Comm_attach_buffer,MPI_Comm_detach_buffer,
     % collectives
     MPI_Allreduce,MPI_Allreduce_c,MPI_Reduce,MPI_Reduce_c,MPI_Reduce_local,MPI_Bcast,
     MPI_Gather,MPI_Scatter,MPI_Scatterv,MPI_Gatherv,MPI_All...,MPI_...v,
@@ -94,7 +95,7 @@
     MPI_Buffer_attach,MPI_Buffer_detach,
     MPI_Get_count,MPI_Get_count_c,MPI_Get_count_x,
     MPI_Get_elements,MPI_Get_elements_c,MPI_Get_elements_x,MPI_Get_address,MPI_Address,
-    MPI_Get_hw_resource_types,
+    MPI_Get_hw_resource_types,MPI_Get_hw_resource_info,
     MPI_Request_free,MPI_Request_get_status,
     MPI_Status_f2f08,MPI_Status_f082f,
     % operator
@@ -176,6 +177,7 @@
     MPI_Session_init,MPI_Session_finalize,
     MPI_Group_from_session_pset,MPI_Session_get_num_psets,MPI_Session_get_nth_pset,
     MPI_Session_get_info,MPI_Session_get_pset_info,
+    MPI_Session_flush_buffer,MPI_Session_attach_buffer,MPI_Session_detach_buffer,
     % tools interface
     MPI_Txxx,MPI_T_init_thread,MPI_T_finalize,
     MPI_T_cvar_get_num,MPI_T_cvar_get_info,MPI_T_cvar_get_index,
@@ -216,6 +218,7 @@
     % comm stuff
     MPI_COMM_WORLD,MPI_COMM_SELF,MPI_ROOT,
     MPI_COMM_TYPE_SHARED,MPI_COMM_TYPE_HW_GUIDED,MPI_COMM_TYPE_HW_UNGUIDED,
+    MPI_COMM_TYPE_RESOURCE_GUIDED,
     MPI_IDENT,MPI_CONGRUENT,MPI_SIMILAR,MPI_UNEQUAL,
     % stuff
     MPI_MAX_DATAREP_STRING,MPI_MAX_ERROR_STRING,

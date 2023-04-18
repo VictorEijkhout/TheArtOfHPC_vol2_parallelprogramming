@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%% "Parallel Computing"
-   %%%% by Victor Eijkhout, copyright 2022
+   %%%% by Victor Eijkhout, copyright 2022-2023
    %%%%
    %%%% iterator.cxx : iterating on custom iterator
    %%%%
@@ -19,21 +19,22 @@ using std::endl;
 #include "omp.h"
 
 //codesnippet classwithiter
+template<typename T>
 class NewVector {
-//codesnippet end
 protected:
-  int *storage;
+  T *storage;
   int s;
+//codesnippet end
 //codesnippet classwithiterdata
 public:
   NewVector( int s )
     : s(s){
-    storage = new int[s]; };
+    storage = new T[s]; };
   ~NewVector() { delete storage; };
-//codesnippet classwithiterdata
-  int at(int i) const { if (i<0 or i>=s) throw;
+  //codesnippet end
+  T at(int i) const { if (i<0 or i>=s) throw;
     return storage[i]; };
-  int& at(int i) { if (i<0 or i>=s) throw;
+  T& at(int i) { if (i<0 or i>=s) throw;
     return storage[i]; };
 
 //codesnippet classwithiter
@@ -42,26 +43,31 @@ public:
   class iter;
   iter begin();
   iter end();
+//codesnippet end
 
+//codesnippet classwithiter
 };
 //codesnippet end
 
 //codesnippet classwithiteriter
-class NewVector::iter {
-private: int *searcher;
+template<typename T>
+class NewVector<T>::iter {
+private: T *searcher;
 //codesnippet end
 public:
-  iter( int *searcher );
+  iter( T *searcher );
   //codesnippet omprandaccess
-  NewVector::iter& operator++();
-  int& operator*(); 
+  NewVector<T>::iter& operator++();
+  T& operator*(); 
   bool operator==( const NewVector::iter &other ) const;
   bool operator!=( const NewVector::iter &other ) const;
   // needed to OpenMP
   int operator-( const NewVector::iter& other ) const;
-  NewVector::iter& operator+=( int add );
+  NewVector<T>::iter& operator+=( int add );
   //codesnippet end
+//codesnippet classwithiteriter
 };
+//codesnippet end
 
 int main() {
 
@@ -75,10 +81,10 @@ int main() {
   //codesnippet end
 
   //codesnippet ompcustompar
-  NewVector v(s);
+  NewVector<float> v(s);
   //codesnippet end
   for ( int i=0; i<s; i++ )
-    v.at(i) = i+1;
+    v.at(i) = i+.5;
 
   //codesnippet ompcustompar
   #pragma omp parallel for
@@ -91,26 +97,38 @@ int main() {
 }
 
 //codesnippet classwithiteriter
-NewVector::iter::iter( int *searcher )
+template<typename T>
+NewVector<T>::iter::iter( T* searcher )
   : searcher(searcher) {};
-NewVector::iter NewVector::begin() {
-  return NewVector::iter(storage); };
-NewVector::iter NewVector::end()   {
-  return NewVector::iter(storage+NewVector::s); };
+template<typename T>
+NewVector<T>::iter NewVector<T>::begin() {
+  return NewVector<T>::iter(storage); };
+template<typename T>
+NewVector<T>::iter NewVector<T>::end()   {
+  return NewVector<T>::iter(storage+NewVector<T>::s); };
 //codesnippet end
 
-//answersnippet classwithitersoln
-NewVector::iter& NewVector::iter::operator++() {
-  searcher++; return *this; };
-int&  NewVector::iter::operator*() {
-  return *searcher; };
-bool  NewVector::iter::operator==( const NewVector::iter &other ) const {
+//answersnippet classwithitersol1
+template<typename T>
+bool  NewVector<T>::iter::operator==( const NewVector<T>::iter &other ) const {
   return searcher==other.searcher; };
-bool  NewVector::iter::operator!=( const NewVector::iter &other ) const {
+template<typename T>
+bool  NewVector<T>::iter::operator!=( const NewVector<T>::iter &other ) const {
   return searcher!=other.searcher; };
-// needed to OpenMP
-int   NewVector::iter::operator-( const NewVector::iter& other ) const {
-  return searcher-other.searcher; };
-NewVector::iter& NewVector::iter::operator+=( int add ) {
+template<typename T>
+NewVector<T>::iter& NewVector<T>::iter::operator++() {
+  searcher++; return *this; };
+template<typename T>
+NewVector<T>::iter& NewVector<T>::iter::operator+=( int add ) {
   searcher += add; return *this; };
+//answersnippet end
+
+//answersnippet classwithitersol2
+template<typename T>
+T&  NewVector<T>::iter::operator*() {
+  return *searcher; };
+// needed for OpenMP
+template<typename T>
+int   NewVector<T>::iter::operator-( const NewVector<T>::iter& other ) const {
+  return searcher-other.searcher; };
 //answersnippet end

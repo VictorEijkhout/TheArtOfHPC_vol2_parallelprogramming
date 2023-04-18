@@ -110,10 +110,6 @@ static constexpr split_tag split{};
 \end{mplnote}
 
 
-There is also a routine \indexmpishow{MPI_Comm_split_type}
-which uses a type rather than a key to split the communicator.
-We will see this in action in section~\ref{mpi-comm-split-type}.
-
 As another example of communicator splitting, consider the recursive
 algorithm for \indextermbus{matrix}{transposition}.
 %
@@ -136,4 +132,50 @@ on $2\times 2$ block form.
   \end{itemize}
   (assume one element per process)
 \end{exercise}
+
+\Level 1 {Splitting by type}
+\label{mpi-comm-split-type}
+
+There is also a routine \indexmpiref{MPI_Comm_split_type}
+which uses a type rather than a key to split the communicator.
+
+Here the \n{split_type} parameter has to be from the following (short) list:
+\begin{itemize}
+\item \indexmpishow{MPI_COMM_TYPE_SHARED}: split the communicator into subcommunicators
+  of processes sharing a memory area.
+  We will see this in action in section~\ref{mpi-comm-split-shared}.
+\begin{mpifournote}{Split by guided types}
+  \item \indexmpishow{MPI_COMM_TYPE_HW_GUIDED} (\mpistandard{4}):
+    split using an \n{info} value from \indexmpidef{MPI_Get_hw_resource_types}.
+    % https://github.com/mpi-forum/mpi-issues/issues/132
+    The function \indexmpidef{MPI_Get_hw_resource_info}
+    (as of \mpistandard{4.1}) returns an \indexmpishow{MPI_Info}
+    object containing key/value pairs of available hardware resources.
+  \item \indexmpishow{MPI_COMM_TYPE_HW_UNGUIDED} (\mpistandard{4}):
+    similar to \indexmpishow{MPI_COMM_TYPE_HW_GUIDED}, but the resulting communicators
+    should be a strict subset of the original communicator.
+    On processes where this condition can not be fullfilled,
+    \indexmpishow{MPI_COMM_NULL} will be returned.
+  \item \indexmpishow{MPI_COMM_TYPE_RESOURCE_GUIDED} (\mpistandard{4.1}):
+    this splits a communicator by
+    \begin{itemize}
+    \item
+      Hardware properties.
+      For this case there is the info key \indextermtt{mpi_hw_resource_type}.
+      One possible key value \indextermtt{mpi_shared_memory} effects
+      the same split as using the split type \indexmpishow{MPI_COMM_TYPE_SHARED}.
+    \item \n{pset} names.
+      For this case there is the info key \indextermtt{mpi_pset_name}.
+      If a communicator is not derived from a session, the split communicator
+      will be \indexmpishow{MPI_COMM_NULL}.
+    \end{itemize}
+
+\end{mpifournote}
+\end{itemize}
+
+\begin{remark}
+  The \indexterm{OpenMPI} implementation of MPI has a number of
+  non-standard split types, such as \indexmpishow{OMPI_COMM_TYPE_SOCKET};
+  see \url{https://www.open-mpi.org/doc/v4.1/man3/MPI_Comm_split_type.3.php}
+\end{remark}
 
