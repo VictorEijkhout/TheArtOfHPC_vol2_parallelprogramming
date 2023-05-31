@@ -394,6 +394,19 @@ With a task it becomes possible to have a spin-wait loop:
   %
   \cxxverbatimsnippet{cppuninitialvec}
   %% \input{cppnote-uninitialized-containers.cut}
+  (Question: why not use \lstinline{reserve}?)
+\end{numberedframe}
+
+\begin{numberedframe}{Uninitialized containers, 3}
+  Easy way of dealing with this:
+\begin{lstlisting}
+template<typename T>
+class ompvector : public vector<uninitialized<T>> {
+public:
+  ompvector( size_t s )
+    : vector<uninitialized<T>>::vector<uninitialized<T>>(s) {};
+};
+\end{lstlisting}
 \end{numberedframe}
 
 \begin{numberedframe}{Atomic updates}
