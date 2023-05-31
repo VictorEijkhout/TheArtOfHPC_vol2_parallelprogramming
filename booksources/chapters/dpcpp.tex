@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% dpcpp.tex : intro stuff about DPC++
 %%%%
@@ -72,7 +72,9 @@ Then for each platform we list the devices:
 \cxxverbatimsnippet[code/dpcpp/cxx/devices.cxx]{dpcppdevices}
 
 You can query what type of device you are dealing with by
-\indexsyclshow{is_host}, \indexsyclshow{is_cpu}, \indexsyclshow{is_gpu}.
+\indexsyclshow{is_cpu}, \indexsyclshow{is_gpu}.
+(The function \indexsyclshow{is_host} was deprecated
+in \syclstandard{2020}.)
 
 \Level 0 {Queues}
 
@@ -100,8 +102,14 @@ The following example explicitly assigns the queue to the CPU device
 using the \lstinline+sycl::+\indexsyclshow{cpu_selector}.
 \cxxverbatimsnippet[code/dpcpp/cxx/cpuname.cxx]{cpuclass}
 
-The \lstinline+sycl::+\indexsyclshow{host_selector} bypasses any devices and
-make the code run on the host.
+\begin{remark}
+  Pre-\syclstandard{2020}:
+  the \lstinline+sycl::+\indexsyclshow{host_selector} bypasses any devices and
+  make the code run on the host.
+
+  \indexsyclshow{cpu_selector} is deprecated in \syclstandard{2020},
+  replaced by \indexsyclshow{cpu_selector_v}.
+\end{remark}
 
 It is good for your sanity to print the name of the device
 you are running on:
@@ -208,6 +216,9 @@ grp.parallel_for_work_item(
     // kernel function is executed once per work-item
 });
 \end{lstlisting}
+
+In \syclstandard{2020} offsets on \indexsyclshow{nd_range} 
+are deprecated.
 
 \Level 2 {Loop bounds: ranges}
 
@@ -490,6 +501,19 @@ it may be necessary to call
 \lstinline+sycl::queue::+\indexsyclshow{wait}
 \begin{lstlisting}
 myQueue.wait();  
+\end{lstlisting}
+
+\Level 0 {Other}
+
+Exceptions:
+\begin{lstlisting}
+  try {
+    sycl::whatever
+  } catch ( sycl::errc::runtime &e ) { ....}
+\end{lstlisting}
+Deprecated as of \syclstandard{2020}:
+\begin{lstlisting}
+  } catch ( sycl::runtime_error &e ) { ... }
 \end{lstlisting}
 
 \Level 0 {DPCPP extensions}

@@ -80,6 +80,15 @@ with freely accessible members:
   where they operate on \indexmpishow{MPI_Fint}, \indexmpishow{MPI_F08_status} arguments.)
 \end{fortrannote}
 
+\begin{mpifournote}
+  The \lstinline{SOURCE,TAG,ERROR} fields can also be accessed,
+  both to get and to set,
+  with routines such as
+  \indexmpishow{MPI_Status_get_source},
+  \indexmpishow{MPI_Status_set_source},
+  et cetera.
+\end{mpifournote}
+
 \begin{pythonnote}{Status object}
   The status object is explicitly created before being passed
   to the receive routine. It has the usual query method

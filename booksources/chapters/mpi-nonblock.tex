@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2021
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% mpi-nonblock.tex : blocking sends
 %%%%
@@ -458,6 +458,12 @@ test for whether one or more requests have been
 fullfilled, but otherwise immediately return.
 It is also a \indexterm{local operation}: it does not force progress.
 
+\begin{remark}
+  The \lstinline{MPI_Test...} routines are similar to, but different from
+  \indexmpishow{MPI_Probe}, which is blocking and forces progress;
+  see section~\ref{sec:mpi-probe}.
+\end{remark}
+
 The \indexmpishow{MPI_Test} call can be used in the
 \indexterm{manager-worker} model: the manager process creates tasks, and
 sends them to whichever worker process has finished its work.
@@ -534,6 +540,11 @@ is concluded and when the buffer is safe to reuse~\cite{Squyres:evilrequest}.
 
 You can inspect the status of a request without freeing the request object
 with \indexmpiref{MPI_Request_get_status}.
+For multiple statuses use
+\indexmpidef{MPI_Request_get_status_all},
+\indexmpidef{MPI_Request_get_status_some},
+\indexmpidef{MPI_Request_get_status_any}
+in \mpistandard{4.1}.
 
 \index{communication!nonblocking|)}
 

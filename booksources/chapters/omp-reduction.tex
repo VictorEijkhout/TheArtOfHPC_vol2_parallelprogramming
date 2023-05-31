@@ -172,6 +172,7 @@ double result = 0;
 \Level 1 {Operators}
 
 Arithmetic reductions: \lstinline{+,*,-,max,min}.
+The minus operator is deprecated as of \ompstandard{5.2}.
 
 Logical operator reductions in C: \n{& && | || ^}
 
@@ -299,6 +300,10 @@ where:
     can be an expression or a brace initializer.
 \end{description}
 
+\begin{fortrannote}{Reduction declaration}
+  The declaration statement has to be in the declaration section of your subprogram.
+\end{fortrannote}
+
 \Level 2 {Explicit expressions}
 
 For very simple cases:
@@ -379,7 +384,7 @@ For instance, recreating the maximum reduction would look like this:
     \columnbreak
     \fverbatimsnippet{ftypeopuse}
   \end{multicols}
-  
+  But note the extra \lstinline{declare} clause.  
 \end{fortrannote}
 
 \begin{cppnote}{Reduction on class objects}

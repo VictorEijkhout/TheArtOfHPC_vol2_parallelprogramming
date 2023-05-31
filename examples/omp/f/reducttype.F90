@@ -4,7 +4,7 @@
 !**** `Parallel programming for Science and Engineering'
 !**** by Victor Eijkhout, eijkhout@tacc.utexas.edu
 !****
-!**** copyright Victor Eijkhout 2012-2021
+!**** copyright Victor Eijkhout 2012-2023
 !****
 !**** OpenMP example of reduction on type
 !****
@@ -36,6 +36,7 @@ Program Reducttype
   !!codesnippet ftypeopuse
   Type(inttype),dimension(nsize) :: intarray
   Type(inttype) :: intsum = inttype(0)
+  !$OMP declare reduction(+:inttype:omp_out=omp_out+omp_in)
   !!codesnippet end
   integer :: i
 
@@ -52,7 +53,7 @@ Program Reducttype
   do i=1,nsize
      intsum = intsum + intarray(i)
   end do
-  !$OMP end parallel
+  !$OMP end parallel do
   !!codesnippet end
 
   print '("Sum = ",i6,"; should be ",i6)',intsum,nsize*(nsize+1)/2

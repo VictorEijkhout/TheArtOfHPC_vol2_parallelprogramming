@@ -1,0 +1,209 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Computing'
+%%%% by Victor Eijkhout, copyright 2012-2023
+%%%%
+%%%% mpi_course.tex : master file for an advanced MPI course
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[11pt,headernav]{beamer}
+
+\beamertemplatenavigationsymbolsempty
+\usetheme{Madrid}%{Montpellier}
+\usecolortheme{seahorse}
+\setcounter{tocdepth}{1}
+
+\setbeamertemplate{footline}{\hskip1em Eijkhout: MPI course\hfill
+  \hbox to 0in {\hss \includegraphics[scale=.1]{tacclogonew}}%
+  \hbox to 0in {\hss \arabic{page}\hskip 1in}}
+
+\usepackage{multicol,multirow}
+% custom arrays and tables
+\usepackage{array} %,multirow,multicol}
+\newcolumntype{R}{>{\hbox to 1.2em\bgroup\hss}{r}<{\egroup}}
+\newcolumntype{T}{>{\hbox to 8em\bgroup}{c}<{\hss\egroup}}
+
+\usepackage{comment}
+\input slides.inex
+\input commonmacs
+\input acromacs
+\input slidemacs
+\input coursemacs
+\excludecomment{solutions}
+\input snippetmacs
+
+\includecomment{full}
+\excludecomment{condensed}
+\excludecomment{online}
+
+\includecomment{download}
+\excludecomment{lab}
+
+\includecomment{onesided}
+\includecomment{advanced}
+\includecomment{foundations}
+
+\def\Location{}% redefine in the inex file
+\def\courseyear{2022}
+\def\Location{TACC APP institute MPI training \courseyear}
+\def\Location{TACC MPI training \courseyear}
+\def\Location{PEARC2022}
+\iffalse
+  \small
+  \url{http://tinyurl.com/pearc21-tacc-advmpi}\\
+  \texttt{\char126 train00/mpithree\_course\_2021.tgz}
+\fi
+\def\TitleExtra{}
+
+%%%%
+%%%% exercise stuff
+%%%%
+\usepackage{tocbasic}
+\DeclareNewTOC[%
+  type=programming,
+  name=programming,
+  listname={List of Exercises},
+  ]{lox}
+
+\input lang
+
+%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%% Document
+%%%%%%%%%%%%%%%%
+
+\begin{document}
+\parskip=10pt plus 5pt minus 3pt
+
+\title{Advanced Features of MPI-3 and MPI-4}
+\author{Victor Eijkhout {\tt eijkhout@tacc.utexas.edu}}
+\date{\Location}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+\begin{download}
+  \begin{frame}[containsverbatim]{Materials}
+    Textbooks and repositories:\\
+    \url{https://theartofhpc.com/pcse}
+  \end{frame}
+\end{download}
+
+\begin{frame}{Justification}
+  Version 3 of the MPI standard has added a number
+  of features, some geared purely towards functionality,
+  others with an eye towards efficiency at exascale.
+
+  Version 4 adds yet more features for exascale,
+  and more flexible process management.
+
+  Note: MPI-3 as of 2012, 3.1 as of~2015. Fully supported everywhere.\\
+  MPI-4 as of June 2021. Partial support in mpich version~4.1.
+\end{frame}
+
+\Level 0 {Fortran bindings}
+\input F08_slides
+
+\Level 0 {Big data communication}
+\input Bigdata-slides
+
+\Level 0 {Advanced collectives}
+\input Highercollective-slides
+
+\Level 0 {Shared memory}
+\input Sharedmemory-slides
+
+\Level 0 {Atomic operations}
+\input Atomic-slides
+ 
+\Level 0 {Partitioned communication}
+\input Partitioned-slides
+
+\Level 0 {Sessions model}
+\input Sessions-slides
+
+\Level 0 {Process topologies}
+\input Graph-slides
+
+\Level 0 {Other MPI-4 material}
+
+\begin{numberedframe}{Better aborts}
+  \begin{itemize}
+  \item Error handler
+     \indexmpidef{MPI_ERRORS_ABORT}:
+     aborts on the processes in the communicator for which it is specified.
+  \item
+    Error code \indexmpidef{MPI_ERR_PROC_ABORTED}:
+    process tried to communicate
+    with a process that has aborted.
+  \end{itemize}
+
+\end{numberedframe}
+
+\begin{numberedframe}{Error as C-string}
+ \indexmpidepr{MPI_Info_get} and \indexmpidepr{MPI_Info_get_valuelen}
+ are not robust with respect to the  \indexterm{null terminator}.\\
+ Replace by:
+\begin{lstlisting}
+int MPI_Info_get_string
+   (MPI_Info info, const char *key, 
+    int *buflen, char *value, int *flag)  
+\end{lstlisting}
+\end{numberedframe}
+
+\Level 0 {Summary}
+
+\begin{numberedframe}{Summary}
+  \begin{itemize}
+  \item Fortran 2008 bindings (MPI-3)
+  \item \indexmpishow{MPI_Count} arguments for large buffers (MPI-4)
+  \item Atomic one-sided communication (MPI-3)
+  \item Non-blocking collectives (MPI-3) and persistent collectives (MPI-4)
+  \item Shared memory (MPI-3)
+  \item Graph topologies (MPI-3)
+  \item Partitioned sends (MPI-4)
+  \item Sessions model (MPI-4)
+  \end{itemize}
+\end{numberedframe}
+
+\coursepart{Supplemental material}
+
+\begin{exerciseframe}[serialsend]
+  \label{exserialsend}
+  \input{ex:serialsend}
+\end{exerciseframe}
+
+\begin{exerciseframe}[procgrid]
+  \input{ex:rowcolcomm}
+\end{exerciseframe}
+
+\end{document}
+
+\Level 0 {Appendix: Intercommunicator recap}
+\input{sl:comm-inter}
+\input{sl:intercomm-picture}
+\input{sl:intercomm-concepts}
+\input{sl:intercomm-routines}
+
+\begin{comment}
+  \begin{numberedframe}{Protocol}
+    \label{sl:rendezvous}
+    Communication is a `rendez-vous' or `hand-shake' protocol:
+    \begin{itemize}
+    \item Sender: `I have data for you'
+    \item Receiver: `I have a buffer ready, send it over'
+    \item Sender: `Ok, here it comes'
+    \item Receiver: `Got it.'
+    \end{itemize}
+    Small messages bypass this: `eager' send.\\
+    Definition of `small message' controlled by environment variables.
+  \end{numberedframe}
+\end{comment}
+
+\end{document}
+

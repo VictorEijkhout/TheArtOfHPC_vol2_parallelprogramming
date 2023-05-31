@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the lecture slides for
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2020
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% Sharedmemory-slides.tex : slides about mpi shared memory
 %%%%
@@ -65,7 +65,8 @@
   \item Use \indexmpishow{MPI_Comm_split_type} to find processes on the same
     shared memory
   \item Use \indexmpishow{MPI_Win_allocate_shared} to create a window between
-    processes on the same shared memory
+    processes on the same shared memory\\
+    (\mpistandard{4.1}: other calls allowed, but the burden is on you!)
   \item Use \indexmpishow{MPI_Win_shared_query} to get pointer to another
     process' window data.
   \item You can now use \n{memcpy} instead of \indexmpishow{MPI_Put}.

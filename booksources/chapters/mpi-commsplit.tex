@@ -83,6 +83,13 @@ Global ranks:  Ranks in row:  Ranks in colum:
   \skeleton{procgrid}
 \end{exercise}
 
+\begin{remark}
+  A process that sets the \lstinline{color} parameter to
+  \indexmpishow{MPI_UNDEFINED},
+  receives a communicator value of \indexmpishow{MPI_COMM_NULL},
+  that is, it will not be part of any created subcommunicator.
+\end{remark}
+
 \begin{pythonnote}{Comm split key is optional}
   In Python, the `key' argument is optional:
   %

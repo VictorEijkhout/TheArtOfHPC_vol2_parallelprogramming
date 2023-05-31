@@ -17,7 +17,7 @@ info::
 	@echo
 
 COURSE = mpi
-COURSES  = mpi mpl mpithree mpibasics mpiintermediate
+COURSES  = mpi mpl mpiadvanced mpibasics mpiintermediate
 EXTRATEXINPUTS =
 
 LANGUAGE = all

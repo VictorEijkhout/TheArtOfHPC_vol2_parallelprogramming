@@ -92,6 +92,15 @@ In order to do such user-level copying:
   shared space; this is done with \indexmpishow{MPI_Win_shared_query}.
 \end{enumerate}
 
+\begin{remark}
+  As of \mpistandard{4.1}, \indexmpishow{MPI_Win_shared_query}
+  can be used on memory from \indexmpishow{MPI_Win_allocate}
+  and \indexmpishow{MPI_Win_create},
+  as long as this is actually a window on shared memory.
+  Only \indexmpishow{MPI_Win_allocate_shared} is guaranteed
+  to yield such shared memory.
+\end{remark}
+
 \Level 1 {Pointers to a shared window}
 
 The first step is to create a window (in the sense of one-sided MPI;

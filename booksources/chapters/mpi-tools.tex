@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% mpi-tools.tex : tools interface
 %%%%
@@ -13,7 +13,9 @@
 
 \index{MPI!tools interface|(}
 
-Recent versions of MPI have a standardized way of reading out
+Recent versions of MPI,
+starting at \mpistandard{3.0} and extended in \mpistandard{3.1} and \mpistandard{4.0},
+have a standardized way of reading out
 performance variables: the \emph{tools interface}
 which improves on the old interface described in section~\ref{sec:profile}.
 
@@ -113,6 +115,15 @@ is done through \indexmpidef{MPI_T_cvar_read} and \indexmpidef{MPI_T_cvar_write}
 int MPI_T_cvar_read(MPI_T_cvar_handle handle, void* buf);
 int MPI_T_cvar_write(MPI_T_cvar_handle handle, const void* buf);
 \end{lstlisting}
+
+\Level 1 {Callback interface}
+
+\begin{mpifournote}{Tools callback interface}
+  \indexmpidef{MPI_T_Source_....}
+  \indexmpidef{MPI_T_Event_....}
+  \indexmpidef{MPI_T_Category_get_num_events_....}
+  \indexmpidef{MPI_T_Category_get_events_....}
+\end{mpifournote}
 
 \index[mpi]{control variable|)}
 

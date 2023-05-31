@@ -406,6 +406,12 @@ see section~\ref{sec:pack}.
 Additionally, a term of \indexmpidef{MPI_BSEND_OVERHEAD} is needed.
 See the above code fragment.
 
+\begin{mpifournote}
+  Unlimited buffering can be enabled (as of \mpistandard{4.1}) by
+  specifying \indexmpidef{MPI_BUFFER_AUTOMATIC}
+  in any of the attach routines.
+\end{mpifournote}
+
 The buffer is detached with \indexmpiref{MPI_Buffer_detach}.
 This returns the address and size of the buffer; the call blocks
 until all buffered messages have been delivered.

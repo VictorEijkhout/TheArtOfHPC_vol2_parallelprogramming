@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% kokkos.tex : intro stuff about Kokkos
 %%%%
@@ -43,16 +43,22 @@ Kokkos::parallel_scan
 Hello world:
 \cxxverbatimsnippet[code/kokkos/cxx/hello.cxx]{kkhello}
 
+The two arguments of \lstinline{parallel_for} are:
 \begin{itemize}
-\item How many iterations,
-\item Function of the iteration number.
+\item The number of iterations,
+\item A function of the iteration number.
   You can use a function pointer here, but often we will use lambda expressions.
-  If you're iterating over an array, it needs to be captured in the lambda expression.
+  %%  If you're iterating over an array, it needs to be captured in the lambda expression.
 \end{itemize}
+
+Optionally, the parallel construct takes a string argument
+that can be used for naming.
 
 \Level 1 {Reduction}
 
 Reductions add a parameter to the construct: the reduction variable.
+Here is the traditional calculation of~$\pi$ by integration:
+%
 \cxxverbatimsnippet[code/kokkos/cxx/pi.cxx]{kkpi}
 
 \begin{itemize}
