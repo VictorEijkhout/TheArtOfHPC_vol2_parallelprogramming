@@ -60,7 +60,8 @@ omp_run :
 	 && eval $$command
 omp_scaling :
 	@export np=$$( make --no-print-directory num_cores ) \
-	 && export ompthreads="$$( make --no-print-directory omp_threads NP=$$np NDIV=5 )" \
+	 && if [ -z "${NDIV}" ] ; then ndiv=5 ; else ndiv=${NDIV} ; fi \
+	 && export ompthreads="$$( make --no-print-directory omp_threads NP=$$np NDIV=$$ndiv )" \
 	 && if [ "${ECHO}" = "1" ] ; then \
 	        echo "Using threads: $$ompthreads out of cores: $$np" ; fi \
 	 && if [ -z "${PROGRAM}" ] ; then \
@@ -71,13 +72,18 @@ omp_scaling :
 	    ; else results=${PROGRAM}-scaling.out ; fi \
 	 && ( \
 	    for t in $$ompthreads ; do \
-	        echo "==== Run ${PROGRAM} on $$t threads ====" \
+	        if [ "${ECHO}" = "1" ] ; then \
+	            echo "==== Run ${PROGRAM} on $$t threads ====" ; fi \
 	         && make --no-print-directory omp_run NP=$$t PROGRAM=${PROGRAM} \
-	                ECHO=${ECHO} NEST=${NEST} TWOLEVEL=${TWOLEVEL} \
+	                ECHO=${ECHO} NEST=${NEST} TWOLEVEL=${TWOLEVEL} ACTIVE=${ACTIVE} \
 	                RUN_OPTIONS="${RUN_OPTIONS}" RUNOUTID=${TACC_SYSTEM} \
 	    ; done \
 	    ) | tee $$results \
-	 && cat $$results | awk '/threads/ { t = $$4 } /speedup=/ { print t " " $$6 }' \
+	 && if [ ! -z "${FTIME}" -a ! -z "${FTHREAD}" ] ; then \
+	      cat $$results \
+	      | awk '{ times=times" "$$(${FTIME}) ; thrds=thrds" "$$(${FTHREAD}) } \
+	                END { print "thrds: " thrds; print "times: "times } ' \
+	    ; fi \
 	 && echo " scaling results in: $$results" \
 	 && git add $$results
 

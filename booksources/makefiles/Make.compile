@@ -52,7 +52,7 @@ FFLAGS =
 CSTANDARD = 99
 ifeq "${MODE}" "cuda"
     C_STD_FLAGS = 
-else ifeq "${LMOD_FAMILY_COMPILER}" "nvhpc"
+else ifeq "${TACC_FAMILY_COMPILER}" "nvhpc"
     C_STD_FLAGS = 
 else
     C_STD_FLAGS = -std=c99
@@ -65,7 +65,7 @@ CXXFLAGS += ${CXX_STD_FLAGS}
 
 OPTFLAGS = -O${OPTLEVEL} -g
 
-ifdef LMOD_TAU_DIR
+ifdef TACC_TAU_DIR
   C_COMPILER = tau_cc.sh -optCompInst -optPreProcess
   CXX_COMPILER = tau_cxx.sh -optCompInst -optPreProcess
   F_COMPILER = tau_f90.sh -optCompInst -optPreProcess
@@ -76,6 +76,9 @@ ifdef LMOD_TAU_DIR
   MPI_F08_COMPILER = tau_f90.sh -optCompInst -optPreProcess
 else
 
+    ##
+    ## Non_TAU modes
+    ##
     MPI_C_COMPILER = mpicc
     MPI_CXX_COMPILER = mpicxx
     MPI_F_COMPILER = mpif90
@@ -97,13 +100,9 @@ else
       F_COMPILER   = ${MPI_F_COMPILER}
       F08_COMPILER   = ${MPI_F08_COMPILER}
     else ifeq "${MODE}" "1api"
-      ifeq "${TACC_SYSTEM}" "frontera"
-        CXX_COMPILER = syclcc
-        CXXFLAGS += -I${LMOD_BOOST_INC}
-        LINK_FLAGS += -L${LMOD_BOOST_LIB}
-      else
-        CXX_COMPILER = dpcpp
-      endif
+        CXX_COMPILER = icpx
+	CXXFLAGS +=  -fsycl
+        LINK_FLAGS += -fsycl
     else ifeq "${MODE}" "petsc"
       ##
       ## annoyingly, there is only an mpicc/mpicxx/mpif90 script
@@ -156,10 +155,10 @@ else
 
       F_HOST_COMPILER   = no_such_f_compiler
       F08_HOST_COMPILER   = no_such_f_compiler
-      ifeq "${LMOD_FAMILY_COMPILER}" "intel"
+      ifeq "${TACC_FAMILY_COMPILER}" "intel"
         C_HOST_COMPILER   = icc
         CXX_HOST_COMPILER = icpc
-      else ifeq "${LMOD_FAMILY_COMPILER}" "gcc"
+      else ifeq "${TACC_FAMILY_COMPILER}" "gcc"
         C_HOST_COMPILER   = gcc
         CXX_HOST_COMPILER = g++
       else 
@@ -170,42 +169,42 @@ else
     else # other modes use the regular compilers
 
 	ifeq "not" "true"
-	else ifeq "${LMOD_FAMILY_COMPILER}" "intel"
-	  C_COMPILER   = icc
-	  CXX_COMPILER = icpc
-	  F_COMPILER   = ifort
-	  F08_COMPILER   = ifort
-	else ifeq "${LMOD_FAMILY_COMPILER}" "intelx"
+	else ifeq "${TACC_FAMILY_COMPILER}" "intel"
+	  C_COMPILER   = ${CC}
+	  CXX_COMPILER = ${CXX}
+	  F_COMPILER   = ${FC}
+	  F08_COMPILER = ${FC}
+	else ifeq "${TACC_FAMILY_COMPILER}" "intelx"
 	  C_COMPILER   = icx
 	  CXX_COMPILER = icpx
 	  F_COMPILER   = ifx
 	  F08_COMPILER   = ifx
-	else ifeq "${LMOD_FAMILY_COMPILER}" "oneapi"
+	else ifeq "${TACC_FAMILY_COMPILER}" "oneapi"
 	  C_COMPILER   = icx
 	  CXX_COMPILER = icpx
 	  F_COMPILER   = ifort
 	  F08_COMPILER   = ifort
-	else ifeq "${LMOD_FAMILY_COMPILER}" "gcc"
+	else ifeq "${TACC_FAMILY_COMPILER}" "gcc"
 	  C_COMPILER   = gcc
 	  CXX_COMPILER = g++
 	  F_COMPILER   = gfortran
 	  F08_COMPILER   = gfortran
-	else ifeq "${LMOD_FAMILY_COMPILER}" "clang"
+	else ifeq "${TACC_FAMILY_COMPILER}" "clang"
 	  C_COMPILER   = clang
 	  CXX_COMPILER = clang++
 	  F_COMPILER   = gfortran
 	  F08_COMPILER   = gfortran
-        else ifeq "${LMOD_FAMILY_COMPILER}" "nvhpc"
+        else ifeq "${TACC_FAMILY_COMPILER}" "nvhpc"
           C_COMPILER   = nvcc
           CXX_COMPILER = nvcc
           F_COMPILER   = /bin/false
           F08_COMPILER   = /bin/false
-	else ifeq "${LMOD_FAMILY_COMPILER}" "xl"
+	else ifeq "${TACC_FAMILY_COMPILER}" "xl"
 	  C_COMPILER   = xlc
 	  CXX_COMPILER = xlc++
 	  F_COMPILER   = xlf
 	  F08_COMPILER   = xlf
-	else ifeq "${LMOD_FAMILY_COMPILER}" "devcloud"
+	else ifeq "${TACC_FAMILY_COMPILER}" "devcloud"
 	  CXX_COMPILER = dpcpp
 	endif # end of non-mpi compiler setting
 
@@ -218,7 +217,7 @@ OMPFLAGS_clang    = -fopenmp
 OMPFLAGS_cuda     = -mp=gpu
 OMPFLAGS_nvhpc    = -fopenmp
 OMPFLAGS_xl       = -qsmp=omp -qoffload
-OMPFLAGS = ${OMPFLAGS_${LMOD_FAMILY_COMPILER}}
+OMPFLAGS = ${OMPFLAGS_${TACC_FAMILY_COMPILER}}
 
 ifeq "${MODE}" "omp"
   CFLAGS   += ${OMPFLAGS}
@@ -347,7 +346,7 @@ else ifeq "${MODE}" "omp"
 else ifeq "${MODE}" "tbb"
   LINK_FLAGS += ${OMPFLAGS}
 endif
-ifeq "${LMOD_FAMILY_COMPILER}" "gcc"
+ifeq "${TACC_FAMILY_COMPILER}" "gcc"
   LINK_FLAGS += -lm
 endif
 
@@ -379,7 +378,7 @@ compile :
 info ::
 	@if [ ! -z "${APPS}${EXERCISES}" ] ; then \
 	    echo "make listsources : list all sources in this directory" \
-	    echo "make listapps : list all apps in this directory" \
+	    && echo "make listapps : list all apps in this directory" \
 	    && echo "make apps : compile all applications in this directory" \
 	    ; \
 	fi
@@ -402,11 +401,12 @@ apps : clean
 	@echo && echo "See compile.log for full output" && echo
 listapps :
 	@echo ${APPS} ${EXERCISES}
-	@for a in ${APPS} ${EXERCISES} ; do \
-	    if [ `ls $$a.{c,cxx,F,F90,f,f90,py} 2>/dev/null | wc -l` -eq 0 ] ; then \
-	        echo "Missing source for <<$$a>>" \
-	    ; fi \
-	; done
+	@x=$$( make --no-print-directory extension ) \
+	 && for app in ${APPS} ${EXERCISES} ; do \
+	      if [ $$( ls $${app}.$${x} 2>/dev/null | wc -l ) -eq 0 ] ; then \
+	        echo "Warning: missing source for <<$${ap}.$${x}>>" \
+	      ; fi \
+	    ; done
 
 info ::
 	@echo "make extension : file extension depending on LANGUAGE"

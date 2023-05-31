@@ -1,8 +1,8 @@
 // doubler.cxx
-  sycl::range<1> mySize{SIZE};
-  sycl::buffer<int, 1> bufferA(myArray.data(), mySize);
-  myqueue.submit
-    ( [&](sycl::handler &myHandle) {
-      auto deviceAccessorA =
-        bufferA.get_access<sycl::access::mode::read_write>(myHandle);
+sycl::range<1> mySize{SIZE};
+sycl::buffer<int, 1> bufferA(myArray.data(), mySize);
+myqueue.submit
+  ( [&](sycl::handler &myHandle) {
+    auto deviceAccessorA =
+      bufferA.get_access<sycl::access::mode::read_write>(myHandle);
 } // queue goes out of scope, executes
