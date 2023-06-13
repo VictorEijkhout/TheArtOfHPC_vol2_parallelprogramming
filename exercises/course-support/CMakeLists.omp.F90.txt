@@ -1,0 +1,18 @@
+cmake_minimum_required( VERSION 3.20 )
+project( f_omp VERSION 1.0 )
+
+enable_language(Fortran)
+
+find_package(OpenMP)
+if( OpenMP_Fortran_FOUND )
+else()
+	message( FATAL_ERROR "Could not find OpenMP" )
+endif()
+
+option( programs "list of programs" )
+foreach( program IN LISTS programs )
+    message( NOTICE "program: ${program}" )
+    add_executable( ${program} ${program}.F90 )
+    target_link_libraries( ${program} PUBLIC OpenMP::OpenMP_Fortran )
+    install( TARGETS ${program} DESTINATION . )
+endforeach()
