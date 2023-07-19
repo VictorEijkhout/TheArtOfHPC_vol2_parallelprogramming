@@ -198,8 +198,12 @@ on statically and dynamically allocated arrays:
 
 \begin{cppnote}{Reductions on vectors}
   Use the \lstinline{data} method to extract the array
-  on which to reduce.
-  Also, the reduction clause wants a variable, not an expression,
+  on which to reduce. However, this does not work:
+\begin{lstlisting}
+vector<float> x;
+#pragma omp parallel reduction(+:x.data())
+\end{lstlisting}
+  because the reduction clause wants a variable, not an expression,
   for the array, so you need an extra bare pointer:
   %
   \cxxverbatimsnippet{cxxreductvector}
@@ -392,6 +396,7 @@ For instance, recreating the maximum reduction would look like this:
   reduction operator is defined as \lstinline{operator+}
   or whichever operator the case may be.
   \begin{multicols}{2}
+    \let\snippetoutputsize\footnotesize
     \cxxverbatimsnippet{ompclassop}
     \columnbreak
     \cxxverbatimsnippet{ompreductop}

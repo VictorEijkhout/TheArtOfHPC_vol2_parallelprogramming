@@ -40,11 +40,6 @@ The following exercise demonstrates this point.
   and run it in parallel with \indextermtt{mpiexec} or your local equivalent. 
   Explain the output.
 
-\begin{tacc}
-    (On TACC machines such as stampede, use \indextermtt{ibrun}, no
-    processor count.)
-\end{tacc}
-
   \skeleton{hello}
 \end{exercise}
 
@@ -159,14 +154,17 @@ multiple times in parallel.
   Add the commands \indexmpishow{MPI_Init} and \indexmpishow{MPI_Finalize}
   to your code. Put three different print statements in your code: one before the init,
   one between init and finalize, and one after the finalize. Again explain the output.
-
-  Run your program on a large scale, using a batch job.
-  Where does the output go?
-  Experiment with
-\begin{verbatim}
-MY_MPIRUN_OPTIONS="-prepend-rank" ibrun yourprogram
-\end{verbatim}
 \end{exercise}
+%% \begin{exercise}
+%%   Run your program on a large scale, using a batch job.
+
+%%   Where does the output go?
+
+%%   Experiment with
+%% \begin{verbatim}
+%% MY_MPIRUN_OPTIONS="-prepend-rank" ibrun yourprogram
+%% \end{verbatim}  
+%% \end{exercise}
 
 \begin{remark}
   For hybrid MPI-plus-threads programming there is also a call

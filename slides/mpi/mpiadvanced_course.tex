@@ -11,54 +11,15 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\documentclass[11pt,headernav]{beamer}
+\documentclass[10pt]{beamer}
 
-\beamertemplatenavigationsymbolsempty
-\usetheme{Madrid}%{Montpellier}
-\usecolortheme{seahorse}
-\setcounter{tocdepth}{1}
-
-\setbeamertemplate{footline}{\hskip1em Eijkhout: MPI course\hfill
-  \hbox to 0in {\hss \includegraphics[scale=.1]{tacclogonew}}%
-  \hbox to 0in {\hss \arabic{page}\hskip 1in}}
-
-\usepackage{multicol,multirow}
-% custom arrays and tables
-\usepackage{array} %,multirow,multicol}
-\newcolumntype{R}{>{\hbox to 1.2em\bgroup\hss}{r}<{\egroup}}
-\newcolumntype{T}{>{\hbox to 8em\bgroup}{c}<{\hss\egroup}}
-
-\usepackage{comment}
-\input slides.inex
-\input commonmacs
-\input acromacs
-\input slidemacs
-\input coursemacs
-\excludecomment{solutions}
-\input snippetmacs
-
-\includecomment{full}
-\excludecomment{condensed}
-\excludecomment{online}
+\input courseformat
 
 \includecomment{download}
 \excludecomment{lab}
 
 \includecomment{onesided}
 \includecomment{advanced}
-\includecomment{foundations}
-
-\def\Location{}% redefine in the inex file
-\def\courseyear{2022}
-\def\Location{TACC APP institute MPI training \courseyear}
-\def\Location{TACC MPI training \courseyear}
-\def\Location{PEARC2022}
-\iffalse
-  \small
-  \url{http://tinyurl.com/pearc21-tacc-advmpi}\\
-  \texttt{\char126 train00/mpithree\_course\_2021.tgz}
-\fi
-\def\TitleExtra{}
 
 %%%%
 %%%% exercise stuff
@@ -77,20 +38,21 @@
 %%%%%%%%%%%%%%%%
 
 \begin{document}
-\parskip=10pt plus 5pt minus 3pt
+%%\parskip=10pt plus 5pt minus 3pt
 
-\title{Advanced Features of MPI-3 and MPI-4}
-\author{Victor Eijkhout {\tt eijkhout@tacc.utexas.edu}}
-\date{\Location}
+\title[MPI 3\&4]{Advanced Features of MPI-3 and MPI-4}
+\author[Eijkhout]{Victor Eijkhout}
+\date{Pearc23}
 
-\begin{frame}
-  \titlepage
-\end{frame}
+\maketitle
 
 \begin{download}
   \begin{frame}[containsverbatim]{Materials}
     Textbooks and repositories:\\
     \url{https://theartofhpc.com/pcse}
+
+    Contact:\\
+    {\texttt eijkhout@tacc.utexas.edu}
   \end{frame}
 \end{download}
 
@@ -103,7 +65,8 @@
   and more flexible process management.
 
   Note: MPI-3 as of 2012, 3.1 as of~2015. Fully supported everywhere.\\
-  MPI-4 as of June 2021. Partial support in mpich version~4.1.
+  MPI-4 as of June 2021. \\
+  Supported in mpich version~4.1, \emph{not} in OpenMPI version~4.
 \end{frame}
 
 \Level 0 {Fortran bindings}

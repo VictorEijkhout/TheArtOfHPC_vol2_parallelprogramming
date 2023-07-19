@@ -30,6 +30,14 @@
 %%%% Outlining
 %%%%
 \usepackage{outliner}
+\newcommand\coursesection[2]{
+  %%\Level 0 {#2} with hypertarget
+  \part{#2}
+  \addcontentsline{toc}{part}{#2}
+  \frame{\partpage
+    \hypertarget{#1}{}
+  }
+}
 \OutlineLevelStart
     0
     {\part{#1}
@@ -276,7 +284,7 @@
 
 \newenvironment
     {mplimpl}
-    {\begin{quotation}\textsl{MPL implementation note:}\ }
+    {\begin{quotation}\textsl{Implementation note:}\ }
     {\end{quotation}}
 
 \newcommand\petscroutineslide[1]{
@@ -291,11 +299,18 @@
 %%%%
 \newcounter{slidecount}
 \setcounter{slidecount}{0}
+%% what is the optional argument for?
 \newenvironment
     {numberedframe}[2][]
     {%% if there is an optional tag, reuse the previous slide number
-      \def\empty{}\def\opt{#1}\ifx\empty\opt \refstepcounter{slidecount} \fi
-      \begin{frame}[containsverbatim]{\arabic{slidecount}#1.\ #2}
+      \def\empty{}\def\opt{#1}
+      \ifx\empty\opt
+          \refstepcounter{slidecount}
+      \else
+          \addtocounter{framenumber}{-1}    
+      \fi
+      %% \arabic{slidecount}
+      \begin{frame}[containsverbatim]{#2}
     }
     {\end{frame}}
 \newenvironment{question}{\begin{quotation}\textbf{Question.\ }}{\end{quotation}}

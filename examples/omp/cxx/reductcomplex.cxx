@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%% "Parallel Computing"
-   %%%% by Victor Eijkhout, copyright 2013-6
+   %%%% by Victor Eijkhout, copyright 2013-2023
    %%%%
    %%%% reductcomplex : complex reduction is not built in
    %%%%
@@ -18,19 +18,6 @@ using std::cout;
 #include <algorithm>
 #include <complex>
 using namespace std;
-
-//codesnippet ompclassop
-class Thing {
-private:
-  float x;
-public:
-  Thing() : Thing( 0.f ) {};
-  Thing( float x ) : x(x) {};
-  Thing operator+( const Thing& other ) {
-    return Thing( x + other.x );
-  };
-};
-//codesnippet end
 
 complex<double> complex_func(vector<complex<double>> x)
 {
@@ -47,17 +34,9 @@ complex<double> complex_func(vector<complex<double>> x)
 
 int main() {
 
-  vector<complex<double>> vec(500);
+  vector<complex<double>> vec(500, complex<double>(.1,.1) );
   auto red = complex_func(vec);
   cout << red << "\n";
 
-//codesnippet ompreductop
-  vector< Thing > things(500,Thing(1.f) );
-  Thing result(0.f);
-#pragma omp parallel for reduction( +:result )
-  for ( const auto& t : things )
-    result = result + t;
-//codesnippet end
-  
   return 0;
 }

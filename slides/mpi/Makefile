@@ -16,6 +16,13 @@ info::
 	@echo "================================================================"
 	@echo
 
+info ::
+	@echo "make makefmt"
+.PHONY: makefmt
+makefmt :
+	TEXINPUTS=../..//:${TEXINPUTS} pdftex --ini "&latex" /opt/local/share/texmf-texlive/tex/latex/mylatex/mylatex.ltx preamble.tex
+	mv mylatex.fmt mpicourse.fmt
+
 COURSE = mpi
 COURSES  = mpi mpl mpiadvanced mpibasics mpiintermediate
 EXTRATEXINPUTS =

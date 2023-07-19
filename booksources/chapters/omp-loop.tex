@@ -404,10 +404,17 @@ For reference, the commandlines executed were:
 \begin{cppnote}{C++20 ranges header}
   The \cppstandard{20} \indextermtt{ranges} library is also supported:
   \cxxverbatimsnippet{omprangelib}
+  Reduction:
+  \cxxverbatimsnippet{omprangereduct}
 \end{cppnote}
 
 \begin{cppnote}{C++20 ranges speedup}
   \lstinputlisting{examples/omp/cxx/range-ls6.runout}
+\end{cppnote}
+
+\begin{cppnote}{Ranges and indices}
+  Use \lstinline{iota_view} to obtain indices:
+  \cxxverbatimsnippet{ompiotaview}
 \end{cppnote}
 
 \Level 0 {Loop schedules}

@@ -11,41 +11,15 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\documentclass[11pt,headernav]{beamer}
+\documentclass[10pt]{beamer}
 
-\beamertemplatenavigationsymbolsempty
-\usetheme{Madrid}%{Montpellier}
-\usecolortheme{seahorse}
-\setcounter{tocdepth}{1}
-%% \AtBeginSection[]
-%% {
-%%   \begin{frame}
-%%     \frametitle{Table of Contents}
-%%     \tableofcontents[currentsection]
-%%   \end{frame}
-%% }
-
-\setbeamertemplate{footline}{\hskip1em Eijkhout: MPI course\hfill
-  \hbox to 0in {\hss \includegraphics[scale=.1]{tacclogonew}}%
-  \hbox to 0in {\hss \arabic{page}\hskip 1in}}
+\input courseformat
 
 \usepackage{multicol,multirow}
 % custom arrays and tables
 \usepackage{array} %,multirow,multicol}
 \newcolumntype{R}{>{\hbox to 1.2em\bgroup\hss}{r}<{\egroup}}
 \newcolumntype{T}{>{\hbox to 8em\bgroup}{c}<{\hss\egroup}}
-
-\usepackage{comment}
-\input slides.inex
-\input commonmacs
-\input acromacs
-\input slidemacs
-\input coursemacs
-\input snippetmacs
-
-\includecomment{full}
-\excludecomment{condensed}
-\excludecomment{online}
 
 \newcommand\referenceframe{\begingroup\catcode`\_=12 \referenceframett}
 \begingroup\catcode`\_=12
@@ -58,37 +32,26 @@
 
 \includecomment{utonly}
 
-\includecomment{onesided}
-\includecomment{advanced}
-\includecomment{foundations}
-
-\def\Location{}% redefine in the inex file
-\def\courseyear{2021}
-\def\Location{TACC APP institute MPI training \courseyear}
-\def\TitleExtra{}
-
-\input lang
-
 %%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%% Document
 %%%%%%%%%%%%%%%%
 
+\def\qrcode{qrvol2}
 \begin{document}
-\parskip=10pt plus 5pt minus 3pt
 
-\title{Tutorial on the MPL interface to MPI}
-\author{Victor Eijkhout {\tt eijkhout@tacc.utexas.edu}}
-\date{\Location}
+\title[MPL]{Tutorial on the MPL interface to MPI}
+\author[Eijkhout]{Victor Eijkhout}
+\date[2023]{PEARC 2023}
 
-\begin{frame}
-  \titlepage
-\end{frame}
+\maketitle
 
 \begin{frame}{Justification}
   While the C API to MPI is usable from C++, it feels very unidiomatic
   for that language.
-  \acf{MPL} is a modern C++11 interface to MPI.
+  \acf{MPL} is a modern C++17 interface to MPI.
   It is both idiomatic and elegant, simplifying many calling sequences.
+
+  \url{https://github.com/rabauke/mpl}
 \end{frame}
 
 \Level 0 {Basics}
@@ -116,23 +79,21 @@ which defines \n{TACC_MPL_INC}, \n{TACC_MPL_DIR}
 \begin{numberedframe}{Rank and size}
   \input{mplnote-rank-and-size.cut}
 \end{numberedframe}
-\referenceframe{Comm_size}
-\referenceframe{Comm_rank}
 
-\begin{numberedframe}{Timing}
-  \input{mplnote-timing.cut}
-\end{numberedframe}
+%% \referenceframe{Comm_size}
+%% \referenceframe{Comm_rank}
+
 \begin{numberedframe}{Predefined communicators}
   \input{mplnote-predefined-communicators.cut}
-\end{numberedframe}
-\begin{numberedframe}{Communicator copying}
-  \input{mplnote-communicator-copying.cut}
 \end{numberedframe}
 \begin{numberedframe}{Communicator duplication}
   \input{mplnote-communicator-duplication.cut}
 \end{numberedframe}
 \begin{numberedframe}{Communicator passing}
   \input{mplnote-communicator-passing.cut}
+\end{numberedframe}
+\begin{numberedframe}{Communicator copying}
+  \input{mplnote-communicator-copying.cut}
 \end{numberedframe}
 
 \Level 0 {Collectives}
@@ -148,6 +109,9 @@ which defines \n{TACC_MPL_INC}, \n{TACC_MPL_DIR}
 \end{numberedframe}
 \begin{numberedframe}{Vector buffers}
   \input{mplnote-vector-buffers.cut}
+\end{numberedframe}
+\begin{numberedframe}{Array buffers}
+  \input{mplnote-array-buffers.cut}
 \end{numberedframe}
 \begin{numberedframe}{Iterator buffers}
   \input{mplnote-iterator-buffers.cut}
@@ -187,6 +151,10 @@ which defines \n{TACC_MPL_INC}, \n{TACC_MPL_DIR}
   \input{mplnote-scan-operations.cut}
 \end{numberedframe}
 
+\begin{numberedframe}{For the next exercise}
+  \label{fig:scanints}
+  \includegraphics[scale=.5]{scanints}
+\end{numberedframe}
 \begin{exerciseframe}[scangather]
   \input ex:scanprint
 \end{exerciseframe}
@@ -220,11 +188,11 @@ which defines \n{TACC_MPL_INC}, \n{TACC_MPL_DIR}
 \end{numberedframe}
 \referenceframe{Send}
 \referenceframe{Recv}
-\begin{numberedframe}{Tag types}
-  \input{mplnote-tag-types.cut}
-\end{numberedframe}
 \begin{numberedframe}{Message tag}
   \input{mplnote-message-tag.cut}
+\end{numberedframe}
+\begin{numberedframe}{Tag types}
+  \input{mplnote-tag-types.cut}
 \end{numberedframe}
 \begin{numberedframe}{Any source}
   \input{mplnote-any-source.cut}

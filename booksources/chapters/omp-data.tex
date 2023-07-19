@@ -64,24 +64,13 @@ private variable and global one.
 \end{fortrannote}
 
 \begin{cppnote}{Privatizing class members}
-  Class members can only be privatized from (non-static) class methods:
-  \begin{lstlisting}
-    class foo {
-      private:
-      int x;
-      public:
-      void f() {
-	#pragma omp parallel private x
-	g()
-      }
-    }
-  \end{lstlisting}
-  So \lstinline{f} can not be \lstinline{static}, and
-  \begin{lstlisting}
-    class foo { public: int x; }
-    foo x;
-    #pragma omp parallel private thing.x // NOPE
-  \end{lstlisting}
+  Class members can only be privatized from (non-static) class methods.
+
+  In this example \lstinline{f} can not be static:
+  \cxxverbatimsnippet{ompprivatemember}
+
+  You can not privatize just a member:
+  \cxxverbatimsnippet{ompprivateuse}
 \end{cppnote}
 
 The \indexpragma{private} directive declares data to have a separate copy 

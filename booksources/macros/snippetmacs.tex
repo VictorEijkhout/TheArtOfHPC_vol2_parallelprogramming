@@ -44,7 +44,8 @@
   \lstset{language=#3}
   \IfFileExists
       {#2}
-      {\lstinputlisting{#2}}
+      {%%\usebeamercolor{black}
+        \lstinputlisting{#2}}
       {\hbox{\textbf{missing snippet #2}\message{missing snippet #2}}}
   \lstset{language=C}
   \ifInBook

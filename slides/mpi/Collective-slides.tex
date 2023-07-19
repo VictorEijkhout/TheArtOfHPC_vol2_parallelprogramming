@@ -53,22 +53,23 @@
   \end{itemize}
 \end{numberedframe}
 
-\frame{\includegraphics[scale=.6]{collective_comm}}
+\frame{\includegraphics[scale=.6]{collective_comm.png}}
 
 \begin{exerciseframe}
   \input ex:collective-cases
 \end{exerciseframe}
 
-\sectionframe{Basic collectives}
+\section{All-reduce}
 
 \begin{numberedframe}{Allreduce: reduce-to-all}
+  Exercise 2 above contains a common case:\\
+  do a reduction, but everyone needs the result.
   \begin{itemize}
   \item \lstinline{MPI_Allreduce} does the same as:\\
     \lstinline{MPI_Reduce} (reduction) followed by \lstinline{MPI_Bcast} (broadcast)
-  \item One line less code
-  \item Same running time as either, half of reduce-followed-by-broadcast
-  \item Expresses the symmetrical nature of the algorithm\\
-    (And you don't have to think about who is the root)
+  \item Same running time as either, half of reduce-followed-by-broadcast\\
+    (no proof given here)
+  \item Common use case, symmetrical expression.
   \end{itemize}
 \end{numberedframe}
 
@@ -90,7 +91,7 @@ Standard deviation:
 \[ \sigma = \sqrt{\frac1N \sum_i^N (x_i-\mu) }
 \qquad\hbox{where}\qquad \mu = \frac{\sum_i^Nx_i}N
 \]
-and assume that every processor stores just one~$x_i$ value.
+and assume that every process stores just one~$x_i$ value.
 
 How do we compute this?
 \begin{enumerate}
@@ -98,7 +99,7 @@ How do we compute this?
 \item Every
   process needs to compute~$x_i-\mu$ for its value~$x_i$, so use
   allreduce operation, which does the reduction and leaves
-  the result on all processors.
+  the result on all processes.
 \item $\sum_i(x_i-\mu)$ is another sum of
   distributed data, so we need another reduction operation. Might as
   well use allreduce.
@@ -116,13 +117,20 @@ How do we compute this?
 \item All processes have send and recv buffer
 \item (No root argument)
 \item \lstinline{count} is number of items in the buffer: 1~for scalar.\\
-  $>1$: pointwise application of the operator
-\item \indexmpishow{MPI_Datatype} is \indexmpishow{MPI_INT}, \indexmpishow{MPI_REAL8} et cetera.
+  $>1$: pointwise application of the reduction operator
+\item \indexmpishow{MPI_Datatype} is \indexmpishow{MPI_INT}, \indexmpishow{MPI_FLOAT},
+  \indexmpishow{MPI_REAL8} et cetera.
 \item \indexmpishow{MPI_Op} is \indexmpishow{MPI_SUM}, \indexmpishow{MPI_MAX} et cetera.
 \end{itemize}
 \end{numberedframe}
 
+\begin{exerciseframe}[randommax]
+  \input ex:randommaxscale
+\end{exerciseframe}
+
 \protoslide{MPI_Allreduce}
+
+\sectionframe{Collective basics}
 
 \begin{numberedframe}{Elementary datatypes}
 \begin{tabular}{|l|l|l|}
@@ -246,10 +254,6 @@ comm.Recv(result, ...)
 \end{numberedframe}
 \end{python}
 
-\begin{exerciseframe}[randommax]
-  \input ex:randommaxscale
-\end{exerciseframe}
-
 \begin{comment}
 \begin{numberedframe}{Random numbers in C}
 \lstset{language=C}
@@ -297,6 +301,7 @@ random_value = random.random()
 \end{python}
 \end{comment}
 
+\begin{comment}
 \begin{numberedframe}{Inner product calculation}
   Given vectors $x,y$:
   \[ x^ty = \sum_{i=0}^{N-1} x_iy_i \]
@@ -333,6 +338,7 @@ MPI_Allreduce( &local_inprod, &global_inprod,
                1,MPI_DOUBLE,MPI_SUM,comm )
 \end{lstlisting}
 \end{numberedframe}
+\end{comment}
 
 \begin{comment}
   \begin{optexerciseframe}
@@ -391,7 +397,7 @@ int MPI_Bcast(
 
 \begin{optexerciseframe}
   Bonus exercise: can you extend your program to have multiple columns
-  per processor?
+  per process?
 \end{optexerciseframe}
 
 \sectionframe{Scan}
@@ -628,7 +634,7 @@ INTEGER :: length, mpitype
 \begin{numberedframe}{Naive realization of collectives}
   Broadcast:
   
-  \includegraphics[scale=.06]{graphics/bcast-simple}
+  \includegraphics[scale=.06]{bcast-simple.png}
 
   Single message:
   \[ \alpha=\hbox{message startup}\approx 10^{-6}s,\qquad
@@ -642,7 +648,7 @@ INTEGER :: length, mpitype
 \end{numberedframe}
 
 \begin{numberedframe}{Better implementation of collective}
-  \includegraphics[scale=.07]{graphics/bcast-tree}
+  \includegraphics[scale=.07]{graphics/bcast-tree.png}
   
   \begin{itemize}
   \item

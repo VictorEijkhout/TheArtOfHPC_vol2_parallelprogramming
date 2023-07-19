@@ -150,11 +150,16 @@ In \fstandard{90} style, the source is an index in the \flstinline{Status} array
 
 \fverbatimsnippet[examples/mpi/f/anysource.F90]{anysource-f}
 
-\begin{mplnote}{Status source querying}
+\begin{mplnote}{Status querying}
 The \indexmplshow{status} object can be queried:
 \begin{lstlisting}
 int source = recv_status.source();
 \end{lstlisting}
+Likewise the source:
+\begin{lstlisting}
+mpl::tag_t t = recv_status.tag();
+\end{lstlisting}
+
 \end{mplnote}
 
 \Level 1 {Tag}
@@ -182,6 +187,20 @@ There are not many cases where this is needed.
   See the example in section~\ref{sec:hybrid-order}.
 \end{itemize}
 
+\begin{mplnote}{Message tag}
+  \ac{MPL} differs from other \acp{API} in its treatment of tags:
+  a~tag is not directly an integer, but an object of class \indexmplshow{tag_t}.
+  %
+  \cxxverbatimsnippet{mplsendrecv} % in an exercise
+  %
+  The \indexmplshow{tag_t} class has a couple of methods such as
+  \lstinline+mpl::+\indexmplshow{tag_t::any}\lstinline+()+
+  (for the \indexmpishow{MPI_ANY_TAG} wildcard in receive calls)
+  and
+  \lstinline+mpl::+\indexmplshow{tag_t::up}\lstinline+()+
+  (maximal tag, found from the \indexmpishow{MPI_TAG_UB} attribute).
+\end{mplnote}
+
 \begin{mplnote}{Tag types}
   Tag are \lstinline{int} or an \lstinline{enum} typ:
   \begin{lstlisting}
@@ -191,20 +210,6 @@ There are not many cases where this is needed.
   \end{lstlisting}
   Example:
   \cxxverbatimsnippet{mplinttag}
-\end{mplnote}
-
-\begin{mplnote}{Message tag}
-  \ac{MPL} differs from other \acp{API} in its treatment of tags:
-  a~tag is not directly an integer, but an object of class \indexmplshow{tag}.
-  %
-  \cxxverbatimsnippet{mplsendrecv} % in an exercise
-  %
-  The \indexmplshow{tag} class has a couple of methods such as
-  \lstinline+mpl::+\indexmplshow{tag::any}\lstinline+()+
-  (for the \indexmpishow{MPI_ANY_TAG} wildcard in receive calls)
-  and
-  \lstinline+mpl::+\indexmplshow{tag::up}\lstinline+()+
-  (maximal tag, found from the \indexmpishow{MPI_TAG_UB} attribute).
 \end{mplnote}
 
 \Level 1 {Error}

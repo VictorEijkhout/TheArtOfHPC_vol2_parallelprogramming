@@ -144,7 +144,7 @@ This means that the normal sequence of first declaring, and then filling in,
 the request variable is not possible.
 
 \begin{mplimpl}
-  The wait call always returns a \indexmplshow{status} object;
+  The wait call always returns a \indexmplshow{status_t} object;
   not assigning it means that the destructor is called on it.
 \end{mplimpl}
 \end{mplnote}
@@ -274,6 +274,7 @@ reference, and not an array of statuses!
   \cxxverbatimsnippet[examples/mpi/mpl/irecvsource.cxx]{mpirequestpush}
 
   You can not declare a pool of a fixed size and assign elements.
+  (Why not? Can you find a way around it?)
 \end{mplnote}
 
 \begin{mplnote}{Wait any}
@@ -283,13 +284,21 @@ reference, and not an array of statuses!
   \indexmplshow{testany}, \indexmplshow{testall},
   \indexmplshow{waitsome}, \indexmplshow{testsome}.
 
-  The `any' methods return a \lstinline+std::pair<bool,size_t>+,
-  with \lstinline{false} meaning \lstinline+index==MPI_UNDEFINED+
-  meaning no more requests to be satisfied.
+  The `any' methods return a \lstinline+std::pair<mpl::test_result,size_t>+,
+  where the \indexmplshow{test_result} is an \lstinline{enum class}
+  with values:
+  \begin{itemize}
+  \item
+    \indexmplshow{completed} (for any/some/all completions),
+  \item
+    \indexmplshow{no_completed} (for none),
+  \item
+    \indexmplshow{no_active_requests} (if no more requests active).
+  \end{itemize}
+
   %
   \cxxverbatimsnippet[examples/mpi/mpl/irecvsource.cxx]{waitforanympl}
 
-  Same for \indexmpishow{testany}, then false means no requests test true.
 \end{mplnote}
 
 \begin{mplnote}{Request handling}

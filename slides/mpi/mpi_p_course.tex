@@ -1,0 +1,143 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Computing'
+%%%% by Victor Eijkhout, copyright 2012-2023
+%%%%
+%%%% mpi_course.tex : master file for an MPI course
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[10pt]{beamer}
+
+\expandafter\ifx\csname ifCourseFormatLoaded\endcsname\relax
+  \input courseformat
+  \let\ifCourseFormatLoaded\iffalse %% make the else part skippable
+\else
+  \ifCourseFormatLoaded
+    \message{Using preloaded format}
+  \else
+    \input courseformat
+  \fi
+\fi
+  
+\def\qrcode{qrvol2}
+\begin{document}
+\input lang
+
+\author[Eijkhout]{Victor Eijkhout}
+\date[2023]{TACC Institute 2023}
+\title[MPI]{MPI Course}
+
+\maketitle
+
+\begin{frame}[containsverbatim]{Materials}
+    Textbooks and repositories:\\
+    \url{https://theartofhpc.com}
+\end{frame}
+
+\begin{frame}{Justification}
+  The MPI library is the main tool
+  for parallel programming on a large scale.
+  This course introduces the main concepts
+  through lecturing and exercises.
+\end{frame}
+
+\begin{frame}{Table of Contents}
+  \def\contentsline####1####2####3{\item ####2\ ####3}
+  \IfFileExists{\jobname.toc}
+               {\begin{itemize}
+                   \tableofcontents
+               \end{itemize}
+               }{}
+\end{frame}
+
+\coursepart{Basics}
+
+\renewcommand\standardversion{3}
+
+\Level 0 {The SPMD model}
+\input SPMD-slides
+
+%% \end{document}
+
+\Level 0 {Collectives}
+\input Collective-slides
+
+\Level 0 {Point-to-point communication}
+\input PTP-slides
+
+\iffalse
+\begin{exerciseframe}[serialsend]
+  \input ex:serialsend
+\end{exerciseframe}
+\fi
+
+\begin{frame}[containsverbatim]\frametitle{Where to go from here\ldots}
+  \begin{itemize}
+  \item Derived data types: send strided/irregular/inhomogeneous data
+  \item Sub-communicators: work with subsets of \indexmpishow{MPI_COMM_WORLD}
+  \item I/O: efficient file operations
+  \item One-sided communication: `just' put/get the data somewhere
+  \item Process management
+  \item Non-blocking collectives
+  \item Graph topology and neighborhood collectives
+  \item Shared memory
+  \end{itemize}
+\end{frame}
+
+\renewcommand\standardversion{}
+
+\coursepart{Intermediate topics}
+
+\begin{frame}{Justification}
+  MPI basic concepts suffice for many applications.  The Intermediate
+  Topics section deals with more complicated data, process groups,
+  file I/O, and the basics of one-sided communication.
+\end{frame}
+
+\Level 0 {Derived Datatypes}
+\input Data-slides
+
+\Level 0 {Communicator manipulations}
+\input Subcomm-slides
+
+\Level 0 {MPI File I/O}
+\input MPIO-slides
+
+\Level 0 {One-sided communication}
+\input Onesided-slides 
+\input Atomic-slides
+
+\Level 0 {Big data communication}
+\input Bigdata-slides
+
+\coursepart{Advanced (MPI-3/4) topics}
+
+\begin{frame}{Justification}
+  Recent additions to the MPI standard allow your 
+  code to deal with unusual scenarios or very large scale runs.
+\end{frame}
+
+\Level 0 {Advanced collectives}
+\input Highercollective-slides
+
+\Level 0 {Shared memory}
+\input Sharedmemory-slides
+
+\Level 0 {Process management}
+\input Spawn-slides
+
+\Level 0 {Process topologies}
+\input Graph-slides
+
+\coursepart{Other}
+
+\Level 0 {Tracing, performance, and such}
+\input Performance-slides
+
+\end{document}
+

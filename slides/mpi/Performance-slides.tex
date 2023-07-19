@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the lecture slides for
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2020
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% Performance-slides.tex: MPI Performance issues
 %%%%
@@ -14,6 +14,37 @@
 \begin{numberedframe}{Overview}
   We briefly touch on peripheral issues issues to MPI.
 \end{numberedframe}
+
+\sectionframe{CMake}
+
+\begin{numberedframe}{cmake}
+  \label{sl:mpi-cmake}.
+  MPI is discoverable by cmake.
+\end{numberedframe}
+
+\begin{c}
+  \begin{numberedframe}{CMake for C}
+    \lstinputlisting{makefiles/CMakeLists.mpi.c.txt}
+  \end{numberedframe}
+\end{c}
+
+\begin{cxx}
+  \begin{numberedframe}{CMake for C++}
+    \lstinputlisting{makefiles/CMakeLists.mpi.cxx.txt}
+  \end{numberedframe}
+\end{cxx}
+
+\begin{fortran}
+\begin{numberedframe}{CMake for F90}
+\lstinputlisting{makefiles/CMakeLists.mpi.f.txt}
+\end{numberedframe}
+\end{fortran}
+
+\begin{fortran}
+\begin{numberedframe}{CMake for F2008}
+\lstinputlisting{makefiles/CMakeLists.mpi.f08.txt}
+\end{numberedframe}
+\end{fortran}
 
 \sectionframe{Errors}
 

@@ -45,7 +45,7 @@ int main()
     count = 0;
 
     if (variant==1) {
-      //codesnippet omprangelib
+      //codesnippet omprangereduct
 #     pragma omp parallel for reduction(+:count)
       for ( auto e : data )
 	count += e;

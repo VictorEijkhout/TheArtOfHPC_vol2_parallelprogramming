@@ -96,14 +96,14 @@ MPI_Get_count(status,MPI_FLOAT,&c);
   \input ex:pingpong
 \end{exerciseframe}
 
-\protoslide{MPI_Wtime}
+%% \protoslide{MPI_Wtime}
 
 \sectionframe{Distributed data}
 
 \begin{numberedframe}{Distributed data}
   Distributed array: each process stores disjoint local part
   
-  \includegraphics[scale=.09]{mpi-array}
+  \includegraphics[scale=.09]{mpi-array.png}
 
   Local numbering $0,\ldots,n_{\mathrm{local}}$;\\
   global numbering is `in your mind'.
@@ -209,7 +209,7 @@ Result:
 \begin{numberedframe}{Partitioned matrix-vector product}
   We need a point-to-point mechanism:
   
-  \includegraphics[scale=.4]{mvpdist}
+  \includegraphics[scale=.35]{mvpdist}
 
   each process with ones before/after it.
 \end{numberedframe}
@@ -220,7 +220,7 @@ compute \[ y_i= -x_{i-1}+2x_i-x_{i+1} \colon i=1,\ldots,N-1 \]
 'owner computes'\\
 This leads to communication:
 
-\includegraphics[scale=.09]{threepoint}
+\includegraphics[scale=.09]{threepoint.png}
 
 so we need a point-to-point mechanism.
 \end{numberedframe}
@@ -234,8 +234,8 @@ so we need a point-to-point mechanism.
 \item A send can not complete until the receive executes.
 \end{itemize}
 \hbox{
-\includegraphics[scale=.07]{graphics/send-ideal}
-\includegraphics[scale=.07]{graphics/send-blocking}
+\includegraphics[scale=.07]{send-ideal}
+\includegraphics[scale=.07]{send-blocking}
 }
 Ideal vs actual send/recv behaviour.
 \end{numberedframe}
@@ -432,14 +432,14 @@ chance of deadlock by missing a case
 \begin{numberedframe}{Sending with irregular connections}
   Graph operations:
   
-  \includegraphics[scale=.1]{graphsend}
+  \includegraphics[scale=.1]{graphsend.png}
 \end{numberedframe}
 
 \sectionframe{Communicating other than in pairs}
   
 \begin{numberedframe}{PDE, 2D case}
     A difference stencil applied to a two-dimensional square
-    domain, distributed over processors. A cross-processor connection
+    domain, distributed over processes. A cross-process connection
     is indicated $\Rightarrow$ complicated to express pairwise
 
     \includegraphics[scale=.1]{laplaceparallel}
@@ -468,7 +468,7 @@ chance of deadlock by missing a case
 \begin{numberedframe}{Halo region}
   The halo region of a process, induced by a stencil
 
-  \includegraphics[scale=.1]{laplaceghost}
+  \includegraphics[scale=.1]{laplaceghost.png}
 \end{numberedframe}
 
 \begin{numberedframe}{How do you approach this?}

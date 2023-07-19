@@ -100,7 +100,7 @@ Each of these needs some elucidation.
   single processor, and do all the computation locally?
 \end{exercise}
 
-\begin{mplnote}{Reduction operator}
+\begin{mplnote}{Allreduce operator}
   The usual reduction operators are given as templated operators:
   %
   \cxxverbatimsnippet[examples/mpi/mpl/collectscalar.cxx]{mplallreduce}
@@ -114,7 +114,7 @@ Each of these needs some elucidation.
 
   \begin{mplimpl}
     The reduction operator has to be compatible with
-    \lstinline+T(T,T)>+
+    \lstinline+T(T,T)>+.
   \end{mplimpl}
 \end{mplnote}
 
@@ -267,7 +267,8 @@ For even more complicated effects, use \n{numpy.frombuffer}:
 \begin{mplnote}{Scalar buffers}
   \label{mpl:buf-scalar}
   \emph{Buffer}\index{buffer!MPI, in MPL} type handling
-  is done through polymorphism and templating: no explicit indiation of types.
+  is done through polymorphism (templating and ADL): \\
+  no explicit indication of types.
 
   Scalars are handled as such:
 \begin{lstlisting}
@@ -292,6 +293,12 @@ this will be discussed in more detail elsewhere
 (see note~\ref{mpl:derived} and later).
 For now, interpret it as a way of indicating the count/type
 part of a buffer specification.
+\end{mplnote}
+
+\begin{mplnote}{Array buffers}
+  \label{mpl:vec-arr}
+  You can pass a C-style array as buffer, requiring a layout:
+  \cxxverbatimsnippet[examples/mpi/mpl/collectarray.cxx]{mplallreducearray}
 \end{mplnote}
 
 \begin{mplnote}{Iterator buffers}

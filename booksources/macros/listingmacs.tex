@@ -30,6 +30,7 @@
   identifierstyle=\slshape\color{black},
   stringstyle=\color{green!60!black}, columns=fullflexible,
   keepspaces=true,tabsize=8,
+  %% alsoletter={(),&*}
 }
 \lstdefinestyle{slidecode}{
   belowcaptionskip=1\baselineskip, frame=none, numbers=left,numberstyle=\tiny,
@@ -42,6 +43,7 @@
   identifierstyle=\slshape\color{black},
   stringstyle=\color{green!60!black}, columns=fullflexible,
   keepspaces=true,tabsize=8,
+  %% alsoletter={(),&*}
 }
 
 \lstset{style=reviewcode}
@@ -96,7 +98,8 @@
     MPI_Get_count,MPI_Get_count_c,MPI_Get_count_x,
     MPI_Get_elements,MPI_Get_elements_c,MPI_Get_elements_x,MPI_Get_address,MPI_Address,
     MPI_Get_hw_resource_types,MPI_Get_hw_resource_info,
-    MPI_Request_free,MPI_Request_get_status,
+    MPI_Request_free,MPI_Request_get_status,MPI_Request_get_status_all,
+    MPI_Request_get_status_some,MPI_Request_get_status_any,
     MPI_Status_get_source, MPI_Status_set_source,
     MPI_Status_f2f08,MPI_Status_f082f,
     % operator
@@ -300,7 +303,7 @@
     threading_modes,single,funneled,serialized,multiple,
     %% SYCL methods
     host_selector,submit,get_access,accessor,
-  },emphstyle={[3]\color{yellow!10!brown}\bfseries},
+  },emphstyle={[3]\color{red!10!brown}\bfseries},
   emph={[4] %% PETSc functions
     AnyPetscRoutine,PetscObjectGetComm,PetscObjectDereference,
     PetscInitialize,PetscInitializeFortran,PetscFinalize,PetscSplitOwnership,

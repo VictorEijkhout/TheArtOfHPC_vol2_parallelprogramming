@@ -110,10 +110,12 @@ NewVector<T>::iter NewVector<T>::end()   {
 
 //answersnippet classwithitersol1
 template<typename T>
-bool  NewVector<T>::iter::operator==( const NewVector<T>::iter &other ) const {
+bool  NewVector<T>::iter::operator==
+    ( const NewVector<T>::iter &other ) const {
   return searcher==other.searcher; };
 template<typename T>
-bool  NewVector<T>::iter::operator!=( const NewVector<T>::iter &other ) const {
+bool  NewVector<T>::iter::operator!=
+    ( const NewVector<T>::iter &other ) const {
   return searcher!=other.searcher; };
 template<typename T>
 NewVector<T>::iter& NewVector<T>::iter::operator++() {

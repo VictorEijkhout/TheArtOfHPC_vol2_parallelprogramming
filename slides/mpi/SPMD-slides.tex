@@ -29,40 +29,58 @@
 \sectionframe{The MPI worldview: SPMD}
 
 \begin{numberedframe}{Computers when MPI was designed}
-  \includegraphics[scale=.1]{mpi-node1}
+  \includegraphics[scale=.1]{mpi-node1.png}
 
   One processor and one  process per node;\\
   all communication goes through the network.
+
+  $\Rightarrow$ process model, no data sharing.
 \end{numberedframe}
 
-\begin{numberedframe}{Pure MPI}
-  \includegraphics[scale=.1]{mpi-node2}
-
-  A node has multiple sockets, each with multiple cores.\\
-  Pure MPI puts a process on each core: pretend shared memory doesn't exist.
-\end{numberedframe}
-
-\begin{numberedframe}{Quad socket node}
-  \includegraphics[scale=.8]{ranger-node-small}
-\end{numberedframe}
-
-\begin{numberedframe}{Hybrid programming}
-  \includegraphics[scale=.1]{mpi-node3}
-
-  Hybrid programming puts a process per node or per socket;\\
-  further parallelism comes from threading.\\
-  Not in this course\ldots
-\end{numberedframe}
-
-\begin{numberedframe}{Terminology}
-  `Processor' is ambiguous: is that a chip or one independent
-  instruction processing unit?
+\begin{tacc}
+\begin{numberedframe}{Lab setup}
   \begin{itemize}
-  \item Socket: the processor chip
-  \item Processor: we don't use that word
-  \item Core: one instruction-stream processing unit
-  \item Process: preferred terminology in talking about MPI.
-  \end{itemize}  
+  \item Clone the repository
+  \item Directory: \n{exercises-mpi-c} or \n{cxx} or \n{f} or \n{f08}
+    or \n{p} or \n{mpl}
+  \item Open a terminal window on a TACC cluster.
+  \item Type \n{idev -N 2 -n 10 -t 2:0:0 } which gives
+    you an interactive session of 2~nodes, 10~cores, for the next
+    2~hours.
+  \item Type \n{make exercisename} to compile it
+  \item Run with \n{ibrun} or \n{mpiexec} (see above)
+  \end{itemize}
+\end{numberedframe}
+\end{tacc}
+
+\begin{python}
+  \addtocounter{slidecount}{-1}
+\begin{numberedframe}{Python}
+ Python: setup once per session
+\begin{verbatim}
+module load python3
+\end{verbatim}
+No compilation needed. Run:
+\begin{verbatim}
+ibrun python3 yourprogram.py
+\end{verbatim}
+\end{numberedframe}
+\end{python}
+
+\begin{exerciseframe}[hello]
+  \input ex:hello1
+
+  \begin{enumerate}
+  \item In the directories \n{exercises-mpi-xxx} do 
+    \n{make hello} to compile;
+  \item do \n{ibrun hello} to execute.
+  \end{enumerate}
+\end{exerciseframe}
+
+\begin{numberedframe}{In a picture}
+  \moveleft .3in \hbox\bgroup
+  \includegraphics[scale=.32]{hello-parallel}
+  \egroup
 \end{numberedframe}
 
 \begin{numberedframe}{SPMD}
@@ -80,7 +98,38 @@
 
 \sectionframe{Practicalities}
 
+\begin{numberedframe}{Pure MPI}
+  \includegraphics[scale=.1]{mpi-node2.png}
+
+  A node has multiple sockets, each with multiple cores.\\
+  Pure MPI puts a process on each core: pretend shared memory doesn't exist.
+\end{numberedframe}
+
+\begin{numberedframe}{Quad socket node}
+  \includegraphics[scale=.8]{ranger-node-small}
+\end{numberedframe}
+
+\begin{numberedframe}{Hybrid programming}
+  \includegraphics[scale=.1]{mpi-node3.png}
+
+  Hybrid programming puts a process per node or per socket;\\
+  further parallelism comes from threading.\\
+  Not in this course\ldots
+\end{numberedframe}
+
+\begin{numberedframe}{Terminology}
+  `Processor' is ambiguous: is that a chip or one independent
+  instruction processing unit?
+  \begin{itemize}
+  \item Socket: the processor chip
+  \item Processor: we don't use that word
+  \item Core: one instruction-stream processing unit
+  \item Process: preferred terminology in talking about MPI.
+  \end{itemize}  
+\end{numberedframe}
+
 \begin{numberedframe}{Compiling and running}
+  \scriptsize
   MPI compilers are usually called \indextermtt{mpicc},
   \indextermtt{mpif90}, \indextermtt{mpicxx}.
 
@@ -91,6 +140,9 @@
 $ mpicc -show
 icc -I/intel/include/stuff -L/intel/lib/stuff -Wwarnings # et cetera
 \end{verbatim}
+\begin{full}
+  (For CMake see slide~\ref{sl:mpi-cmake}.)
+\end{full}
 
 \begin{tacc}
   Running your program at TACC:
@@ -108,29 +160,6 @@ mpirun -np 4 hostfile ... yourprogram arguments
 \end{verbatim}
 \end{numberedframe}
 
-\begin{c}
-  \begin{numberedframe}{CMake for C}
-    \lstinputlisting{makefiles/CMakeLists.mpi.c.txt}
-  \end{numberedframe}
-\end{c}
-
-\begin{cxx}
-  \begin{numberedframe}{CMake for C++}
-    \lstinputlisting{makefiles/CMakeLists.mpi.cxx.txt}
-  \end{numberedframe}
-\end{cxx}
-
-\begin{fortran}
-\begin{numberedframe}{CMake for F90}
-\lstinputlisting{makefiles/CMakeLists.mpi.f.txt}
-\end{numberedframe}
-\end{fortran}
-
-\begin{fortran}
-\begin{numberedframe}{CMake for F2008}
-\lstinputlisting{makefiles/CMakeLists.mpi.f08.txt}
-\end{numberedframe}
-\end{fortran}
 
 \begin{numberedframe}{Do I need a supercomputer?}
   \begin{itemize}
@@ -147,7 +176,7 @@ mpirun -np 4 hostfile ... yourprogram arguments
   It is convenient to do MPI development on your laptop/desktop.
   \begin{itemize}
   \item Use a package manager\\
-    Apple: brew of macports\\
+    Apple: brew or macports\\
     Linux: yum, aptget,~\ldots\\
     Windows: I'll have to get back to you on that
   \item \ldots~or download and compile from source \n{mpich.org}
@@ -186,168 +215,18 @@ mpirun -np 4 hostfile ... yourprogram arguments
   \includegraphics[scale=.15]{job_sbatch}
 \end{numberedframe}
 
-\begin{tacc}
-\begin{numberedframe}{Lab setup}
-    \begin{itemize}
-    \item Open a terminal window on a TACC cluster.
-    \item Type \n{idev -N 2 -n 10 -t 2:0:0 } which gives
-      you an interactive session of 2~nodes, 10~cores, for the next
-      2~hours.
-    \item (After this course, for serious work, you would write a
-      batch script. The idev sessions are strictly limited in time and
-      resources.)
-    \item See external handouts for reservations, project IDs,
-      and location of training materials.
-    \item Next slide for how to make and run exercises.
-    \end{itemize}
-\end{numberedframe}
-\end{tacc}
-
-\begin{numberedframe}{How to make exercises}
-  \begin{itemize}
-  \item Directory: \n{exercises-mpi-c} or \n{cxx} or \n{f} or \n{f08}
-    or \n{p} or \n{mpl}
-  \item If a slide has a \n{(exercisename)} over it, there will be a
-    template program \n{exercisename.c} (or \n{F90} or \n{py}).
-  \item Type \n{make exercisename} to compile it
-  \item Run with \n{ibrun} or \n{mpiexec} (see above)
-  \item Python: setup once per session
-\begin{verbatim}
-module load python3
-\end{verbatim}
-No compilation needed. Run:
-\begin{verbatim}
-ibrun python3 yourprogram.py
-\end{verbatim}
-\item Add an exercise of your own to the makefile: add the name to
-    the \n{EXERCISES}
-  \end{itemize}
-\end{numberedframe}
-
-\begin{exerciseframe}[hello]
-  \input ex:hello1
-\end{exerciseframe}
-
-\begin{numberedframe}{In a picture}
-  \includegraphics[scale=.35]{hello-parallel}
-\end{numberedframe}
-
 \sectionframe{We start learning MPI!}
 
-\begin{numberedframe}{Bindings}
-  The standard defines interfaces to MPI
-  from C and Fortran.\\
-  These look very similar;
-  sometimes we will only show the C variant.
-
-  MPI can also be used from C++ and Python
-\end{numberedframe}
-
-\begin{numberedframe}{MPI headers: C}
-\label{sl:mpi-header-c}
-You need an include file:
-\begin{verbatim}
-#include "mpi.h"
-\end{verbatim}
-This defines all routines and constants.
-\end{numberedframe}
-
-\begin{fortran}
-  \addtocounter{slidecount}{-2}
-\begin{numberedframe}{Fortran bindings}
-    \begin{itemize}
-    \item
-      In the standard
-    \item Come in two flavors, Fortran90 vs Fortran2008\\
-      you will find many examples online in old style
-    \item We teach you modern style.
-    \end{itemize}
-\end{numberedframe}
-
-\begin{numberedframe}{MPI headers: Fortran}
-    \label{sl:mpi-header-f}
-    You need an include file:
-\begin{verbatim}
-! Modern Fortran2008
-use mpi_f08
-! Legacy Fortran90
-use mpi       
-! Deprecated
-#include "mpif.h"
-\end{verbatim}
-\end{numberedframe}
-\end{fortran}
-
-\begin{mpl}
-  \addtocounter{slidecount}{-2}
-\begin{numberedframe}{C++ bindings, MPL}
-  MPI-1 had C++ bindings, by MPI-2 they were deprecated, in MPI-3 they have been removed.
-  \begin{itemize}
-  \item Easy solution: use the C~bindings unaltered.
-    \begin{itemize}
-    \item This is done in the \n{cxx} exercise directory.
-    \item Ugly: very un-OO.
-    \end{itemize}
-  \item There are private projects for C++ bindings.\\
-    In particular
-    MPL: \url{https://github.com/rabauke/mpl}
-    \begin{itemize}
-    \item Very modern OO.
-    \item Header-only
-    \item Caution: not a full MPI implementation\\
-      (I/O and one-sided mostly missing)
-    \item Exercises in \n{mpl} directory.
-    \end{itemize}
-  \end{itemize}
-\end{numberedframe}
-
-\begin{numberedframe}{MPL header}
-    In your program:
-    \begin{lstlisting}
-      #include <mpl/mpl.hpp>
-    \end{lstlisting}
-    Compiling:
-\begin{verbatim}
-  mpicxx -o prog sources.cxx -I${TACC_MPL_INC}
-\end{verbatim}
-TACC: \texttt{module load mpl}
-\end{numberedframe}
-\end{mpl}
-
-\begin{python}
-  \addtocounter{slidecount}{-2}
-\begin{numberedframe}{Python bindings}
-    \begin{itemize}
-    \item Not part of the standard:\\
-      private project by Lisando Dalcin\\
-      Download \url{https://github.com/mpi4py/mpi4py}\\
-      Docs: \url{https://mpi4py.readthedocs.io/}
-    \item Comes in two variants:\\
-      `pythonic' vs efficient
-    \end{itemize}
-\end{numberedframe}
-
-\begin{numberedframe}{MPI headers: Python}
-    \label{sl:mpi-header-p}
-    You need an include file:
-\begin{verbatim}
-from mpi4py import MPI
-\end{verbatim}
-You need a python with MPI support\\
-at TACC: \texttt{module load python3}
-\end{numberedframe}
-\end{python}
-
 \begin{numberedframe}{MPI Init / Finalize}
-Then put these calls around your code:
+ These calls need to be around the MPI part of your code:
 \lstset{language=C}
 \begin{lstlisting}
 MPI_Init(&argc,&argv); // zeros allowed
 // your code
 MPI_Finalize();  
 \end{lstlisting}
-This is not a `parallel region':\\
-only internal library initialization:\\
+This is not a `parallel region'.\\
+Only internal library initialization:\\
 allocate buffers, discover network,~\ldots
 \end{numberedframe}
 
@@ -383,46 +262,113 @@ call MPI_Finalize(ierr)
   \addtocounter{slidecount}{-1}
 \begin{numberedframe}{Python init/finalize}
     Done by the import~/ at end of the program.
+\begin{verbatim}
+from mpi4py import MPI
+\end{verbatim}
 \end{numberedframe}
 \end{python}
 
-\begin{numberedframe}{About errors}
-  MPI routines invoke an error handler (slide~\ref{sl:errhandler})\\
-  default action: abort
-  
-  Every routine is defined as returning integer error code
-  \begin{itemize}
-  \item In C: function result. 
-\lstset{language=C++}
-\begin{lstlisting}
-ierr = MPI_Init(0,0);
-if (ierr!=MPI_SUCCESS) /* do something */
-\end{lstlisting}
-  But really: can often be ignored; is ignored in this course.
-\begin{lstlisting}
-MPI_Init(0,0);
-\end{lstlisting}
-  \item In Fortran: as optional (F08 only) parameter.
-  \item In Python: throwing exception.
-  \end{itemize}
-  There's not a lot you can do with an error code:\\
-  very hard to recover from errors in parallel.\\
-  By default code bombs with (hopefully informative) message.
-\end{numberedframe}
-
 \begin{exerciseframe}[hello]
   \input ex:hello2
-
-  Python, MPL: include magic line from slide~\ref{sl:mpi-comm-world}.
 \end{exerciseframe}
+
+\sectionframe{About library calls and bindings}
+
+\begin{numberedframe}{Bindings}
+  The standard defines interfaces to MPI
+  from C and Fortran.\\
+  These look very similar;
+  sometimes we will only show the C variant.
+
+  MPI can also be used from C++ and Python
+\end{numberedframe}
+
+\begin{numberedframe}{MPI headers: C}
+\label{sl:mpi-header-c}
+You need an include file:
+\begin{verbatim}
+#include "mpi.h"
+\end{verbatim}
+This defines all routines and constants.
+\end{numberedframe}
+
+\begin{fortran}
+  \addtocounter{slidecount}{-1}
+\begin{numberedframe}{MPI headers: Fortran}
+    \label{sl:mpi-header-f}
+    Fortran bindings are declared in the standard.
+    \begin{itemize}
+    \item Come in two flavors, Fortran90 vs Fortran2008\\
+      you will find many examples online in old style
+    \item We teach you modern style.
+    \end{itemize}
+    You need an include file:
+\begin{verbatim}
+! Modern Fortran2008
+use mpi_f08
+! Legacy Fortran90
+use mpi       
+! Deprecated
+#include "mpif.h"
+\end{verbatim}
+\end{numberedframe}
+\end{fortran}
+
+\begin{mpl}
+  \addtocounter{slidecount}{-1}
+\begin{numberedframe}{C++ bindings, MPL}
+  MPI-1 had C++ bindings, by MPI-2 they were deprecated, in MPI-3 they have been removed.
+  \begin{itemize}
+  \item Easy solution: use the C~bindings unaltered.\\
+    This is done in the \n{cxx} exercise directory;  Ugly: very un-OO.
+  \item There are private projects for C++ bindings.\\
+    In particular
+    MPL: \url{https://github.com/rabauke/mpl}\\
+    (Exercises in \n{mpl} directory.)\\
+    Very modern OO,  Header-only\\
+    Not a full MPI implementation: (I/O and one-sided mostly missing)
+  \end{itemize}
+    In your program:
+    \begin{lstlisting}
+      #include <mpl/mpl.hpp>
+    \end{lstlisting}
+    Compiling:
+\begin{verbatim}
+  mpicxx -o prog sources.cxx -I${TACC_MPL_INC}
+\end{verbatim}
+TACC: \texttt{module load mpl}
+\end{numberedframe}
+\end{mpl}
+
+\begin{python}
+  \addtocounter{slidecount}{-1}
+\begin{numberedframe}{Python bindings}
+    \label{sl:mpi-header-p}
+    \begin{itemize}
+    \item Not part of the standard:\\
+      private project by Lisando Dalcin\\
+      Download \url{https://github.com/mpi4py/mpi4py}\\
+      Docs: \url{https://mpi4py.readthedocs.io/}
+    \item Comes in two variants:\\
+      `pythonic' vs efficient
+    \end{itemize}
+    You need an include file:
+\begin{verbatim}
+from mpi4py import MPI
+\end{verbatim}
+You need a python with MPI support\\
+at TACC: \texttt{module load python3}
+\end{numberedframe}
+\end{python}
+
+\sectionframe{Ranks}
 
 \begin{numberedframe}{Process identification}
   \label{sl:comm-world}
   \begin{itemize}
-  \item Processors are organized in `communicators'.
+  \item Processes are organized in `communicators'.
   \item For now only the `world' communicator
-    (slide~\ref{sl:comm-world})
-  \item Each process has a `rank' wrt the communicator.
+  \item Each process has a unique `rank' wrt the communicator.
   \end{itemize}
 
 \lstset{language=C}
@@ -436,48 +382,17 @@ This is a logical view of parallelism: mapping to physical
 processors/cores is invisible here.
 \end{numberedframe}
 
-\begin{numberedframe}{Communicators}
-  \label{sl:mpi-comm-world}
-  For now, the communicator will be \indexmpishow{MPI_COMM_WORLD}.
+\begin{exerciseframe}[commrank]
+  \input ex:hello3
+\end{exerciseframe}
 
-  C:
-  \lstset{language=C}
-  \begin{lstlisting}
-    MPI_Comm comm = MPI_COMM_WORLD;
-  \end{lstlisting}
+%% \protoslide{MPI_Comm_size}
+%% \protoslide{MPI_Comm_rank}
 
-  F:
-  \lstset{language=Fortran}
-  \begin{lstlisting}
-    Type(MPI_Comm) :: comm = MPI_COMM_WORLD
-  \end{lstlisting}
-
-  P:
-  \lstset{language=Python}
-  \begin{lstlisting}
-    from mpi4py import MPI
-    comm = MPI.COMM_WORLD
-  \end{lstlisting}
-
-  MPL:
-  \lstset{language=C++}
-  \begin{lstlisting}
-    const mpl::communicator &comm_world =
-        mpl::environment::comm_world();
-  \end{lstlisting}
-\end{numberedframe}
-
-\begin{numberedframe}{Illustration}
-  \includegraphics[scale=.35]{rank-parallel}
-\end{numberedframe}
-
-\protoslide{MPI_Comm_size}
-\protoslide{MPI_Comm_rank}
-
-\begin{mpl}
-  \mplprotoslide{size}
-  \mplprotoslide{rank}
-\end{mpl}
+%% \begin{mpl}
+%%   \mplprotoslide{size}
+%%   \mplprotoslide{rank}
+%% \end{mpl}
 
 \begin{numberedframe}{About routine signatures: C/C++}
   \label{sec:protos}
@@ -494,7 +409,10 @@ int nprocs;
 int errorcode;
 errorcode = MPI_Comm_size( comm,&nprocs );
 \end{lstlisting}
-(but forget about that error code most of the time)
+But forget about that error code most of the time:
+\begin{lstlisting}
+MPI_Comm_size( comm,&nprocs );
+\end{lstlisting}
 \end{numberedframe}
 
 \begin{fortran}
@@ -521,7 +439,7 @@ CALL MPI_Comm_size( comm, size ) ! F2008 style
 \end{itemize}
 \end{numberedframe}
 
-\begin{numberedframe}[b]{About routine signatures: Fortran90}
+\begin{numberedframe}[f]{About routine signatures: Fortran90}
 Signature
 \lstset{language=Fortran}
 \begin{lstlisting}
@@ -565,16 +483,78 @@ Note: most functions are methods of the \lstinline{MPI.Comm} class.\\
 \end{numberedframe}
 \end{python}
 
+\begin{exerciseframe}[commrank]
+  \input ex:hello4
+\end{exerciseframe}
+
+\begin{numberedframe}{Illustration}
+  \includegraphics[scale=.35]{rank-parallel}
+\end{numberedframe}
+
+\begin{numberedframe}{About errors}
+  MPI routines invoke an error handler (slide~\ref{sl:errhandler})\\
+  default action: abort
+  
+  Every routine is defined as returning integer error code
+  \begin{itemize}
+  \item In C: function result. 
+\lstset{language=C++}
+\begin{lstlisting}
+ierr = MPI_Init(0,0);
+if (ierr!=MPI_SUCCESS) /* do something */
+\end{lstlisting}
+  But really: can often be ignored; is ignored in this course.
+\begin{lstlisting}
+MPI_Init(0,0);
+\end{lstlisting}
+  \item In Fortran: as optional (F08 only) parameter.
+  \item In Python: throwing exception.
+  \end{itemize}
+  There's not a lot you can do with an error code:\\
+  very hard to recover from errors in parallel.\\
+  By default code bombs with (hopefully informative) message.
+\end{numberedframe}
+
+\begin{numberedframe}{Communicators}
+  \label{sl:mpi-comm-world}
+  For now, the communicator will be \indexmpishow{MPI_COMM_WORLD}.
+
+  C:
+  \lstset{language=C}
+  \begin{lstlisting}
+    MPI_Comm comm = MPI_COMM_WORLD;
+  \end{lstlisting}
+
+  F:
+  \lstset{language=Fortran}
+  \begin{lstlisting}
+    Type(MPI_Comm) :: comm = MPI_COMM_WORLD
+  \end{lstlisting}
+
+  P:
+  \lstset{language=Python}
+  \begin{lstlisting}
+    from mpi4py import MPI
+    comm = MPI.COMM_WORLD
+  \end{lstlisting}
+
+  MPL:
+  \lstset{language=C++}
+  \begin{lstlisting}
+    const mpl::communicator &comm_world =
+        mpl::environment::comm_world();
+  \end{lstlisting}
+\end{numberedframe}
+
 \begin{numberedframe}{Have you been paying attention?}
   \input{ex:mpi01rank}
 \end{numberedframe}
 
-\begin{exerciseframe}[commrank]
-  \input ex:hello3
-\end{exerciseframe}
+\begin{exerciseframe}
+  \input ex:procname
 
-\begin{exerciseframe}[commrank]
-  \input ex:hello4
+  Go to \n{examples/mpi/c} and do \n{make procname},
+  then \n{ibrun procname}
 \end{exerciseframe}
 
 \begin{numberedframe}{Processor name}
@@ -588,16 +568,25 @@ Note: most functions are methods of the \lstinline{MPI.Comm} class.\\
   \includegraphics[scale=.3]{node-comm-rank}
 \end{numberedframe}
 
-\protoslide{MPI_Get_processor_name}
-\begin{mpl}
-  \mplprotoslide{MPI_Get_processor_name}
-\end{mpl}
+\begin{numberedframe}[f]{Processor name: Fortran}
+  Processes (can) run on physically distinct locations.
 
-\begin{exerciseframe}
-  \input ex:procname
-\end{exerciseframe}
+  \fverbatimsnippet{procnamef}
+\end{numberedframe}
 
-\sectionframe{A practical example}
+\begin{numberedframe}[p]{Processor name: Python}
+  Processes (can) run on physically distinct locations.
+
+  \pverbatimsnippet{procnamep}
+\end{numberedframe}
+
+
+%% \protoslide{MPI_Get_processor_name}
+%% \begin{mpl}
+%%   \mplprotoslide{MPI_Get_processor_name}
+%% \end{mpl}
+
+\sectionframe{Your first useful parallel program}
 
 \begin{numberedframe}{Functional Parallelism}
   Parallelism by letting each process do a different thing.

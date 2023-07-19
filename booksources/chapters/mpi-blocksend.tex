@@ -175,8 +175,9 @@ they need to be in the same communicator.
 
 \begin{mplnote}{Buffer type safety}
   \begin{itemize}
-  \item Data type is templated: derived by the compiler.
-  \item Count $>1$ is declared in the datatype.
+  \item Scalar data type is handled through templating
+    (and `argument-dependent-lookup'): derived by the compiler.
+  \item Count $>1$ is declared in the layout datatype.
   \end{itemize}
 \end{mplnote}
 
@@ -219,7 +220,7 @@ std::list<int> v(20, 0);
 mpl::iterator_layout<int> l(v.begin(), v.end());
 comm_world.recv(&(*v.begin()), l, 0);  
 \end{lstlisting}
-(See also note~\ref{mpl:buf-itr}.)
+%% (See also note~\ref{mpl:buf-itr}.)
 \end{mplnote}
 
 \Level 1 {Receive call}

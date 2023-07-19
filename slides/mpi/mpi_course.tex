@@ -11,69 +11,28 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\documentclass[11pt,headernav]{beamer}
+\documentclass[10pt]{beamer}
 
-\beamertemplatenavigationsymbolsempty
-\usetheme{Madrid}%{Montpellier}
-\usecolortheme{seahorse}
-\setcounter{tocdepth}{1}
-
-\setbeamertemplate{footline}{\hskip1em Eijkhout: MPI course\hfill
-  \hbox to 0in {\hss \includegraphics[scale=.1]{tacclogonew}}%
-  \hbox to 0in {\hss \arabic{page}\hskip 1in}}
-
-\usepackage{morewrites}
-%% \usepackage{array} %,multicol,multirow}
-%% \newcolumntype{R}{>{\hbox to 1.2em\bgroup\hss}{r}<{\egroup}}
-%% \newcolumntype{T}{>{\hbox to 8em\bgroup}{c}<{\hss\egroup}}
-
-\usepackage{comment}
-\input slides.inex
-\input commonmacs
-\input acromacs
-\input slidemacs
-\input coursemacs
-\input snippetmacs
-
-\input doxymacs
-
-%%%%
-%%%% Where is this course?
-%%%%
-
-\def\Location{}% redefine in the inex file
-\def\courseyear{2023}
-%\def\Location{TACC HPC Training \courseyear}
-\def\Location{SDS PCSE \courseyear}
-
-\includecomment{full}
-\excludecomment{condensed}
-\excludecomment{online}
-
-\includecomment{utonly}
-
-\includecomment{onesided}
-\includecomment{advanced}
-\includecomment{foundations}
-\excludecomment{solutions}
-
-\def\TitleExtra{}
-
-%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%% Document
-%%%%%%%%%%%%%%%%
+\expandafter\ifx\csname ifCourseFormatLoaded\endcsname\relax
+  \input courseformat
+  \let\ifCourseFormatLoaded\iffalse %% make the else part skippable
+\else
+  \ifCourseFormatLoaded
+    \message{Using preloaded format}
+  \else
+    \input courseformat
+  \fi
+\fi
+  
+\def\qrcode{qrvol2}
+\begin{document}
 \input lang
 
-\begin{document}
-\parskip=10pt plus 5pt minus 3pt
+\author[Eijkhout]{Victor Eijkhout}
+\date[2023]{TACC Institute 2023}
+\title[MPI]{MPI Course}
 
-\title{Tutorial on MPI programming\TitleExtra}
-\author{Victor Eijkhout {\tt eijkhout@tacc.utexas.edu}}
-\date{\Location}
-
-\begin{frame}
-  \titlepage
-\end{frame}
+\maketitle
 
 \begin{frame}[containsverbatim]{Materials}
     Textbooks and repositories:\\
@@ -88,25 +47,42 @@
 \end{frame}
 
 \begin{frame}{Table of Contents}
-  \def\contentsline####1####2{\item ####2}
-  \IfFileExists{\jobname.toc}
-               {\begin{itemize}
-                   \tableofcontents
-               \end{itemize}
-               }{}
+  \begin{enumerate}
+  \item The SPMD Model~\hyperlink{sec:spmd}{\textsl{link}}
+  \item Collectives~\hyperlink{sec:collectives}{\textsl{link}}
+  \item Point-to-point~\hyperlink{sec:ptp}{\textsl{link}}
+  \item Derived datatypes~\hyperlink{sec:derived}{\textsl{link}}
+  \item Communicators~\hyperlink{sec:comm}{\textsl{link}}
+  \item MPI I/O~\hyperlink{sec:io}{\textsl{link}}
+  \item One-sided communication~\hyperlink{sec:1side}{\textsl{link}}
+  \item Big data~\hyperlink{sec:bigdata}{\textsl{link}}
+  \item Advanced collectives~\hyperlink{sec:coll2}{\textsl{link}}
+  \item Shared memory~\hyperlink{sec:shared}{\textsl{link}}
+  \item Process management~\hyperlink{sec:process}{\textsl{link}}
+  \item Process topologies~\hyperlink{sec:topo}{\textsl{link}}
+  \item Trace and performance~\hyperlink{sec:trace}{\textsl{link}}
+  \end{enumerate}
+%%   \def\contentsline####1####2####3{\item ####2\ ####3}
+%%   \IfFileExists{\jobname.toc}
+%%                {\begin{itemize}
+%%                    \tableofcontents
+%%                \end{itemize}
+%%                }{}
 \end{frame}
 
 \coursepart{Basics}
 
 \renewcommand\standardversion{3}
 
-\Level 0 {The SPMD model}
+\coursesection{sec:spmd}{The SPMD model}
 \input SPMD-slides
 
-\Level 0 {Collectives}
+%% \end{document}
+
+\coursesection{sec:collectives}{Collectives}
 \input Collective-slides
 
-\Level 0 {Point-to-point communication}
+\coursesection{sec:ptp}{Point-to-point communication}
 \input PTP-slides
 
 \iffalse
@@ -138,20 +114,20 @@
   file I/O, and the basics of one-sided communication.
 \end{frame}
 
-\Level 0 {Derived Datatypes}
+\coursesection{sec:derived}{Derived Datatypes}
 \input Data-slides
 
-\Level 0 {Communicator manipulations}
+\coursesection{sec:comm}{Communicator manipulations}
 \input Subcomm-slides
 
-\Level 0 {MPI File I/O}
+\coursesection{sec:io}{MPI File I/O}
 \input MPIO-slides
 
-\Level 0 {One-sided communication}
+\coursesection{sec:1side}{One-sided communication}
 \input Onesided-slides 
 \input Atomic-slides
 
-\Level 0 {Big data communication}
+\coursesection{sec:bigdata}{Big data communication}
 \input Bigdata-slides
 
 \coursepart{Advanced (MPI-3/4) topics}
@@ -161,21 +137,21 @@
   code to deal with unusual scenarios or very large scale runs.
 \end{frame}
 
-\Level 0 {Advanced collectives}
+\coursesection{sec:coll2}{Advanced collectives}
 \input Highercollective-slides
 
-\Level 0 {Shared memory}
+\coursesection{sec:shared}{Shared memory}
 \input Sharedmemory-slides
 
-\Level 0 {Process management}
+\coursesection{sec:process}{Process management}
 \input Spawn-slides
 
-\Level 0 {Process topologies}
+\coursesection{sec:topo}{Process topologies}
 \input Graph-slides
 
 \coursepart{Other}
 
-\Level 0 {Tracing, performance, and such}
+\coursesection{sec:trace}{Tracing, performance, and such}
 \input Performance-slides
 
 \end{document}

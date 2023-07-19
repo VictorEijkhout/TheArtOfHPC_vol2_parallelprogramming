@@ -102,7 +102,7 @@ Recursively constructed types.
 int MPI_Type_contiguous(
   int count, MPI_Datatype old_type, MPI_Datatype *new_type_p)  
 \end{lstlisting}
-  \includegraphics[scale=.06]{data-contiguous}
+  \includegraphics[scale=.06]{data-contiguous.png}
 
 This one is indistinguishable from just sending \lstinline{count} instances
 of the \lstinline{old_type}.
@@ -114,7 +114,7 @@ of the \lstinline{old_type}.
   \item Columns are contiguous
   \item Rows are not contiguous
   \end{itemize}
-  \includegraphics[scale=.1]{densearray}
+  \includegraphics[scale=.1]{densearray.png}
 \end{numberedframe}
 
 \begin{numberedframe}{Vector type}
@@ -133,7 +133,7 @@ Used to pick a regular subset of elements from an array.
   Send and receive type can differ. Example:\\
   Sender type: vector\\ receiver type: contiguous or elementary
 
-  \includegraphics[scale=.1]{data-vector-to-contiguous}
+  \includegraphics[scale=.1]{data-vector-to-contiguous.png}
 
   Receiver has no knowledge of the stride of the sender.
 \end{numberedframe}
@@ -158,7 +158,7 @@ Used to pick a regular subset of elements from an array.
 \end{exerciseframe}
 
 \begin{numberedframe}{Indexed type}
-  \includegraphics[scale=.07]{data-indexed}
+  \includegraphics[scale=.07]{data-indexed.png}
 \begin{lstlisting}
 int MPI_Type_indexed(
   int count, int blocklens[], int displacements[],
@@ -180,7 +180,7 @@ int MPI_Type_create_struct(
   int count, int blocklengths[], MPI_Aint displacements[],
   MPI_Datatype types[], MPI_Datatype *newtype);
 \end{lstlisting}
-  \includegraphics[scale=.07]{data-struct}
+  \includegraphics[scale=.07]{data-struct.png}
 
 This gets very tedious\ldots
 \end{numberedframe}
@@ -201,7 +201,7 @@ This gets very tedious\ldots
 \begin{numberedframe}{BLAS/Lapack storage}
   Three parameter description:
 
-  \includegraphics[scale=.1]{blasmatrix}
+  \includegraphics[scale=.1]{blasmatrix.png}
 
   How about as a `block within a block'?
 \end{numberedframe}
@@ -248,14 +248,16 @@ CALL MPI_Type_create_f90_real( 15 , 300 , realtype , error )
   Extent: `size' of a type,\\
   especially useful for derived types.
 
-  \includegraphics{extentvector}
+  \includegraphics[scale=.5]{extent358.png}
+%%  \includegraphics{extentvector.jpg}
 \end{numberedframe}
 
 \begin{numberedframe}{Extent resizing: enlarging}
   Multiple derived types may not be what you intended\\
   extent resizing makes it artificually larger:
 
-  \includegraphics[scale=.8]{extentpad}  
+  \includegraphics[scale=.7]{extent359.png}
+%%  \includegraphics[scale=.8]{extentpad.jpg}  
 \end{numberedframe}
 
 \begin{numberedframe}{Extent computation}
@@ -310,6 +312,22 @@ Receive 6 elements: 0 2 4 6 8 10
   \indexmpiref{MPI_Type_get_true_extent} returns
   non-zero lower bound.
 \end{numberedframe}
+
+\begin{numberedframe}{Transposition}
+  \begin{itemize}
+  \item Basic block of FFT
+  \item Before: Each process stores a block column,
+  \item After: Each process stores a block row
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{in a picture}
+  \includegraphics[scale=.7]{transpose1d}
+\end{numberedframe}
+
+\begin{exerciseframe}[transposeblock]
+  Fill in the missing bits of the skeleton code.  
+\end{exerciseframe}
 
 \sectionframe{Packed data}
 

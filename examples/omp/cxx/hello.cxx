@@ -27,8 +27,8 @@ int main(int argc,char **argv) {
   {
     int t = omp_get_thread_num();
     stringstream proctext;
-    proctext << "Hello world from " << t << endl;
-    cerr << proctext.str();
+    proctext << "Hello world from " << t;
+    cerr << proctext.str() << '\n';
   }
 //codesnippet end
 

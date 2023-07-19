@@ -84,8 +84,6 @@ which may interfere with execution of the main thread, or conversely it may not 
 activated at the optimal time. Passive RMA is also very hard to debug and can lead
 to race conditions.
 
-%% McLaren says use an info object
-
 \Level 0 {Windows}
 \label{sec:windows}
 \index{window|(}
@@ -208,6 +206,12 @@ part of \indexmpishow{MPI_Win_allocate}, after which you need to
     of \indexmpishow{mpi_minimum_memory_alignment}.
   \item The type of memory allocated can be controlled by info keys;
     see section~\ref{sec:mpi-alloc-kind}.
+  \item An info key \indexmpishow{mpi_accumulate_granularity} can be used
+    to distinguish between accumulate operations for which throughput,
+    or rather latency, is more important. This key has an integer value
+    of the number of bytes in between synchronizations; this
+    can also stand for the number of bytes that is atomically written
+    (\mpistandard{4.1}).
 \end{mpifournote}
 \end{itemize}
 
