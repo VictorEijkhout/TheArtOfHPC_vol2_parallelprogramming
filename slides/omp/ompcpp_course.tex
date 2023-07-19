@@ -11,49 +11,18 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\documentclass[11pt,headernav]{beamer}
+\documentclass[10pt]{beamer}
 
-\beamertemplatenavigationsymbolsempty
-\usetheme{Madrid}%{Montpellier}
-\usecolortheme{seahorse}
-\setcounter{tocdepth}{1}
-%% \AtBeginSection[]
-%% {
-%%   \begin{frame}
-%%     \frametitle{Table of Contents}
-%%     \tableofcontents[currentsection]
-%%   \end{frame}
-%% }
+\input courseformat
 
-%Global Background must be put in preamble
-%\usebackgroundtemplate{\includegraphics[width=\paperwidth,height=\paperheight]{newton.jpg}}
-
-\setbeamertemplate{footline}{\hskip1em Eijkhout: OMP C++\hfill
-  \hbox to 0in {\hss \includegraphics[scale=.1]{tacclogonew}}%
-  \hbox to 0in {\hss \arabic{page}\hskip 1in}}
-
-\usepackage{morewrites}
-
-\usepackage{comment}
-\input slides.inex
-\input commonmacs
-\input acromacs
-
-\input slidemacs
-\input snippetmacs
-
-\input coursemacs
-
+\def\qrcode{qrvol2}
 \begin{document}
-\parskip=10pt plus 5pt minus 3pt
 
-\title{Using OpenMP from C++}
-\author{Victor Eijkhout}
-\date{TACC training 2023}
+\title[OMP \& C++]{Using OpenMP from C++}
+\author[Eijkhout]{Victor Eijkhout}
+\date{PEARC 2023}
 
-\begin{frame}
-  \titlepage
-\end{frame}
+\maketitle
 
 \begin{frame}{Justification}
   OpenMP has the opportunity to exploit features of modern~C++
@@ -132,6 +101,10 @@
   \input{cppnote-c++20-ranges-speedup.cut}
 \end{numberedframe}
 
+\begin{numberedframe}{Ranges and indices}
+  \input{cppnote-ranges-and-indices.cut}  
+\end{numberedframe}
+
 \begin{numberedframe}{Custom iterators, 0}
   Recall that
 \begin{multicols}{2}
@@ -143,7 +116,7 @@ for ( auto e : v )
 \end{lstlisting}
 \columnbreak for:
 \begin{lstlisting}
-for ( vector<float>::iterator 
+for ( vector<float>::iter
       e=v.begin();
       e!=v.end(); e++ )
   ... *e ...
@@ -156,7 +129,8 @@ for ( auto e : my_object )
 \end{lstlisting}
 we need a sub-class for the iterator with methods such as
 \lstinline{begin}, \lstinline{end},
-  \lstinline|*| and \lstinline|++|.
+\lstinline|*| and \lstinline|++|.\\
+Probably also \lstinline|+=| and \lstinline|-|
 \end{numberedframe}
 
 \begin{numberedframe}{Custom iterators, 1}
@@ -236,6 +210,8 @@ we need a sub-class for the iterator with methods such as
 \begin{numberedframe}{Scalar reductions}
   Same as in C,\\
   you can now use range syntax for the loop.
+  %
+  \cxxverbatimsnippet{omprangereduct}
 \end{numberedframe}
 
 \begin{numberedframe}{Reductions on vectors}
@@ -243,7 +219,6 @@ we need a sub-class for the iterator with methods such as
 \end{numberedframe}
 
 \begin{numberedframe}{Reduction on class objects}
-  \footnotesize
   \input{cppnote-reduction-on-class-objects.cut}
 \end{numberedframe}
 
@@ -252,7 +227,7 @@ we need a sub-class for the iterator with methods such as
 
   Reduction of four items on two threads, taking into account
   initial values.
-  \includegraphics[scale=.1]{omp-reduct}
+  \includegraphics[scale=.1]{omp-reduct.png}
 \end{numberedframe}
 
 \begin{numberedframe}{User-defined reductions, syntax}
@@ -285,7 +260,7 @@ we need a sub-class for the iterator with methods such as
 \end{numberedframe}
 
 \begin{numberedframe}{Histogram: intended main program}
-  Declare a reduction on a history gram object:
+  Declare a reduction on a histogram object:
   \cxxverbatimsnippet{ompbinreduce}
   Q: why does the \lstinline{inc} not have to be atomic?
 \end{numberedframe}
@@ -435,7 +410,7 @@ public:
 \begin{numberedframe}{Atomic updates, comparison to native}
   Timing comparison on simplest case:
 \begin{multicols}{2}
-  \lstset{basicstyle=\scriptsize}
+  \let\snippetoutputsize\scriptsize
   Object with built-in lock:
 \cxxverbatimsnippet{lockobjectuse}
 \columnbreak
@@ -463,6 +438,7 @@ Native C++ atomics:
     for ( datatype i = 0; i < N; i++ ) {
       k[ (i%nthreads) * spread ] += 2;
   \end{lstlisting}
+  Since \cppstandard{17}
 \end{numberedframe}
 
 \begin{numberedframe}{Beware vector-of-bool!}

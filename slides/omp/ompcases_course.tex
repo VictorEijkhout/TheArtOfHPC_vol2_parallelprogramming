@@ -11,35 +11,17 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\documentclass[11pt,headernav]{beamer}
+\documentclass[10pt]{beamer}
 
-\beamertemplatenavigationsymbolsempty
-\usetheme{Madrid}%{Montpellier}
-\usecolortheme{seahorse}
-\setcounter{tocdepth}{1}
-
-\setbeamertemplate{footline}{\hskip1em Eijkhout: OMP topics\hfill
-  \hbox to 0in {\hss \includegraphics[scale=.1]{tacclogonew}}%
-  \hbox to 0in {\hss \arabic{page}\hskip 1in}}
-
-\usepackage{comment}
-\input slides.inex
-\input commonmacs
-\input acromacs
-\input slidemacs
-\input coursemacs
-\input snippetmacs
-
+\input courseformat
 \begin{document}
-\parskip=10pt plus 5pt minus 3pt
 
-\title{OpenMP case studies}
-\author{Victor Eijkhout}
-\date{SDS 335 2022}
+\author[Eijkhout]{Victor Eijkhout}
+\date[2023]{SDS 335 2023}
+\def\qrcode{qrvol2}
+\title[case studies]{OpenMP case studies}
 
-\begin{frame}{}
-  \titlepage
-\end{frame}
+\maketitle
 
 \begin{frame}{Case study: molecular dynamics}
 \end{frame}
