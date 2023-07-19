@@ -1,5 +1,5 @@
 // sendrecv.cxx
-mpl::tag t0(0);
+mpl::tag_t t0(0);
 comm_world.sendrecv
   ( mydata,sendto,t0,
     leftdata,recvfrom,t0 );

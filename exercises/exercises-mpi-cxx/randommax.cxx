@@ -4,7 +4,7 @@
  **** `Parallel programming for Science and Engineering'
  **** by Victor Eijkhout, eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-9
+ **** copyright Victor Eijkhout 2012-2023
  ****
  **** MPI Exercise
  ****
@@ -43,11 +43,11 @@ int main() {
    * -- scale your number by the sum
    * -- check that the sum of scales values is 1
    */
-  float sumrandom, scaled_random, sum_scaled_random;
+  float sum_random, scaled_random, sum_scaled_random;
   MPI_Allreduce(
 /**** your code here ****/
 		);
-  scaled_random = myrandom / sumrandom;
+  scaled_random = myrandom / sum_random;
   MPI_Allreduce(
 /**** your code here ****/
 		);
@@ -57,7 +57,7 @@ int main() {
   int error=nprocs, errors;
   if ( abs(sum_scaled_random-1.)>1.e-5 ) {
     stringstream proctext;
-    proctext << "Suspicious sum " << sumrandom << " on process " << procno << endl;
+    proctext << "Suspicious sum " << sum_random << " on process " << procno << endl;
     cerr << proctext.str(); proctext.clear();
     error = procno;
   }

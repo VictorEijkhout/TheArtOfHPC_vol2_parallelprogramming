@@ -31,10 +31,11 @@ courses ::
 	    ; \
 	 fi
 languages :
+	@make course COURSE=${COURSE} LANGUAGE=
 	@if [ ! -z "${LANGUAGES}" ] ; then \
 	    for l in ${LANGUAGES} ; do \
 	        cp ${COURSE}_course.tex ${COURSE}_$${l}_course.tex \
-	         && make course COURSE=${COURSE}_$${l} LANGUAGE=${LANGUAGE} \
+	         && make course COURSE=${COURSE}_$${l} LANGUAGE=$${l} \
 	         && rm -f ${COURSE}_$${l}_course.tex \
 	     ; done \
 	 ; fi
@@ -42,7 +43,9 @@ languages :
 course ::
 	@if [ -z "${COURSE}" ] ; then \
 	    echo "Error: no COURSE variable defined" && exit 1 ; fi 
-	@if [ ! -z "${LANGUAGE}" ] ; then \
+	@if [ -z "${LANGUAGE}" ] ; then \
+	    cp ../course-support/lang_all.tex ./lang.tex \
+	 ; else \
 	    cp ../course-support/lang_${LANGUAGE}.tex ./lang.tex \
 	 ; fi
 	@make --no-print-directory pdf FILE=${COURSE}_course
@@ -55,13 +58,13 @@ no_acro_rule :
 	      && make --no-print-directory pdf FILE=${COURSE}_course \
 	    ; fi
 
-.PHONY: onepass pdf onepassformat
+.PHONY: beamerfiles onepass pdf onepassformat 
 info ::
-	@echo "make onepass COURSE=... / FILE=..."
+	@echo "make pdf onepass COURSE=... / FILE=..."
 TEXROOTDIR = ../../booksources
-pdf :: 
+pdf :: beamerfiles
 	@export file=$$( make --no-print-directory filename COURSE="${COURSE}" FILE="${FILE}" ) \
-	 && make --no-print-directory onepassformat FILE=$${file} \
+	 && make --no-print-directory onepassformat FORMAT="${FORMAT}" FILE=$${file} \
 	 && if [ -z "${BIB}" ] ; then \
 	        bib=0 ; else bib=1 ; fi \
 	 && if [ $${bib} -eq 1 ] ; then \
@@ -75,9 +78,17 @@ pdf ::
 	 && if [ $$( cat ${FILE}.log | grep "Rerun to get cross-references right" | wc -l ) -eq 0 ] ; then \
 	    ref=0; else ref=1 ; fi \
 	 && if [ $${index} -eq 1 -o $${bib} -eq 1 -o $${ref} -eq 1 ] ; then \
-	        make onepassformat FILE=$${file} \
+	        make --no-print-directory onepassformat FORMAT="${FORMAT}" FILE=$${file} \
 	    ; fi
-LOCALTEXINPUTS = .:../..//
+beamerfiles :
+	@\
+	if [ "`whoami`" = "eijkhout" ] ; then \
+	    ( cd ../../beamer \
+	     && rsync -v ../../parallel-programming-private/beamer/*.sty . \
+	    ) \
+	; fi
+
+LOCALTEXINPUTS = .:../../beamer:../..//
 include ../../makefiles/Make.tex
 
 .PHONY: listextra extrafiles

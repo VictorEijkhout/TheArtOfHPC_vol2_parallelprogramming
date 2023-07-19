@@ -20,14 +20,16 @@ info ::
 .PHONY: onepass onepassformat
 onepass ::
 	@export file=$$( make --no-print-directory filename COURSE="${COURSE}" FILE="${FILE}" ) \
-	 && make --no-print-directory onepassformat FILE=$$file
+	 && make --no-print-directory onepassformat FORMAT="${FORMAT}" FILE=$$file
 onepassformat :
 	@if [ $$( which $$( echo ${LATEXENGINE} | awk '{ print $$1 }' ) >/dev/null 2>&1 ; echo $$? ) -ne 0 ] ; then \
 	    echo && echo "Can not invoke LATEXENGINE=${LATEXENGINE}. Maybe load a module?" && echo \
 	    && exit 1 \
 	    ; fi
 	@echo && echo "One pass over file: ${FILE}" && echo \
-	 && TEXINPUTS=${LOCALTEXINPUTS}:${TEXINPUTS} ${LATEXENGINE} ${FILE}
+	 && TEXINPUTS=${LOCALTEXINPUTS}:${TEXINPUTS} ${LATEXENGINE} \
+	        $$( if [ ! -z "${FORMAT}" ] ; then echo \&${FORMAT} ; fi ) \
+	        ${FILE}
 
 .PHONY: filename
 filename :

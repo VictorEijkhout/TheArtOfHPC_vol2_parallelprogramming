@@ -51,12 +51,15 @@ info ::
 	@echo "make regression         : compile and run"
 regression_compile : clean
 	@for e in ${EXERCISES} ; do \
-	  echo ".. $$e" \
-	 &&  make --no-print-directory $$e >./$$e.log 2>&1 \
-	 &&  if [ $$? -ne 0 ] ; then \
-	    echo "Failed:" ; cat $$e.log ; \
-	  fi ; \
-	done
+	    echo ".. $$e" \
+	     && err=0 \
+	     &&  make --no-print-directory $$e >./$$e.log 2>&1 \
+	        || err=$$? \
+	     && if [ $$err -ne 0 ] ; then \
+	            echo " .. failed:" && cat $$e.log \
+	        ; fi \
+	; done 2>&1 | tee regression.log \
+	&& echo && echo "see regression.log" && echo
 regression :
 	@regressout=`pwd`/regress.out \
 	 && rm -f $$regressout && touch $$regressout \

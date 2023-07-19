@@ -1,4 +1,4 @@
-// reductcomplex.cxx
+// reductclass.cxx
 class Thing {
 private:
   float x;

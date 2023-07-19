@@ -351,7 +351,7 @@ ifeq "${TACC_FAMILY_COMPILER}" "gcc"
 endif
 
 .SECONDEXPANSION:
-${APPS} ${EXERCISES} ${PROGRAMS} ${WRONGS} : $$@.o ${EXTRA_OBJS}
+${APPS} ${EXERCISES} ${PROGRAMS} ${WRONGS} :: $$@.o ${EXTRA_OBJS}
 	@if [ ! -z "${LINK_SETUP_COMMANDS}" ] ; then \
 	    if [ "${ECHO}" = "1" ] ; then echo ${LINK_SETUP_COMMANDS} ; fi \
 	     && eval ${LINK_SETUP_COMMANDS} \

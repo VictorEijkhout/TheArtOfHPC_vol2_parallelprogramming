@@ -1,4 +1,3 @@
 comm_world.reduce
-  ( [] (int i,int j) -> int 
-       { return i+j; },
+  ( [] (int i,int j) -> int { return i+j; },
 	0,data );
