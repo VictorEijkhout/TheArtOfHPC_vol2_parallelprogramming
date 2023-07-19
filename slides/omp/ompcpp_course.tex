@@ -282,6 +282,19 @@ Probably also \lstinline|+=| and \lstinline|-|
   \lstinputlisting{code/omp/cxx/mapatomic-frontera.runout}
 \end{numberedframe}
 
+\begin{numberedframe}{Exercise: mapreduce}
+  Make an OpenMP parallel version of:
+\begin{lstlisting}
+intcounter primecounter;
+for ( auto n : numbers )
+  if ( isprime(n) )
+    primecounter.add(n);
+\end{lstlisting}
+  where \lstinline{primecounter} contains a \lstinline|map<int,int>|.
+
+  Use skeleton: \n{mapreduce.cxx}  
+\end{numberedframe}
+
 \begin{numberedframe}{Example category: list filtering}
 The sequential code is as follows:
 \begin{lstlisting}
