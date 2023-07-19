@@ -21,9 +21,9 @@ using namespace std;
 //codesnippet ompclassop
 class Thing {
 private:
-  float x;
+  float x{0.f};
 public:
-  Thing() : Thing( 0.f ) {};
+  Thing() = default;
   Thing( float x ) : x(x) {};
   Thing operator+( const Thing& other ) {
     return Thing( x + other.x );
