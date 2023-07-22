@@ -3,3 +3,4 @@ vector<bool> bits(3000000);
 #pragma omp parallel for schedule(static,4)
 for ( int i=0; i<bits.size(); i++ )
   bits[i] = ( i%3==0 );
+// and then count the million 1s

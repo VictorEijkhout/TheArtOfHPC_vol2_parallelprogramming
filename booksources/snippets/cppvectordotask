@@ -1,4 +1,3 @@
-// filtertask.cxx
 #   pragma omp task \
       shared(filtered,ithread)
     {

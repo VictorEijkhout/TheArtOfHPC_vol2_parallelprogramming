@@ -49,6 +49,9 @@ CFLAGS =
 CXXFLAGS =
 FFLAGS =
 
+INTEL19 := $(findstring 19,${TACC_FAMILY_COMPILER_VERSION})
+INTEL23 := $(findstring 23,${TACC_FAMILY_COMPILER_VERSION})
+
 CSTANDARD = 99
 ifeq "${MODE}" "cuda"
     C_STD_FLAGS = 
@@ -170,10 +173,17 @@ else
 
 	ifeq "not" "true"
 	else ifeq "${TACC_FAMILY_COMPILER}" "intel"
-	  C_COMPILER   = ${CC}
-	  CXX_COMPILER = ${CXX}
-	  F_COMPILER   = ${FC}
-	  F08_COMPILER = ${FC}
+	    ifeq "${INTEL23}" "23"
+	      C_COMPILER   = icx
+	      CXX_COMPILER = icpx
+	      F_COMPILER   = ifx
+	      F08_COMPILER = ifx
+	    else
+	      C_COMPILER   = icc
+	      CXX_COMPILER = icpc
+	      F_COMPILER   = ifort
+	      F08_COMPILER = ifort
+	    endif
 	else ifeq "${TACC_FAMILY_COMPILER}" "intelx"
 	  C_COMPILER   = icx
 	  CXX_COMPILER = icpx

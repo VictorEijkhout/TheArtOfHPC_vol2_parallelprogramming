@@ -7,7 +7,8 @@ for (int i=0; i<nthreads; i++)
 #pragma omp parallel firstprivate(array)
 {
   int t = omp_get_thread_num();
-  array += t;
+// ptr arith: needs private array
+  array += t; 
   array[0] = t;
 }
 // ... print the array
