@@ -265,7 +265,7 @@ Probably also \lstinline|+=| and \lstinline|-|
   Q: why does the \lstinline{inc} not have to be atomic?
 \end{numberedframe}
 
-\begin{numberedframe}{Histogram: reduction operator}
+\begin{numberedframe}{Histogram solution: reduction operator}
   Give the class a \lstinline{+=} operator to do the combining:
   \footnotesize
   \cxxverbatimsnippet{ompbincounter}
@@ -337,7 +337,13 @@ may not appear in order.
 \end{numberedframe}
 
 \begin{numberedframe}{List filtering, task-based solution}
-With a task it becomes possible to have a spin-wait loop:
+  Parallel region, without for:
+  %
+\cxxsnippetwithoutput{cppvectordomain}{code/omp/cxx}{filtertask}
+\end{numberedframe}
+
+\begin{numberedframe}{List filtering, task-based solution'}
+  The task spins until it's its turn:
 \cxxsnippetwithoutput{cppvectordotask}{code/omp/cxx}{filtertask}
 \end{numberedframe}
 
@@ -351,6 +357,10 @@ With a task it becomes possible to have a spin-wait loop:
 
 \begin{numberedframe}{Threadprivate random number generators}
   \input{cppnote-threadprivate-random-number-generators.cut}
+\end{numberedframe}
+
+\begin{numberedframe}{Threadprivate random use}
+  \input{cppnote-threadprivate-random-use.cut}
 \end{numberedframe}
 
 \begin{numberedframe}{Uninitialized containers}
@@ -397,15 +407,15 @@ public:
 \end{lstlisting}
 \end{numberedframe}
 
-\begin{numberedframe}{Atomic updates}
-  Pragma \lstinline{atomic} only works for simple cases.
-  Can you atomically do more complicated updates?
+\begin{numberedframe}{Atomic scalar updates}
+  Can you atomically update scalars?
   \begin{itemize}
   \item Make an object that has data plus a lock;
   \item Disable copy and copy-assignment operators;
   \item Destructor does \indexompshow{omp_destroy_lock};
   \item Overload arithmetic operator.
   \end{itemize}
+  (Quick self-test: why lock, not critical?)
 \end{numberedframe}
 
 \begin{numberedframe}{Atomic updates: class with OMP lock}
