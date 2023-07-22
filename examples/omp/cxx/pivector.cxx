@@ -47,9 +47,8 @@ int main(int argc,char **argv) {
    * 2. adding up the samples
    */
   float pi4 = 0.;
-  vector<float>::iterator ysample;
-#pragma omp parallel for reduction(+:pi4) shared(yvalues) private(ysample)
-  for (ysample=yvalues.begin(); ysample<yvalues.end(); ++ysample) {
+#pragma omp parallel for reduction(+:pi4) shared(yvalues) 
+  for (auto ysample=yvalues.begin(); ysample<yvalues.end(); ++ysample) {
     pi4 += *ysample * h;
   }
   double duration = omp_get_wtime()-tstart;

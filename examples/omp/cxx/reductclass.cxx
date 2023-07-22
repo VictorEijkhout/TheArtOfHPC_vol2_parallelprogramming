@@ -25,7 +25,8 @@ private:
 public:
   Thing() = default;
   Thing( float x ) : x(x) {};
-  Thing operator+( const Thing& other ) {
+  Thing operator+
+      ( const Thing& other ) {
     return Thing( x + other.x );
   };
 };

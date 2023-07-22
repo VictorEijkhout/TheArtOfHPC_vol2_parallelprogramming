@@ -17,9 +17,7 @@
   Commands learned:
   \begin{itemize}
   \item \indexmpishow{MPI_Send_c}, \indexmpishow{MPI_Allreduce_c},
-    \indexmpishow{MPI_Get_count_c} (MPI-4)
-  \item \indexmpishow{MPI_Get_elements_x}, \indexmpishow{MPI_Type_get_extent_x},
-    \indexmpishow{MPI_Type_get_true_extent_x} (MPI-3)
+    \indexmpishow{MPI_Get_count_c}~etc. (MPI-4)
   \end{itemize}
 \end{numberedframe}
 
@@ -106,18 +104,11 @@ call MPI_Get_elements( status,MPI_INTEGER,count )
 \lstset{language=C}
 \end{numberedframe}
 
-\begin{numberedframe}{MPI 3 kludge: use semi-large types}
-  Make a derived datatype, and send a couple of those:
-  
-  \cverbatimsnippet{bigvectorptp}
-
-  You can even receive them:
-
-  \cverbatimsnippet{bigvectorrecv}
-\end{numberedframe}
-
 \begin{numberedframe}{Large int counting}
-  MPI-3 mechanism, deprecated (probably) in MPI-4.1: 
+  MPI-3 mechanism, deprecated in MPI-4.1:\\
+  send a number of contiguous types:
+
+  \cverbatimsnippet{bigvectorptp}
 
   By composing types you can make a `big type'. Use\\
   \indexmpishow{MPI_Type_get_extent_x},

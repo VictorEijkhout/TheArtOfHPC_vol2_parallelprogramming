@@ -15,20 +15,24 @@
 using std::cout;
 #include <string>
 using std::string;
+#include <sstream>
+using std::stringstream;
 
 #include <omp.h>
 
 //codesnippet nestclass
-class c {
+class withnest {
 public:
   void f() {
-    cout
+    stringstream ss;
+    ss 
       << omp_get_num_threads()
       << '\n';
+    cout << ss.str();
   };
 };
 int main() {
-  c my_object;
+  withnest my_object;
 #pragma omp parallel
   my_object.f();
 //codesnippet end

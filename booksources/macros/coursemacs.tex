@@ -55,7 +55,11 @@
         \else
         \frametitle{Exercise \arabic{excounter} (\tt{#1})}
         \fi
-        \refstepcounter{excounter}}
+        \refstepcounter{excounter}
+        \addcontentsline
+            {exe}{section}
+            {\protect\numberline\hbox to 1in {\arabic{excounter}~{#1}\hfil}}
+    }
     {\end{frame}}
 \newenvironment
     {optexerciseframe}[1][]

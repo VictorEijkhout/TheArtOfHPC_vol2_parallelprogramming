@@ -54,6 +54,10 @@
   \url{https://github.com/rabauke/mpl}
 \end{frame}
 
+\makeatletter
+\frame{\frametitle{List of exercises}\def\numberline{\par\noindent}\@starttoc{exe}}
+\makeatother
+
 \Level 0 {Basics}
 
 \begin{numberedframe}{Environment}
@@ -110,6 +114,9 @@ which defines \n{TACC_MPL_INC}, \n{TACC_MPL_DIR}
 \begin{numberedframe}{Vector buffers}
   \input{mplnote-vector-buffers.cut}
 \end{numberedframe}
+\begin{exerciseframe}[pingpongbuffer]
+  Implement the layout for a pingpong with an array.
+\end{exerciseframe}
 \begin{numberedframe}{Array buffers}
   \input{mplnote-array-buffers.cut}
 \end{numberedframe}
@@ -318,7 +325,6 @@ which defines \n{TACC_MPL_INC}, \n{TACC_MPL_DIR}
 \begin{frame}{Missing from MPL}
   MPL is not a full MPI implementation
   \begin{itemize}
-  \item File I/O
   \item One-sided communication
   \item Shared memory
   \item Process management

@@ -32,7 +32,8 @@ int main(int argc,char **argv) {
     #pragma omp parallel firstprivate(array)
     {
       int t = omp_get_thread_num();
-      array += t;
+      // ptr arith: needs private array
+      array += t; 
       array[0] = t;
     }
     // ... print the array

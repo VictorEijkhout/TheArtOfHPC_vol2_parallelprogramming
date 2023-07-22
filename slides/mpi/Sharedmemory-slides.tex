@@ -66,7 +66,7 @@
     shared memory
   \item Use \indexmpishow{MPI_Win_allocate_shared} to create a window between
     processes on the same shared memory\\
-    (\mpistandard{4.1}: other calls allowed, but the burden is on you!)
+    (\mpistandard{4.1}: other window creation calls allowed, but the burden is on you!)
   \item Use \indexmpishow{MPI_Win_shared_query} to get pointer to another
     process' window data.
   \item You can now use \n{memcpy} instead of \indexmpishow{MPI_Put}.
@@ -78,9 +78,7 @@
   \item
     \indexmpishow{MPI_Comm_split_type} splits into communicators of same type.
   \item Use type: \indexmpishow{MPI_COMM_TYPE_SHARED} splitting by
-    shared memory.\\
-    (MPI-4: split by other hardware features through \indexmpishow{MPI_COMM_TYPE_HW_GUIDED}
-    and \indexmpidef{MPI_Get_hw_resource_types})
+    shared memory.
   \end{itemize}
 
   { 
@@ -92,8 +90,7 @@
   %\cverbatimsnippet{commsplittype}
 \end{numberedframe}
 
-
-\begin{exerciseframe}
+\begin{exerciseframe}[shareddata]
   \input{ex:mpi-node-proc-split}
 \end{exerciseframe}
 
@@ -148,11 +145,13 @@ Question: what is going on here?
   \end{itemize}
 \end{numberedframe}
 
-\endinput
-
-\begin{numberedframe}{}
+\begin{numberedframe}{Split by other hardware types}
+  MPI-4: split by other hardware features through \indexmpishow{MPI_COMM_TYPE_HW_GUIDED}
+  and \indexmpidef{MPI_Get_hw_resource_types})
 \begin{lstlisting}
   
+\endinput
+
 \end{lstlisting}
 \end{numberedframe}
 

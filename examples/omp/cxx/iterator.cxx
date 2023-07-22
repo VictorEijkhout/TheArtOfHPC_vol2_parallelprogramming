@@ -62,7 +62,8 @@ public:
   bool operator==( const NewVector::iter &other ) const;
   bool operator!=( const NewVector::iter &other ) const;
   // needed to OpenMP
-  int operator-( const NewVector::iter& other ) const;
+  int operator-
+      ( const NewVector::iter& other ) const;
   NewVector<T>::iter& operator+=( int add );
   //codesnippet end
 //codesnippet classwithiteriter
@@ -131,6 +132,7 @@ T&  NewVector<T>::iter::operator*() {
   return *searcher; };
 // needed for OpenMP
 template<typename T>
-int   NewVector<T>::iter::operator-( const NewVector<T>::iter& other ) const {
+int   NewVector<T>::iter::operator-
+    ( const NewVector<T>::iter& other ) const {
   return searcher-other.searcher; };
 //answersnippet end

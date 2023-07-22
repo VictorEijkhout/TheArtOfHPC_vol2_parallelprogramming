@@ -31,8 +31,10 @@ int main() {
 //codesnippet ompreductstr
   string result{""};
 #pragma omp parallel for reduction( +:result )
-  for ( const auto& t : letters )
+  for ( const auto& t : letters ) {
     result = result + t;
+    cout << ":" << result << '\n';
+  }
 //codesnippet end
   cout << "result: " << result << '\n';
 

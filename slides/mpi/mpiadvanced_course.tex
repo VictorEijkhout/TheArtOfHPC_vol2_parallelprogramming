@@ -15,46 +15,22 @@
 
 \input courseformat
 
-\includecomment{download}
-\excludecomment{lab}
-
-\includecomment{onesided}
-\includecomment{advanced}
-
-%%%%
-%%%% exercise stuff
-%%%%
-\usepackage{tocbasic}
-\DeclareNewTOC[%
-  type=programming,
-  name=programming,
-  listname={List of Exercises},
-  ]{lox}
-
-\input lang
-
-%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%% Document
-%%%%%%%%%%%%%%%%
-
+\def\qrcode{qrvol2}
 \begin{document}
-%%\parskip=10pt plus 5pt minus 3pt
 
 \title[MPI 3\&4]{Advanced Features of MPI-3 and MPI-4}
 \author[Eijkhout]{Victor Eijkhout}
-\date{Pearc23}
+\date{PEARC 2023}
 
 \maketitle
 
-\begin{download}
-  \begin{frame}[containsverbatim]{Materials}
-    Textbooks and repositories:\\
-    \url{https://theartofhpc.com/pcse}
+\begin{frame}[containsverbatim]{Materials}
+  Textbooks and repositories:\\
+  \url{https://theartofhpc.com/pcse}
 
-    Contact:\\
-    {\texttt eijkhout@tacc.utexas.edu}
-  \end{frame}
-\end{download}
+  Contact:\\
+  {\texttt eijkhout@tacc.utexas.edu}
+\end{frame}
 
 \begin{frame}{Justification}
   Version 3 of the MPI standard has added a number
@@ -64,9 +40,14 @@
   Version 4 adds yet more features for exascale,
   and more flexible process management.
 
-  Note: MPI-3 as of 2012, 3.1 as of~2015. Fully supported everywhere.\\
-  MPI-4 as of June 2021. \\
-  Supported in mpich version~4.1, \emph{not} in OpenMPI version~4.
+  \begin{itemize}
+  \item
+    MPI-3 as of 2012, 3.1 as of~2015. Fully supported everywhere.\\
+  \item 
+    MPI-4 as of June 2021;
+    Supported in mpich version~4.1, \emph{not} in OpenMPI version~4.
+  \item MPI-4.1 to be ratified late 2023.
+  \end{itemize}
 \end{frame}
 
 \Level 0 {Fortran bindings}

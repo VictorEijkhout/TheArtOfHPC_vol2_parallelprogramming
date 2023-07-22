@@ -1,4 +1,4 @@
-% -*- latex -*-
+ % -*- latex -*-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
@@ -142,18 +142,12 @@ Available for all collectives and neighborhood collectives.
   \item Non-blocking is `ad hoc': buffer info not known before the collective call.
   \item Persistent allows `planning ahead': management of internal buffers and such.
   \end{itemize}
+  Request handling:
+  \begin{itemize}
+  \item Non-blocking: wait deallocates the request
+  \item Persistent: wait deactivates the request
+  \end{itemize}
 \end{numberedframe}
-
-\begin{comment}
-  \begin{numberedframe}{Problem with `progress'}
-    \begin{itemize}
-    \item Problem: \indexmpishow{MPI_Test} is local
-    \item Something needs to force the barrier information to propagate
-    \item Solution: force progress with \indexmpishow{MPI_Iprobe}
-    \item Frowny face: barrier completion takes much longer than you'd expect.
-    \end{itemize}
-  \end{numberedframe}
-\end{comment}
 
 \subsectionframe{Non-blocking barrier}
 

@@ -5,7 +5,7 @@
    %%%% "Parallel Computing"
    %%%% by Victor Eijkhout, copyright 2018
    %%%%
-   %%%% shared.c : illustrating MPI shared memory
+   %%%% shared.c : illustrating MPI bulk shared memory
    %%%%
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

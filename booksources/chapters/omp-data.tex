@@ -402,10 +402,12 @@ static mt19937 rng(rd);
 However, the following works:
 %
 \cxxverbatimsnippet{privaterandom}
-%
-You can then use the generator safely and independently:
-%
-\cxxverbatimsnippet{privateranduse}
+\end{cppnote}
+
+\begin{cppnote}{Threadprivate random use}
+  Based on the previous note, you can  use the generator safely and independently:
+  %
+  \cxxverbatimsnippet{privateranduse}
 \end{cppnote}
 
 \Level 0 {Allocators}
