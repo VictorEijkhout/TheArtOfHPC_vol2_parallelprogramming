@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the lecture slides for
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2022
+%%%% by Victor Eijkhout, copyright 2022-2023
 %%%%
 %%%% Bigdata-slides.tex : slides about messages beyond 2G
 %%%%
@@ -53,7 +53,8 @@ Big enough for
 \begin{itemize}
 \item
   \lstinline{int};
-\item \indexmpishow{MPI_Aint}, used in one-sided;
+\item \indexmpishow{MPI_Aint}, used in one-sided
+  (and therefore big enough for \indexc{intptr_t} and \indexc{ptrdiff_t});
 \item \indexmpishow{MPI_Offset}, used in file I/O.
 \end{itemize}
 However, this type could not be used in MPI-3 to describe send buffers.
@@ -104,7 +105,7 @@ call MPI_Get_elements( status,MPI_INTEGER,count )
 \lstset{language=C}
 \end{numberedframe}
 
-\begin{numberedframe}{Large int counting}
+\begin{numberedframe}{Compound messages}
   MPI-3 mechanism, deprecated in MPI-4.1:\\
   send a number of contiguous types:
 

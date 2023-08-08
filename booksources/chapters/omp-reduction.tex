@@ -209,6 +209,11 @@ vector<float> x;
   \cxxverbatimsnippet{cxxreductvector}
 \end{cppnote}
 
+In the course of the reduction, OpenMP may need to allocate
+temporary arrays. This may run into limitations of stack size.
+You may need to increase the value of the \indexompshow{OMP_STACKSIZE}
+environment variable.
+
 \Level 1 {Types}
 
 Reduction can be applied to any type for which the operator is defined.

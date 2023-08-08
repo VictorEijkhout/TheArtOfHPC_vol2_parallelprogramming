@@ -42,7 +42,7 @@
   \begin{itemize}
   \item MPI uses optimizations for shared memory: copy instead of
     socket call
-  \item One-sided offers `fake shared memory': yes, can access another
+  \item One-sided offers `fake shared memory': you can access another
     process' data, but only through function calls.
   \item MPI-3 shared memory gives you a pointer to another process'
     memory,\\
@@ -148,10 +148,5 @@ Question: what is going on here?
 \begin{numberedframe}{Split by other hardware types}
   MPI-4: split by other hardware features through \indexmpishow{MPI_COMM_TYPE_HW_GUIDED}
   and \indexmpidef{MPI_Get_hw_resource_types})
-\begin{lstlisting}
-  
-\endinput
-
-\end{lstlisting}
 \end{numberedframe}
 

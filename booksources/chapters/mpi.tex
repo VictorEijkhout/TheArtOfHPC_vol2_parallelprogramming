@@ -63,6 +63,18 @@ int MPI_Info_get_string
 \end{lstlisting}
 \end{mpifournote}
 
+\begin{mplnote}{Info objects}
+  There is an \indexmpldef{info} object in the \lstinline{mpl} namespace:
+\begin{lstlisting}
+mpl::info infoobject; // default constructor
+\end{lstlisting}
+Sample methods:  
+\begin{lstlisting}
+void set(const std::string &key, const std::string &value);
+[[nodiscard]] std::optional<std::string> value(const std::string &key) const;
+\end{lstlisting}
+\end{mplnote}
+
 \Level 2 {Environment information}
 \label{sec:mpi-info-env}
 

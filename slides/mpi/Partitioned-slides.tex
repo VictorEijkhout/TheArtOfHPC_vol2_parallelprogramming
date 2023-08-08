@@ -39,6 +39,8 @@ MPI_Precv_init
   (recvbuffer,nparts,SIZE,MPI_DOUBLE,src,0,
    comm,MPI_INFO_NULL,&recv_request);
 \end{lstlisting}
+Send and recv need both be of partitioned type:
+can not match partitioned send and non-partitioned recv or~vv.
 \end{numberedframe}
 
 \begin{numberedframe}{Partitioned send}

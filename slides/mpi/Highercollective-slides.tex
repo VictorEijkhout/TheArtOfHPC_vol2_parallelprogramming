@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the lecture slides for
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2018-2022
+%%%% by Victor Eijkhout, copyright 2018-2023
 %%%%
 %%%% Highercollective-slides.tex : more slides about collective operations
 %%%%
@@ -43,7 +43,7 @@ MPI_Isomething( <usual arguments>, MPI_Request *req);
 
 \protoslide{MPI_Ibcast}
 
-\begin{numberedframe}{Overlapping collectives}
+\begin{numberedframe}{Overlapping collectives and computation}
   \label{sl:coll-nonblock-overlap}
   Independent collective and local operations:
 \[ y \leftarrow Ax + (x^tx)y \]
@@ -87,8 +87,9 @@ MPI_Waitall(2,reqs,MPI_STATUSES_IGNORE);
 
 \begin{numberedframe}{Matching collectives}
   \label{sl:coll-nonblock-match}
-  Blocking and non-blocking don't match: either all processes
-  call the non-blocking or all call the blocking one.
+  Blocking and non-blocking collectives don't match:\\
+  either all processes
+  call the non-blocking or all call the blocking one.\\
   Thus the following code is incorrect:
 \begin{lstlisting}
 if (rank==root)
@@ -120,10 +121,13 @@ else
 \begin{numberedframe}{Persistent collectives (MPI-4)}
   Similar to persistent send/recv:
 \begin{lstlisting}
-MPI_Allreduce_init( ...., &request );
+double *buffer;
+MPI_Allreduce_init( buffer ...., &request );
 for ( ... ) {
+  // fill buffer
   MPI_Start( request );
-  MPI_Wait( request );
+  // possibly other activities
+  MPI_Wait( &request );
 }
 MPI_Request_free( &request );
 \end{lstlisting}
@@ -145,7 +149,8 @@ Available for all collectives and neighborhood collectives.
   Request handling:
   \begin{itemize}
   \item Non-blocking: wait deallocates the request
-  \item Persistent: wait deactivates the request
+  \item Persistent: wait deactivates the request,
+    still requires \indexmpishow{MPI_Request_free}.
   \end{itemize}
 \end{numberedframe}
 
