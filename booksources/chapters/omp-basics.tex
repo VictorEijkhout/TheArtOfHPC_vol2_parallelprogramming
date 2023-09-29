@@ -2,7 +2,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-%%%% This text file is part of the source of 
+%%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
 %%%% by Victor Eijkhout, copyright 2012-2022
 %%%%
@@ -122,7 +122,7 @@ OpenMP is dynamically activated by a thread spawning a team of
 threads. Furthermore,
 the number of threads used can differ between parallel regions, and
 threads can create threads recursively. This is known as
-as \indexterm{dynamic mode}. By contrast, in an MPI program the number
+\indexterm{dynamic mode}. By contrast, in an MPI program the number
 of running processes is (mostly) constant throughout the run, and
 determined by factors external to the program.
 
@@ -171,7 +171,7 @@ icc -o foo foo.c -qopenmp
 \end{verbatim}
 If you have separate compile and link stages, you need that option in both.
 
-When you use the above compiler options, 
+When you use the above compiler options,
 the \indextermbus{OpenMP}{macro},
 (or  \indexterm{cpp} macro)
  \indexompshow{_OPENMP}
@@ -282,7 +282,7 @@ The simplest way to create parallelism in OpenMP is to use
 the \indexpragma{parallel} pragma.
 A~block preceded by the \indexpragma{parallel} pragma
 is called a \emph{parallel region}; it
-is executed by a newly created team of threads. 
+is executed by a newly created team of threads.
 This is an instance of the \indexac{SPMD} model:
 all threads execute (redundantly) the same segment of code.
 \begin{lstlisting}
@@ -349,7 +349,7 @@ Here are a couple of important concepts:
 
   A~structured block can not be jumped into, so it can not start with a
   labeled statement, or contain a jump statement leaving the block.
-\item 
+\item
  An OpenMP \indextermdef{construct} is the section of code
   starting with a directive and spanning the following structured block,
   plus in Fortran the end-directive. This is a lexical concept: it contains
@@ -438,7 +438,7 @@ there are variables on the
 Summarizing the above, there are
 \begin{itemize}
 \item \indexterm{shared variables},
-  where each thread refers to the same data item, and 
+  where each thread refers to the same data item, and
 \item \indexterm{private variables},
   where each thread has its own instance.
 \end{itemize}
