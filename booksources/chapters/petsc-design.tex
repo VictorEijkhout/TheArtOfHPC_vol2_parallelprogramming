@@ -2,7 +2,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-%%%% This text file is part of the source of 
+%%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
 %%%% by Victor Eijkhout, copyright 2012-2022
 %%%%
@@ -16,7 +16,7 @@
 PETSc is a library with a great many uses, but for now let's say that
 it's primarily a library for dealing with the sort of linear algebra
 that comes from discretized \acp{PDE}. On a single processor, the
-basics of such computations 
+basics of such computations
 can be coded out by a grad student during a semester
 course in numerical analysis, but on large scale issues get much more
 complicated and a library becomes indispensible.
@@ -82,7 +82,7 @@ sometimes called \indextermbus{sequential}{semantics}.
 \label{sec:petsc-oop}
 
 PETSc has an object-oriented design, even though it is written
-in~C. There are classes of objects, such \clstinline{Mat} for
+in~C. There are classes of objects, such as \clstinline{Mat} for
 matrices and \clstinline{Vec} for Vectors, but there is also the
 \clstinline{KSP} (for "Krylov SPace solver") class of linear system solvers, and
 \clstinline{PetscViewer} for outputting matrices and vectors to screen or file.
@@ -257,7 +257,7 @@ module load petsc/3.11-debug
 module load petsc/3.11
 \end{verbatim}
 Other installations are real versus complex, or 64bit integers instead
-of the default 32. The command 
+of the default 32. The command
 \begin{verbatim}
 module spider petsc
 \end{verbatim}
@@ -305,7 +305,7 @@ There are two further arguments to \indexpetscshow{PetscInitialize}:
   The Fortran version has no arguments for commandline options;
   however, you can pass a file of database options:
 \begin{lstlisting}
-PetscInitialize(filename,ierr)    
+PetscInitialize(filename,ierr)
 \end{lstlisting}
   If none is specified, give \indexpetsctt{PETSC_NULL_CHARACTER} as argument.
 
@@ -346,7 +346,7 @@ MPI_Comm_size(comm,&ntids);
 \begin{pythonnote}{Communicator object}
 \begin{verbatim}
 comm = PETSc.COMM_WORLD
-nprocs = comm.getSize(self) 
+nprocs = comm.getSize(self)
 procno = comm.getRank(self)
 \end{verbatim}
 \end{pythonnote}
