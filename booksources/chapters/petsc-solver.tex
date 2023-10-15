@@ -2,7 +2,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-%%%% This text file is part of the source of 
+%%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
 %%%% by Victor Eijkhout, copyright 2012-2022
 %%%%
@@ -17,7 +17,7 @@ system. This is done through a solver object: an object of the class
 \lstinline{KSPSolve} takes a matrix and a right-hand-side and gives a
 solution; however, before you can call this some amount of setup is needed.
 
-There two very different ways of solving a
+There are two very different ways of solving a
 linear system: through a direct method, essentially a variant of
 Gaussian elimination; or through an iterative method that makes
 successive approximations to the solution. In PETSc there are only
@@ -117,7 +117,7 @@ the one that the preconditioner is derived from.
 In some cases it makes sense
 to specify a different matrix here.
 (You can retrieve the operators with \indexpetscdef{KSPGetOperators}.)
-The call \indexpetscshow{KSPSetFromOptions} can cover almost all of the 
+The call \indexpetscshow{KSPSetFromOptions} can cover almost all of the
 settings discussed next.
 
 KSP objects have many options to control them, so it is convenient
@@ -318,7 +318,7 @@ it is usually more convenient to use commandline options:
 \begin{comment}
   hypre with drop tolerance:
 
-  You can run with -help to see this: 
+  You can run with -help to see this:
 
  -pc_hypre_euclid_level <now -2 : formerly -2>: Factorization levels (None)
   -pc_hypre_euclid_droptolerance <0. : 0.>: Drop tolerance for ILU(k) in Euclid (None)
@@ -392,7 +392,7 @@ There are two preconditioners that operate on this notion:
   commandline options:
 \begin{verbatim}
 -pc_type jacobi -sub_ksp_type preonly \
-    -sub_pc_type ilu -sub_pc_factor_levels 1 
+    -sub_pc_type ilu -sub_pc_factor_levels 1
 \end{verbatim}
 (Note that this also talks about a \n{sub_ksp}: the subdomain solver is in fact
 a \lstinline{KSP} object. By setting its type to \lstinline{preonly} we state that the
@@ -529,7 +529,7 @@ KSPSetConvergenceTest
         KSPConvergedReason *reason,void *ctx),
     void *ctx,PetscErrorCode (*destroy)(void *ctx));
 \end{lstlisting}
-This routines accepts 
+This routines accepts
 \begin{itemize}
 \item the custom stopping test function,
 \item a `context' void pointer to pass information to the tester, and
@@ -609,7 +609,7 @@ As specified on the commandline
 yourprog -ksp_type preonly -pc_type lu -pc_factor_mat_solver_type mumps
 \end{verbatim}
 the choices are mumps, superlu, umfpack, or a number of
-others. 
+others.
 Note that availability of these packages depends on how PETSc
 was installed on your system.
 
