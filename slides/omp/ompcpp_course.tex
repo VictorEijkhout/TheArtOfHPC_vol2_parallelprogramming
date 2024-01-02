@@ -225,8 +225,9 @@ Probably also \lstinline|+=| and \lstinline|-|
 \begin{numberedframe}{Reduction illustrated}
   \label{fig:omp-reduct}
 
-  Reduction of four items on two threads, taking into account
-  initial values.
+  Reduction of four items on two threads.
+  \n{i}~is the OpenMP initialization, and \n{u}~is the
+  user initialization; each \n{p}~stands for a partial reduction value.
   \includegraphics[scale=.1]{omp-reduct.png}
 \end{numberedframe}
 
@@ -260,7 +261,8 @@ Probably also \lstinline|+=| and \lstinline|-|
 \end{numberedframe}
 
 \begin{numberedframe}{Histogram: intended main program}
-  Declare a reduction on a histogram object:
+  Declare a reduction on a histogram object;\\
+  each thread gets a local map:
   \cxxverbatimsnippet{ompbinreduce}
   Q: why does the \lstinline{inc} not have to be atomic?
 \end{numberedframe}
