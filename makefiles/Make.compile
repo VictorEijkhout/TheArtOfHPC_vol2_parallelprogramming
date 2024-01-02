@@ -51,6 +51,7 @@ FFLAGS =
 
 INTEL19 := $(findstring 19,${TACC_FAMILY_COMPILER_VERSION})
 INTEL23 := $(findstring 23,${TACC_FAMILY_COMPILER_VERSION})
+INTEL24 := $(findstring 24,${TACC_FAMILY_COMPILER_VERSION})
 
 CSTANDARD = 99
 ifeq "${MODE}" "cuda"
@@ -66,7 +67,12 @@ CPPSTANDARD = 17
 CXX_STD_FLAGS = -std=c++${CPPSTANDARD}
 CXXFLAGS += ${CXX_STD_FLAGS}
 
-OPTFLAGS = -O${OPTLEVEL} -g
+OPTFLAGS := -O${OPTLEVEL} -g
+ifeq "${TACC_FAMILY_COMPILER}" "intel"
+  OPTFLAGS += "-sox"
+else ifeq "${TACC_FAMILY_COMPILER}" "gcc"
+  OPTFLAGS += "-Wno-psabi"
+endif
 
 ifdef TACC_TAU_DIR
   C_COMPILER = tau_cc.sh -optCompInst -optPreProcess
@@ -160,7 +166,8 @@ else
       F08_HOST_COMPILER   = no_such_f_compiler
       ifeq "${TACC_FAMILY_COMPILER}" "intel"
         C_HOST_COMPILER   = icc
-        CXX_HOST_COMPILER = icpc
+        CXX_HOST_COMPILER = icpc 
+	notHOST_FLAGS = -diag-disable=10441
       else ifeq "${TACC_FAMILY_COMPILER}" "gcc"
         C_HOST_COMPILER   = gcc
         CXX_HOST_COMPILER = g++
@@ -174,6 +181,11 @@ else
 	ifeq "not" "true"
 	else ifeq "${TACC_FAMILY_COMPILER}" "intel"
 	    ifeq "${INTEL23}" "23"
+	      C_COMPILER   = icx
+	      CXX_COMPILER = icpx
+	      F_COMPILER   = ifx
+	      F08_COMPILER = ifx
+	    else ifeq "${INTEL24}" "24"
 	      C_COMPILER   = icx
 	      CXX_COMPILER = icpx
 	      F_COMPILER   = ifx
@@ -220,7 +232,14 @@ else
 
     endif # end of mode choices
 
-OMPFLAGS_intel    = -qopenmp 
+## there are bugs in the qopenmp backend of Intel23
+ifdef INTEL_OMP_FLAG
+  OMPFLAGS_intel = ${INTEL_OMP_FLAG}
+else ifeq "${INTEL23}" "23"
+  OMPFLAGS_intel    = -fopenmp 
+else
+  OMPFLAGS_intel    = -qopenmp 
+endif
 OMPFLAGS_oneapi   = -qopenmp 
 OMPFLAGS_gcc      = -ggdb -fopenmp
 OMPFLAGS_clang    = -fopenmp
@@ -241,6 +260,8 @@ else ifeq "${MODE}" "hybrid"
   CFLAGS   += ${OMPFLAGS}
   CXXFLAGS += ${OMPFLAGS}
   FFLAGS   += ${OMPFLAGS}
+else ifeq "${MODE}" "mpl"
+  CXXFLAGS += -I${TACC_MPL_INC}
 endif
 
 CFLAGS   += ${OPTFLAGS}
@@ -257,7 +278,31 @@ FFLAGS   += ${EXTRA_OPTIONS}
 ##
 ## Ordinary C/C++ rules
 ##
-%.o : %.c
+.PHONY: modules
+modules :
+	@needs="" \
+	 && modules="${MODULES}" \
+	 && if [ ! -z "${PROGRAM}" ] ; then \
+	      modules="$${modules} $$( make -p | grep MODULES_${PROGRAM} | cut -d '=' -f 2 ) " \
+	    ; fi \
+	 && if [ ! -z "${ECHO}" ] ; then echo "satisfying modules: $$modules" ; fi \
+	 && for m in $$modules ; do \
+	      mdir=TACC_$${m}_DIR \
+	       && mdir=$$( env | grep -i $${mdir} | cut -d = -f 2 ) \
+	       && if [ -z "$${mdir}" ] ; then \
+	            needs="$$needs $$m" \
+	           ; \
+	          fi \
+	       ; \
+	     done \
+	     && if [ ! -z "$$needs" ] ; then \
+	          echo "Please load modules: $$needs" \
+	           && echo  \
+	           && exit 1 \
+	           ;  \
+	        fi
+%.o : %.c 
+	@make --no-print-directory modules
 	@cmdline="${C_COMPILER} -g  ${EXTRA_INCLUDES} ${CFLAGS} \
 	    -c $<" \
 	 && if [ "${ECHO}" = "1" ] ; then \
@@ -268,7 +313,21 @@ FFLAGS   += ${EXTRA_OPTIONS}
 	            ; fi \
 	    ; fi \
 	 && eval $$cmdline
-%.o : %.cxx
+%.o : %.cxx 
+	@program=$@ && program=$${program%%.o} \
+	 && make --no-print-directory modules PROGRAM=$${program}
+	@cmdline="${CXX_COMPILER} -g ${EXTRA_INCLUDES} ${CXXFLAGS} \
+	    -c $<" \
+	 && if [ "${ECHO}" = "1" ] ; then \
+	        echo "Compiling: $$cmdline" \
+	         && echo "with ${CXX_COMPILER}=$$( which ${CXX_COMPILER} )" \
+	         && if [ "${MODE}" = "mpi" ] ; then \
+	                echo "where ${CXX_COMPILER}=$$( ${CXX_COMPILER} -show )" \
+	            ; fi \
+	    ; fi \
+	 && eval $$cmdline
+%.o : %.cpp 
+	@make --no-print-directory modules
 	@cmdline="${CXX_COMPILER} -g ${EXTRA_INCLUDES} ${CXXFLAGS} \
 	    -c $<" \
 	 && if [ "${ECHO}" = "1" ] ; then \
@@ -295,6 +354,7 @@ FFLAGS   += ${EXTRA_OPTIONS}
 	      cmdline="$${compiler} -ccbin \"$${hostcompiler} ${HOST_FLAGS}\"" \
 	      ; \
 	    fi \
+	 && cmdline="$${compiler}" \
 	 && cmdline="$$cmdline ${EXTRA_INCLUDES} ${CFLAGS} -c $<" \
 	 && if [ "${ECHO}" = "1" ] ; then \
 	        echo "Compiling: $$cmdline" \
@@ -312,7 +372,10 @@ FFLAGS   += ${EXTRA_OPTIONS}
 	        echo "Compiling: $$cmdline" \
 	         && echo "with ${F_COMPILER}=$$( which ${F_COMPILER} )" \
 	         && if [ "${MODE}" = "mpi" ] ; then \
-	                echo "where ${F_COMPILER}=$$( ${F_COMPILER} -show )" \
+	              mpicompiler=$$( ${F_COMPILER} -show ) \
+	               && echo "where ${F_COMPILER}=$$mpicompiler" \
+	               && fcompiler=$$( echo $$mpicompiler | cut -d ' ' -f 1 ) \
+	               && echo "where $$fcompiler=$$( which $$fcompiler ) " \
 	            ; fi \
 	    ; fi \
 	 && eval $$cmdline
@@ -361,6 +424,7 @@ ifeq "${TACC_FAMILY_COMPILER}" "gcc"
 endif
 
 .SECONDEXPANSION:
+## why the double colon?
 ${APPS} ${EXERCISES} ${PROGRAMS} ${WRONGS} :: $$@.o ${EXTRA_OBJS}
 	@if [ ! -z "${LINK_SETUP_COMMANDS}" ] ; then \
 	    if [ "${ECHO}" = "1" ] ; then echo ${LINK_SETUP_COMMANDS} ; fi \
@@ -370,9 +434,14 @@ ${APPS} ${EXERCISES} ${PROGRAMS} ${WRONGS} :: $$@.o ${EXTRA_OBJS}
 	    echo "No linker defined for LANGUAGE=${LANGUAGE}" && exit 1 ; fi
 	@if [ "${MODE}" = "tbb" ] ; then \
 	    tbblibs=$$( pkg-config --libs tbb ) ; fi \
+	 && if [ ! -z "${RPATH}" ] ; then \
+	      for r in ${RPATH} ; do \
+	          rpath="$$rpath -Wl,-rpath,$${r}" \
+	      ; done \
+	    ; fi \
 	 && cmd="${LINKER} -o $@ $^ \
 	        ${LINK_FLAGS} ${EXTRA_LINK_FLAGS} \
-	        ${EXTRA_LIBS} $$tbblibs " \
+	        ${EXTRA_LIBS} $$tbblibs $$rpath " \
 	 && if [ "${ECHO}" = "1" ] ; then echo "Linking: $$cmd" ; fi \
 	 && eval $$cmd
 	@if [ "${ECHO}" = "1" -a ! -z "${LINK_EXTRA_COMMANDS}" ] ; then \

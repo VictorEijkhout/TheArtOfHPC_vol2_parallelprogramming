@@ -3,9 +3,10 @@ template<typename key>
 class bincounter : public map<key,int> {
 public:
 // merge this with other map
-  void operator+=( const bincounter<key>& other ) {
+  void operator+=
+      ( const bincounter<key>& other ) {
     for ( auto [k,v] : other )
-      if ( map<key,int>::contains(k) ) // c++20
+      if ( map<key,int>::contains(k) )
 	this->at(k) += v;
       else
 	this->insert( {k,v} );

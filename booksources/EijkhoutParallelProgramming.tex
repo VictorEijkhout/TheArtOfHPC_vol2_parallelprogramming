@@ -60,6 +60,7 @@
 \input exmacs
 \input tutmacs
 \input idxmacs
+\input idxpkgmacs
 \makeindex
 \input bookmacs
 \input snippetmacs
@@ -78,11 +79,11 @@
   }
 \else
   \def\chaptersourcelisting#1{
-    \newpage
-    \Level 0 {Full source code of examples}
-    Please see the repository:
-    \expandafter\url\expandafter{\SourceRepoRoot}.
-    Examples are sorted first by programming system, then by language.
+    %% \newpage
+    %% \Level 0 {Full source code of examples}
+    %% Please see the repository:
+    %% \expandafter\url\expandafter{\SourceRepoRoot}.
+    %% Examples are sorted first by programming system, then by language.
   }
 \fi
 
@@ -267,19 +268,23 @@
 \Level 1 {MPI-4 notes}
 
 \listofmpifournote
+\vfill\hbox{}
 
 \Level 1 {Fortran notes}
 
 \listoffortrannote
+\vfill\hbox{}
 
 \Level 1 {C++ notes}
 
 \listofcppnote
+\vfill\hbox{}
 
 \Level 1 {The MPL C++ interface}
 \label{sec:idx:mpl}
 
 \listofmplnote
+\vfill\hbox{}
 
 \Level 1 {Python notes}
 

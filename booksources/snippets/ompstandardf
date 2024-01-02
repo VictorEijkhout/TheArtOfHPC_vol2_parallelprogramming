@@ -1,4 +1,5 @@
 !! version.F90
+  use omp_lib
+  implicit none
   integer :: standard
-
   standard = openmp_version

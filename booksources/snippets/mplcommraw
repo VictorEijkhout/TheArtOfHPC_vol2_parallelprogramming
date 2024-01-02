@@ -6,9 +6,9 @@ MPI_Comm
 int result;
 MPI_Comm_compare(world_extract,world_given,&result);
 cout << "Compare raw comms: " << "\n"
-	 << "identical: " << (result==MPI_IDENT)
-	 << "\n"
-	 << "congruent: " << (result==MPI_CONGRUENT)
-	 << "\n"
-	 << "unequal  : " << (result==MPI_UNEQUAL)
-	 << "\n";
+     << "identical: "
+     << (result==MPI_IDENT) << "\n"
+     << "congruent: "
+     << (result==MPI_CONGRUENT) << "\n"
+     << "unequal  : "
+     << (result==MPI_UNEQUAL) << "\n";

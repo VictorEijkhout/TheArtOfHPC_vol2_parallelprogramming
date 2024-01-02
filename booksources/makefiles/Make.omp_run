@@ -36,7 +36,7 @@ ECHO = 0
 TWOLEVEL =
 OMPSCHEDULE = 
 
-.PHONY: omp_run omp_scaling
+.PHONY: omp_run omp_scaling omp_proc_scale
 omp_run :
 	@if [ -z "${PROGRAM}" ] ; then \
 	    echo "Please set variable PROGRAM" >2 && exit 1 ; fi 
@@ -49,6 +49,7 @@ omp_run :
 	    ; else \
 	        command="OMP_NUM_THREADS=$$np $$command" \
 	    ; fi \
+	 && echo "Execute program ${PROGRAM} cores $${np}" \
 	 && command="OMP_PROC_BIND=${BIND} $$command" \
 	 && if [ ${ACTIVE} -gt 1 ] ; then \
 	         command="OMP_MAX_ACTIVE_LEVELS=${ACTIVE} $$command" ; fi \
@@ -56,20 +57,24 @@ omp_run :
 	         command="OMP_SCHEDULE=${OMPSCHEDULE} $$command" ; fi \
 	 && if [ ! -z "${RUN_OPTIONS}" ] ; then \
 	        command="$$command ${RUN_OPTIONS}" ; fi \
-	 && if [ "${ECHO}" = "1" ] ; then echo "Executing: $$command" ; fi \
+	 && if [ "${ECHO}" = "1" ] ; then echo "Commandline: $$command" ; fi \
 	 && eval $$command
-omp_scaling :
+omp_proc_scale :
 	@export np=$$( make --no-print-directory num_cores ) \
 	 && if [ -z "${NDIV}" ] ; then ndiv=5 ; else ndiv=${NDIV} ; fi \
 	 && export ompthreads="$$( make --no-print-directory omp_threads NP=$$np NDIV=$$ndiv )" \
+	 && echo $$ompthreads
+omp_scaling :
+	@ompthreads="$$( make --no-print-directory omp_proc_scale NDIV=${NDIV} )" \
 	 && if [ "${ECHO}" = "1" ] ; then \
 	        echo "Using threads: $$ompthreads out of cores: $$np" ; fi \
 	 && if [ -z "${PROGRAM}" ] ; then \
 	        echo "Set PROGRAM variable" && exit 1 \
 	    ; fi \
-	 && if [ ! -z "${RUNOUTID}" ] ; then \
-	        results=${PROGRAM}-scaling-${RUNOUTID}.out \
-	    ; else results=${PROGRAM}-scaling.out ; fi \
+	 && if [ -z "${RESULTS}" ] ; then \
+	      results=$$( make --no-print-directory scaling_logname \
+	                  RUNOUTID="${RUNOUTID}" PROGRAM="${PROGRAM}" ) \
+	    ; else results="${RESULTS}" ; fi \
 	 && ( \
 	    for t in $$ompthreads ; do \
 	        if [ "${ECHO}" = "1" ] ; then \
@@ -84,8 +89,14 @@ omp_scaling :
 	      | awk '{ times=times" "$$(${FTIME}) ; thrds=thrds" "$$(${FTHREAD}) } \
 	                END { print "thrds: " thrds; print "times: "times } ' \
 	    ; fi \
-	 && echo " scaling results in: $$results" \
-	 && git add $$results
+	 && echo " scaling results in: $$results"
+.PHONY: scaling_logname
+scaling_logname :
+	@if [ ! -z "${RUNOUTID}" ] ; then \
+	  echo ${PROGRAM}-scaling-${RUNOUTID}.out \
+	; else \
+	  echo ${PROGRAM}-scaling.out \
+	; fi
 
 #
 # Utility targets

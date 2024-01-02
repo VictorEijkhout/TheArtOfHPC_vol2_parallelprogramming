@@ -1,6 +1,6 @@
 // ksp.c
 PetscBool flag;
-int domain_size = 100; 
+PetscInt domain_size = 100; 
 ierr = PetscOptionsGetInt
-  (NULL,PETSC_NULL,"-n",&domain_size,&flag); 
+  (NULL,NULL,"-n",&domain_size,&flag); 
 PetscPrintf(comm,"Using domain size %d\n",domain_size);
