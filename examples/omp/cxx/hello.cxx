@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%% "Parallel Computing"
-   %%%% by Victor Eijkhout, copyright 2013-2020
+   %%%% by Victor Eijkhout, copyright 2013-2024
    %%%%
    %%%% hello.cxx : simple hello world
    %%%%
@@ -27,8 +27,8 @@ int main(int argc,char **argv) {
   {
     int t = omp_get_thread_num();
     stringstream proctext;
-    proctext << "Hello world from " << t;
-    cerr << proctext.str() << '\n';
+    proctext << "Hello world from " << t << '\n';
+    cerr << proctext.str();
   }
 //codesnippet end
 

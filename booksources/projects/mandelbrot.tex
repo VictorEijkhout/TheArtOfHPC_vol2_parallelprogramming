@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-8
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% mandelbrot.tex : a mandelbrot project
 %%%%
@@ -43,7 +43,9 @@ change this is the last processor, rather than zero) which gives out
 work to, and accepts results from, the worker processors. It then
 takes the results and constructs an image file from them.
 
-\Level 0 {Invocation}
+\Level 0 {MPI solutions}
+
+\Level 1 {Invocation}
 
 The \n{mandel_main} program is called as
 \begin{verbatim}
@@ -59,7 +61,7 @@ mandel_serial -h
 \end{verbatim}
 and it will print out the usage information.
 
-\Level 0 {Tools}
+\Level 1 {Tools}
 
 The driver part of the Mandelbrot program is simple. There is a 
 circle object that can generate coordinates
@@ -92,7 +94,7 @@ A very simple solution using blocking sends on the manager is given:
 \label{fig:mandel-serial}
 \end{figure}
 
-\Level 0 {Bulk task scheduling}
+\Level 1 {Bulk task scheduling}
 \label{proj:mandel-bulk}
 
 The previous section showed a very inefficient solution, but that was mostly
@@ -122,7 +124,7 @@ to do this is with non-blocking sends.
 \label{fig:mandel-bulk}
 \end{figure}
 
-\Level 0 {Collective task scheduling}
+\Level 1 {Collective task scheduling}
 \label{proj:mandel-collective}
 
 Another implementation of the bulk scheduling of the previous section
@@ -134,7 +136,7 @@ would be through using collectives.
   less efficient than the previous?
 \end{exercise}
 
-\Level 0 {Asynchronous task scheduling}
+\Level 1 {Asynchronous task scheduling}
 
 At the start of section~\ref{proj:mandel-bulk} we said that bulk scheduling
 mostly makes sense if all tasks take similar time to complete.
@@ -151,7 +153,7 @@ In the Mandelbrot case this is clearly not the case.
 \label{fig:mandel-async}
 \end{figure}
 
-\Level 0 {One-sided solution}
+\Level 1 {One-sided solution}
 
 Let us reason about whether it is possible (or advisable) to code a
 one-sided solution to computing the Mandelbrot set.  
@@ -175,3 +177,127 @@ It is hard to get results into the image as they become available. For
 this, the manager would continuously have to scan the results
 array. Therefore, constructing the image is easiest done when all
 tasks are concluded.
+
+\Level 0 {OpenMP solutions}
+
+\Level 1 {Loop based}
+
+One could make a double loop over all coordinates,
+and use a dynamic or guided schedule.
+
+\Level 1 {Producer-consumer}
+\label{sec:omp-mandel-oracle}
+
+You could also use a \indexterm{producer-consumer} model:
+one thread generates coordinates, which the other threads then process.
+To make this as asynchronous as possible,
+we keep a single FIFO object
+(in C++ one could use a \indextermtt{deque})
+with a lock on it:
+both the writing and reading threads lock the FIFO.
+
+This constant locking probably means that threads will keep each other
+from doing useful work part of the time.
+This can be alleviated by writing and reading the FIFO
+with a block of values at a time.
+
+\begin{verbatim}
+[c205-013 cxx:30] for t in 2 3 4 5 6 ; do OMP_NUM_THREADS=$t ./mandeldeque -s .001 -l 10000 -b 10  ; done
+================ #threads = 2 ================
+Time: 62.9568
+Number of points: 16000000
+Interior: 1506920
+Compute time: 60.288
+================ #threads = 3 ================
+Time: 33.2471
+Compute time: 60.5359
+================ #threads = 4 ================
+Time: 23.6858
+Compute time: 60.4749
+================ #threads = 5 ================
+Time: 19.2046
+Compute time: 60.4396
+================ #threads = 6 ================
+Time: 16.7634
+Compute time: 60.4717
+\end{verbatim}
+
+Note that the aggregate compute time is more or less constant, and equals to the case
+with just one consumer thread.
+
+Lower limits destroy scalability,
+and the aggregate time stays again constant,
+roughly equal to the external time.
+
+\begin{verbatim}
+Frontera:
+
+[c208-022 cxx:14] for t in 2 3 4 5 6 ; do OMP_NUM_THREADS=$t ./mandeldeque -t $t -s .001 -l 1000 -b 20 ; done
+================ #threads = 2 ================
+Time: 8.01974
+Number of points: 16000000
+Interior: 1510209
+Compute time: 6.47284
+================ #threads = 3 ================
+Time: 4.85859
+Number of points: 16000000
+Interior: 1510209
+Compute time: 6.37375
+================ #threads = 4 ================
+Time: 4.31056
+Number of points: 16000000
+Interior: 1510209
+Compute time: 6.40085
+================ #threads = 5 ================
+Time: 4.26642
+Number of points: 16000000
+Interior: 1510209
+Compute time: 6.37777
+================ #threads = 6 ================
+Time: 4.18028
+Number of points: 16000000
+Interior: 1510209
+Compute time: 6.41134
+
+Blocksize 200:
+================ #threads = 2 ================
+Time: 6.51065
+Number of points: 16000000
+Interior: 1510209
+Compute time: 6.19076
+================ #threads = 3 ================
+Time: 3.44035
+================ #threads = 4 ================
+Time: 2.42226
+================ #threads = 5 ================
+Time: 1.90706
+================ #threads = 6 ================
+Time: 1.60447
+
+Blocksize 2000:
+================ #threads = 2 ================
+Time: 6.50357
+Number of points: 16000000
+Interior: 1510209
+Compute time: 6.43529
+================ #threads = 3 ================
+Time: 3.23416
+================ #threads = 4 ================
+Time: 2.21621
+================ #threads = 5 ================
+Time: 1.66643
+================ #threads = 6 ================
+Time: 1.36181
+
+
+\end{verbatim}
+
+Four threads:
+
+\includegraphics[scale=.5]{block200t4}
+
+Eight:
+
+\includegraphics[scale=.5]{block200t8}
+
+It's not clear where the idle time in the beginning and end comes from.

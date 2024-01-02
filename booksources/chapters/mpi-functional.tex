@@ -2,7 +2,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-%%%% This text file is part of the source of 
+%%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
 %%%% by Victor Eijkhout, copyright 2012-202
 %%%%
@@ -151,6 +151,7 @@ summarize the results, for instance printing out some total.
 The mechanisms for that you will learn next.
 
 \Level 0 {Distributed computing and distributed data}
+%%packtsnippet distarray
 \label{sec:distributed-array}
 
 One reason for using MPI is that sometimes you need to work on
@@ -172,7 +173,8 @@ elements.
   \label{fig:mpi-array}
 \end{figure}
 
-We sometimes say that \n{data} is the local part
+In figure~\ref{fig:mpi-array} we
+say that \n{data} is the local part
 of a \indexterm{distributed array} with a total size of
 $\mathtt{n}\cdot\mathtt{p}$
 elements.
@@ -184,6 +186,8 @@ In other words, you have to write your code in such a way that
 it acts like you're working with a large array that is distributed
 over the processors, while
 actually manipulating only the local arrays on the processors.
+
+%%packtsnippet end
 
 Your typical code then looks like
 

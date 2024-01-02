@@ -2,7 +2,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-%%%% This text file is part of the source of 
+%%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
 %%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
@@ -10,9 +10,6 @@
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\Level 0 {Loop parallelism}
-\label{sec:omp-for}
 
 Loop parallelism is a very common type of parallelism in scientific
 codes, so OpenMP has an easy mechanism for it.
@@ -45,7 +42,8 @@ and based on its thread number finds a unique block of work to do.
   What are some important differences between the resulting OpenMP and MPI code?
 \end{exercise}
 
-\Level 1 {The loop directive}
+\Level 0 {Loop parallelism through directives}
+\label{sec:omp-for}
 
 The natural way to parallelize a loop in OpenMP
 is to use the
@@ -94,7 +92,7 @@ $!omp end parallel
 \end{lstlisting}
 \end{fortrannote}
 
-\Level 2 {About parallelism and worksharing}
+\Level 1 {About parallelism and worksharing}
 
 It is important to realize that the \indexpragma{parallel}
 directive does not immediately distribute any work:
@@ -398,11 +396,11 @@ For reference, the commandlines executed were:
   %
   \cxxverbatimsnippet{omprangeloop}
   %
-  Tests not reported here show exactly the same speedup as the C~code.
+  Tests show exactly the same speedup as the C~code.
 \end{cppnote}
 
 \begin{cppnote}{C++20 ranges header}
-  The \cppstandard{20} \indextermtt{ranges} library is also supported:
+  The \cppstandard{20} \indextermtt{ranges} library is supported:
   \cxxverbatimsnippet{omprangelib}
 \end{cppnote}
 
@@ -413,6 +411,11 @@ For reference, the commandlines executed were:
 \begin{cppnote}{Ranges and indices}
   Use \lstinline{iota_view} to obtain indices:
   \cxxverbatimsnippet{ompiotaview}
+  Note that this uses \cppstandard{23} suffix for
+  \lstinline{unsigned size_t}. For older versions:
+\begin{lstlisting}
+iota_view( static_cast<size_t>(0),data.size() )
+\end{lstlisting}
 \end{cppnote}
 
 \Level 0 {Loop schedules}
@@ -632,12 +635,113 @@ Here are the various schedules you can set with the
     \indexompshow{omp_sched_runtime}
 \end{description}
 
-\Level 0 {OpenMP loops vs C++ standard algorithms}
+\Level 0 {Timing experiments}
+
+\Level 1 {Indexing schemes}
+
+For two-dimensional loops there are several possible ways of handling the indexing.
+\begin{enumerate}
+\item We can use a nested loop, and translate \lstinline{i,j} indices to a linear index;
+\cxxverbatimsnippet{collapse2}
+\item same, but with a \lstinline{collapse(2)} directive;
+\cxxverbatimsnippet{collapse3}
+\item with \cppstandard{32} \lstinline{mdspan} we can use true 2D indexing;
+\cxxverbatimsnippet{collapse5}
+\item finally, to deal with \acp{PDE} with a boundary condition, we
+  use a nested loop that only traverses the interior of the array.
+\cxxverbatimsnippet{collapse4}
+\end{enumerate}
+We report the results in figure~\ref{fig:omp-collapse}.
+These results were run on the \indextermbus{TACC}{Frontera} cluster,
+with 56-core dual-socket \indextermbus{Intel}{Cascade Lake} processors.
+
+\begin{figure}[t]
+  \pgfplotsset{table/col sep=comma}
+  \begin{multicols}{2}
+    \begin{tikzpicture}
+      \tikzsetnextfilename{omp-collapse-time}
+      \begin{semilogyaxis}[
+          title=Comparison of 2D indexing schemes,
+          ylabel=msec, xlabel=cores,
+          width=.5\textwidth, height=.5\textwidth,
+          legend entries={TwoD,Collapse,MDspan,Inner,},
+        ]
+        \addplot table[y=TwoD]{plots/collapse-scaling-frontera6000.csv};
+        \addplot table[y=Collapse]{plots/collapse-scaling-frontera6000.csv};
+        \addplot table[y=MDspan]{plots/collapse-scaling-frontera6000.csv};
+        \addplot table[y=Inner]{plots/collapse-scaling-frontera6000.csv};
+      \end{semilogyaxis}
+    \end{tikzpicture}
+    \columnbreak
+    \tikzsetnextfilename{omp-collapse-effic}
+    \begin{tikzpicture}
+      \begin{axis}[
+          title=Comparison of 2D indexing schemes,
+          ylabel=efficiency loss, xlabel=cores,
+          width=.5\textwidth, height=.5\textwidth,
+          legend entries={TwoD,Collapse,MDspan,Inner,},
+          legend pos=south east,
+        ]
+        \addplot table[y=TwoD]{plots/collapse-scaling-frontera6000-eff.csv};
+        \addplot table[y=Collapse]{plots/collapse-scaling-frontera6000-eff.csv};
+        \addplot table[y=MDspan]{plots/collapse-scaling-frontera6000-eff.csv};
+        \addplot table[y=Inner]{plots/collapse-scaling-frontera6000-eff.csv};
+      \end{axis}
+    \end{tikzpicture}
+  \end{multicols}
+  %% \addplot table[y=linear]{plots/collapse-scaling-frontera6000.csv};
+  \caption{Different ways of indexing a 2D parallel loop. Left: absolute times; Right: normalized to~$t_1$.}
+  \label{fig:omp-collapse}
+\end{figure}
+
+\begin{figure}[t]
+  \pgfplotsset{table/col sep=comma}
+  \begin{multicols}{2}
+    \begin{tikzpicture}
+      \tikzsetnextfilename{omp-fivepoint-time}
+      \begin{semilogyaxis}[
+          title=Comparison of 2D indexing schemes,
+          ylabel=msec, xlabel=cores,
+          width=.5\textwidth, height=.5\textwidth,
+          legend entries={TwoD,Collapse,MDspan,},
+        ]
+        \addplot table[y=TwoD]{plots/fivepoint-scaling-frontera30000.csv};
+        \addplot table[y=Collapse]{plots/fivepoint-scaling-frontera30000.csv};
+        \addplot table[y=MDspan]{plots/fivepoint-scaling-frontera30000.csv};
+      \end{semilogyaxis}
+    \end{tikzpicture}
+    \columnbreak
+    \tikzsetnextfilename{omp-fivepoint-effic}
+    \begin{tikzpicture}
+      \begin{axis}[
+          title=Comparison of 2D indexing schemes,
+          ylabel=efficiency loss, xlabel=cores,
+          width=.5\textwidth, height=.5\textwidth,
+          legend entries={TwoD,Collapse,MDspan,},
+          legend pos=south east,
+        ]
+        \addplot table[y=TwoD]{plots/fivepoint-scaling-frontera30000-eff.csv};
+        \addplot table[y=Collapse]{plots/fivepoint-scaling-frontera30000-eff.csv};
+        \addplot table[y=MDspan]{plots/fivepoint-scaling-frontera30000-eff.csv};
+      \end{axis}
+    \end{tikzpicture}
+  \end{multicols}
+  %% \addplot table[y=linear]{plots/fivepoint-scaling-frontera6000.csv};
+  \caption{Different ways of indexing a five-point Laplace loop. Left: absolute times; Right: normalized to~$t_1$.}
+  \label{fig:omp-fivepoint}
+\end{figure}
+
+We conclude that all schemes perform approximately equally well.
+Surprisingly the \lstinline{collapse(2)} degrades performance.
+The gaps in the indexing from the `inner' scheme don't seem to matter.
+The \lstinline{mdspan} indexing performs slightly worse than the best scheme.
+
+\Level 1 {OpenMP loops vs C++ standard algorithms}
 \label{sec:omp-vs-cpp-tbb}
 
 \begin{cppnote}{Parallel standard algorithms}
   The \cppstandard{17}/\cppstandard{20} standards have introduced the
-  notion of \indexterm{execution policy} to the `standard algorithms',
+  notion of \indexterm{execution policy} to the standard algorithms,
   meaning the operations on containers that are in the \lstinline{algorithm}
   library.
 
@@ -651,17 +755,59 @@ if \lstinline{i} is prime, zero otherwise.
 \cxxverbatimsnippet{markprimeomp}
 \cxxverbatimsnippet{markprimecpp}
 
-As a result we find that the parallel algorithm
-is competitive with OpenMP loop parallelization
-for low thread counts, but not higher.
+%% \lstinputlisting{examples/tbb/cxx/primepolicy-scaling-ls6.runout}
+\begin{figure}[t]
+  %\lstinputlisting{examples/tbb/cxx/primepolicy-scaling-ls6.runout}
+  \pgfplotsset{table/col sep=comma}
+  \begin{multicols}{2}
+    \begin{tikzpicture}
+      \tikzsetnextfilename{omp-primepolicy}
+      \begin{semilogyaxis}[
+          title=Comparison of loop scheduling schemes,
+          ylabel=msec, xlabel=cores,
+          width=.47\textwidth, height=.47\textwidth,
+          legend entries={Policy,Static,Dynamic,},
+        ]
+        \addplot table[y=TBB]{plots/primepolicy-scaling-ls6.csv};
+        \addplot table[y=Stat]{plots/primepolicy-scaling-ls6.csv};
+        \addplot table[y=Dyn]{plots/primepolicy-scaling-ls6.csv};
+      \end{semilogyaxis}
+    \end{tikzpicture}
+    \columnbreak
+    \begin{tikzpicture}
+      \tikzsetnextfilename{omp-reducepolicy}
+      \begin{semilogyaxis}[
+          title=Comparison of loop scheduling schemes,
+          ylabel=msec, xlabel=cores,
+          width=.47\textwidth, height=.47\textwidth,
+          legend entries={Policy,Static,Dynamic,},
+        ]
+        \addplot table[y=TBB]{plots/reducepolicy-scaling-ls6.csv};
+        \addplot table[y=Stat]{plots/reducepolicy-scaling-ls6.csv};
+        \addplot table[y=Dyn]{plots/reducepolicy-scaling-ls6.csv};
+      \end{semilogyaxis}
+    \end{tikzpicture}
+  \end{multicols}
+  \caption{Load unbalanced algorithm (left: parallel loop, right: reduction)
+    with 1.~execution policy, 2.~OpenMP static scheduling, 3.~OpenMP dynamic scheduling}
+  \label{fig:omp-primepolicy}
+\end{figure}
 
-\lstinputlisting{examples/tbb/cxx/primepolicy-scaling-ls6.runout}
+As a result we find (figure~\ref{fig:omp-primepolicy})
+that the parallel algorithm
+is competitive with OpenMP loop parallelization
+for low thread counts, but not for higher.
 
 \Level 0 {Reductions}
 
 So far we have focused on loops with independent iterations.
 Reductions are a common type of loop with dependencies.
 There is an extended discussion of reductions in chapter~\ref{sec:reduction}.
+
+\begin{cppnote}{Performance comparison}
+  Figure~\ref{fig:omp-primepolicy} gives a performance comparison between
+  OpenMP reductions and C++ execution policies.
+\end{cppnote}
 
 \Level 0 {Nested loops}
 
@@ -860,7 +1006,7 @@ are for instance used to search through data:
 \begin{lstlisting}
 while ( a[i]!=0 && i<imax ) {
  i++; }
-// now i is the first index for which \n{a[i]} is zero.
+// now i is the first index for which a[i] is zero.
 \end{lstlisting}
 We replace the while loop by a for loop that examines all locations:
 \begin{lstlisting}

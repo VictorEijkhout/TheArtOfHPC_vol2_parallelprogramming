@@ -2,9 +2,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-%%%% This text file is part of the source of 
+%%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2021
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% mpi-topo.tex : about communicator topologies
 %%%%
@@ -53,9 +53,26 @@ of points that have two neighbors in each of the dimensions.
 Thus, if a Cartesian grid has sizes $K\times M\times N$, its
 points have coordinates $(k,m,n)$ with $0\leq k<K$ et cetera.
 Most points have six neighbors $(k\pm1,m,n)$, $(k,m\pm1,n)$, $(k,m,n\pm1)$;
-the exception are the edge points. A~grid where edge processors
+the exception are the edge points. A~grid where edge points
 are connected through \indexterm{wraparound connections} is called
 a \indextermsub{periodic}{grid}.
+
+MPI has a `Cartesian communicator' construct
+(that is, a communicator with type \indexmpishow{MPI_CART};
+see above)
+for processes to be organized not just linearly
+through their ranks,
+but also as if they are organized in a Cartesian grid.
+
+\begin{mplnote}{Cartesian communicator}
+  There is a separate class \indexmplshow{cartesian_communicator}.
+  
+  Additionaly, there is a class \indexmplshow{dimensions}
+  that describes the shape of the Cartesian grid
+  and its periodicity.
+  The \lstinline{size(int)} method retrieves the size
+  in the given dimension.
+\end{mplnote}
 
 The auxiliary routine \indexmpidef{MPI_Dims_create}
 assists in finding a grid of a given dimension,
@@ -72,26 +89,16 @@ If the dimensions array is nonzero in a component, that one is not touched.
 Of course, the product of the specified dimensions has to divide in
 the input number of nodes.
 
-\begin{comment}
-  \Level 1 {Cartesian coordinates}
-
-  The most common use of Cartesian coordinates
-  is to find the rank of process by referring to it in grid terms.
-  For instance, one could ask `what are my neighbors offset by $(1,0,0)$, 
-  $(-1,0,0)$, $(0,1,0)$ et cetera'.
-
-  While the Cartesian topology interface is fairly easy to use, as
-  opposed to the more complicated general graph topology below, it is
-  not actually sufficient for all Cartesian graph uses. Notably, in
-  a so-called \indextermsub{star}{stencil}, such as the
-  \indextermsub{nine-point}{stencil}, there are diagonal connections,
-  which can not be described in a single step. Instead, it is necessary
-  to take a separate step along each coordinate dimension. In higher
-  dimensions this is of course fairly awkward.
-
-  Thus, even for Cartesian structures, it may be advisable to use the
-  general graph topology interface.
-\end{comment}
+\begin{mplnote}{Dims create}
+  The \indexmplshow{dims_create} routine takes a \indexmplshow{dimensions}
+  object with only the dimensionality specified, and creates one
+  with the sizes filled in.
+  \cxxverbatimsnippet{mpldimscreate}
+  To have certain dimensions be periodic,
+  the initial \indexmplshow{dimensions} object needs to be
+  create with periodicity values \indexmplshow{periodic} or \indexmplshow{non_periodic}.
+  \cxxverbatimsnippet{mpldimscreatep}
+\end{mplnote}
 
 \Level 1 {Cartesian topology communicator}
 \label{sec:cart-comm-create}
@@ -105,6 +112,12 @@ each axis, and whether the grid is periodic along that axis.
 (The Cartesian grid can have fewer processes than the input communicator:
 any processes not included get \indexmpishow{MPI_COMM_NULL} as output.)
 
+\begin{mplnote}{Cartesian communicator create}
+  The actual Cartesian communicator has a constructor that
+  takes a \indexmplshow{dimensions} object as input.
+  \cxxverbatimsnippet{mplcartcreate}
+\end{mplnote}
+
 For a given communicator, you can test what type it is
 with \indexmpiref{MPI_Topo_test}:
 %
@@ -116,9 +129,17 @@ and \indexmpidef{MPI_Cart_get}:
 %
 \cverbatimsnippet{cartget}
 
+\begin{mplnote}{Get the dimensions object}
+  The \indexmplshow{dimensions} object can be extracted
+  from the communicator
+  \cxxverbatimsnippet{mplcartgetdims}
+  after which dimensions and periodicies can be extracted:
+  \cxxverbatimsnippet{mpldimsgetdims}
+\end{mplnote}
+
 \Level 1 {Cartesian vs world rank}
 
-Each point in this new communicator has a coordinate and a rank.
+Each point in a Cartesian communicator has a coordinate and a rank.
 The translation from rank to Cartesian coordinate is done by 
 \indexmpiref{MPI_Cart_coords},
 and translation from coordinates to a rank is done by
@@ -133,6 +154,12 @@ if the grid is not periodic in the offending coordinate.
 The \n{reorder} parameter to \indexmpishow{MPI_Cart_create}
 indicates whether processes can have a rank
 in the new communicator that is different from in the old one.
+
+\begin{mplnote}{Rank to coord translation}
+  The \lstinline{coordinates} method of the cartesian communicator
+  returns a vector-like object describing the process coordinate:
+  \cxxverbatimsnippet{mplcartrankcoord}
+\end{mplnote}
 
 \Level 1 {Cartesian communication}
 
@@ -151,6 +178,15 @@ in dimension~1 we get \indexmpishow{MPI_PROC_NULL} as source,
 and a legitimate target.
 %
 \csnippetwithoutput{cartshift01}{examples/mpi/c}{cartshift}
+
+\begin{mplnote}{Cartesian shifting}
+  The routine \lstinline{cartesian_communicator::}\indexmplshow{shift}
+  takes a dimension and a direction,
+  and gives the source and destination
+  as a \indexmplshow{shifted_ranks} object, which is basically
+  a tuple of two integers:
+  \cxxverbatimsnippet{mplcartshift}
+\end{mplnote}
 
 \Level 1 {Communicators in subgrids}
 

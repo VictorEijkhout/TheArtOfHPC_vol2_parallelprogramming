@@ -2,7 +2,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-%%%% This text file is part of the source of 
+%%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
 %%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
@@ -496,10 +496,10 @@ You can create your own error handler with
 handler with \indexmpishow{MPI_Comm_get_errhandler}.
 
 \begin{mplnote}{Communicator errhandler}
-  \ac{MPL} does not allow for access to the wrapped communicators.
-  However, for \indexmpishow{MPI_COMM_WORLD}, the routine
-  \indexmpishow{MPI_Comm_set_errhandler}
-  can be called directly.
+  \ac{MPL} does not have a routine
+  for setting the error handler.
+  Instead, use the \indexmplshow{native_handle} method
+  to retrieve the embedded communiator.
 \end{mplnote}
 
 \Level 1 {Defining your own MPI errors}

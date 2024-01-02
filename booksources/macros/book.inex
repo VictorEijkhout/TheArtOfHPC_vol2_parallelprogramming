@@ -1,4 +1,4 @@
-% -*_ latex -*_
+% -*- latex -*-
 % include lulu means _ex_clude stuff that is specific for the class
 % or not ready for prime time yet
 \excludecomment{lulu}
@@ -13,3 +13,6 @@
 \includecomment{fmm}
 \newif\ifIncludeAnswers
 \IncludeAnswersfalse
+
+\includecomment{nopackt}
+\excludecomment{packt}

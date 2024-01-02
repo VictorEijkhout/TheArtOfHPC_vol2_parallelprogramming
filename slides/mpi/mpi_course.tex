@@ -13,16 +13,7 @@
 
 \documentclass[10pt]{beamer}
 
-\expandafter\ifx\csname ifCourseFormatLoaded\endcsname\relax
-  \input courseformat
-  \let\ifCourseFormatLoaded\iffalse %% make the else part skippable
-\else
-  \ifCourseFormatLoaded
-    \message{Using preloaded format}
-  \else
-    \input courseformat
-  \fi
-\fi
+\input courseformat
   
 \def\qrcode{qrvol2}
 \begin{document}

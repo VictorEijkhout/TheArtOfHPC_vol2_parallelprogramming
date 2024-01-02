@@ -12,3 +12,6 @@
 
 \newif\ifIncludeAnswers
 \IncludeAnswerstrue
+
+\includecomment{nopackt}
+\excludecomment{packt}

@@ -1,16 +1,21 @@
 !****************************************************************
 !****
+!**** This program file is part of the book 
+!**** `Parallel programming for Science and Engineering'
+!**** by Victor Eijkhout, eijkhout@tacc.utexas.edu
+!****
+!**** copyright Victor Eijkhout 2012-2023
+!****
 !**** version.F90 : deduct OpenMP version
 !****
 !****************************************************************
 
 Program Hello
 
+  !!codesnippet ompstandardf
   use omp_lib
   implicit none
-  !!codesnippet ompstandardf
   integer :: standard
-
   standard = openmp_version
   !!codesnippet end
 

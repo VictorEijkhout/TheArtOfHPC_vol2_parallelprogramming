@@ -123,13 +123,13 @@ if (mytid==0) printf("Time synchronized? %d->%d\n",flag,*v);
   mean overall? Take average or maximum?
 
   Alternative:
-  \begin{lstlisting}
+\begin{lstlisting}
     MPI_Barrier(comm)
     t = MPI_Wtime();
     // something happens here
     MPI_Barrier(comm)
     t = MPI_Wtime()-t;
-  \end{lstlisting}
+\end{lstlisting}
 \end{numberedframe}
 
 \begin{numberedframe}{Profiling}

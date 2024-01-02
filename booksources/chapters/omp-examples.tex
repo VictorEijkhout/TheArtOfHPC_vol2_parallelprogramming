@@ -2,7 +2,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-%%%% This text file is part of the source of 
+%%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
 %%%% by Victor Eijkhout, copyright 2012-2021
 %%%%
@@ -581,17 +581,21 @@ This is again shows that the GNU compiler is really bad at OpenMP tasks.
 \Level 0 {Filtering array elements}
 \lstset{language=C++}
 
-Let's assume we have an array of (integer, for the sake of the argument)
-elements and we want to construct a subarray
+%%packtsnippet ompfilter
+
+Let's assume we have an array of elements (integers, for the sake of the argument)
+and we want to construct a subarray
 of only those elements that satisfy some test
 \begin{lstlisting}
 bool f(int);
 \end{lstlisting}
 
+\begin{nopackt}
 \begin{cppnote}{List filtering example}
   We will do this example only in~C++ because of its ease
   of handling \lstinline{std::vector}s.
 \end{cppnote}
+\end{nopackt}
 
 The sequential code is as follows:
 \begin{lstlisting}
@@ -615,9 +619,11 @@ and then to concatenate these:
 {
   vector<int> local;
 # pragma omp for
-  for ( auto e : data )
-    if ( f(e) )
+  for ( auto e : data ) {
+    if ( f(e) ) {
       local.push_back(e);
+    }
+  }
   filtered += local;
 }
 \end{lstlisting}
@@ -655,6 +661,8 @@ The best solution is to use a completely different mechanism.
 
 With a task it becomes possible to have a spin-wait loop:
 \cxxsnippetwithoutput{cppvectordotask}{code/omp/cxx}{filtertask}
+
+%%packtsnippet end
 
 \lstset{language=C}
 

@@ -2,7 +2,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-%%%% This text file is part of the source of 
+%%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
 %%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
@@ -15,6 +15,7 @@
 \label{sec:reduction}
 
 \Level 0 {Reductions: why, what, how?}
+\label{sec:reduct-intro}
 
 Parallel tasks often produce some quantity that needs to be summed
 or otherwise combined.
@@ -70,7 +71,7 @@ For multiple reduction with different operators, use more than one clause.
 \begin{remark}
   A reduction is one of those cases where the parallel execution can have a slightly different
   value from the one that is computed sequentially, because floating point operations
-  are not associative, so \emph{roundoff}{omp!reduction!roundoff}
+  are not associative, so \emph{roundoff}\index{omp!reduction!roundoff}
   will lead to differing results.
   See~\HPSCref{sec:roundoff-parallel} for more explanation.
 
@@ -81,6 +82,10 @@ For multiple reduction with different operators, use more than one clause.
 \end{remark}
 
 \Level 1 {Code your own solution}
+
+While using a \lstinline{reduction} clause is the preferred way of dealing
+with codes as in section~\ref{sec:reduct-intro} above,
+it can be instructive to look at other mechanisms.
 
 The most immediate way is to eliminate the race condition
 by declaring a \indexterm{critical section}:
@@ -179,6 +184,9 @@ Logical operator reductions in C: \n{& && | || ^}
 Logical operator reductions in Fortran:
 \n{.and. .or. .eqv. .neqv. .iand. .ior. .ieor.}
 
+Reduction can be applied to any type for which the operator is defined.
+The types to which \lstinline{max/min} are applicable are limited.
+
 \begin{exercise}
   The maximum and minimum reductions were not added to OpenMP until
   \ompstandard{3.1}.
@@ -213,11 +221,6 @@ In the course of the reduction, OpenMP may need to allocate
 temporary arrays. This may run into limitations of stack size.
 You may need to increase the value of the \indexompshow{OMP_STACKSIZE}
 environment variable.
-
-\Level 1 {Types}
-
-Reduction can be applied to any type for which the operator is defined.
-The types to which \lstinline{max/min} are applicable are limited.
 
 \Level 0 {Initial value for reductions}
 
@@ -326,9 +329,14 @@ you can declare the reduction through an expression:
 and use that in the \indexclause{reduction} clause:
 %
 \cverbatimsnippet{ompminabsclause}
+%
+for the above loop
+%
+\cverbatimsnippet{ompminabsloop}
 
 \begin{cppnote}{Lambda expressions in declared reductions}
-  You can use lambda expressions in the explicit expression:
+  You can use lambda expressions in the explicit expression
+  for a declared reduction:
   %
   \cxxverbatimsnippet{cppreductlambda}
   %
@@ -352,7 +360,7 @@ For instance, recreating the maximum reduction would look like this:
 \begin{cppnote}{Reduction over iterators}
   Support for
   \emph{C++ iterators}\index{C++ iterators!in OMP reduction}
-\begin{lstlisting}
+\begin{lstlisting}[language=C++]
 #pragma omp declare reduction \
     (merge             // identifier 
     : std::vector<int> // typelist
@@ -375,7 +383,7 @@ For instance, recreating the maximum reduction would look like this:
 \end{cppnote}
 
 \begin{cppnote}{Example: reduction over a map}
-  You can do a reduction over a \lstinline{std::map}
+  Reduction over a \lstinline{std::map}
   by merging thread-local maps:
   \begin{multicols}{2}
     \cxxverbatimsnippet{ompbincounter}

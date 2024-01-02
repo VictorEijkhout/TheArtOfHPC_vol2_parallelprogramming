@@ -2,7 +2,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-%%%% This text file is part of the source of 
+%%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
 %%%% by Victor Eijkhout, copyright 2012-2022
 %%%%
@@ -578,7 +578,7 @@ the case of a tridiagonal matrix you would specify that each row has
 three elements:
 %
 \begin{lstlisting}
-MatSeqAIJSetPreallocation(A,3, NULL);
+MatSeqAIJSetPreallocation(A,3, PETSC_NULLPTR);
 \end{lstlisting}
 
 If the matrix is less regular you can use the third argument to give
@@ -588,7 +588,7 @@ int *rowlengths;
 // allocate, and then:
 for (int row=0; row<nrows; row++)
   rowlengths[row] = // calculation of row length
-MatSeqAIJSetPreallocation(A,NULL,rowlengths);
+MatSeqAIJSetPreallocation(A,PETSC_NULLPTR,rowlengths);
 \end{lstlisting}
 
 In case of a distributed matrix you need to specify this bound with
@@ -615,7 +615,7 @@ or a detailed listing of row lengths.
 For the matrix of the \indexterm{Laplace equation}, this specification
 would seem to be:
 \begin{lstlisting}
-MatMPIAIJSetPreallocation(A, 3, NULL, 2, NULL);
+MatMPIAIJSetPreallocation(A, 3, PETSC_NULLPTR, 2, PETSC_NULLPTR);
 \end{lstlisting}
 However, this is only correct if the block structure from the parallel division
 equals that from the lines in the domain.
@@ -624,7 +624,7 @@ It is then possible to contract the storage by copying the matrix.
 
 Specifying bounds on the number of nonzeros is often enough, and not too wasteful. However,
 if many rows have fewer nonzeros than these bounds, a lot of space is
-wasted. In that case you can replace the NULL arguments by an array
+wasted. In that case you can replace the \lstinline{PETSC_NULLPTR} arguments by an array
 that lists for each row the number of nonzeros in that row.
 
 \Level 1 {Matrix elements}
@@ -681,7 +681,7 @@ Since PETSc is geared towards
 this returns not only the element values, but also the column numbers,
 as well as the mere number of stored columns.
 If any of these three return values are not needed, they can be
-unrequested by setting the parameter passed to \clstinline{NULL}.
+unrequested by setting the parameter passed to \clstinline{PETSC_NULLPTR}.
 
 PETSc insists that you properly release the row again with
 \indexpetscxref{MatRestoreRow}{MatGetRow}.
@@ -958,12 +958,12 @@ The \indexpetscref{VecScatterCreate} call has as arguments:
 \item An input vector. From this, the parallel layout is used; any
   vector being scattered from should have this same layout.
 \item An \clstinline{IS} object describing what indices are being
-  scattered; if the whole vector is rearranged, \clstinline{NULL}
+  scattered; if the whole vector is rearranged, \clstinline{PETSC_NULLPTR}
   (Fortran: \indexpetsctt{PETSC_NULL_IS}) can be given.
 \item An output vector. From this, the parallel layout is used; any
   vector being scattered into should have this same layout.
 \item An \clstinline{IS} object describing what indices are being
-  scattered into; if the whole vector is a target, \clstinline{NULL} can
+  scattered into; if the whole vector is a target, \clstinline{PETSC_NULLPTR} can
   be given.
 \end{itemize}
 
@@ -975,7 +975,7 @@ odd index to process one:
 
 Note that the index set is applied to the input vector, since it
 describes the components to be moved. The output vector uses
-\clstinline{NULL} since these components are placed in sequence.
+\clstinline{PETSC_NULLPTR} since these components are placed in sequence.
 
 \begin{exercise}
   Modify this example so that the components are still separated
@@ -1036,7 +1036,7 @@ MatPartitioningSetType(part,MATPARTITIONINGPARMETIS);
 MatPartitioningApply(part,&is);
 /* get new global number of each old global number */
 ISPartitioningToNumbering(is,&isn);
-ISBuildTwoSided(is,NULL,&isrows);
+ISBuildTwoSided(is,PETSC_NULLPTR,&isrows);
 MatCreateSubMatrix(A,isrows,isrows,MAT_INITIAL_MATRIX,&perA);
 \end{lstlisting}
 

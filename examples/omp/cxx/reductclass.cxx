@@ -35,9 +35,11 @@ public:
 int main() {
 
 //codesnippet ompreductop
-  vector< Thing > things(500,Thing(1.f) );
+  vector< Thing >
+    things(500,Thing(1.f) );
   Thing result(0.f);
-#pragma omp parallel for reduction( +:result )
+#pragma omp parallel for \
+      reduction( +:result )
   for ( const auto& t : things )
     result = result + t;
 //codesnippet end

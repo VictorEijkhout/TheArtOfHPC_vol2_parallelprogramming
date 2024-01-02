@@ -16,3 +16,6 @@
 
 \includecomment{advanced}
 \includecomment{foundations}
+
+\includecomment{nopackt}
+\excludecomment{packt}

@@ -1,3 +1,4 @@
+% -*- latex -*-
 % include lulu means _ex_clude stuff that is specific for the class
 % or not ready for prime time yet
 \includecomment{lulu}
@@ -10,3 +11,6 @@
 \excludecomment{notlulu}
 \includecomment{montecarlo}
 \excludecomment{fmm}
+
+\includecomment{nopackt}
+\excludecomment{packt}

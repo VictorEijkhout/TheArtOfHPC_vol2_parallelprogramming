@@ -44,7 +44,9 @@ int main(int argc,char **argv) {
   for ( int id=0; id<dim; id++)
     periods[id] = 0;
   if (procno==0) {
+    printf("Hyperplane13p\n");
     print_grid( nprocs,dim,dimensions );
+    printf(" .. hyperplane13p\n");
   }
   MPI_Comm cart_comm;
   MPI_Cart_create

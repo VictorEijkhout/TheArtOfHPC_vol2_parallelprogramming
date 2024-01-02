@@ -33,7 +33,7 @@ int main()
   //codesnippet ompiotaview
   vector<long> data(N);
 # pragma omp parallel for
-  for ( auto i : std::ranges::iota_view( static_cast<size_t>(0),data.size() ) )
+  for ( auto i : std::ranges::iota_view( 0UZ,data.size() ) )
     data[i] = f(i);
   //codesnippet end
 

@@ -2,9 +2,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-%%%% This text file is part of the source of 
+%%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% omp-sync.tex : synchronization
 %%%%
@@ -265,8 +265,10 @@ void omp_unset_lock(omp_lock_t *lock);
 \end{lstlisting}
 Since the set call is blocking, there is also 
 \begin{lstlisting}
-omp_test_lock();
+int omp_test_lock();
 \end{lstlisting}
+which returns true if the lock was successfully set;
+otherwise it return false and continues execution with the next statement.
 
 Unsetting a lock needs to be done by the thread that set it.
 
@@ -314,6 +316,11 @@ see section \ref{sec:omp:flush}.
   }  /* end of parallel region */
 \end{lstlisting}
 \end{exercise}
+
+\Level 1 {Example: Mandelbrot set}
+
+Section \ref{sec:omp-mandel-oracle} has an approach to the  \indexterm{Mandelbrot set}
+based locking a FIFO that has the coordinates to be processed.
 
 \Level 1 {Example: object with atomic update}
 

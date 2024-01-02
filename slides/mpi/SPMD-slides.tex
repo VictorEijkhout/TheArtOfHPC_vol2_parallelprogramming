@@ -331,7 +331,7 @@ use mpi
     In your program:
     \begin{lstlisting}
       #include <mpl/mpl.hpp>
-    \end{lstlisting}
+  \end{lstlisting}
     Compiling:
 \begin{verbatim}
   mpicxx -o prog sources.cxx -I${TACC_MPL_INC}
@@ -521,29 +521,29 @@ MPI_Init(0,0);
 
   C:
   \lstset{language=C}
-  \begin{lstlisting}
-    MPI_Comm comm = MPI_COMM_WORLD;
-  \end{lstlisting}
+\begin{lstlisting}
+MPI_Comm comm = MPI_COMM_WORLD;
+\end{lstlisting}
 
   F:
   \lstset{language=Fortran}
-  \begin{lstlisting}
-    Type(MPI_Comm) :: comm = MPI_COMM_WORLD
-  \end{lstlisting}
+\begin{lstlisting}
+Type(MPI_Comm) :: comm = MPI_COMM_WORLD
+\end{lstlisting}
 
   P:
   \lstset{language=Python}
-  \begin{lstlisting}
-    from mpi4py import MPI
-    comm = MPI.COMM_WORLD
-  \end{lstlisting}
+\begin{lstlisting}
+from mpi4py import MPI
+comm = MPI.COMM_WORLD
+\end{lstlisting}
 
   MPL:
   \lstset{language=C++}
-  \begin{lstlisting}
+\begin{lstlisting}
     const mpl::communicator &comm_world =
         mpl::environment::comm_world();
-  \end{lstlisting}
+\end{lstlisting}
 \end{numberedframe}
 
 \begin{numberedframe}{Have you been paying attention?}

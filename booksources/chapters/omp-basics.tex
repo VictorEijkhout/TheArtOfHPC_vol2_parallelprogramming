@@ -2,7 +2,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-%%%% This text file is part of the source of 
+%%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
 %%%% by Victor Eijkhout, copyright 2012-2022
 %%%%
@@ -23,8 +23,9 @@ that OpenMP targets.
 
 Modern computers have a multi-layered design. Maybe you have access to
 a cluster, and maybe you have learned how to use MPI to communicate
-between cluster nodes. OpenMP, the topic of this chapter, is concerned
-with a single \indextermsub{cluster}{node} or \indexterm{motherboard},
+between cluster nodes.
+OpenMP, the topic of this chapter,
+is concerned with a single \indextermsub{cluster}{node}
 and getting the most out of the available parallelism available there.
 
 \begin{figure}[ht]
@@ -41,8 +42,8 @@ no longer in serivce, with two
 sockets and an \indextermbus{Intel}{Xeon PHI} co-processor.)
 
 Your personal laptop or desktop computer will probably
-have one socket,
-most supercomputers have nodes with two or four sockets.
+have one socket;
+while most supercomputers have nodes with two or four sockets.
 In either case there can be a \ac{GPU} as co-processor;
 supercomputer clusters can also have other types of accelerators.
 OpenMP versions as of \ompstandard{4.0} target such offloadable devices.
@@ -53,10 +54,11 @@ OpenMP versions as of \ompstandard{4.0} target such offloadable devices.
   \label{fig:sandybridge}
 \end{figure}
 %
-To see where OpenMP operates we need to dig into the
-sockets. Figure~\ref{fig:sandybridge} shows a picture of an
+To see what aspects of this architecture OpenMP addresses
+we need to dig into the sockets.
+Figure~\ref{fig:sandybridge} shows a picture of an
 \indextermbus{Intel}{Sandybridge} socket. You recognize a structure
-with eight \indextermdef{core}s: independent processing
+with eight \indextermdefp{core}: independent processing
 units, that all have access to the same memory.
 (In
 figure~\ref{fig:stampedenode} you saw four memory chips,
@@ -65,7 +67,7 @@ attached to
 each of the two sockets; all of the sixteen cores have access to all
 that memory.)
 OpenMP makes it easy to explore all these cores in the same program.
-The \ompstandard{5.0} standard also added the possibility
+The \ompstandard{4.0} standard also added the possibility
 to offload computations to the GPU or other accelerator.
 
 To summarize the structure of the architecture that OpenMP targets:
@@ -76,13 +78,16 @@ To summarize the structure of the architecture that OpenMP targets:
   the memory on the node.
 \item There can be an accelerator, which can be used to offload computations to.
 \end{itemize}
+What OpenMP does not target is the \indexterm{cluster} structure,
+where nodes communicate through a library that can access the network,
+such as \ac{MPI}
 
 \Level 1 {Target software}
 
 OpenMP is based on on two concepts: the use of \indexterm{threads}
 and the \indextermdef{fork/join model} of
 parallelism. For now you can think of a thread as a sort of process:
-the computer executes a sequence of instructions.
+the processing unit executes a sequence of instructions.
 The fork/join model says that a thread can split itself (`fork')
 into a number of threads that are identical copies. At some point
 these copies go away and the original thread is left (`join'),
@@ -121,8 +126,8 @@ An important difference between OpenMP and MPI is that parallelism in
 OpenMP is dynamically activated by a thread spawning a team of
 threads. Furthermore,
 the number of threads used can differ between parallel regions, and
-threads can create threads recursively. This is known as
-as \indexterm{dynamic mode}. By contrast, in an MPI program the number
+threads can create threads recursively. 
+By contrast, in an MPI program the number
 of running processes is (mostly) constant throughout the run, and
 determined by factors external to the program.
 
@@ -143,7 +148,11 @@ with some speedup over the single thread. To use such a processor
 efficiently you would let the number of OpenMP threads be
 2 or~4 times the number of cores, depending on the hardware.
 
-\Level 0 {Compiling and running an OpenMP program}
+\Level 0 {Logistics of an OpenMP program run}
+
+Before we can start looking at OpenMP,
+we need to get some formalities out of the way
+about OpenMP programs.
 
 \Level 1 {Compiling}
 \index{OpenMP!compiling|(}
@@ -171,6 +180,14 @@ icc -o foo foo.c -qopenmp
 \end{verbatim}
 If you have separate compile and link stages, you need that option in both.
 
+\Level 1 {Standards}
+
+The OpenMP system has gone through a number of standards,
+and some features you read about in this course
+may not be available with your compiler.
+
+When you want to check this, you can query the
+\indextermbus{OpenMP}{standard} as follows.
 When you use the above compiler options, 
 the \indextermbus{OpenMP}{macro},
 (or  \indexterm{cpp} macro)

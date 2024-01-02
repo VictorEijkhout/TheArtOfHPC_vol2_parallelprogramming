@@ -47,7 +47,8 @@ int main(int argc,char **argv) {
   int partial_sum;
   //codesnippet scanincexc
   partial_sum=0;
-#pragma omp parallel for reduction(inscan,+:partial_sum)
+#pragma omp parallel for \
+  reduction(inscan,+:partial_sum)
   for (int i=0; i<nthreads; i++) {
     partial_sum += amounts[i];
 #   pragma omp scan inclusive(partial_sum)
@@ -58,7 +59,8 @@ int main(int argc,char **argv) {
 
   //codesnippet scanincexc
   partial_sum=0;
-#pragma omp parallel for reduction(inscan,+:partial_sum)
+#pragma omp parallel for \
+  reduction(inscan,+:partial_sum)
   for (int i=0; i<nthreads; i++) {
     exc_partials[i] = partial_sum;
 #   pragma omp scan exclusive(partial_sum)

@@ -2,7 +2,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-%%%% This text file is part of the source of 
+%%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
 %%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
@@ -409,7 +409,8 @@ See the above code fragment.
 \begin{mpifournote}
   Unlimited buffering can be enabled (as of \mpistandard{4.1}) by
   specifying \indexmpidef{MPI_BUFFER_AUTOMATIC}
-  in any of the attach routines.
+  in any of the attach routines as the \lstinline{buffer} argument.
+  The \lstinline{size} argument is then ignored.
 \end{mpifournote}
 
 The buffer is detached with \indexmpiref{MPI_Buffer_detach}.
@@ -466,3 +467,6 @@ The possible error codes are
 The asynchronous version is \indexmpishow{MPI_Ibsend}, the persistent
 (see section~\ref{sec:persistent}) call is \indexmpiref{MPI_Bsend_init}.
 
+\Level 1 {Local behavior}
+
+The attach routines are local; the detach and flush routines are non-local.

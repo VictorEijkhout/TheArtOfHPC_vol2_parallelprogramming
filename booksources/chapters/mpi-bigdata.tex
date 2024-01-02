@@ -2,7 +2,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-%%%% This text file is part of the source of 
+%%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
 %%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
@@ -26,6 +26,11 @@ larger count parameter of type \indexmpishow{MPI_Count}.
 The implementation of this depends somewhat on the language.
 
 \begin{mpifournote}{MPI Count type}
+
+\begin{mplnote}{Large counts}
+  Large buffer communication is supported:
+  \cxxverbatimsnippet{mplbigbuffer}  
+\end{mplnote}
 
 \Level 1 {C}
 \label{sec:c-mpi-count}

@@ -12,16 +12,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \usepackage{imakeidx}
-
 \indexsetup{noclearpage}
 \makeindex[columns=1]
-\makeindex[name=mpi,title=,columns=1]
-\makeindex[name=mpl,title=,columns=1]
-\makeindex[name=omp,title=,columns=1]
-\makeindex[name=petsc,title=,columns=1]
-\makeindex[name=kokkos,title=,columns=1]
-\makeindex[name=sycl,title=,columns=1]
-\makeindex[name=python,title=,columns=1]
 
 
 \newcommand{\indextermp}[1]{\emph{#1s}\index{#1}}
@@ -67,24 +59,6 @@
     @\acl{#1} (#1)|)}}\tmp}
 \makeatother
 
-\newif\ifShowRoutine
-{ \catcode`\_=13
-  \gdef\indexmpishowf#{\bgroup
-    \InnocentChars \def\\{\char`\\}\relax
-    \ShowRoutinetrue
-    \afterassignment\mpitoindexf\edef\indexedmpi}
-  \gdef\indexmpishowp#{\bgroup
-    \InnocentChars \def\\{\char`\\}\relax
-    \ShowRoutinetrue
-    \afterassignment\mpitoindexp\edef\indexedmpi}
-  \gdef\indexmpishowsub#{\bgroup
-    \InnocentChars
-    \catcode`\_=13 \def_{\char95\discretionary{}{}{}}
-    \def\\{\char`\\}\relax
-    %
-    \tt \afterassignment\defineindexmpisubtwo \xdef\indexedmpisubone}
-  \gdef\defineindexmpisubtwo{\afterassignment\mpitoindexsub \gdef\indexedmpisubtwo}
-}
 
 %%%%
 %%%% Stuff to index
@@ -204,174 +178,6 @@
 %%%% routine ref
 %%%%
 
-\def\indexpetscxref#1#2{\def\indexedroutine{#1}\def\displayedroutine{#2}%
-  %\petscIndexBF -> \RoutineIndexBF{petsc}
-  \edef\tmp{%
-    \noexpand\lstinline+\indexedroutine+
-    (figure\noexpand~\noexpand\ref{ref:\displayedroutine})%
-    \noexpand\index[petsc]{%
-      \indexedroutine@{\catcode95=12 \noexpand\texttt{\indexedroutine}}|textbf}%
-  }%
-  \tmp
-}  
-
-%% mpi
-\newcommand\indexmpishow{\PackageIndex\mpiIndexRM}
-\newcommand\indexmpidepr{\PackageIndex\mpiIndexRd}
-\newcommand\indexmpidef {\PackageIndex\mpiIndexBF}
-\newcommand\indexmpiex  {\PackageIndex\mpiIndexIT}
-% versions that generate man page
-\newcommand\indexmpiref {\PackageIndex   \mpiIndexAndRef}
-\newcommand\indexmpixref{\PackageIndexTwo\mpiIndexAndXRef}
-\let\indexmpirep\indexmpishow % need to incorporate link to man page
-
-\newcommand\mpiIndexBF{\RoutineIndexFont{mpi}{textbf}\endgroup}
-\newcommand\mpiIndexRM{\RoutineIndexFont{mpi}{textrm}\endgroup}
-\newcommand\mpiIndexRd{\RoutineDeprcFont{mpi}{textrm}\endgroup}
-\newcommand\mpiIndexIT{\RoutineIndexFont{mpi}{textsl}\endgroup}
-\newcommand\mpiIndexAndRef{% this is called through afterassignment; \indexedroutine has been set
-  \global\let\referencedroutine\indexedroutine
-  \RoutineShowAndIndex{mpi}{textbf}% show name, index, reference to figure
-  \endgroup % end of innocent characters
-  \def\routinefam{mpi}\RoutineRefDisplay
-}
-\newcommand\mpiIndexAndXRef{%
-  \RoutineShowAndIndex{mpi}{textbf}%
-  \endgroup}
-
-% mpl
-\newcommand\indexmplshow{\PackageIndex\mplIndexRM}
-\newcommand\indexmpldef {\PackageIndex\mplIndexBF}
-\newcommand\indexmplref {\PackageIndex\mplIndexAndRef}
-\newcommand\indexmplex  {\PackageIndex\mplIndexIT}
-\let\indexmplrep\indexmplshow % need to incorporate link to man page
-
-\newcommand\mplIndexBF{\RoutineIndexFont{mpl}{textbf}\endgroup}
-\newcommand\mplIndexRM{\RoutineIndexFont{mpl}{textrm}\endgroup}
-\newcommand\mplIndexIT{\RoutineIndexFont{mpl}{textsl}\endgroup}
-\newcommand\mplIndexAndRef{%
-  \let\referencedroutine\indexedroutine
-  \RoutineShowAndIndex{mpl}{textbf}%
-  \def\routinefam{mpl}\RoutineRefDisplay\endgroup}
-
-% omp
-\newcommand\indexompterm  {\PackageIndex\ompIndexTe}
-\newcommand\indexompshow  {\PackageIndex\ompIndexRM}
-\newcommand\indexompdepr  {\PackageIndex\ompIndexRd}
-\newcommand\indexompdef   {\PackageIndex\ompIndexBF}
-\newcommand\indexompclause{\PackageIndex\ompIndexRM}
-\newcommand\indexompref   {\PackageIndex\ompIndexAndRef}
-\newcommand\indexompex    {\PackageIndex\ompIndexIT}
-\let\indexomprep\indexompshow % need to incorporate link to man page
-
-%%%% \def\indexpragma#1{\texttt{#1}\index[omp]{#1}}
-\newcommand\indexpragma   {\PackageIndex\ompIndexTT}
-%%%% \def\indexpragmadef#1{\texttt{#1}\index[omp]{#1|textbf}}
-\newcommand\indexpragmadef{\PackageIndex\ompIndexBF}
-\index[omp]{pragma|see{see under pragma name}}
-%\def\indexompclause#1{\texttt{#1}\index[omp]{omp clause!#1}}
-\newcommand\indexclause   {\PackageIndex\ompIndexTT}
-\newcommand\indexclausedef{\PackageIndex\ompIndexTT}
-\def\indexclauseoption#1#2{\texttt{#2}\index[omp]{#1!#2}}
-\def\indexompclauseoption#1#2{\texttt{#2}\index[omp]{#1!#2}}
-
-\newcommand\ompIndexTe{\TermIndexFont{omp}{textrm}\endgroup}
-\newcommand\ompIndexTT{\RoutineIndexFont{omp}{texttt}\endgroup}
-\newcommand\ompIndexRM{\RoutineIndexFont{omp}{textrm}\endgroup}
-\newcommand\ompIndexBF{\RoutineIndexFont{omp}{textbf}\endgroup}
-\newcommand\ompIndexRd{\RoutineDeprcFont{omp}{textrm}\endgroup}
-\newcommand\ompIndexIT{\RoutineIndexFont{omp}{textsl}\endgroup}
-\newcommand\ompIndexAndRef{%
-  \let\referencedroutine\indexedroutine
-  \RoutineIndexFont{omp}{textbf}%
-  \def\routinefam{omp}\RoutineRefDisplay\endgroup}
-
-% petsc
-\newcommand\indexpetscshow{\PackageIndex\petscIndexRM}
-\newcommand\indexpetscdepr{\PackageIndex\petscIndexRd}
-\newcommand\indexpetscdef {\PackageIndex\petscIndexBF}
-\newcommand\indexpetscref {\PackageIndex\petscIndexAndRef}
-\newcommand\indexpetscex  {\PackageIndex\petscIndexIT}
-\newcommand\indexpetsctt  {\PackageIndex\petscIndexTT}
-\newcommand\indexpetscfile{\PackageIndex\petscIndexTT}
-\let\indexpetscrep\indexpetscshow % need to incorporate link to man page
-
-\newcommand\petscIndexBF{\RoutineIndexFont{petsc}{textbf}\endgroup}
-\newcommand\petscIndexRM{\RoutineIndexFont{petsc}{textrm}\endgroup}
-\newcommand\petscIndexRd{\RoutineDeprcFont{petsc}{textrm}\endgroup}
-\newcommand\petscIndexIT{\RoutineIndexFont{petsc}{textsl}\endgroup}
-\newcommand\petscIndexTT{\RoutineIndexFont{petsc}{texttt}\endgroup}
-\newcommand\petscIndexAndRef{%
-  \let\referencedroutine\indexedroutine
-  \RoutineShowAndIndex{petsc}{textbf}%
-  \def\routinefam{petsc}\RoutineRefDisplay\endgroup}
-
-% sycl
-\newcommand\indexsyclshow{\PackageIndex\syclIndexRM}
-\newcommand\indexsycldef {\PackageIndex\syclIndexBF}
-\newcommand\syclIndexBF{\RoutineIndexFont{sycl}{textbf}\endgroup}
-\newcommand\syclIndexRM{\RoutineIndexFont{sycl}{textrm}\endgroup}
-
-% kokkos
-\newcommand\indexkokkosshow{\PackageIndex\kokkosIndexRM}
-\let\indexkokkos\indexkokkosshow
-\newcommand\indexkokkosdef {\PackageIndex\kokkosIndexBF}
-\newcommand\kokkosIndexBF{\RoutineIndexFont{kokkos}{textbf}\endgroup}
-\newcommand\kokkosIndexRM{\RoutineIndexFont{kokkos}{textrm}\endgroup}
-
-%%
-%% Define `indexedroutine' and invoke #1 which will process this
-%%
-\newcommand\PackageIndex[1]{\begingroup
-    \InnocentChars \ShowRoutinetrue
-    \afterassignment#1\xdef\indexedroutine
-}
-
-%%
-%% Define `indexedroutine' and `referencedroutine' and invoke #1 which will process this
-%%
-\newcommand\PackageIndexTwo[1]{\begingroup
-    \InnocentChars \ShowRoutinetrue
-    \let\routineprocess=#1%
-    \afterassignment\defineReferencedAndProcess
-    \edef\indexedroutine
-}
-\newcommand\defineReferencedAndProcess{%
-  \afterassignment\routineprocess
-  \edef\referencedroutine}
-
-%%
-%% Write `indexedroutine' to index #1 with #2 font
-%%
-\def\RoutineIndexFont#1#2{% 
-  \def\ifont{#2}\def\bfont{textbf}%
-  \edef\tmp{%
-    \noexpand\lstinline+\indexedroutine+%
-    \ifx\ifont\bfont\noexpand\label{def:\indexedroutine}\fi%
-    \noexpand\index[#1]{%
-      \indexedroutine@{\catcode95=12 \noexpand\texttt{\indexedroutine}}|#2}%
-  }%
-  \tmp%
-}
-\def\TermIndexFont#1#2{% 
-  \def\ifont{#2}\def\bfont{textbf}%
-  \edef\tmp{%
-    \noexpand\textsl{\indexedroutine}%
-    \ifx\ifont\bfont\noexpand\label{def:\indexedroutine}\fi%
-    \noexpand\index[#1]{\indexedroutine|#2}%
-    \noexpand\index{\indexedroutine (OpenMP)}%
-  }%
-  \tmp
-}
-\def\RoutineDeprcFont#1#2{% 
-  \edef\tmp{%
-    \noexpand\lstinline+\indexedroutine+%
-    \noexpand\index[#1]{%
-      \indexedroutine@{\catcode95=12 \noexpand\texttt{\indexedroutine} (deprecated)}|#2}%
-  }%
-  \tmp
-}
-
 %%
 %% Write `indexedroutine' to index #1 with #2 font
 %% also: generate manpage float
@@ -470,6 +276,7 @@
 
 \newcommand{\indexterm}[1]{\emph{#1}\index{#1}}
 \def\indextermdef#1{\emph{#1}\index{#1|textbf}}
+\def\indextermdefp#1{\emph{#1s}\index{#1|textbf}}
 { \catcode`\_=13
   \gdef\tttoindex{%\tracingmacros=2
     \edef\tmp{%

@@ -92,7 +92,9 @@ int main() {
       //codesnippet lockobjectuse
       atomic_int my_object;
       vector<std::thread> threads;
-      for (int ithread=0; ithread<NTHREADS; ithread++) {
+      for (int ithread=0;
+           ithread<NTHREADS;
+           ithread++) {
         threads.push_back
           ( std::thread(
             [=,&my_object] () {

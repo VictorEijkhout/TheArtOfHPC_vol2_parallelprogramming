@@ -63,11 +63,11 @@ int main(int argc,char **argv) {
     int *datadata = data.data();
 #pragma omp parallel for schedule(static,1) \
       reduction(+:datadata[:nthreads])
+    //codesnippet end
     for (int it=0; it<nthreads; it++) {
       for (int i=0; i<nthreads; i++)
 	datadata[i]++;
     }
-    //codesnippet end
     printf("Data should be ===%d:",nthreads);
     for (int i=0; i<nthreads; i++)
       printf(" %d",data[i]);

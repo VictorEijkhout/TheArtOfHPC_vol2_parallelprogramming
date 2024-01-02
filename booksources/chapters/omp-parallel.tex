@@ -2,7 +2,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-%%%% This text file is part of the source of 
+%%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
 %%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
@@ -47,7 +47,7 @@ Here is a very simple example where each thread
 outputs its number:
 \csnippetwithoutput{hello-omp}{examples/omp/c}{hello}
 or in Fortran
-\fsnippetwithoutput{hello-omp-f}{examples/omp/f}{helloompf}
+\fsnippetwithoutput{hello-omp-f}{examples/omp/f}{hellof}
 
 \begin{cppnote}{Output streams in parallel}
   \label{sl:par-stringstream}
@@ -62,7 +62,7 @@ or in Fortran
   OpenMP parallel regions can be in functions,
   including lambda expressions.
   \cxxverbatimsnippet{ompinlambda}
-  (`Immediately Invoked Function Expression')
+  (`Immediately Invoked Function Expression') %%packtskip
 \end{cppnote}
 
 The following example uses parallelism for an actual calculation:

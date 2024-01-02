@@ -2,7 +2,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-%%%% This text file is part of the source of 
+%%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
 %%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
@@ -85,6 +85,11 @@ from mpi4py import MPI
 #include <mpl/mpl.hpp>
 \end{lstlisting}
   to your file.
+  You need to add a path to your compile line:
+\begin{lstlisting}[language=bash]
+mpicxx -o mpiprog -I${MPL_LOCATION}/include mympiprog.cpp
+\end{lstlisting}
+where \n{MPL_LOCATION} is system-dependent.
 \end{mplnote}
 
 \Level 1 {Initialization / finalization}

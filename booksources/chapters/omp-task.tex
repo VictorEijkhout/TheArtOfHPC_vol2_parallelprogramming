@@ -2,9 +2,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-%%%% This text file is part of the source of 
+%%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% omp-task.tex : openmp tasking
 %%%%
@@ -496,6 +496,29 @@ See section~\ref{sec:omp-cancel} for details.
 \end{exercise}
 
 \Level 0 {Examples}
+
+\Level 1 {Recursive matrix-matrix multiplication}
+
+Large matrices can be multiplied recursively using the formula
+\[ 
+\begin{pmatrix}
+  C_{11}&C_{12}\\ C_{21}&C_{22}\\
+\end{pmatrix}
+\begin{pmatrix}
+  A_{11}&A_{12}\\ A_{21}&A_{22}\\
+\end{pmatrix}
+\begin{pmatrix}
+  B_{11}&B_{12}\\ B_{21}&B_{22}\\
+\end{pmatrix}
+\]
+with
+\[ C_{11} = A_{11}\cdot B_{11} + A_{12}\cdot B_{21} \]
+et cetera.
+You can implement this by creating four tasks, each of which can create another four.
+
+\begin{cppnote}{Use mdspan for submatrices}
+  For the data structure, use \lstinline{mdspan}.
+\end{cppnote}
 
 \Level 1 {Fibonacci}
 

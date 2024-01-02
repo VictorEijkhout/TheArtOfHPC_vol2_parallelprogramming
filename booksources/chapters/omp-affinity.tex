@@ -2,7 +2,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-%%%% This text file is part of the source of 
+%%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
 %%%% by Victor Eijkhout, copyright 2012-2022
 %%%%
@@ -285,11 +285,13 @@ that there is very little parallelization overhead.
 The affinity issue shows up in the \indexterm{first-touch}
 phenomemon.
 
+%%packtsnippet firsttouch
+
 A little background knowledge. Memory is organized in
 \indextermbus{memory}{page}s\index{page, memory|see{memory, page}},
-and what we think of as `addresses' really
+and what we think of as `addresses' really are
 \indextermsub{virtual}{address}es,
-mapped to \indextermsub{physical}{address}es,
+mapped to \indextermsub{physical}{address}es
 through a \indextermbus{page}{table}.
 
 This means that data in your program can be anywhere in physical memory.
@@ -311,9 +313,13 @@ for (i=0; i<N; i++)
   .... something with x[i] ...
 \end{lstlisting}
 Since the initialization loop is not parallel it is executed by the
-master thread, making all the memory associated with the socket of
-that thread. Subsequent access by the other socket will then access
-data from memory not attached to that socket.
+main thread, making all the memory associated with the socket of
+that thread.
+Subsequent access by the other socket will then access
+data from memory not attached to that socket,
+which induces a considerable delay, and performance degradation.
+
+\Level 1 {Example}
 
 Let's consider an example. We make the initialization
 parallel subject to an option:
@@ -334,14 +340,14 @@ On the \indextermbus{TACC}{Frontera} machine, with dual 28-core
 \indextermbus{Intel}{Cascade Lake} processors,
 we use the following settings:
 
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 export OMP_PLACES=cores
 export OMP_PROC_BIND=close
 # no parallel initialization
 make heat && OMP_NUM_THREADS=56 ./heat
 # yes parallel initialization
 make heat && OMP_NUM_THREADS=56 ./heat 1
-\end{verbatim}
+\end{lstlisting}
 
 This gives us a remarkable difference in runtime:
 \begin{itemize}
@@ -357,7 +363,7 @@ for algorithms with higher arithmetic intensity.
   How do the OpenMP dynamic schedules relate to this issue?
 \end{exercise}
 
-\Level 1 {C++}
+\Level 1 {Solution in C++}
 
 \lstset{language=C++}
 
@@ -398,6 +404,8 @@ since square bracket indexing is overloaded for \lstinline+unique_ptr+.
 The only disadvantage is that we can not query the \lstinline{size}
 of these arrays. Or do bound checking with \lstinline{at},
 but in high performance contexts that is usually not appropriate anyway.
+
+%%packtsnippet end
 
 \lstset{language=C}
 

@@ -2,9 +2,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-%%%% This text file is part of the source of 
+%%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2023
 %%%%
 %%%% petsc-dmda.tex : DMDA objects
 %%%%
@@ -78,7 +78,7 @@ DMDACreate2d( communicator,
   2~for 2nd order discretizations of a 4th order \ac{PDE}, et cetera.
 \item \lstinline{partitionx,partitiony} are arrays
   giving explicit partitionings of the grid over the processors,
-  or \indexpetscshow{PETSC_NULL} for default distributions.
+  or \indexpetscshow{PETSC_NULLPTR} for default distributions.
 \end{itemize}
 
 \csnippetwithoutput{dm2dcreate}{examples/petsc/c}{dmcreate}
