@@ -4,7 +4,7 @@
 ####
 #### This program file is part of the book and course
 ####   Parallel Computing for Science and Engineering
-#### by Victor Eijkhout, copyright 2013-8
+#### by Victor Eijkhout, copyright 2013-2023
 ####
 #### randommaxp.py : use collectives to find maximum of local values
 ####
@@ -36,13 +36,13 @@ print("Process %3d has random value %7.5f" % (procno,myrandom))
 ## -- scale your number by the sum
 ## -- check that the sum of the scaled values is 1
 ##
-sumrandom = np.zeros(1,dtype=np.float32)
+sum_random = np.zeros(1,dtype=np.float32)
 scaled_random = np.zeros(1,dtype=np.float32)
 sum_scaled_random = np.zeros(1,dtype=np.float32)
 comm.Allreduce(
 #### your code here ####
 )
-scaled_random = myrandom / sumrandom
+scaled_random = myrandom / sum_random
 comm.Allreduce(
 #### your code here ####
 )

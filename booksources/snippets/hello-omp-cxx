@@ -3,6 +3,6 @@
   {
     int t = omp_get_thread_num();
     stringstream proctext;
-    proctext << "Hello world from " << t;
-    cerr << proctext.str() << '\n';
+    proctext << "Hello world from " << t << '\n';
+    cerr << proctext.str();
   }

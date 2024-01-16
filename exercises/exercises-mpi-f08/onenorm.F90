@@ -5,7 +5,7 @@
 !**** `Parallel programming for Science and Engineering'
 !**** by Victor Eijkhout, eijkhout@tacc.utexas.edu
 !****
-!**** copyright Victor Eijkhout 2012-2021
+!**** copyright Victor Eijkhout 2012-2023
 !****
 !**** MPI Exercise for user-defined operators
 !**** fortran 2008 version
@@ -17,7 +17,7 @@ Program OneNorm
   use mpi_f08
   implicit none
 
-  integer :: nprocs, procno,ierr
+  integer :: nprocs, procno
   type(MPI_Comm) :: comm
 
   !! data specific for this program
@@ -47,7 +47,7 @@ Program OneNorm
   call MPI_Finalize()
   
 contains
-  subroutine add_abs(invec,inoutvec,len,datatype) bind(c)
+  subroutine add_abs(invec,inoutvec,len,datatype) ! bind(c)
     use, intrinsic :: iso_c_binding, only : c_ptr,c_f_pointer
     use mpi_f08
 

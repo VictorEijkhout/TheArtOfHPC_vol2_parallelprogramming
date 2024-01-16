@@ -4,7 +4,7 @@
 ! **** `Parallel programming for Science and Engineering'
 ! **** by Victor Eijkhout, eijkhout@tacc.utexas.edu
 ! ****
-! **** copyright Victor Eijkhout 2012-2020
+! **** copyright Victor Eijkhout 2012-2023
 ! ****
 ! **** MPI Exercise for the use of Scan/Exscan
 ! ****
@@ -16,7 +16,7 @@ Program ScanGather
   implicit none
 
   type(MPI_Comm) :: comm = MPI_COMM_WORLD
-  integer :: nprocs, procno,ierr
+  integer :: nprocs, procno
   integer :: source,target, error,errors
 
   ! random stuff

@@ -13,12 +13,6 @@ info ::
 	@echo "================ OMP running"
 	@echo "make run_xxx in: ${RUNS}"
 
-# ifeq "${TACC_SYSTEM}" "frontera"
-#   OMPTHREADS = 1 2 4 8 12 26 38 56 
-# else
-#   OMPTHREADS = 1 2 4 8 12
-# endif
-
 info ::
 	@echo "make omp_run [ NP=... ] PROGRAM=program"
 	@echo "    [ RUNOUTID= .... (extra id, default blank) ]"

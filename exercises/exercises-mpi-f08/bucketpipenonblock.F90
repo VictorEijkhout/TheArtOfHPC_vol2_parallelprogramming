@@ -5,7 +5,7 @@
 !**** `Parallel programming for Science and Engineering'
 !**** by Victor Eijkhout, eijkhout@tacc.utexas.edu
 !****
-!**** copyright Victor Eijkhout 2019
+!**** copyright Victor Eijkhout 2019-2023
 !****
 !**** MPI Exercise to illustrate bucket brigade pipelining
 !**** fortran 2008 version
@@ -26,7 +26,7 @@ Program BucketPipe
   implicit none
 
   type(MPI_Comm) :: comm = MPI_COMM_WORLD
-  integer :: nprocs, procno,ierr
+  integer :: nprocs, procno
   integer :: source,target, error,errors
 
   !! data for this exercise:

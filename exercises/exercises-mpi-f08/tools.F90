@@ -43,7 +43,7 @@ contains
     implicit none
     logical,intent(in) :: cond
     Type(MPI_Comm),intent(in) :: comm
-    integer :: nprocs,procno, error,errors, ierr
+    integer :: nprocs,procno, error,errors
 
     call MPI_Comm_size(comm,nprocs)
     call MPI_Comm_rank(comm,procno)

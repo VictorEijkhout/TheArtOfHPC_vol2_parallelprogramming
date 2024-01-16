@@ -4,7 +4,7 @@
  **** `Parallel programming for Science and Engineering'
  **** by Victor Eijkhout, eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-2022
+ **** copyright Victor Eijkhout 2012-2023
  ****
  **** MPI Exercise for sendrecv : three-point combination in MPL
  ****
@@ -38,7 +38,7 @@ int main(int argc,char **argv) {
   //hint:  sendto = 
   //hint:  recvfrom =
 /**** your code here ****/
-  mpl::tag t0(0);
+  mpl::tag_t t0(0);
   comm_world.sendrecv
     ( mydata,sendto,t0,
       leftdata,recvfrom,t0 );

@@ -4,7 +4,7 @@
  **** `Parallel programming for Science and Engineering'
  **** by Victor Eijkhout, eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-2021
+ **** copyright Victor Eijkhout 2012-2023
  ****
  **** MPI Exercise to illustrate pipelining in MPL
  ****
@@ -78,7 +78,7 @@ int main(int argc,char **argv) {
       (
        leftdata.data()+partition_starts[ipart],
        mpl::contiguous_layout<double>(partition_sizes[ipart]),
-       recvfrom,mpl::tag(ipart)
+       recvfrom,mpl::tag_t(ipart)
        );
     for (int i=partition_starts[ipart];
 	 i<partition_starts[ipart]+partition_sizes[ipart];
@@ -88,7 +88,7 @@ int main(int argc,char **argv) {
       (
        myvalue.data()+partition_starts[ipart],
        mpl::contiguous_layout<double>(partition_sizes[ipart]),
-       sendto,mpl::tag(ipart)
+       sendto,mpl::tag_t(ipart)
        );
   }
 #else

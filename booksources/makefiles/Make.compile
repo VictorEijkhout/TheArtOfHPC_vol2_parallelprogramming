@@ -276,7 +276,7 @@ CXXFLAGS += ${EXTRA_OPTIONS}
 FFLAGS   += ${EXTRA_OPTIONS}
 
 ##
-## Ordinary C/C++ rules
+## Module detection
 ##
 .PHONY: modules
 modules :
@@ -285,7 +285,6 @@ modules :
 	 && if [ ! -z "${PROGRAM}" ] ; then \
 	      modules="$${modules} $$( make -p | grep MODULES_${PROGRAM} | cut -d '=' -f 2 ) " \
 	    ; fi \
-	 && if [ ! -z "${ECHO}" ] ; then echo "satisfying modules: $$modules" ; fi \
 	 && for m in $$modules ; do \
 	      mdir=TACC_$${m}_DIR \
 	       && mdir=$$( env | grep -i $${mdir} | cut -d = -f 2 ) \
@@ -301,6 +300,10 @@ modules :
 	           && exit 1 \
 	           ;  \
 	        fi
+
+##
+## Ordinary C/C++ rules
+##
 %.o : %.c 
 	@make --no-print-directory modules
 	@cmdline="${C_COMPILER} -g  ${EXTRA_INCLUDES} ${CFLAGS} \
@@ -432,16 +435,14 @@ ${APPS} ${EXERCISES} ${PROGRAMS} ${WRONGS} :: $$@.o ${EXTRA_OBJS}
 	    ; fi
 	@if [ -z "${LINKER}" ] ; then \
 	    echo "No linker defined for LANGUAGE=${LANGUAGE}" && exit 1 ; fi
-	@if [ "${MODE}" = "tbb" ] ; then \
-	    tbblibs=$$( pkg-config --libs tbb ) ; fi \
-	 && if [ ! -z "${RPATH}" ] ; then \
+	@if [ ! -z "${RPATH}" ] ; then \
 	      for r in ${RPATH} ; do \
 	          rpath="$$rpath -Wl,-rpath,$${r}" \
 	      ; done \
 	    ; fi \
 	 && cmd="${LINKER} -o $@ $^ \
 	        ${LINK_FLAGS} ${EXTRA_LINK_FLAGS} \
-	        ${EXTRA_LIBS} $$tbblibs $$rpath " \
+	        ${EXTRA_LIBS} $$rpath " \
 	 && if [ "${ECHO}" = "1" ] ; then echo "Linking: $$cmd" ; fi \
 	 && eval $$cmd
 	@if [ "${ECHO}" = "1" -a ! -z "${LINK_EXTRA_COMMANDS}" ] ; then \

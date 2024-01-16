@@ -13,9 +13,7 @@
 
 BOOKNAME = EijkhoutParallelProgramming
 
-
 .PHONY: taccrepo dropbox studentrepo
-PUBLICDIR = ${HOME}/Current/istc/TheArtofHPC_pdfs/vol2
 taccrepo:
 	@if [ -d "${PUBLICDIR}" ] ; then \
 	    dir=${PUBLICDIR}/${TARGETDIR} \
@@ -27,7 +25,6 @@ taccrepo:
 	            && ( cd "$$dir" && git add "${FILE}.pdf" ) \
 	        ; fi \
 	    ; fi
-DROPBOX = ${HOME}/Dropbox/Scicomp/${DROPBOXPATH}
 dropbox:
 	@if [ -d "${DROPBOX}" ] ; then \
 	    dir=${DROPBOX}/${TARGETDIR} \
@@ -38,12 +35,6 @@ dropbox:
 	            && cp ${FILE}.pdf "$$dir"/ \
 	        ; fi \
 	    ; fi
-##
-## base directory, not the lectures directory
-## DO NoT escape any spaces!
-##
-STUDENTREPO =
-# ${HOME}/Current/SSC/PCSE/PCSE2023/sds374394spring2023
 studentrepo :
 	@if [ -d "${STUDENTREPO}" ] ; then \
 	    dir="${STUDENTREPO}/${TARGETDIR}" \

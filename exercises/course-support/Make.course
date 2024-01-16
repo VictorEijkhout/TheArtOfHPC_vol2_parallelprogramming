@@ -89,7 +89,6 @@ beamerfiles :
 	; fi
 
 LOCALTEXINPUTS = .:../../beamer:../..//
-include ../../makefiles/Make.tex
 
 .PHONY: listextra extrafiles
 listextra :

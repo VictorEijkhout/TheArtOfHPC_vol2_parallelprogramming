@@ -25,7 +25,7 @@ EXERCISES = hello \
     rightsend rightput rightgraph \
     bucketblock bucketpipenonblock setdiff \
     isendirecv isendirecvarray status transposeblock \
-    stridesend stridescatter cubegather onenorm procgrid \
+    stridesend stridescatter cubegather onenorm procgrid procgridnonblock \
     randomput onesidedbuild countdown lockfetch lockfetchshared \
     blockwrite shareddata ibarrierupdate
 OTHERPROGRAMS = write

@@ -4,7 +4,7 @@
  **** `Parallel programming for Science and Engineering'
  **** by Victor Eijkhout, eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2021
+ **** copyright Victor Eijkhout 2021-2023
  ****
  **** MPI Exercise for Isend/Irecv using MPL
  ****

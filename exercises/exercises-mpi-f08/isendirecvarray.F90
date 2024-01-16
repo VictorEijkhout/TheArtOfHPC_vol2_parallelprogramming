@@ -18,7 +18,7 @@ Program IsendIrecvArray
   implicit none
 
   type(MPI_Comm) :: comm = MPI_COMM_WORLD
-  integer :: nprocs, procno,ierr
+  integer :: nprocs, procno
   integer :: source,target
   logical :: error_condition
 
@@ -52,10 +52,10 @@ Program IsendIrecvArray
 !!!! your code here !!!!
        1,MPI_DOUBLE, sendto,0, comm, &
 !!!! your code here !!!!
-       ierr)
+       )
   call MPI_Irecv(leftdata, 1,MPI_DOUBLE, recvfrom,0, comm, &
 !!!! your code here !!!!
-       ierr)
+       )
 
   !!
   !! then get right neighbor data
@@ -66,10 +66,10 @@ Program IsendIrecvArray
 !!!! your code here !!!!
        1,MPI_DOUBLE, sendto,0, comm, &
 !!!! your code here !!!!
-       ierr)
+       )
   call MPI_Irecv(rightdata, 1,MPI_DOUBLE, recvfrom,0, comm, &
 !!!! your code here !!!!
-       ierr)
+       )
 
   !!
   !! Now make sure all Irecv/Irecv operations are completed

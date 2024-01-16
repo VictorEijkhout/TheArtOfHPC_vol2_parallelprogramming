@@ -19,7 +19,7 @@ Program StrideScatter
   implicit none
 
   type(MPI_Comm) :: comm = MPI_COMM_WORLD
-  integer :: nprocs, procno,ierr
+  integer :: nprocs, procno
   !! for this exercise
   integer :: sender=0, ndata, count,stride,blocklength, i
   logical :: error

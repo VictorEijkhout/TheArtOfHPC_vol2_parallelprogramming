@@ -60,8 +60,8 @@ proginvocation :
 	      progargs="${PYTHON} $$progargs" \
 	    ; else \
 	      progargs=$${program} ; fi \
-	 && if [ ! -z "${OPTIONS}" ] ; then \
-	      progargs="$${progargs} ${OPTIONS}" ; fi \
+	 && if [ ! -z "${RUN_OPTIONS}" ] ; then \
+	      progargs="$${progargs} ${RUN_OPTIONS}" ; fi \
 	 && if [ ! -z "${CATCHER}" ] ; then \
 	      catcher=${CATCHER} \
 	       && if [ "${LANGUAGE}" = "P" ] ; then \
@@ -121,7 +121,7 @@ mpi_scaling :
 	    for t in $$mpiprocs ; do \
 	        ppn=$$(( $$t / ${SLURM_NNODES} )) \
 	         && echo "Procs: $$t ppn=$$ppn" \
-	         && make --no-print-directory mpirun \
+	         && make --no-print-directory mpirun ECHO=${ECHO} \
 	                NP=$$t PROGRAM=${PROGRAM} \
 	                ENVOPTIONS="IBRUN_TASKS_PER_NODE=$$ppn" \
 	         && echo \
@@ -148,6 +148,13 @@ mpi_procs :
 	     && echo "$$nplow $$frac" \
 	    ; \
 	fi
+.PHONY: scaling_logname
+scaling_logname :
+	@if [ ! -z "${RUNOUTID}" ] ; then \
+	  echo ${PROGRAM}-scaling-${RUNOUTID}.out \
+	; else \
+	  echo ${PROGRAM}-scaling.out \
+	; fi
 
 
 info ::

@@ -16,7 +16,7 @@ Program BlockWrite
   use mpi_f08
   implicit none
 
-  integer :: nprocs, procno,ierr
+  integer :: nprocs, procno
   type(MPI_Comm) :: comm = MPI_COMM_WORLD
 
   !! variables for this particular exercise
@@ -28,9 +28,9 @@ Program BlockWrite
   integer(kind=MPI_OFFSET_KIND) :: offset
   integer :: error,errors
 
-  call MPI_Init(ierr)
-  call MPI_Comm_size(comm,nprocs,ierr)
-  call MPI_Comm_rank(comm,procno,ierr)
+  call MPI_Init()
+  call MPI_Comm_size(comm,nprocs)
+  call MPI_Comm_rank(comm,procno)
 
   nwriters = nprocs-1
   nwords = 3
@@ -52,7 +52,7 @@ Program BlockWrite
   call MPI_File_open(comm,"blockwrite.dat",&
 !!!! your code here !!!!
        MPI_INFO_NULL,&
-       mpifile,ierr)
+       mpifile)
   
   !!
   !! Exercise:
@@ -64,9 +64,9 @@ Program BlockWrite
 !!!! your code here !!!!
      call MPI_File_write_at( &
           mpifile,offset,output_data,nwords, &
-          MPI_INT,MPI_STATUS_IGNORE,ierr)
+          MPI_INT,MPI_STATUS_IGNORE)
   end if
-  call MPI_File_close(mpifile,ierr)
+  call MPI_File_close(mpifile)
 
   
   !!
@@ -104,7 +104,7 @@ Program BlockWrite
      end if
   end if
   
-  call MPI_Finalize(ierr)
+  call MPI_Finalize()
 
 end Program BlockWrite
 

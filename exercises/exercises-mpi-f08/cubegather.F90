@@ -5,7 +5,7 @@
 !**** `Parallel programming for Science and Engineering'
 !**** by Victor Eijkhout, eijkhout@tacc.utexas.edu
 !****
-!**** copyright Victor Eijkhout 2012-2020
+!**** copyright Victor Eijkhout 2012-2023
 !****
 !**** MPI Exercise for the subarray type
 !**** fortran 2008 version
@@ -18,7 +18,7 @@ Program CubeGather
   implicit none
 
   type(MPI_Comm) :: comm = MPI_COMM_WORLD
-  integer :: nprocs, procno,ierr
+  integer :: nprocs, procno
 
   !! data for this exercise:
   integer :: procs_per_side, proci,procj,prock, sender,i,j,k, error,mydata
@@ -70,7 +70,7 @@ Program CubeGather
               !!
 !!!! your code here !!!!
               call MPI_Type_create_subarray( 3,sides,sub_sizes,startpoint, &
-                   MPI_ORDER_FORTRAN,MPI_INT, insert_type, ierr)
+                   MPI_ORDER_FORTRAN,MPI_INT, insert_type )
               call MPI_Type_commit(insert_type)
               !! 
               !! Now the receive call.

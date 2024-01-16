@@ -33,28 +33,30 @@ int main(int argc,char **argv) {
    * -- also declare, with values set to identically one:
    *    int weights[]
    */
-  mpl::dist_graph_communicator::source_set ss;
-  ss.insert( {procno,1} );
+  mpl::distributed_graph_communicator::neighbours_set ss;
+  ss.add( {procno,1} );
   if (procno>0)
-    ss.insert( {procno-1,1} );
-  mpl::dist_graph_communicator::dest_set ds;
-  ds.insert( {procno,1} );
+    ss.add( {procno-1,1} );
+  mpl::distributed_graph_communicator::neighbours_set ds;
+  ds.add( {procno,1} );
   if (procno<nprocs-1)
-    ds.insert( {procno+1,1} );
-  mpl::dist_graph_communicator pair_communicator( comm_world, ss,ds );
+    ds.add( {procno+1,1} );
+  mpl::distributed_graph_communicator pair_communicator( comm_world, ss,ds );
   {
-    mpl::dist_graph_communicator::source_set
-      ss = pair_communicator.inneighbors();
+    mpl::distributed_graph_communicator::neighbours_set
+      ss = pair_communicator.in_neighbors();
     auto // this is a dest_set
-      ds = pair_communicator.outneighbors();
+      ds = pair_communicator.out_neighbors();
     stringstream proctext;
     proctext << "Proc " << procno << " has " << ss.size() << " sources: \n    ";
+    // components of a distributed_graph_communicator::rank_weight_pair
+    // rank & weight
     for ( auto s : ss ) {
-      proctext << s.first << ",";
+      proctext << s.rank << ",";
     }
     proctext << "\n    and " << ds.size() << " destinations:\n    ";
     for ( auto d : ds ) {
-      proctext << d.first << ",";
+      proctext << d.rank << ",";
     }
     cout << proctext.str() << endl;
   }

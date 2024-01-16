@@ -27,6 +27,7 @@ int main(int argc,char **argv) {
   MPI_Comm_rank(comm,&procno);
 
   double mydata=procno, leftdata=0, rightdata=0;
+  int send_count=1,recv_count=1;
   int sendto,recvfrom;
 
   // Exercise:
@@ -38,16 +39,16 @@ int main(int argc,char **argv) {
   //hint:  recvfrom =
 /**** your code here ****/
   MPI_Sendrecv
-    (&mydata,1,MPI_DOUBLE, sendto,0,
-     &leftdata,1,MPI_DOUBLE, recvfrom,0, comm,MPI_STATUS_IGNORE);
+    (&mydata,send_count,MPI_DOUBLE, sendto,0,
+     &leftdata,recv_count,MPI_DOUBLE, recvfrom,0, comm,MPI_STATUS_IGNORE);
 
   // then the right neighbor data
   //hint:  recvfrom =
   //hint:  sendto = 
 /**** your code here ****/
   MPI_Sendrecv
-    (&mydata,1,MPI_DOUBLE, sendto,0,
-     &rightdata,1,MPI_DOUBLE, recvfrom,0, comm,MPI_STATUS_IGNORE);
+    (&mydata,send_count,MPI_DOUBLE, sendto,0,
+     &rightdata,recv_count,MPI_DOUBLE, recvfrom,0, comm,MPI_STATUS_IGNORE);
 
   /*
    * Correctness check:

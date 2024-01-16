@@ -17,7 +17,7 @@ Program SumSquares
   use mpi_f08
   implicit none
 
-  integer :: nprocs, procno,ierr
+  integer :: nprocs, procno
   type(MPI_Comm) :: comm = MPI_COMM_WORLD
 
   !! data specific for this program

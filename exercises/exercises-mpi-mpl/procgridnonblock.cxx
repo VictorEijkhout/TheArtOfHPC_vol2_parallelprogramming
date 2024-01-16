@@ -4,7 +4,7 @@
  **** `Parallel programming for Science and Engineering'
  **** by Victor Eijkhout, eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2019-2020
+ **** copyright Victor Eijkhout 2019-2023
  ****
  **** MPI Exercise for multiple nonblocking collectives using MPL
  ****
@@ -54,13 +54,13 @@ int main(int argc,char **argv) {
   // Make a `col_comm' communicator with all processes in this column
   //
   mpl::communicator col_comm
-    (mpl::communicator::split(),comm_world,col_no);
+    (mpl::communicator::split_tag(),comm_world,col_no);
 
   //
   // Make a `row_comm' communicator with all processes in this row
   //
   mpl::communicator row_comm
-    (mpl::communicator::split(),comm_world,row_no);
+    (mpl::communicator::split_tag(),comm_world,row_no);
 
   //
   // Now find `row_rank': the number I am in my row

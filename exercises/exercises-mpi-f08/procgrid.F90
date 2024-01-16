@@ -5,7 +5,7 @@
 !**** `Parallel programming for Science and Engineering'
 !**** by Victor Eijkhout, eijkhout@tacc.utexas.edu
 !****
-!**** copyright Victor Eijkhout 2012-9
+!**** copyright Victor Eijkhout 2012-2023
 !****
 !**** MPI Exercise for comm_split
 !**** fortran 2008 version
@@ -17,7 +17,7 @@ Program ProcGrid
   use mpi_f08
   implicit none
 
-  integer :: nprocs, procno,ierr
+  integer :: nprocs, procno
   type(MPI_Comm) :: comm = MPI_COMM_WORLD
 
   !! data specifically for this program
@@ -61,13 +61,13 @@ Program ProcGrid
   !!
   call MPI_Comm_split(comm, &
 !!!! your code here !!!!
-       ierr)
+       )
   !!
   !! Make a `row_comm' communicator with all processes in this row
   !!
   call MPI_Comm_split(comm, &
 !!!! your code here !!!!
-       ierr)
+       )
 
   !!
   !! Now find `row_rank': the number I am in my row
@@ -75,14 +75,14 @@ Program ProcGrid
   !!
   call MPI_Comm_rank( &
 !!!! your code here !!!!
-       ierr)
+       )
   !!
   !! also find `col_rank': the number I am in my column
   !! by using MPI_Comm_rank
   !!
   call MPI_Comm_rank( &
 !!!! your code here !!!!
-       ierr)
+       )
 
   !  write(*,'("Process",i3," is (",i2,",",i2,")")') procno,col_rank,row_rank
 

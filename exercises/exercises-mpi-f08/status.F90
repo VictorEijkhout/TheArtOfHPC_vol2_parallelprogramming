@@ -5,7 +5,7 @@
 !**** `Parallel programming for Science and Engineering'
 !**** by Victor Eijkhout, eijkhout@tacc.utexas.edu
 !****
-!**** copyright Victor Eijkhout 2012-9
+!**** copyright Victor Eijkhout 2012-2023
 !****
 !**** MPI Exercise for MPI_Status use
 !**** fortran 2008 version
@@ -19,7 +19,7 @@ Program Status
 
   type(MPI_Comm) :: comm = MPI_COMM_WORLD
   type(MPI_Status) :: recv_status
-  integer :: nprocs, procno,ierr
+  integer :: nprocs, procno
   integer :: processA,processB
 
   ! buffers for ping and pong

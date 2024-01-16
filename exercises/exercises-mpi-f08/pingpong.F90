@@ -5,7 +5,7 @@
 !**** `Parallel programming for Science and Engineering'
 !**** by Victor Eijkhout, eijkhout@tacc.utexas.edu
 !****
-!**** copyright Victor Eijkhout 2012-9
+!**** copyright Victor Eijkhout 2012-2023
 !****
 !**** MPI Exercise for pingpong
 !**** fortran 2008 version
@@ -18,10 +18,10 @@ Program PingPong
   implicit none
 
   type(MPI_Comm) :: comm = MPI_COMM_WORLD
-  integer :: nprocs, procno,ierr
+  integer :: nprocs, procno
   integer :: processA,processB
   double precision,dimension(:) :: senddata(10000),recvdata(10000)
-  integer :: nexperiments = 10000,iexperiment,nanosec
+  integer :: nexperiments = 100000,iexperiment,nanosec
   double precision :: t,s=1.
 
   call MPI_Init()

@@ -5,7 +5,7 @@
 !**** `Parallel programming for Science and Engineering'
 !**** by Victor Eijkhout, eijkhout@tacc.utexas.edu
 !****
-!**** copyright Victor Eijkhout 2012-9
+!**** copyright Victor Eijkhout 2012-2023
 !****
 !**** MPI Exercise for communicator rank/size
 !**** fortran 2008 version
@@ -17,7 +17,7 @@ Program CommRank
   use mpi_f08
   implicit none
 
-  integer :: nprocs, procno,ierr
+  integer :: nprocs, procno
   type(MPI_Comm) :: comm = MPI_COMM_WORLD
 
   call MPI_Init()

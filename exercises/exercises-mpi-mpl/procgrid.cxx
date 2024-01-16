@@ -53,7 +53,7 @@ int main() {
   // Make a `col_comm' communicator with all processes in this column
   //
   mpl::communicator col_comm
-    (mpl::communicator::split(),comm_world,
+    (mpl::communicator::split_tag(),comm_world,
 /**** your code here ****/
      );
 
@@ -61,7 +61,7 @@ int main() {
   // Make a `row_comm' communicator with all processes in this row
   //
   mpl::communicator row_comm
-    (mpl::communicator::split(),comm_world,
+    (mpl::communicator::split_tag(),comm_world,
 /**** your code here ****/
      );
 

@@ -5,7 +5,7 @@
 !**** `Parallel programming for Science and Engineering'
 !**** by Victor Eijkhout, eijkhout@tacc.utexas.edu
 !****
-!**** copyright Victor Eijkhout 2012-9
+!**** copyright Victor Eijkhout 2012-2023
 !****
 !**** MPI Exercise for Ibarrier
 !**** fortran 2008 version
@@ -18,7 +18,7 @@ Program Isendirecv
   implicit none
 
   type(MPI_Comm) :: comm = MPI_COMM_WORLD
-  integer :: nprocs, procno,ierr
+  integer :: nprocs, procno
   integer :: source,tag,target
 
   !! random stuff

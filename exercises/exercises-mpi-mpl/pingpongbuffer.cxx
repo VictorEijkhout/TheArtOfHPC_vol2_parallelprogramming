@@ -4,9 +4,9 @@
  **** `Parallel programming for Science and Engineering'
  **** by Victor Eijkhout, eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-2020
+ **** copyright Victor Eijkhout 2012-2023
  ****
- **** MPI Exercise using MPL
+ **** MPI Exercise using MPL layouts on a pingpong
  ****
  ****************************************************************/
 
@@ -33,13 +33,13 @@ int main() {
 #endif
 
   // Exercise:
-  // -- set source and target processors two ways:
-  //    close together and far apart
-  // -- run the experiment both ways.
+  // -- define a layout for the buffer
+  // -- use the layout to send the buffer
   int processA,processB;
-/**** your code here ****/
+  processA = 0; processB = nprocs-1;
   double t, send[SIZE],recv[SIZE]; send[0] = 1.1;
-  mpl::contiguous_layout<double> buffersize(SIZE);
+  // use mpl::contiguous_layout
+/**** your code here ****/
   if (procno==processA) {
     t = MPI_Wtime();
     for (int n=0; n<NEXPERIMENTS; n++) {

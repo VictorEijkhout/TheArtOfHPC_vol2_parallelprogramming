@@ -18,6 +18,30 @@
 
 #define BLOCKSIZE 4
 
+void print_array( MPI_Comm comm,int *data,char *id,int longside,int shortside ) {
+  int procno;
+  MPI_Comm_rank(comm,&procno);
+  int summed_shortside;
+  MPI_Reduce( &shortside,&summed_shortside,1,MPI_INT,MPI_SUM,0,comm );
+  int *bigdata = NULL;
+  if (procno==0)
+    bigdata = (int*) malloc( longside*summed_shortside*sizeof(int) );
+  MPI_Gather( data,longside*shortside,MPI_INT,
+	      bigdata,longside*shortside,MPI_INT,
+	      0,comm);
+  if (procno==0) {
+    printf("%s\n",id);
+    for (int row=0; row<longside; row++) {
+      printf("Row %3d:",row);
+      for (int col=0; col<summed_shortside; col++)
+	printf(" %3d",bigdata[ row + col*longside ]);
+      printf("\n");
+    }
+  }
+  if (procno==0)
+    free(bigdata);
+}
+
 int main(int argc,char **argv) {
 
 #define CHK(x) if (x) {						 \
@@ -36,6 +60,11 @@ int main(int argc,char **argv) {
 
   int blocksize_i = BLOCKSIZE, blocksize_j = BLOCKSIZE;
 
+  /*
+   * Store a matrix in column-major:
+   * the columns are contiguous
+   * and contain successive numbers.
+   */
   int isize = nprocs * blocksize_i, jsize = nprocs * blocksize_j;
   int
     *data_0 = (int*) malloc( blocksize_j*isize*sizeof(int) ),
@@ -46,13 +75,7 @@ int main(int argc,char **argv) {
 	/* get to my column */ procno*isize*blocksize_j + col*isize +
 	/* get to my row    */ row;
 
-  printf("Input data:\n");
-  for (int row=0; row<isize; row++) {
-    printf("Row %3d:",row);
-    for (int col=0; col<blocksize_j; col++)
-      printf(" %3d",data_0[ row + col*isize ]);
-    printf("\n");
-  }
+  print_array( comm,data_0,"Input",isize,blocksize_j );
 
   /*
    * What are we sending to proc p? Block:
@@ -102,20 +125,19 @@ int main(int argc,char **argv) {
     MPI_Gather( data_0+p*blocksize_i,1,sourceblock,
 		data_1,              1,targetblock,
 		p,comm );
-    if (p==procno) {
-      printf("Output data:\n");
-      for (int row=0; row<blocksize_i; row++) {
-	printf("Row %3d:",procno*blocksize_i+row);
-	for (int col=0; col<jsize; col++)
-	  printf(" %3d",data_1[ row*jsize + col ]);
-	printf("\n");
-      }
-    }
   }
 
+  print_array( comm,data_1,"Output",jsize,blocksize_i );
+
+  MPI_Type_free(&sourceblock)
+  MPI_Type_free(&targetcolumn);
+  MPI_Type_free(&skinnycolumn);
+  MPI_Type_free(&targetblock);
+  MPI_Finalize();
+
+  free(data_0); free(data_1);
   if (procno==0)
     printf("Finished\n");
 
-  MPI_Finalize();
   return 0;
 }

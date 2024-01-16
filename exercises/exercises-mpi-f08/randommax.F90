@@ -5,7 +5,7 @@
 !**** `Parallel programming for Science and Engineering'
 !**** by Victor Eijkhout, eijkhout@tacc.utexas.edu
 !****
-!**** copyright Victor Eijkhout 2012-9
+!**** copyright Victor Eijkhout 2012-2023
 !****
 !**** MPI Exercise for MPI_Reduce
 !**** fortran 2008 version
@@ -19,14 +19,17 @@ Program RandomMax
   implicit none
 
   type(MPI_Comm) :: comm = MPI_COMM_WORLD
-  integer :: nprocs, procno, ierr,i
+  integer :: nprocs, procno, i
   logical :: error
 
   ! stuff for the random number generator
-  integer :: randomint,sender
   integer :: randsize
   integer,allocatable,dimension(:) :: randseed
-  real(8) :: my_random,scaled_random,sum_random,sum_scaled_random
+  real(8) :: &
+       my_random,     &  ! original random number
+       sum_random,    &  ! sum of original randoms
+       scaled_random, &  ! original random scaled by sum
+       sum_scaled_random ! sum of scaled random numbers
 
   call MPI_Init(); 
   call MPI_Comm_rank(comm,procno); 

@@ -18,7 +18,7 @@ Program Isendirecv
   implicit none
 
   type(MPI_Comm) :: comm = MPI_COMM_WORLD
-  integer :: nprocs, procno,ierr
+  integer :: nprocs, procno
   integer :: source,target, error,errors
 
   !! data for this exercise:
@@ -47,10 +47,10 @@ Program Isendirecv
   !! now do the Isend/Irecv calls
   call MPI_Isend(mydata, 1,MPI_REAL8, sendto,0, comm, &
 !!!! your code here !!!!
-       ierr)
+       )
   call MPI_Irecv(leftdata, 1,MPI_REAL8, recvfrom,0, comm, &
 !!!! your code here !!!!
-       ierr)
+       )
 
   !!
   !! then get right neighborj data
@@ -62,10 +62,10 @@ Program Isendirecv
   !! now do the Isend/Irecv calls
   call MPI_Isend(mydata, 1,MPI_REAL8, sendto,0, comm, &
 !!!! your code here !!!!
-       ierr)
+       )
   call MPI_Irecv(rightdata, 1,MPI_REAL8, recvfrom,0, comm, &
 !!!! your code here !!!!
-       ierr)
+       )
 
   !!
   !! Now make sure all Irecv/Irecv operations are completed

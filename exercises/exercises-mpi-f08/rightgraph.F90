@@ -5,7 +5,7 @@
 !**** `Parallel programming for Science and Engineering'
 !**** by Victor Eijkhout, eijkhout@tacc.utexas.edu
 !****
-!**** copyright Victor Eijkhout 2012-2022
+!**** copyright Victor Eijkhout 2012-2023
 !****
 !**** MPI Exercise to illustrate graph topologies
 !**** fortran 2008 version
@@ -18,7 +18,7 @@ Program RightGraph
   implicit none
 
   type(MPI_Comm) :: comm = MPI_COMM_WORLD
-  integer :: nprocs, procno,ierr
+  integer :: nprocs, procno
   integer :: source,target, error,errors
 
   !! data for this exercise:
@@ -57,13 +57,13 @@ Program RightGraph
        degrees,      & ! degrees of the sources
        destinations, & ! where does our data go to
        weights, MPI_INFO_NULL,.FALSE., &
-       pair_communicator, &
-       ierr )
+       pair_communicator &
+        )
 
   call MPI_Neighbor_allgather( &
        mydata,1,MPI_DOUBLE, &
        leftandme,1,MPI_DOUBLE, &
-       pair_communicator,ierr )
+       pair_communicator )
   leftdata = leftandme(1)
 
   !!

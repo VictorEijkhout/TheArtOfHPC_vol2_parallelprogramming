@@ -38,7 +38,10 @@ int main(int argc,char **argv) {
    * -- scale your number by the sum
    * -- check that the sum of the scaled values is 1
    */
-  float sum_random, scaled_random, sum_scaled_random;
+  float
+    /* the sum of all initial randoms:    */ sum_random,
+    /* my random, scaled by the that sum: */ scaled_random,
+    /* the sum of all scaled randoms:     */ sum_scaled_random;
   MPI_Allreduce(
 /**** your code here ****/
 		);
