@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% mpi_course.tex : master file for an MPI course
 %%%%
@@ -20,10 +20,21 @@
 \input lang
 
 \author[Eijkhout]{Victor Eijkhout}
-\date[2023]{TACC Institute 2023}
+\date[2024]{2024 COE 379L / CSE 392}
+%% \normalsize last formatted \today}
 \title[MPI]{MPI Course}
-
 \maketitle
+
+%% \event{2024 COE 379L / CSE 392}
+%% \author{Victor Eijkhout}
+%% \date{Spring 2024\\ \tiny\texttt{last formatted: \today}}
+
+%% \newcommand\titleslide[1]{
+%%   \title{#1}
+%%   \date{\event}
+%%   \frame{\titlepage}
+%% }
+%% \titleslide{Parallel programming in MPI}
 
 \begin{frame}[containsverbatim]{Materials}
     Textbooks and repositories:\\
@@ -53,12 +64,6 @@
   \item Process topologies~\hyperlink{sec:topo}{\textsl{link}}
   \item Trace and performance~\hyperlink{sec:trace}{\textsl{link}}
   \end{enumerate}
-%%   \def\contentsline####1####2####3{\item ####2\ ####3}
-%%   \IfFileExists{\jobname.toc}
-%%                {\begin{itemize}
-%%                    \tableofcontents
-%%                \end{itemize}
-%%                }{}
 \end{frame}
 
 \coursepart{Basics}
@@ -67,8 +72,6 @@
 
 \coursesection{sec:spmd}{The SPMD model}
 \input SPMD-slides
-
-%% \end{document}
 
 \coursesection{sec:collectives}{Collectives}
 \input Collective-slides

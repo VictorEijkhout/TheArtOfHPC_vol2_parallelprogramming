@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the lecture slides for
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% SPMD-slides.tex : slides about MPI's SPMD mode
 %%%%
@@ -128,8 +128,7 @@ ibrun python3 yourprogram.py
   \end{itemize}  
 \end{numberedframe}
 
-\begin{numberedframe}{Compiling and running}
-  \scriptsize
+\begin{numberedframe}{Compiling}
   MPI compilers are usually called \indextermtt{mpicc},
   \indextermtt{mpif90}, \indextermtt{mpicxx}.
 
@@ -143,7 +142,9 @@ icc -I/intel/include/stuff -L/intel/lib/stuff -Wwarnings # et cetera
 \begin{full}
   (For CMake see slide~\ref{sl:mpi-cmake}.)
 \end{full}
+\end{numberedframe}
 
+\begin{numberedframe}{Running}
 \begin{tacc}
   Running your program at TACC:
 \begin{verbatim}
@@ -159,7 +160,6 @@ mpiexec -n 4 hostfile ... yourprogram arguments
 mpirun -np 4 hostfile ... yourprogram arguments
 \end{verbatim}
 \end{numberedframe}
-
 
 \begin{numberedframe}{Do I need a supercomputer?}
   \begin{itemize}
@@ -230,6 +230,17 @@ Only internal library initialization:\\
 allocate buffers, discover network,~\ldots
 \end{numberedframe}
 
+\begin{mpl}
+  \addtocounter{slidecount}{-1}
+\begin{numberedframe}{MPL init/finalize}
+    No explicit init/finalize:
+    \begin{itemize}
+    \item init is done by the first command that needs it
+    \item finalize in some destructor.
+    \end{itemize}
+\end{numberedframe}
+\end{mpl}
+
 \begin{fortran}
   \addtocounter{slidecount}{-1}
 \begin{numberedframe}{Init Finalize, Fortran}
@@ -246,17 +257,6 @@ call MPI_Finalize(ierr)
 \end{lstlisting}  
 \end{numberedframe}
 \end{fortran}
-
-\begin{mpl}
-  \addtocounter{slidecount}{-1}
-\begin{numberedframe}{MPL init/finalize}
-    No explicit init/finalize:
-    \begin{itemize}
-    \item init is done by the first command that needs it
-    \item finalize in some destructor.
-    \end{itemize}
-\end{numberedframe}
-\end{mpl}
 
 \begin{python}
   \addtocounter{slidecount}{-1}
@@ -292,28 +292,6 @@ You need an include file:
 This defines all routines and constants.
 \end{numberedframe}
 
-\begin{fortran}
-  \addtocounter{slidecount}{-1}
-\begin{numberedframe}{MPI headers: Fortran}
-    \label{sl:mpi-header-f}
-    Fortran bindings are declared in the standard.
-    \begin{itemize}
-    \item Come in two flavors, Fortran90 vs Fortran2008\\
-      you will find many examples online in old style
-    \item We teach you modern style.
-    \end{itemize}
-    You need an include file:
-\begin{verbatim}
-! Modern Fortran2008
-use mpi_f08
-! Legacy Fortran90
-use mpi       
-! Deprecated
-#include "mpif.h"
-\end{verbatim}
-\end{numberedframe}
-\end{fortran}
-
 \begin{mpl}
   \addtocounter{slidecount}{-1}
 \begin{numberedframe}{C++ bindings, MPL}
@@ -339,6 +317,28 @@ use mpi
 TACC: \texttt{module load mpl}
 \end{numberedframe}
 \end{mpl}
+
+\begin{fortran}
+  \addtocounter{slidecount}{-1}
+\begin{numberedframe}{MPI headers: Fortran}
+    \label{sl:mpi-header-f}
+    Fortran bindings are declared in the standard.
+    \begin{itemize}
+    \item Come in two flavors, Fortran90 vs Fortran2008\\
+      you will find many examples online in old style
+    \item We teach you modern style.
+    \end{itemize}
+    You need an include file:
+\begin{verbatim}
+! Modern Fortran2008
+use mpi_f08
+! Legacy Fortran90
+use mpi       
+! Deprecated
+#include "mpif.h"
+\end{verbatim}
+\end{numberedframe}
+\end{fortran}
 
 \begin{python}
   \addtocounter{slidecount}{-1}
@@ -508,6 +508,7 @@ if (ierr!=MPI_SUCCESS) /* do something */
 MPI_Init(0,0);
 \end{lstlisting}
   \item In Fortran: as optional (F08 only) parameter.
+  \item MPL: throws exceptions
   \item In Python: throwing exception.
   \end{itemize}
   There's not a lot you can do with an error code:\\
@@ -553,7 +554,7 @@ comm = MPI.COMM_WORLD
 \begin{exerciseframe}
   \input ex:procname
 
-  Go to \n{examples/mpi/c} and do \n{make procname},
+  Go to \n{examples/mpi/xxx} and do \n{make procname},
   then \n{ibrun procname}
 \end{exerciseframe}
 
@@ -566,6 +567,14 @@ comm = MPI.COMM_WORLD
 \begin{numberedframe}{In a picture}
   Four processes on two nodes (\n{idev -N 2 -n 4})
   \includegraphics[scale=.3]{node-comm-rank}
+\end{numberedframe}
+
+\begin{numberedframe}{Processor name: MPL}
+  Processes (can) run on physically distinct locations.
+
+  \cxxsnippetwithoutput{mplprocname}{examples/mpi/mpl}{procname}
+
+  (Why \lstinline{stringstream} instead of plain \lstinline{cout}?)
 \end{numberedframe}
 
 \begin{numberedframe}[f]{Processor name: Fortran}

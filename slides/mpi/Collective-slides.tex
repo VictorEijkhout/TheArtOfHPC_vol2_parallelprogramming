@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the lecture slides for
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% Collective-slides.tex : slides about collective operations
 %%%%
@@ -53,7 +53,7 @@
   \end{itemize}
 \end{numberedframe}
 
-\frame{\includegraphics[scale=.6]{collective_comm.png}}
+\frame{\includegraphics[scale=.45]{collectives}}
 
 \begin{exerciseframe}
   \input ex:collective-cases
@@ -76,6 +76,7 @@
 \begin{numberedframe}{Motivation for allreduce}
   Example: normalizing a vector
   \[ y \leftarrow x/\|x\| \]
+  \includegraphics[scale=.05]{mpi-array}
   \begin{itemize}
   \item Vectors \lstinline{x,y} are distributed: every process has certain
     elements
@@ -128,57 +129,14 @@ How do we compute this?
   \input ex:randommaxscale
 \end{exerciseframe}
 
+\begin{exerciseframe}
+  \input ex:randommaxarray
+\end{exerciseframe}
+
 \protoslide{MPI_Allreduce}
+\mplprotoslide{MPI_Allreduce}
 
-\sectionframe{Collective basics}
-
-\begin{numberedframe}{Elementary datatypes}
-\begin{tabular}{|l|l|l|}
-  \hline
-  C&Fortran&meaning\\
-  \hline
-  \indexmpishow{MPI_CHAR}&  \indexmpishow{MPI_CHARACTER}&only for text\\
-  \indexmpishow{MPI_SHORT}&  \indexmpishow{MPI_BYTE}&8 bits\\
-  \indexmpishow{MPI_INT}&  \indexmpishow{MPI_INTEGER}&like the C/F types\\
-  \indexmpishow{MPI_FLOAT}&  \indexmpishow{MPI_REAL}&\\
-  \indexmpishow{MPI_DOUBLE}&  \indexmpishow{MPI_DOUBLE_PRECISION}&\\
-  &\indexmpishow{MPI_COMPLEX}&\\
-  &\indexmpishow{MPI_LOGICAL}&\\  
-  \hline
-  unsigned&extensions&\\
-  \hline
-  &&\indexmpishow{MPI_Aint}\\
-  &&\indexmpishow{MPI_Offset}\\
-  \hline
-\end{tabular}  
-
-A bunch more.
-\end{numberedframe}
-
-\begin{numberedframe}{MPI operators}
-\begingroup \tt\catcode`\_=12\relax %pyskip
-\begin{tabular}{|l|l|}
-  \hline
-  \indexmpishow{MPI_Op}&description\\
-  \hline
-  \indexmpishow{MPI_MAX}&maximum\\
-  \indexmpishow{MPI_MIN}&minimum\\
-  \indexmpishow{MPI_SUM}&sum\\
-  \indexmpishow{MPI_PROD}&product\\
-  \indexmpishow{MPI_LAND}&logical and\\
-  \indexmpishow{MPI_BAND}&bitwise and\\
-  \indexmpishow{MPI_LOR}&logical or\\
-  \indexmpishow{MPI_BOR}&bitwise or\\
-  \indexmpishow{MPI_LXOR}&logical xor\\
-  \indexmpishow{MPI_BXOR}&bitwise xor\\
-  \indexmpishow{MPI_MAXLOC}&location of max\\
-  \indexmpishow{MPI_MINLOC}&location of min\\
-  \hline
-\end{tabular}
-\endgroup %pyskip
-
-A couple more.
-\end{numberedframe}
+\sectionframe{Buffers}
 
 \begin{c}
 \begin{numberedframe}{Buffers in C}
@@ -222,12 +180,22 @@ MPI_Send( &xx.front(),25,MPI_FLOAT, .... );
 \end{numberedframe}
 \end{cxx}
 
+\begin{numberedframe}{Buffers in MPL}
+  Two mechanisms:
+  \begin{enumerate}
+  \item Scalars; type derived through overloading
+  \item Automatic (static) arrays; type derived through overloading.
+  \item Layouts: contiguous or otherwise; see later.
+  \end{enumerate}  
+\end{numberedframe}
+
 \begin{numberedframe}{Large buffers}
   As of \mpistandard{4} a buffer can be longer than $2^{31}$ elements.\\
   \begin{itemize}
   \item Use \indexmpishow{MPI_Count} for count
   \item In C: use \indexmpishow{MPI_Reduce_c}
   \item in Fortran: polymorphism means no change to the call.
+  \item MPL: \lstinline{long int} and \lstinline{size_t} supported for layouts.
   \end{itemize}
   \cverbatimsnippet{reducecount}
 \end{numberedframe}
@@ -253,6 +221,80 @@ comm.Recv(result, ...)
   \end{itemize}
 \end{numberedframe}
 \end{python}
+
+\sectionframe{Collective basics}
+
+\begin{numberedframe}{Elementary datatypes}
+\begin{tabular}{|l|l|l|l|}
+  \hline
+  C&Fortran&Python&meaning\\
+  \hline
+  \indexmpishow{MPI_CHAR}&  \indexmpishow{MPI_CHARACTER}&&only for text\\
+  \indexmpishow{MPI_SHORT}&  \indexmpishow{MPI_BYTE}&&8 bits\\
+  \indexmpishow{MPI_INT}&  \indexmpishow{MPI_INTEGER}&&like the C/F types\\
+  \indexmpishow{MPI_FLOAT}&  \indexmpishow{MPI_REAL}&&\\
+  \indexmpishow{MPI_DOUBLE}&  \indexmpishow{MPI_DOUBLE_PRECISION}&
+      \indexmpishow{MPI.DOUBLE}&\\
+  &\indexmpishow{MPI_COMPLEX}&&\\
+  &\indexmpishow{MPI_LOGICAL}&&\\  
+  \hline
+  unsigned&extensions&&\\
+  \hline
+  &&&\indexmpishow{MPI_Aint}\\
+  &&&\indexmpishow{MPI_Offset}\\
+  \hline
+\end{tabular}  
+
+A bunch more.
+\end{numberedframe}
+
+\begin{numberedframe}{MPL datatypes}
+  Elementary types derived through polymorphism.
+\end{numberedframe}
+
+\begin{numberedframe}{Python datatypes}
+  \begin{itemize}
+  \item Elementary types not needed: type can be deduced from the Numpy buffer
+  \item Buffer / count / datatype triples can be used
+    in exceptional circumstances.
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{MPI operators}
+\begingroup \tt\catcode`\_=12\relax %pyskip
+\begin{tabular}{|l|l|}
+  \hline
+  \indexmpishow{MPI_Op}&description\\
+  \hline
+  \indexmpishow{MPI_MAX}&maximum\\
+  \indexmpishow{MPI_MIN}&minimum\\
+  \indexmpishow{MPI_SUM}&sum\\
+  \indexmpishow{MPI_PROD}&product\\
+  \indexmpishow{MPI_LAND}&logical and\\
+  \indexmpishow{MPI_BAND}&bitwise and\\
+  \indexmpishow{MPI_LOR}&logical or\\
+  \indexmpishow{MPI_BOR}&bitwise or\\
+  \indexmpishow{MPI_LXOR}&logical xor\\
+  \indexmpishow{MPI_BXOR}&bitwise xor\\
+  \indexmpishow{MPI_MAXLOC}&location of max\\
+  \indexmpishow{MPI_MINLOC}&location of min\\
+  \hline
+\end{tabular}
+\endgroup %pyskip
+
+A couple more.
+\end{numberedframe}
+
+\begin{numberedframe}{MPL operators}
+Elementary operators:
+\begin{lstlisting}
+comm_world.allreduce(mpl::plus<float>(), rank2p2p1, p2layout);
+\end{lstlisting}
+User-defined operator:
+\begin{lstlisting}
+comm_world.reduce(lcm<int>(), 0, v, result);
+\end{lstlisting}
+\end{numberedframe}
 
 \begin{comment}
 \begin{numberedframe}{Random numbers in C}
@@ -444,7 +486,9 @@ Scan or `parallel prefix': reduction with partial results
 \sectionframe{Gather/Scatter, Barrier, and others}
 
 \protoslide{MPI_Gather}
+\mplprotoslide{MPI_Gather}
 \protoslide{MPI_Scatter}
+\mplprotoslide{MPI_Scatter}
 
 \begin{numberedframe}{Gather/Scatter}
 \begin{itemize}

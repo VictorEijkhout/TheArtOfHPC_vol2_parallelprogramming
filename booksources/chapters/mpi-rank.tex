@@ -40,6 +40,11 @@ The maximum needed length is \indexmpishow{MPI_MAX_PROCESSOR_NAME}.
 %
 (Underallocating the buffer will not lead to a runtime error.)
 
+\begin{mplnote}{Processor name}
+  The processor name is a method of the environment class:
+  \cxxsnippetwithoutput{mplprocname}{examples/mpi/mpl}{procname}
+\end{mplnote}
+
 \begin{fortrannote}{Processor name}
   Allocate a \lstinline{Character} variable with
   the appropriate length.
@@ -60,14 +65,6 @@ The maximum needed length is \indexmpishow{MPI_MAX_PROCESSOR_NAME}.
     is faster inside a rack than between racks!
 \end{tacc}
 \end{exercise}
-
-\begin{mplnote}{Processor name}
-  The \indexmplshow{processor_name} call is an environment method
-  returning a \lstinline{std::string}:
-\begin{lstlisting}
-std::string mpl::environment::processor_name ();
-\end{lstlisting}
-\end{mplnote}
 
 \Level 1 {Communicators}
 

@@ -53,7 +53,7 @@ the proper header file, \indextermtt{mpi.h} for~C/C++.
 #include "mpi.h" // for C
 \end{verbatim}
 The internals of these files can be different between MPI
-installations, so you can not compile one file against one \n{mpi.h}
+installations, so you can not compile one file against one \lstinline{mpi.h}
 file and another file, even with the same compiler on the same machine,
 against a different MPI.
 
@@ -89,7 +89,7 @@ from mpi4py import MPI
 \begin{lstlisting}[language=bash]
 mpicxx -o mpiprog -I${MPL_LOCATION}/include mympiprog.cpp
 \end{lstlisting}
-where \n{MPL_LOCATION} is system-dependent.
+where \lstinline[language=bash]{MPL_LOCATION} is system-dependent.
 \end{mplnote}
 
 \Level 1 {Initialization / finalization}
@@ -109,7 +109,7 @@ int main(int argc,char **argv) {
     return 0;
 }
 \end{lstlisting}
-(It is allowed to pass \n{NULL} for these arguments.)
+(It is allowed to pass \lstinline{NULL} for these arguments.)
 
 Fortran (before 2008) lacks this commandline argument handling,
 so \indexmpishow{MPI_Init} lacks those arguments.
@@ -184,14 +184,14 @@ conclusion of the MPI run, an abnormal end to a run can be forced by
 \indexmpiref{MPI_Abort}.
 %
 This stop execution on all processes associated with the communicator,
-but many implementations will terminate all processes. The \n{value} parameter
+but many implementations will terminate all processes. The \lstinline{value} parameter
 is returned to the environment.
 
 \csnippetwithoutput{abortcode}{code/mpi/c}{return}
 
 \Level 2 {Testing the initialized/finalized status}
 
-The commandline arguments \n{argc} and \n{argv} are only guaranteed to
+The commandline arguments \lstinline{argc} and \lstinline{argv} are only guaranteed to
 be passed to process zero, so the best way to pass commandline information
 is by a broadcast (section~\ref{sec:bcast}).
 
@@ -219,7 +219,7 @@ information; see section~\ref{sec:mpi-info-env}.
 The \indexmpishow{MPI_Init} routines takes a reference to \indextermtt{argc}
 and \indextermtt{argv} for the following reason: the \indexmpishow{MPI_Init} calls
 filters out the arguments to \indexterm{mpirun} or \indextermtt{mpiexec},
-thereby lowering the value of \n{argc} and elimitating some of the \n{argv}
+thereby lowering the value of \lstinline{argc} and elimitating some of the \lstinline{argv}
 arguments.
 
 On the other hand, the commandline arguments that are meant for \indextermtt{mpiexec}

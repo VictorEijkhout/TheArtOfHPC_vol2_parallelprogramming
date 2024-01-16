@@ -31,6 +31,7 @@ LANGUAGE = all
 LANGUAGES = c f p x
 course_prep ::
 	@cp ../course-support/lang_${LANGUAGE}.tex lang.tex
+include ../../booksources/makefiles/Make.tex
 include ../course-support/Make.course
 
 info ::
@@ -55,6 +56,7 @@ exercisecheck :
 	        done ; \
 	   done
 
+include ../../booksources/makefiles/repos.inc
 
 include ../../booksources/makefiles/Make.clean
 total_clean ::
