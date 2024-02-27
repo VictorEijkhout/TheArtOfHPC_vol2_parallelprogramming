@@ -1,0 +1,118 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `The Art of HPC, vol 1: The Science of Computing'
+%%%% by Victor Eijkhout, copyright 2012-2024
+%%%%
+%%%% blockmacs.tex : text and slide blocks
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{mdframed,xcolor}
+
+\mdfdefinestyle{exercisestyle}{%
+    innertopmargin=2pt,
+    innerbottommargin=2pt,
+    innerrightmargin=2pt,
+    innerleftmargin=2pt,
+    backgroundcolor=green!20!white!80}
+\mdfdefinestyle{reviewstyle}{%
+    innertopmargin=2pt,
+    innerbottommargin=2pt,
+    innerrightmargin=2pt,
+    innerleftmargin=2pt,
+    backgroundcolor=blue!40!yellow!20!white!40}
+\mdfdefinestyle{blockstyle}{%
+    innertopmargin=2pt,
+    innerbottommargin=2pt,
+    innerrightmargin=2pt,
+    innerleftmargin=2pt,
+    backgroundcolor=yellow!20!blue!20!white!60}
+
+\newcounter{framecounter}[chapter]
+\newcounter{blcounter}[chapter]
+\makeatletter
+\renewcommand\theframecounter{\@arabic\c@chapter.\@arabic\c@framecounter}
+\renewcommand\theblcounter{\@arabic\c@chapter.\@arabic\c@blcounter}
+\makeatother
+
+\newcommand\framenumber{\arabic{chapter}.\arabic{framecounter}}
+\newcommand\blocknumber{\arabic{chapter}.\arabic{framecounter}}
+%% block: write out a frame, and read back in
+\generalcommentarg{block}
+  {\refstepcounter{framecounter}%
+    \begingroup
+    \def\ProcessCutFile{}\par
+    \def\PrepareCutFile{\immediate\write\CommentStream
+      {\noexpand\begin{frameblock}{\CommentBlockName}}}
+      %  \noexpand\nobreak}}%
+    \def\FinalizeCutFile{\immediate\write\CommentStream
+      {\noexpand\end{frameblock}}}%
+    \edef\tmp{\def\noexpand\CommentCutFile
+      {frames/\chapshortname-block-\arabic{framecounter}.tex}}\tmp
+  }
+  {\input{\CommentCutFile}
+   \endgroup
+  }
+%% plain block: include without fancy formatting
+\generalcommentarg{plainblock}
+  {\refstepcounter{framecounter}%
+    \begingroup
+    \def\ProcessCutFile{}\par
+    \def\PrepareCutFile{\immediate\write\CommentStream
+      {\noexpand\begin{plainframeblock}{\CommentBlockName}}}
+      %  \noexpand\nobreak}}%
+    \def\FinalizeCutFile{\immediate\write\CommentStream
+      {\noexpand\end{plainframeblock}}}%
+    \edef\tmp{\def\noexpand\CommentCutFile
+      {frames/\chapshortname-block-\arabic{framecounter}.tex}}\tmp
+  }
+  {\input{\CommentCutFile}
+   \endgroup
+  }
+%% slide: write out a frame, and don't read back in
+\generalcommentarg{slide}
+  {\refstepcounter{framecounter}%
+    \begingroup
+    \def\ProcessCutFile{}\par
+    \edef\tmp{\def\noexpand\CommentCutFile
+      {frames/\chapshortname-block-\arabic{framecounter}.tex}}\tmp
+    \def\PrepareCutFile{\immediate\write\CommentStream
+      {\noexpand\begin{frameblock}{\CommentBlockName}
+        \noexpand\par\noexpand\nobreak}}%
+    \def\FinalizeCutFile{\immediate\write\CommentStream
+      {\noexpand\end{frameblock}}}%
+  }
+  {\endgroup}
+
+%%
+%% in book, frame are rendered without title
+%%
+\newenvironment
+    {frameblock}[2][keyword]
+    {\par\hbox{}\smallskip
+      \begin{mdframed}[style=blockstyle]
+        \leavevmode \raggedright
+    }
+    {\par
+      \end{mdframed}
+      \smallskip
+    }
+% plain frames are inserted even without frame
+\newenvironment
+    {plainframeblock}[2][keyword]
+    {\par\hbox{}\smallskip \begingroup\raggedright\leavevmode}
+    {\par\endgroup\smallskip}
+\newenvironment
+    {bestpractice}
+    {\par\hbox{}\smallskip
+      \begin{mdframed}[style=blockstyle]
+        \leavevmode \raggedright
+        Best practice note.\par
+    }
+    {\par
+      \end{mdframed}
+      \smallskip
+    }
+

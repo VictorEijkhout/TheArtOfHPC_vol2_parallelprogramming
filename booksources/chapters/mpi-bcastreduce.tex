@@ -434,14 +434,16 @@ in different branches of a condition is infelicitous. The following may be prefe
 %
 \cverbatimsnippet[examples/mpi/c/allreduceinplace.c]{tworeduceinplace}
 
-In Fortran  you can not do these address calculations.
-You can use the solution with a conditional:
-%
-\fverbatimsnippet[examples/mpi/f/reduceinplace.F90]{reduceinplace-f}
-%
-but you can also solve this with pointers:
-%
-\fverbatimsnippet[examples/mpi/f08/reduceinplaceptr.F90]{reduceinplace-fptr}
+\begin{fortrannote}{In-place operations}
+  In Fortran  you can not do these address calculations.
+  You can use the solution with a conditional:
+  %
+  \fverbatimsnippet[examples/mpi/f/reduceinplace.F90]{reduceinplace-f}
+  %
+  but you can also solve this with pointers:
+  %
+  \fverbatimsnippet[examples/mpi/f08/reduceinplaceptr.F90]{reduceinplace-fptr}
+\end{fortrannote}
 
 \begin{pythonnote}{In-place collectives}
   The value \lstinline+MPI.IN_PLACE+ can be used for the send buffer:

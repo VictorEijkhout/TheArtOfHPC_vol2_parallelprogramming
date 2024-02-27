@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% omp-reduction.tex : reduction loops
 %%%%
@@ -171,6 +171,80 @@ double result = 0;
   result += local_result;
 }
 \end{lstlisting}
+
+\Level 1 {Exercises}
+
+\begin{exercise}
+  \label{ex:omp-pi}
+  Compute $\pi$ by \indexterm{numerical integration}. We use the fact that $\pi$
+  is the area of the unit circle, and we approximate this by computing
+  the area of a quarter circle using \indexterm{Riemann sums}.
+  \begin{itemize}
+  \item Let $f(x)=\sqrt{1-x^2}$ be the function that describes the
+    quarter circle for $x=0\ldots 1$;
+  \item Then we compute \[ \pi/4\approx\sum_{i=0}^{N-1} \Delta x
+    f(x_i) \qquad \hbox{where $x_i=i\Delta x$ and $\Delta x=1/N$} \]
+  \end{itemize}
+  Write a program for this, and parallelize it using OpenMP parallel
+  for directives.
+  \begin{enumerate}
+  \item Put a \indexompshow{parallel} directive around your loop. Does it still
+    compute the right result? Does the time go down with the number of
+    threads? (The answers should be no and no.)
+  \item Change the \lstinline{parallel} to \lstinline{parallel for}
+    (or \lstinline{parallel do}). Now is the result correct? Does execution speed up? (The
+    answers should now be no and yes.)
+  \item Put a \indexompshow{critical} directive in front of the update. (Yes and
+    very much no.)
+  \item Remove the \indexompshow{critical} and add a clause
+    \indexompshow{reduction}\n{(+:quarterpi)} to the \indexompshow{for} directive.
+    Now it should be correct and efficient.
+  \end{enumerate}
+  Use different numbers of cores and compute the
+  speedup you attain over the sequential computation. Is there a
+  performance difference between the OpenMP code with 1~thread and the
+  sequential code?
+\end{exercise}
+
+\begin{remark}
+  In this exercise you may have seen the runtime go up a couple of times
+  where you weren't expecting it. The issue here is \indexterm{false
+    sharing}; see~\HPSCref{sec:roundoff-parallel} for more explanation.
+\end{remark}
+
+\begin{exercise}[jacobi]
+  \label{ex:omp-jacobi1}
+  The Jacobi method for solving linear system $Ax=b$ is given by
+  \[ x^{(n+1)}_i = a_{ii}(b_i-\sum_{j\not=i}a_{ij}x^{(n)}_j \]
+  Insert OpenMP directives in the code, and check that it converges
+  with the same precision, regardless the number of threads.
+
+  Study speedup. Does the problem size play a role?
+\end{exercise}
+
+\begin{exercise}
+  \label{ex:omp-jacobi2}
+  How much performance improvement do you get from considering
+  \begin{itemize}
+  \item removing barriers by \lstinline{nowait} clauses
+  \item affinity
+  \item first-touch
+  \end{itemize}
+\end{exercise}
+
+\begin{exercise}
+  \label{ex:omp-jacobi3}
+  Experiment with scheduling options.\\
+  Do you see any effect?\\
+  In particular try small chunk sizes.
+\end{exercise}
+
+\begin{exercise}
+  \label{ex:omp-jacobi4}
+  Can you put the whole iteration loop in a parallel region?
+
+  Does this give further performance improvement?
+\end{exercise}
 
 \Level 0 {Built-in reduction}
 

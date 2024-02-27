@@ -26,7 +26,7 @@
   \end{itemize}
 \end{numberedframe}
 
-\sectionframe{The MPI worldview: SPMD}
+\Level 2 {The MPI worldview: SPMD}
 
 \begin{numberedframe}{Computers when MPI was designed}
   \includegraphics[scale=.1]{mpi-node1.png}
@@ -96,7 +96,7 @@ ibrun python3 yourprogram.py
   data sending/receiving is the same for all neighbors.
 \end{numberedframe}
 
-\sectionframe{Practicalities}
+\Level 2 {Practicalities}
 
 \begin{numberedframe}{Pure MPI}
   \includegraphics[scale=.1]{mpi-node2.png}
@@ -215,7 +215,7 @@ mpirun -np 4 hostfile ... yourprogram arguments
   \includegraphics[scale=.15]{job_sbatch}
 \end{numberedframe}
 
-\sectionframe{We start learning MPI!}
+\Level 2 {We start learning MPI!}
 
 \begin{numberedframe}{MPI Init / Finalize}
  These calls need to be around the MPI part of your code:
@@ -272,7 +272,7 @@ from mpi4py import MPI
   \input ex:hello2
 \end{exerciseframe}
 
-\sectionframe{About library calls and bindings}
+\Level 2 {About library calls and bindings}
 
 \begin{numberedframe}{Bindings}
   The standard defines interfaces to MPI
@@ -346,7 +346,7 @@ use mpi
     \label{sl:mpi-header-p}
     \begin{itemize}
     \item Not part of the standard:\\
-      private project by Lisando Dalcin\\
+      private project by Lisandro Dalcin\\
       Download \url{https://github.com/mpi4py/mpi4py}\\
       Docs: \url{https://mpi4py.readthedocs.io/}
     \item Comes in two variants:\\
@@ -361,7 +361,7 @@ at TACC: \texttt{module load python3}
 \end{numberedframe}
 \end{python}
 
-\sectionframe{Ranks}
+\Level 2 {Ranks}
 
 \begin{numberedframe}{Process identification}
   \label{sl:comm-world}
@@ -415,9 +415,23 @@ MPI_Comm_size( comm,&nprocs );
 \end{lstlisting}
 \end{numberedframe}
 
+\begin{mpl}
+  \addtocounter{slidecount}{-1}
+\begin{numberedframe}{About routine signatures: MPL}
+  %% \input standardx/size
+  Signature:
+  \verbatiminput{mplreference/MPI_Comm_rank.tex}
+  Use
+\begin{lstlisting}
+const mpl::communicator &comm_world = mpl::environment::comm_world();
+int nprocs, procno;
+nprocs = comm_world.size();
+\end{lstlisting}
+\end{numberedframe}
+\end{mpl}
+
 \begin{fortran}
   \addtocounter{slidecount}{-1}
-
 \begin{numberedframe}{About routine signatures: Fortran2008}
 Signature
 \lstset{language=Fortran}
@@ -569,25 +583,34 @@ comm = MPI.COMM_WORLD
   \includegraphics[scale=.3]{node-comm-rank}
 \end{numberedframe}
 
-\begin{numberedframe}{Processor name: MPL}
+\begin{mpl}
+  \addtocounter{slidecount}{-1}
+\begin{numberedframe}[l]{Processor name: MPL}
   Processes (can) run on physically distinct locations.
 
   \cxxsnippetwithoutput{mplprocname}{examples/mpi/mpl}{procname}
 
   (Why \lstinline{stringstream} instead of plain \lstinline{cout}?)
 \end{numberedframe}
+\end{mpl}
 
+\begin{fortran}
+  \addtocounter{slidecount}{-1}
 \begin{numberedframe}[f]{Processor name: Fortran}
   Processes (can) run on physically distinct locations.
 
   \fverbatimsnippet{procnamef}
 \end{numberedframe}
+\end{fortran}
 
+\begin{python}
+  \addtocounter{slidecount}{-1}
 \begin{numberedframe}[p]{Processor name: Python}
   Processes (can) run on physically distinct locations.
 
   \pverbatimsnippet{procnamep}
 \end{numberedframe}
+\end{python}
 
 
 %% \protoslide{MPI_Get_processor_name}
@@ -595,7 +618,7 @@ comm = MPI.COMM_WORLD
 %%   \mplprotoslide{MPI_Get_processor_name}
 %% \end{mpl}
 
-\sectionframe{Your first useful parallel program}
+\Level 2 {Your first useful parallel program}
 
 \begin{numberedframe}{Functional Parallelism}
   Parallelism by letting each process do a different thing.

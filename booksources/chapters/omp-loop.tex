@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% omp-loop.tex : the OpenMP loop construct
 %%%%
@@ -163,9 +163,12 @@ able to determine in advance how many iterations there will be.
 \begin{itemize}
 \item The loop can not contains \n{break}, \n{return}, \n{exit} statements, or
   \n{goto} to a label outside the loop.
+  However, there is the \indexompshow{cancel} construct;
+  see section~\ref{sec:omp-cancel}.
 \item The \indextermtt{continue} (for~C/C++)
   or \indextermtt{cycle} (for Fortran)
   statement is allowed.
+\item C++ exceptions need to be caught in the loop body.
 \item The index update has to be an increment (or decrement) by a fixed amount.
 \item The loop index variable is automatically private (section~\ref{sec:omp-private}),
   and no changes to it
@@ -202,8 +205,8 @@ The trivial case of a loop that is executed correctly in parallel,
 is one where iteration~\lstinline{i} writes in location~\lstinline{i}
 of some array:
 \begin{lstlisting}
-  for (int i=low; i<hi; i++)
-     x[i] = // expression
+for (int i=low; i<hi; i++)
+   x[i] = // expression
 \end{lstlisting}
 The iterations of this loop are independent,
 and hence can be computed in parallel in any order,
@@ -214,61 +217,22 @@ or at best~\lstinline{x[i]}.
 Leaving considerations of the right-hand-side expression aside,
 we can more generally say that a loop is parallelizable if in
 \begin{lstlisting}
-  for (int i=low; i<hi; i++)
-     x[ f(i) ] = // expression
+for (int i=low; i<hi; i++)
+   x[ f(i) ] = // expression
 \end{lstlisting}
 the function \lstinline{f} satisfies:
 \[ i\not=j \Rightarrow f(i)\not=f(j). \]
 
 \begin{exercise}
+  \label{sl:omp:loop-over-2}
   Consider the code
-  \begin{lstlisting}
-    for (int i=0; i<n; i++)
-      x[i/2] += f(i)
-  \end{lstlisting}
+\begin{lstlisting}
+for (int i=0; i<n; i++)
+  x[i/2] += f(i)
+\end{lstlisting}
   Argue that this does not satisfy the above consition.
   Can you rewrite this loop to be parallelizable?
 \end{exercise}
-
-\Level 1 {Exercises}
-
-\begin{exercise}
-  \label{ex:omp-pi}
-  Compute $\pi$ by \indexterm{numerical integration}. We use the fact that $\pi$
-  is the area of the unit circle, and we approximate this by computing
-  the area of a quarter circle using \indexterm{Riemann sums}.
-  \begin{itemize}
-  \item Let $f(x)=\sqrt{1-x^2}$ be the function that describes the
-    quarter circle for $x=0\ldots 1$;
-  \item Then we compute \[ \pi/4\approx\sum_{i=0}^{N-1} \Delta x
-    f(x_i) \qquad \hbox{where $x_i=i\Delta x$ and $\Delta x=1/N$} \]
-  \end{itemize}
-  Write a program for this, and parallelize it using OpenMP parallel
-  for directives.
-  \begin{enumerate}
-  \item Put a \indexompshow{parallel} directive around your loop. Does it still
-    compute the right result? Does the time go down with the number of
-    threads? (The answers should be no and no.)
-  \item Change the \lstinline{parallel} to \lstinline{parallel for}
-    (or \lstinline{parallel do}). Now is the result correct? Does execution speed up? (The
-    answers should now be no and yes.)
-  \item Put a \indexompshow{critical} directive in front of the update. (Yes and
-    very much no.)
-  \item Remove the \indexompshow{critical} and add a clause
-    \indexompshow{reduction}\n{(+:quarterpi)} to the \indexompshow{for} directive.
-    Now it should be correct and efficient.
-  \end{enumerate}
-  Use different numbers of cores and compute the
-  speedup you attain over the sequential computation. Is there a
-  performance difference between the OpenMP code with 1~thread and the
-  sequential code?
-\end{exercise}
-
-\begin{remark}
-  In this exercise you may have seen the runtime go up a couple of times
-  where you weren't expecting it. The issue here is \indexterm{false
-    sharing}; see~\HPSCref{sec:roundoff-parallel} for more explanation.
-\end{remark}
 
 \Level 0 {An example}
 

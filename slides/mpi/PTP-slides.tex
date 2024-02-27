@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the lecture slides for
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% PTP-slides.tex: slides about point-to-point communication
 %%%%
@@ -75,6 +75,10 @@ if ( /* I am process A */ ) {
 
 \protoslide{MPI_Send}
 \protoslide{MPI_Recv}
+\begin{mpl}
+  \mplprotoslide{MPI_Send}
+  \mplprotoslide{MPI_Recv}
+\end{mpl}
 
 \begin{numberedframe}{Status object}
  Use \indexmpishow{MPI_STATUS_IGNORE} unless~\ldots
@@ -336,6 +340,9 @@ Take another look: \[ y_i=x_{i-1}+x_i+x_{i+1}\colon i=1,\ldots,N-1 \]
 \end{numberedframe}
 
 \protoslide{MPI_Sendrecv}
+\begin{mpl}
+  \mplprotoslide{MPI_Sendrecv}
+\end{mpl}
 
 \begin{numberedframe}{SPMD picture}
   What does process $p$ do?
@@ -361,6 +368,10 @@ sendrecv(from=predecessor,to=successor);
 \end{lstlisting}
 (Receive from \indexmpishow{MPI_PROC_NULL} succeeds without altering
 the receive buffer.)
+\end{numberedframe}
+
+\begin{numberedframe}{Proc null}
+  \input{mplnote-null-processor.cut}
 \end{numberedframe}
 
 \begin{numberedframe}{A point of programming style}
@@ -614,27 +625,51 @@ MPI_Waitsomething(.....)
 \end{numberedframe}
 
 \begin{exerciseframe}[isendirecvarray]
+  \label{ex:isendirecvarray}
   \input ex:3ptnonblock-hide
 
   Write your code so that it can achieve latency hiding.
 \end{exerciseframe}
 
+\begin{numberedframe}{Mix and match}
+  You can match blocking and non-blocking:
+\begin{lstlisting}
+if ( /* I am Process A */ ) {
+  MPI_Irecv( /* from B */, &req1 );
+  MPI_Isend( /* to B */, &req2 );
+  MPI_Waitall( /* requests 1 and 2 */ );
+} else if ( /* I am Process B */ ) {
+  MPI_Recv( /* from A */ );
+  MPI_Send( /* to A */ );
+}
+\end{lstlisting}
+\end{numberedframe}
+
 \begin{numberedframe}{Test: non-blocking wait}
   \begin{itemize}
   \item Post non-blocking receives
-  \item test for incoming messages
+  \item test on the request(s) for incoming messages
   \item if nothing comes in, do local work
   \end{itemize}
 \lstset{language=C}
 \begin{lstlisting}
 while (1) {
-  MPI_Test( /* from: */ MPI_ANY_SOURCE, &flag );
+  MPI_Test( some_request, &flag );
   if (flag)
     // do something with incoming message
   else
     // do local work
 }
 \end{lstlisting}
+Local operation.\\
+Also \indexmpishow{MPI_Testall} et cetera.
+\end{numberedframe}
+
+\begin{numberedframe}{Probe for message}
+  Is there a message?
+  \cverbatimsnippet[examples/mpi/c/probe.c]{probe}
+  (Also non-blocking \indexmpishow{MPI_Iprobe}.)\\
+  These commands force global progress.
 \end{numberedframe}
 
 \begin{numberedframe}{The Pipeline Pattern}

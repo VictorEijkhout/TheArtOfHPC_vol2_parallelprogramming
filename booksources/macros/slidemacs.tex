@@ -30,48 +30,31 @@
 %%%% Outlining
 %%%%
 \usepackage{outliner}
-\newcommand\coursesection[2]{
-  %%\Level 0 {#2} with hypertarget
-  \part{#2}
-  \addcontentsline{toc}{part}{#2}
-  \frame{\partpage
-    \hypertarget{#1}{}
-  }
-}
-\OutlineLevelStart
-    0
-    {\part{#1}
-      \addcontentsline{toc}{part}{#1}
-      \frame{\partpage}
-    }
-%\OutlineLevelStart 1{\section{#1}}
-\OutlineLevelStart 1{\frame{\section{#1}\Large\bf#1}}
+\newcounter{sectionframe}
+\OutlineLevelStart 0{\refstepcounter{sectionframe}
+  \frame{\part{#1}\Large\bf #1}}
+\OutlineLevelStart 1{\frame{\section*{#1}\large\bf #1}}
+\OutlineLevelStart 2{\frame{\subsection*{#1}\large #1}}
+
+%% \setcounter{tocdepth}{3}
+%% \OutlineLevelStart 0 {
+%%     \section{#1}
+%%     \addcontentsline{toc}{section}{#1}
+%%     \frame{\partpage}
+%% }
+%% %\OutlineLevelStart 1{\section{#1}}
+%% \OutlineLevelStart 1{
+%%   \subsection{#1}
+%%   \addcontentsline{toc}{subsection}{#1}
+%%   \begin{frame}\Large\bf#1
+%%   \end{frame}
+%% }
 \def\sectionframe#{\Level 1 }
 \def\subsectionframe#{\Level 2 }
-\setcounter{tocdepth}{2}
 \usepackage{framed}
 \colorlet{shadecolor}{blue!15}
-\OutlineLevelStart 2{\subsection{#1}
-  \frame{\begin{shaded}\large #1\end{shaded}}}
-%% \OutlineLevelCont 2{\end{frame}\begin{frame}{#1}}
-%% \OutlineLevelEnd 2{\end{frame}}
-%\OutlineTracetrue
-
-\newcommand\coursepart[1]{
-  %\addcontentsline{toc}{part}{Section: #1}
-  \begin{frame}{}
-    \setbox0=\hbox to \hsize{\hfil\Huge{#1}\hfil}
-    \dimen0=\vsize
-    \advance\dimen0 by -\ht0 \advance\dimen0 by -\dp0
-    \divide\dimen0 by 2
-    \hbox{}
-    \vskip \dimen0
-    \box0
-    \vskip \dimen0
-    \hbox{}
-  \end{frame}
-}
-
+%% \OutlineLevelStart 2{\subsection{#1}
+%%   \frame{\begin{shaded}\large #1\end{shaded}}}
 
 %%
 %% stuff
@@ -193,10 +176,9 @@
     \tiny
     \edef\tmp{\lowercase{\def\noexpand\standardroutine{\protoname}}}\tmp
     \IfFileExists
-        {standardx/\standardroutine.tex}
-        {\input{standardx/\standardroutine}}
+        {mplreference/\standardroutine.tex}
+        {\lstinputlisting{mplreference/\standardroutine}}
         {Missing MPL proto: \standardroutine}
-        %\expandafter\mpiRoutineRef\expandafter{\protoname}
   \end{frame}\egroup
 }
     

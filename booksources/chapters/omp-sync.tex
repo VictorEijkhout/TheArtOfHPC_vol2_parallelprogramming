@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% omp-sync.tex : synchronization
 %%%%
@@ -162,6 +162,16 @@ for updates in a loop:
 \end{lstlisting}
 but this should really be done with a \indexpragma{reduction} clause,
 which will be far more efficient.
+
+\begin{figure}[ht]
+  \includegraphics{omp-idle}
+  \caption{Idle time induced by a critical section}
+  \label{fig:omp-idle}
+\end{figure}
+Figure~{fig:omp-idle} illustrates how a critical section induces idle time:
+threads have to wait at the initial barrier
+until its their turn to enter the critical section.
+In effect, the execution becomes sequential!
 
 A good use of critical sections is doing file writes or database updates.
 

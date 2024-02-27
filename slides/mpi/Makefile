@@ -3,7 +3,7 @@
 ####
 #### This makefile is part of the source of 
 #### "Parallel Programming in MPI and OpenMP"
-#### by Victor Eijkhout, copyright 2013-2023
+#### by Victor Eijkhout, copyright 2013-2024
 ####
 #### Makefile for MPI course slides
 ####
@@ -24,15 +24,17 @@ makefmt :
 	mv mylatex.fmt mpicourse.fmt
 
 COURSE = mpi
-COURSES  = mpi mpl mpiadvanced mpibasics mpiintermediate
+COURSES  = mpi mpl mpiadvanced mpibasics mpiintermediate \
+    test
 EXTRATEXINPUTS =
 
 LANGUAGE = all
 LANGUAGES = c f p x
 course_prep ::
 	@cp ../course-support/lang_${LANGUAGE}.tex lang.tex
-include ../../booksources/makefiles/Make.tex
 include ../course-support/Make.course
+include ../../booksources/makefiles/Make.tex
+include ../../booksources/makefiles/Make.texerror
 
 info ::
 	@echo "make jordan.pdf"

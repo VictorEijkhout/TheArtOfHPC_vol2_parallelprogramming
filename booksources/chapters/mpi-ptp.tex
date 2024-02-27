@@ -45,7 +45,9 @@ the \emph{status}\index{status!of received message} of the message:
 \item Maybe you know the sender of a message, but the amount of data
   is unknown. In that case you can overallocate your receive buffer,
   and after the message is received ask how big it was, or you can
-  `probe' an incoming message and allocate enough data when you find
+  `probe' an incoming message
+  (see section~\ref{sec:mpi-probe})
+  and allocate enough data when you find
   out how much data is being sent.
 \end{itemize}
 

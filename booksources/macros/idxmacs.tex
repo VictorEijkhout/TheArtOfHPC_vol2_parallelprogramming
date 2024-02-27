@@ -4,7 +4,7 @@
 %%%%
 %%%% This LaTeX file is part of the source of 
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% idxmacs.tex : index-related macros.
 %%%%
@@ -14,7 +14,7 @@
 \usepackage{imakeidx}
 \indexsetup{noclearpage}
 \makeindex[columns=1]
-
+\usepackage{morewrites}
 
 \newcommand{\indextermp}[1]{\emph{#1s}\index{#1}}
 \newcommand{\indextermsub}[2]{\emph{#1 #2}\index{#2!#1}}
@@ -180,7 +180,7 @@
 
 %%
 %% Write `indexedroutine' to index #1 with #2 font
-%% also: generate manpage float
+%% manpage float is done in RoutineRefDisplay
 %%
 \def\RoutineShowAndIndex#1#2{% write `indexedroutine' to index #1 with #2 font
   \def\ifont{#2}\def\bfont{textbf}%

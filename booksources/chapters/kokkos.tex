@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% kokkos.tex : intro stuff about Kokkos
 %%%%
@@ -18,8 +18,25 @@ Jeff Miles and Christian Trott
 gave
 April 21-24, 2020.
 
+\Level 0 {Compilation}
+
 Include file:
 \cxxverbatimsnippet[code/kokkos/cxx/hello.cxx]{kokkoscore}
+
+Discoverable in CMake:
+\begin{lstlisting}
+find_package(Kokkos REQUIRED)
+target_link_libraries(myTarget Kokkos::kokkos)
+\end{lstlisting}
+Either set \lstinline{CMAKE_PREFIX_PATH} or add
+\begin{lstlisting}
+-DKokkos_ROOT=<Kokkos Install Directory>/lib64/cmake/Kokkos
+\end{lstlisting}
+Maybe:
+\begin{lstlisting}
+  -DCMAKE_CXX_COMPILER=<Kokkos Install Directory>/bin/nvcc_wrapper
+\end{lstlisting}
+See \url{https://kokkos.org/kokkos-core-wiki/ProgrammingGuide/Compiling.html}
 
 \Level 0 {Parallel code execution}
 

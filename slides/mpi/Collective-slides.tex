@@ -107,6 +107,14 @@ How do we compute this?
 \end{enumerate}
 \end{numberedframe}
 
+\begin{numberedframe}{Conceptual picture}
+  Recall SPMD: every process has the input and output variable
+
+  \includegraphics[scale=.4]{allreduce}
+
+  (What actually happens is a different story!)
+\end{numberedframe}
+
 \begin{numberedframe}{Allreduce syntax}
 \begin{lstlisting}
   int MPI_Allreduce(
@@ -134,7 +142,10 @@ How do we compute this?
 \end{exerciseframe}
 
 \protoslide{MPI_Allreduce}
+\begin{mpl}
+  \addtocounter{slidecount}{-1}
 \mplprotoslide{MPI_Allreduce}
+\end{mpl}
 
 \sectionframe{Buffers}
 
@@ -146,6 +157,12 @@ How do we compute this?
   \item write \lstinline{&x} or \lstinline{(void*)&x} for scalar
   \item write \lstinline{x} or \lstinline{(void*)x} for array
   \end{itemize}
+\begin{lstlisting}
+double x;
+MPI_Bcast( &x, .... );
+double x[5];
+MPI_Bcast( x, .... );
+\end{lstlisting}
 \end{numberedframe}
 \end{c}
 
@@ -159,6 +176,12 @@ How do we compute this?
   \item write \lstinline{x} for array
   \end{itemize}
 \end{numberedframe}
+\begin{lstlisting}
+integer :: i
+integer,dimension(:) :: iar
+call MPI_Bcast( i, .... );
+call MPI_Bcast( iar, .... );
+\end{lstlisting}
 \end{fortran}
 
 \begin{cxx}
@@ -180,6 +203,8 @@ MPI_Send( &xx.front(),25,MPI_FLOAT, .... );
 \end{numberedframe}
 \end{cxx}
 
+\begin{mpl}
+  \addtocounter{slidecount}{-1}
 \begin{numberedframe}{Buffers in MPL}
   Two mechanisms:
   \begin{enumerate}
@@ -188,6 +213,7 @@ MPI_Send( &xx.front(),25,MPI_FLOAT, .... );
   \item Layouts: contiguous or otherwise; see later.
   \end{enumerate}  
 \end{numberedframe}
+\end{mpl}
 
 \begin{numberedframe}{Large buffers}
   As of \mpistandard{4} a buffer can be longer than $2^{31}$ elements.\\
@@ -248,10 +274,15 @@ comm.Recv(result, ...)
 A bunch more.
 \end{numberedframe}
 
+\begin{mpl}
+  \addtocounter{slidecount}{-1}
 \begin{numberedframe}{MPL datatypes}
   Elementary types derived through polymorphism.
 \end{numberedframe}
+\end{mpl}
 
+\begin{python}
+  \addtocounter{slidecount}{-1}
 \begin{numberedframe}{Python datatypes}
   \begin{itemize}
   \item Elementary types not needed: type can be deduced from the Numpy buffer
@@ -259,6 +290,7 @@ A bunch more.
     in exceptional circumstances.
   \end{itemize}
 \end{numberedframe}
+\end{python}
 
 \begin{numberedframe}{MPI operators}
 \begingroup \tt\catcode`\_=12\relax %pyskip
@@ -285,7 +317,13 @@ A bunch more.
 A couple more.
 \end{numberedframe}
 
+\begin{mpl}
+  \addtocounter{slidecount}{-1}
 \begin{numberedframe}{MPL operators}
+Operators need to have type:
+\begin{lstlisting}
+T(T&)
+\end{lstlisting}
 Elementary operators:
 \begin{lstlisting}
 comm_world.allreduce(mpl::plus<float>(), rank2p2p1, p2layout);
@@ -295,6 +333,7 @@ User-defined operator:
 comm_world.reduce(lcm<int>(), 0, v, result);
 \end{lstlisting}
 \end{numberedframe}
+\end{mpl}
 
 \begin{comment}
 \begin{numberedframe}{Random numbers in C}
@@ -410,6 +449,35 @@ int MPI_Reduce
 \end{itemize}
 \end{numberedframe}
 
+\begin{numberedframe}{In-place operations}
+  \cverbatimsnippet{allreduceinplace}
+\end{numberedframe}
+
+\begin{numberedframe}{More in-place operations}
+  \cverbatimsnippet[examples/mpi/c/allreduceinplace.c]{onereduceinplace}
+  or
+  \cverbatimsnippet[examples/mpi/c/allreduceinplace.c]{tworeduceinplace}
+\end{numberedframe}
+
+\begin{fortran}
+  \addtocounter{slidecount}{-1}
+\begin{numberedframe}{In-place (Fortran)}
+  \fverbatimsnippet{reduceinplace-f}
+  or
+  \fverbatimsnippet{reduceinplace-fptr}
+\end{numberedframe}
+\end{fortran}
+
+\begin{mpl}
+  \addtocounter{slidecount}{-1}
+\begin{numberedframe}{In-place (MPL)}
+  Scalar:
+  \cxxverbatimsnippet[examples/mpi/mpl/collectscalar.cxx]{mplallreduce}
+  Buffer:
+  \cxxverbatimsnippet[examples/mpi/mpl/collectbuffer.cxx]{mplallreducebuffer}
+\end{numberedframe}
+\end{mpl}
+
 \begin{numberedframe}{Broadcast}
 \begin{lstlisting}
 int MPI_Bcast(
@@ -473,22 +541,35 @@ Scan or `parallel prefix': reduction with partial results
 \end{numberedframe}
 
 \protoslide{MPI_Scan}
+\protoslide{MPI_Exscan}
+\begin{mpl}
+  \addtocounter{slidecount}{-1}
+  \mplprotoslide{MPI_Scan}
+\end{mpl}
 
-\begin{numberedframe}{For the next exercise}
-  \label{fig:scanints}
-  \includegraphics[scale=.5]{scanints}
-\end{numberedframe}
+%% \begin{numberedframe}{For the next exercise}
+%%   \label{fig:scanints}
+%%   \includegraphics[scale=.5]{scangather0}
+%% \end{numberedframe}
 
 \begin{exerciseframe}[scangather]
+  \label{fig:scanints}
   \input ex:scanprint
+  \includegraphics[scale=.3]{scangather1}
 \end{exerciseframe}
 
 \sectionframe{Gather/Scatter, Barrier, and others}
 
 \protoslide{MPI_Gather}
-\mplprotoslide{MPI_Gather}
+\begin{mpl}
+  \addtocounter{slidecount}{-1}
+  \mplprotoslide{MPI_Gather}
+\end{mpl}
 \protoslide{MPI_Scatter}
-\mplprotoslide{MPI_Scatter}
+\begin{mpl}
+  \addtocounter{slidecount}{-1}
+  \mplprotoslide{MPI_Scatter}
+\end{mpl}
 
 \begin{numberedframe}{Gather/Scatter}
 \begin{itemize}
@@ -515,6 +596,10 @@ buffer; instead, it is the amount of data to/from each process.
 \end{numberedframe}
 
 \protoslide{MPI_Allgather}
+\begin{mpl}
+  \addtocounter{slidecount}{-1}
+  \mplprotoslide{MPI_Allgather}
+\end{mpl}
 
 \begin{numberedframe}{Allgather pictured}
   \includegraphics[scale=.4]{allgather}
@@ -528,9 +613,18 @@ buffer; instead, it is the amount of data to/from each process.
 \end{numberedframe}
 
 \protoslide{MPI_Gatherv}
+\begin{mpl}
+  \addtocounter{slidecount}{-1}
+  \mplprotoslide{MPI_Gatherv}
+\end{mpl}
 
 \begin{exerciseframe}[scangather]
   \input ex:scangather
+\end{exerciseframe}
+
+\begin{exerciseframe}[scangather]
+  \input ex:scanprint
+  \includegraphics[scale=.3]{scangather2}
 \end{exerciseframe}
 
 \begin{reviewframe}

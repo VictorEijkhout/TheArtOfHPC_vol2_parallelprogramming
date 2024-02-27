@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%% "Parallel Computing"
-   %%%% by Victor Eijkhout, copyright 2013-8
+   %%%% by Victor Eijkhout, copyright 2013-2024
    %%%%
    %%%% reductpositive.c : user-defined reduction
    %%%%
@@ -35,8 +35,8 @@ void reduce_without_zero(void *in,void *inout,int *len,MPI_Datatype *type) {
 #ifdef DEBUG
   printf("combine %d %d : %d\n",r,n,m);
 #endif
-  // return the new value
   //codesnippet mpirwz
+  // return the new value
   *(int*)inout = m;  
 }
 //codesnippet end

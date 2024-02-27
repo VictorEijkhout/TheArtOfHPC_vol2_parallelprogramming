@@ -1,0 +1,8 @@
+void mpl::communicator::scatter
+    ( int  root_rank, const T *  send_data, const layout< T > &  sendl,
+      T *  recv_data, const layout< T > &  recvl ) const
+    ( int  root_rank, const T *  send_data,
+      T &  recv_data ) const
+    // non-root versions:
+    ( int  root_rank, T &  recv_data ) const
+    ( int  root_rank, T *  recv_data, const layout< T > &  recvl ) const

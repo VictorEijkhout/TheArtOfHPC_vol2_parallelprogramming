@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% omp-basics.tex : intro stuff
 %%%%
@@ -237,10 +237,11 @@ much greater detail in later chapters.
 
 \Level 1 {Directives}
 \label{sec:omp-directives}
-\index{directives|(textbf}
+\index{OpenMP!directive|see{directive}}
+\index{directive|(textbf}
 
 OpenMP is not magic, so you have to tell it when something
-can be done in parallel. This is mostly done through \indexterm{directives};
+can be done in parallel. This is mostly done through \emph{directives};
 additional specifications can be done through library calls.
 
 In C/C++ the \indextermdef{pragma} mechanism is used: annotations for
@@ -268,6 +269,13 @@ with
 Directives in C/C++ are case-sensitive. Directives can be broken over
 multiple lines by escaping the line end.
 
+\begin{cppnote}{Bracket syntax}
+  In keeping with the desire to get rid of the \ac{CPP} in~C++,
+  a new \emph{syntax} for OpenMP \emph{directives}\index{directive!C++ syntax}
+  was introduced:
+  \cxxverbatimsnippet{ompcppdirective}
+\end{cppnote}
+
 \begin{fortrannote}{OpenMP sentinel}
 The sentinel in Fortran looks like a comment:
 \begin{lstlisting}
@@ -291,7 +299,7 @@ In
 \verb+c$omp+ and \verb+*$omp+ are allowed too.
 \end{fortrannote}
 
-\index{directives|)}
+\index{directive|)}
 
 \Level 1 {Parallel regions}
 
@@ -400,8 +408,11 @@ main () {
 Fortran has simpler rules, since it does not have blocks inside blocks.
 
 OpenMP has similar rules concerning data in parallel regions
-and other OpenMP constructs. First of all, data is visible
-in enclosed scopes:
+and other OpenMP constructs.
+
+\begin{block}{Enclosed scopes}
+  \label{sl:omp:enclosed}
+Data is visible in enclosed scopes:
 \begin{lstlisting}
 main() {
   int x;
@@ -413,6 +424,7 @@ main() {
                       // happened in the parallel region
 }
 \end{lstlisting}
+\end{block}
 
 In C, you can redeclare a variable inside a nested scope:
 \begin{lstlisting}
@@ -426,18 +438,30 @@ In C, you can redeclare a variable inside a nested scope:
 \end{lstlisting}
 Doing so makes the outer variable inaccessible.
 
-OpenMP has a similar mechanism:
-\begin{lstlisting}
+OpenMP has a similar mechanism: parallel regions are a scope.
+There is an important difference with plain C code:
+each thread in the team gets its own instance of the enclosed variable.
+
+\begin{block}{Thread-local variables}
+  \label{sl:omp:thread-local}
+  \begin{multicols}{2}
+  \begin{lstlisting}
 {
   int x;
 #pragma omp parallel
   {
     double x;
+    // do something with x
   }
 }
 \end{lstlisting}
-There is an important difference: each thread in the team
-gets its own instance of the enclosed variable.
+\columnbreak
+\begin{itemize}
+\item A parallel region is a scope.
+\item Local variables are per thread.
+\end{itemize}
+  \end{multicols}
+\end{block}
 
 \begin{figure}[ht]
 \includegraphics[scale=.1]{fork-join-vars}

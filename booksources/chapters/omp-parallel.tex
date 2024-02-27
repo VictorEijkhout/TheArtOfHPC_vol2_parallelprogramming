@@ -117,6 +117,9 @@ This code corresponds to the model we just discussed:
 
 What happens if you call a function from inside a parallel region, and
 that function itself contains a parallel region?
+\begin{block}{Nested parallelism}
+  \label{sl:omp:nest-code}
+\begin{multicols}{2}
 \begin{lstlisting}
 int main() {
   ...
@@ -127,6 +130,9 @@ int main() {
   ...
   }
 } // end of main
+\end{lstlisting}
+\columnbreak
+\begin{lstlisting}
 void func(...) {
 #pragma omp parallel
   {
@@ -134,6 +140,8 @@ void func(...) {
   }
 }
 \end{lstlisting}
+\end{multicols}
+\end{block}
 
 Since any thread can create a team, you may expect that every thread,
 in its call to \lstinline{func},
@@ -188,7 +196,7 @@ The total number of threads active simultaneously
 (technically: in a \indexterm{contention group})
 can be limited with:
 \begin{verbatim}
-  OMP_THREAD_LIMIT=123
+OMP_THREAD_LIMIT=123
 \end{verbatim}
 Its value can be queried with \indexompshow{omp_get_thread_limit}.
 

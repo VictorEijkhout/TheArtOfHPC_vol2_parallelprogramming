@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%% "Parallel Computing"
-   %%%% by Victor Eijkhout, copyright 2013-2021
+   %%%% by Victor Eijkhout, copyright 2013-2024
    %%%%
    %%%% cartdims.c : cartesian grid exploration
    %%%%
@@ -73,7 +73,7 @@ int main(int argc,char **argv) {
       MPI_Cart_coords( cart_comm,ip,dim,coord );
       printf("[%2d] coord: [",ip);
       for ( int id=0; id<dim; id++ )
-	printf("%d,",coord[id]);
+        printf("%d,",coord[id]);
       printf("]\n");
 
       /*
@@ -103,15 +103,17 @@ int main(int argc,char **argv) {
       //codesnippet cartshift01
       int pred,succ;
       MPI_Cart_shift
-	(period_comm,/* dim: */ 0,/* up: */ 1,
-	 &pred,&succ);
-      printf("periodic dimension 0:\n  src=%d, tgt=%d\n",
-             pred,succ);
+        (period_comm,/* dim: */ 0,/* up: */ 1,
+         &pred,&succ);
+      printf
+        ("periodic dimension 0:\n  src=%d, tgt=%d\n",
+         pred,succ);
       MPI_Cart_shift
-	(period_comm,/* dim: */ 1,/* up: */ 1,
-	 &pred,&succ);
-      printf("non-periodic dimension 1:\n  src=%d, tgt=%d\n",
-             pred,succ);
+        (period_comm,/* dim: */ 1,/* up: */ 1,
+         &pred,&succ);
+      printf
+        ("non-periodic dimension 1:\n  src=%d, tgt=%d\n",
+         pred,succ);
       //codesnippet end
       printf("cartshift\n\n");
     }
