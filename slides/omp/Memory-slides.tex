@@ -1,0 +1,53 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the lecture slides for
+%%%% `Parallel Computing'
+%%%% by Victor Eijkhout, copyright 2012-2024
+%%%%
+%%%% Memory-slides.tex : OpenMP memory model
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{numberedframe}{Atomic operations}
+fill in  
+\end{numberedframe}
+
+\begin{numberedframe}{Flush}
+\begin{multicols}{2}
+\begin{lstlisting}
+a = foo();
+flag = 1;
+\end{lstlisting}
+\columnbreak
+\begin{lstlisting}
+while (!flag) ;
+b = a;
+\end{lstlisting}
+\end{multicols}
+\end{numberedframe}
+
+\begin{numberedframe}{Flush'}
+\begin{multicols}{2}
+\begin{lstlisting}
+a = foo();
+#pragma omp flush
+#pragma omp atomic write
+flag = 1;
+#pragma omp flush
+\end{lstlisting}
+\columnbreak
+\begin{lstlisting}
+myflag = 0;
+while (!myflag){
+#pragma omp flush
+#pragma omp atomic read
+   myflag = flag;
+}
+#pragma omp flush
+b = a;
+\end{lstlisting}
+\end{multicols}
+\end{numberedframe}

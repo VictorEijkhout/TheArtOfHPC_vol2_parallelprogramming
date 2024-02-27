@@ -4,36 +4,47 @@
 %%%%
 %%%% This text file is part of the lecture slides for
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-6
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% OmpOther-slides.tex : remaining OpenMP topics
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}[containsverbatim]{Affinity}
+\begin{numberedframe}{Affinity}
+  \indexompshow{OMP_PROC_BIND}
+  \indexompshow{OMP_PLACES}
+\end{numberedframe}
+
+\begin{numberedframe}{False sharing}
+  
+\end{numberedframe}
+
+\begin{numberedframe}{Affinity}
   How do you place threads on cores?
   \begin{itemize}
   \item Two socket design NUMA
   \item Intel KNL has quadrants and hardware multi-threading
   \item \indextermtt{OMP_PROC_BIND} and \indextermtt{OMP_PLACES}
   \end{itemize}
-\end{frame}
+\end{numberedframe}
 
-\begin{frame}[containsverbatim]{Accelerators}
+%\includepdf{amask.pdf}
+
+\begin{numberedframe}{Accelerators}
   OpenMP 4 has mechanisms for offloading.
-\end{frame}
+\end{numberedframe}
 
-\begin{frame}[containsverbatim]{SIMD}
+\begin{numberedframe}{SIMD}
   Processors have 4 or 8-wide SIMD.\\
   convert OpenMP loop to SIMD vector instructions.
-\end{frame}
+\end{numberedframe}
 
 \endinput
 
-\begin{frame}[containsverbatim]{}
+\begin{numberedframe}{}
   \begin{itemize}
   \item 
   \end{itemize}
-\end{frame}
+\end{numberedframe}
 

@@ -4,14 +4,14 @@
 %%%%
 %%%% This text file is part of the lecture slides for
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-6
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% ParLoop-slides.tex : slides about OpenMP's fork-join model
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}{Loop parallelism}
+\begin{numberedframe}{Loop parallelism}
   Much of parallelism in scientific computing is in loops:
   \begin{itemize}
   \item Vector updates and inner products
@@ -19,18 +19,29 @@
   \item Finite Element meshes
   \item Multigrid
   \end{itemize}
-\end{frame}
+\end{numberedframe}
 
-\begin{frame}[containsverbatim]{Work distribution}
+\begin{numberedframe}{Work distribution}
   \begin{itemize}
   \item Suppose loop iterations are independent:
   \item Distribute them over the threads:
   \item Use \indextermtt{omp_get_thread_num} to determine disjoint subsets.
-  \item How would you do this specifically?
   \end{itemize}
-\end{frame}
+\begin{lstlisting}
+#pragma omp parallel
+{
+  int threadnum = omp_get_thread_num(),
+    numthreads = omp_get_num_threads();
+  int low = N*threadnum/numthreads,
+    high = N*(threadnum+1)/numthreads;
+  for (int i=low; i<high; i++)
+    // do something with i
+}
+\end{lstlisting}
+Discuss.
+\end{numberedframe}
 
-\begin{frame}[containsverbatim]{Workshare constructs}
+\begin{numberedframe}{Workshare constructs}
   Here's the two-step parallelization in OpenMP:
   \begin{itemize}
   \item You use the \indextermtt{parallel} directive to create a team of
@@ -39,9 +50,9 @@
     work over the team.
   \item For loops that is the \indextermtt{for} (or \indextermtt{do}) construct.
   \end{itemize}
-\end{frame}
+\end{numberedframe}
 
-\begin{frame}[containsverbatim]{Workshare construct for loops}
+\begin{numberedframe}{Workshare construct for loops}
 C: directive followed by statement or block:
 \begin{verbatim}
 #pragma omp parallel
@@ -61,10 +72,9 @@ Fortran: matching end directive
 !$omp end do
 !$omp end parallel
 \end{verbatim}
-\end{frame}
+\end{numberedframe}
 
-\begin{frame}[containsverbatim]{Stuff inside a parallel region}
-\footnotesize
+\begin{numberedframe}{Stuff inside a parallel region}
 \begin{multicols}{2}  
 \begin{verbatim}
 #pragma omp parallel
@@ -80,16 +90,61 @@ Fortran: matching end directive
 \columnbreak
 \includegraphics[scale=.07]{parallel-do}
 \end{multicols}
-\end{frame}
+\end{numberedframe}
 
-\begin{exerciseframe}[pi]
-  \footnotesize
-  \input ex:omp-pi
+\begin{numberedframe}{Loops are static}
+  \begin{itemize}
+  \item No \lstinline{break} or so.
+  \item \lstinline{continue} or \lstinline{cycle} allowed.
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Loops are static'}
+  \begin{itemize}
+  \item Fixed upper bound;
+  \item Simple loop increment;
+  \item $\Rightarrow$~OpenMP needs to be able to calculate
+    the number of iterations in advance.
+  \item No \lstinline{while} loops.
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{When is a loop parallel?}
+  It's up to you!
+
+  This is parallelizable:
+\begin{lstlisting}
+  for (int i=low; i<hi; i++)
+     x[i] = // expression
+\end{lstlisting}
+Is this?
+\begin{lstlisting}
+for (int i=low; i<hi; i++)
+   x[ f(i) ] = // expression
+\end{lstlisting}
+Histograms / binning.
+\end{numberedframe}
+
+\begin{exerciseframe}
+  \input{sl:omp:loop-over-2}
 \end{exerciseframe}
 
-\begin{frame}[containsverbatim]{Loop schedules}
+\begin{exerciseframe}
+  Run the following snippet
+  \begin{enumerate}
+  \item Sequentially
+  \item On one thread
+  \item With more than one thread.
+  \end{enumerate}
+  \cverbatimsnippet{ompsineloop}
+\end{exerciseframe}
+
+\Level 1 {More about loops}
+
+\begin{numberedframe}{Loop schedules}
   \begin{itemize}
-  \item Default: static scheduling of iterations. \\
+  \item Static scheduling of iterations. \\
+    (default in practice though not formally)\\
     Very efficient. Good if all iterations take the same amount of
     time.\\ \texttt{schedule(static)}
   \item Other possibility: dynamic.\\
@@ -102,9 +157,9 @@ Fortran: matching end directive
   dynamic schedule is better:
   
   \includegraphics[scale=.07]{scheduling}
-\end{frame}
+\end{numberedframe}
 
-\begin{frame}[containsverbatim]{Chunk size}
+\begin{numberedframe}{Chunk size}
 \small
   With $N$ iterations and $t$ threads:
   \begin{itemize}
@@ -112,15 +167,77 @@ Fortran: matching end directive
     explicit chunk size: \texttt{schedule(static,123)}
   \item Dynamic: each thread gets $1$ iteration at a time\\
     explicit chunk size: \texttt{schedule(dynamic,45)}\\
-  \item Help from OpenMP:\\
-    guided schedule uses decreasing chunk size (with optional minimum
-    chunk):\\
-    \texttt{schedule(guided,6)}
   \end{itemize}
-  \includegraphics[scale=.08]{schedules}
-\end{frame}
+  \includegraphics[scale=.075]{schedules}
+\end{numberedframe}
 
-\begin{frame}[containsverbatim]{Reductions}
+\begin{numberedframe}{Guided schedule}
+  Use decreasing chunk size (with optional minimum
+  chunk): \texttt{schedule(guided,6)}
+
+  More flexible than dynamic, less overhead than dynamic.    
+\end{numberedframe}
+
+\begin{numberedframe}{Collapse}
+  \begin{itemize}
+  \item Parallelize loop nest
+  \item More iterations $\Rightarrow$ better performance
+  \item Inner loop needs to be directly nested\\
+    bounds simple function of outer bounds and var
+  \end{itemize}
+\cverbatimsnippet{ompnbodycollapse}
+\end{numberedframe}
+
+\begin{numberedframe}{More loop topics}
+  \begin{itemize}
+  \item Ordered iterations: normally OpenMP can execute iterations in
+    any sequence. You can force ordering if you absolutely have
+    to. Bad for performance!
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Barriers}
+  \begin{itemize}
+  \item Barrier: synchronize all threads
+  \item explicit: \lstinline{omp barrier}
+  \item implicit: end of a workshare construct such as \lstinline{for}
+  \item remove implicit barriers: \lstinline{nowait} clause
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Nowait}
+\begin{lstlisting}
+#pragma omp parallel nowait
+for ( int i=0; i<N; ++i )
+  x[i] = // something
+#pragma omp parallel 
+for ( int i=0; i<N; ++i )
+  y[i] = ... x[i] ...
+\end{lstlisting}
+Needed:
+  \begin{itemize}
+  \item Same number of iterations
+  \item Same schedule
+  \end{itemize}
+\end{numberedframe}
+
+\Level 1 {Loop data}
+
+\begin{numberedframe}{Where is the bug?}
+\begin{lstlisting}
+  int i,j;
+#pragma omp parallel for private(temp)
+   for(i=0;i<N;i++){
+    for (j=0;j<M;j++){
+       temp = b[i]*c[j];
+       a[i][j] = temp * temp + d[i];
+} }  
+\end{lstlisting}
+\end{numberedframe}
+
+\Level 1 {Reduction}
+
+\begin{numberedframe}{Reductions}
   \begin{itemize}
   \item Inner product loop:
 \begin{verbatim}
@@ -131,14 +248,14 @@ for (i=0; i<N; i++)
 \item Use the \indextermtt{reduction(+:s)} clause.
   \item All the usual operations are available; you can also make your own.
   \end{itemize}
-\end{frame}
+\end{numberedframe}
 
 \begin{exerciseframe}[piadapt]
   \footnotesize
   \input ex:omp-pi-adapt
 \end{exerciseframe}
 
-\begin{frame}[containsverbatim]{same exercise}
+\begin{numberedframe}{same exercise}
   \begin{enumerate}
   \item Use the \indextermtt{omp parallel for} construct to parallelize the loop.
     As in the previous lab, you may at first see an incorrect result.
@@ -159,25 +276,69 @@ for (i=0; i<N; i++)
   \item \indextermtt{schedule(runtime)} : leave it up to environment variables;
     good for experimenting.
   \end{enumerate}
-\end{frame}
+\end{numberedframe}
 
-\begin{frame}[containsverbatim]{More loop topics}
-  \begin{itemize}
-  \item Multiple loops can be collapsed: \indextermtt{collapse(2)}. Improves
-    performance.
-  \item Ordered iterations: normally OpenMP can execute iterations in
-    any sequence. You can force ordering if you absolutely have
-    to. Bad for performance!
-  \item There is a barrier at the end of a \indextermtt{for}: use \indextermtt{nowait} to
-    let threads continue.
-  \end{itemize}
-\end{frame}
+\begin{numberedframe}{Reduction on arrays, static}
+  \cverbatimsnippet{creductstatic}
+\end{numberedframe}
+
+\begin{numberedframe}{Reduction on arrays, dynamic}
+  \cverbatimsnippet{creductdynamic}
+\end{numberedframe}
+
+\begin{numberedframe}{Reduction on arrays, warning}
+  Each thread gets a copy of the array on the stack\\
+  $\Rightarrow$~possible stack overflow\\
+  set \indexompshow{OMP_STACKSIZE}\\
+  also see \indextermtt{ulimit} on the Unix level.
+\end{numberedframe}
+
+\begin{exerciseframe}[pi]
+  \footnotesize
+  \input ex:omp-pi
+\end{exerciseframe}
+
+%% \Level 1 {Affinity}
+
+%% \begin{numberedframe}{Threads vs cores}
+%%   \begin{itemize}
+%%   \item Threads are software: instructions and local data
+%%   \item OS can `migrate' threads
+%%   \item Expensive because of data movement
+%%   \item Destroys cache-locality.
+%%   \item $\Rightarrow$~prevent migration
+%%   \end{itemize}
+%% \begin{lstlisting}
+%% OMP_PROC_BIND=true
+%% \end{lstlisting}
+%% \lstinline{close/spread}, also \lstinline{OMP_PLACES=cores/sockets}
+%% \end{numberedframe}
+
+\Level 1 {Exercises}
+
+\begin{exerciseframe}[jacobi]
+  \input{ex:omp-jacobi1}
+\end{exerciseframe}
+
+\begin{exerciseframe}
+  \input{ex:omp-jacobi2}
+\end{exerciseframe}
+
+\begin{exerciseframe}
+  \input{ex:omp-jacobi3}
+\end{exerciseframe}
+
+\begin{exerciseframe}
+  \input{ex:omp-jacobi4}
+\end{exerciseframe}
 
 \endinput
 
-\begin{frame}[containsverbatim]{}
+\begin{numberedframe}{}
+\begin{lstlisting}
+\end{lstlisting}
   \begin{itemize}
   \item 
   \end{itemize}
-\end{frame}
+\end{numberedframe}
 

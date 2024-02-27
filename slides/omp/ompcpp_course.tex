@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2022-2023
+%%%% by Victor Eijkhout, copyright 2022-2024
 %%%%
 %%%% ompcpp_course.tex : course in C++ aspects of OpenMP
 %%%%
@@ -42,6 +42,10 @@
 \sectionframe{Basic stuff}
 %%%%%%%%%%%%%%%%
 
+\begin{numberedframe}{Bracket syntax}
+  \input{cppnote-bracket-syntax.cut}
+\end{numberedframe}
+
 \begin{numberedframe}{Output streams in parallel}
   \input{cppnote-output-streams-in-parallel.cut}
 \end{numberedframe}
@@ -57,6 +61,12 @@
 
 \begin{numberedframe}{Privatizing class members}
   \input{cppnote-privatizing-class-members.cut}
+\end{numberedframe}
+
+\begin{numberedframe}{More privatization}
+  Reference types can not be private.
+
+  Private objects are constructed/destructed by each thread.
 \end{numberedframe}
 
 \begin{numberedframe}{Vectors are copied, unlike arrays, 1}
@@ -228,7 +238,7 @@ Probably also \lstinline|+=| and \lstinline|-|
   Reduction of four items on two threads.
   \n{i}~is the OpenMP initialization, and \n{u}~is the
   user initialization; each \n{p}~stands for a partial reduction value.
-  \includegraphics[scale=.1]{omp-reduct.png}
+  \includegraphics[scale=.1]{omp-reduct.jpeg}
 \end{numberedframe}
 
 \begin{numberedframe}{User-defined reductions, syntax}
