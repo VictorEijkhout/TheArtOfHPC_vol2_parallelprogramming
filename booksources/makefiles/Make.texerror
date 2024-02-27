@@ -1,0 +1,45 @@
+# -*- makefile -*-
+################################################################
+####
+#### This makefile is part of The Art of High Performance Computing
+#### Victor Eijkhout
+#### eijkhout@tacc.utexas.edu
+####
+#### copyright Victor Eijkhout 2012-2024
+####
+#### Make include file with TeX/LaTeX formatting rules
+####
+################################################################
+
+MAKEFLAGS += --no-builtin-rules
+
+info ::
+	@echo
+	@echo "================ LaTeX"
+
+info ::
+	@echo "make diagnostics [FILE=...(default: ${FILE})]] : formatting problems"
+.PHONY: diagnostics
+diagnostics ::
+	@if [ -z "${FILE}" ] ; then \
+	    echo "Please specify FILE variable" && exit 1 \
+	    ; fi \
+	 && echo "================ Diagnostics ================" \
+	 && ( grep multiply ${FILE}.log | grep -v header \
+	        || echo >/dev/null ) \
+	 && ( grep "LaTeX Warning: Citation" ${FILE}.log ) \
+	        || echo 0 >/dev/null \
+	 && ( grep "LaTeX Warning: Reference" ${FILE}.log ) \
+	        || echo 0 >/dev/null \
+	 && ( ( grep "missing snippet" ${FILE}.log | grep -v OT1 ) \
+	        || echo >/dev/null ) \
+	 && echo "----------------" \
+	 && ( grep undefined ${FILE}.log | grep -v def: | grep -v although \
+	        || echo >/dev/null ) \
+	 && echo "----------------" \
+	 && ( grep "is not defined on" ${FILE}.log || echo >/dev/null ) \
+	 && echo "----------------" \
+	 && ( grep "no file" ${FILE}.log || echo >/dev/null ) \
+	 && echo "----------------" \
+	 && ( grep "not strip file" ${FILE}.log || echo >/dev/null ) \
+	 && echo "---------------- end of diagnostics --------"
