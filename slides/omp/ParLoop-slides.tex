@@ -80,8 +80,8 @@ Fortran: matching end directive
 #pragma omp parallel
 {
   code1();
-#pragma omp for
-  for (i=1; i<=4*N; i++) {
+  #pragma omp for
+  for (int i=1; i<=4*N; i++) {
     code2();
   }
   code3();
@@ -96,11 +96,6 @@ Fortran: matching end directive
   \begin{itemize}
   \item No \lstinline{break} or so.
   \item \lstinline{continue} or \lstinline{cycle} allowed.
-  \end{itemize}
-\end{numberedframe}
-
-\begin{numberedframe}{Loops are static'}
-  \begin{itemize}
   \item Fixed upper bound;
   \item Simple loop increment;
   \item $\Rightarrow$~OpenMP needs to be able to calculate
@@ -129,14 +124,16 @@ Histograms / binning.
   \input{sl:omp:loop-over-2}
 \end{exerciseframe}
 
-\begin{exerciseframe}
+\begin{exerciseframe}[vectorsum]
   Run the following snippet
+  \cverbatimsnippet{exvectorsum}
   \begin{enumerate}
   \item Sequentially
   \item On one thread
   \item With more than one thread.
   \end{enumerate}
-  \cverbatimsnippet{ompsineloop}
+  Do a scaling study.
+  What all can you do to improve performance? Read back through previous slides.
 \end{exerciseframe}
 
 \Level 1 {More about loops}
