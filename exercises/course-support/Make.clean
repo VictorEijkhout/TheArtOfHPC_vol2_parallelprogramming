@@ -4,7 +4,7 @@
 ####
 #### This makefile is part of the source of 
 #### "Parallel Computing for Science and Engineering"
-#### by Victor Eijkhout, copyright 2013-2023
+#### by Victor Eijkhout, copyright 2013-2024
 ####
 #### Make include file for clean rules
 ####
@@ -20,6 +20,7 @@ clean :: local_clean
 codeclean :
 	@/bin/rm -rf \
 	    *.a *.o *~ *.gch *.inst.c *.pp.F90 *.mod *.optrpt events.* *.mod a.out *.pyc \
+	    *.drawio.bkp \
 	    ${APPS} ${EXERCISES} ${WRONGS} ${INPROGRESS} \
 	    *.dSYM MULTI__*  __pycache__ fort.[0-9]* \
 	    core.[0-9]* idev[0-9]*.o[0-9]* ddt.o[0-9]* *.out[0-9]* jobtest.o* tautrace_* \

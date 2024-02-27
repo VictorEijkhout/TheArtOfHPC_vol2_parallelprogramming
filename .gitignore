@@ -275,3 +275,4 @@ TSWLatexianTemp*
 # Makeindex log files
 *.lpz
 booksources/exercises/*.tex
+booksources/graphics/petsc_graphics/*.cdd

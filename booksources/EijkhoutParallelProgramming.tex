@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% parcompbook.tex : master file for the book
 %%%%
@@ -16,7 +16,9 @@
 
 \usepackage{verbatim}
 
-\usepackage{comment}
+\input macros/comment.sty % our own prerelease
+%\usepackage{comment}
+
 \specialcomment{tacc}{\def\CommentCutFile{tacc.cut}}{}
 \newif\ifIncludeAnswers
 \IncludeAnswersfalse
@@ -57,20 +59,14 @@
 
 \input commonmacs
 \input acromacs
+\input blockmacs
 \input exmacs
 \input tutmacs
 \input idxmacs
 \input idxpkgmacs
-\makeindex
+%% \makeindex
 \input bookmacs
 \input snippetmacs
-
-%% \begin{lulu}
-%% %% no source listing in the printed book
-%% \def\chaptersourcelisting#1{}
-%% \end{lulu}
-%% \begin{notlulu}
-%% % source listing for online book online
 
 \ifincludesources
   \def\chaptersourcelisting#1{
@@ -258,10 +254,7 @@
 
 \index{parallel!prefix|see{prefix}}
 
-% \begin{multicols*}{1} % this runs off the page...
-%% \let\theindex\description \input parcombook.ind
 \printindex
-% \end{multicols*}
 
 \Level 0 {Lists of notes}
 

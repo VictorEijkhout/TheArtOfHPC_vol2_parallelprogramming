@@ -27,7 +27,7 @@ cmake :
 	 \
 	 && if [ -z "${CXX_COMPILER}" ] ; then \
 	        echo "Please set CXX_COMPILER" && exit 1 ; fi \
-	 && if [ -z "${LMOD_FAMILY_MPI}" ] ; then \
+	 && if [ -z "${TACC_FAMILY_MPI}" ] ; then \
 	        echo "Please use Lmod to load MPI" && exit 1 ; fi \
 	 && export CXX=${CXX_COMPILER} \
 	 && export CC=${C_COMPILER} \
@@ -55,7 +55,7 @@ cmake :
 	        -B $$builddir \
 	        -D PROJECT_NAME=$${program} \
 	        $$( if [ "${MODE}" = "mpi" ] ; then \
-	              echo "-D MPI_NAME=${LMOD_FAMILY_MPI}" \
+	              echo "-D MPI_NAME=${TACC_FAMILY_MPI}" \
 	            ; fi ) \
 	        -D CMAKE_INSTALL_PREFIX=$$installdir \
 	        -D CMAKE_VERBOSE_MAKEFILE=ON \

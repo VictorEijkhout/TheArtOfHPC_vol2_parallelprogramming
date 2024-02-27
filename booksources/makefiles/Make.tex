@@ -5,7 +5,7 @@
 #### Victor Eijkhout
 #### eijkhout@tacc.utexas.edu
 ####
-#### copyright Victor Eijkhout 2012-2023
+#### copyright Victor Eijkhout 2012-2024
 ####
 #### Make include file with TeX/LaTeX formatting rules
 ####
@@ -41,26 +41,3 @@ filename :
 	    echo "Please set FILE or COURSE" >2 && exit 1 \
 	; fi \
 	 && echo $$file
-
-info ::
-	@echo "make diagnostics [FILE=...(default: ${FILE})]] : formatting problems"
-.PHONY: diagnostics
-diagnostics ::
-	@if [ -z "${FILE}" ] ; then \
-	    echo "Please specify FILE variable" && exit 1 \
-	    ; fi \
-	 && echo "================ Diagnostics ================" \
-	 && ( grep multiply ${FILE}.log | grep -v header \
-	        || echo >/dev/null ) \
-	 && ( grep "missing snippet" ${FILE}.log \
-	        || echo >/dev/null ) \
-	 && ( grep "Missing output" ${FILE}.log \
-	        || echo >/dev/null ) \
-	 && echo "----------------" \
-	 && ( grep "LaTeX Warning: Citation" ${FILE}.log ) \
-	        || echo 0 >/dev/null \
-	 && ( grep "LaTeX Warning: Reference" ${FILE}.log | grep -v def: ) \
-	        || echo 0 >/dev/null \
-	 && echo "----------------" \
-	 && ( grep "is not defined on" ${FILE}.log || echo >/dev/null ) \
-	 && echo "---------------- end of diagnostics --------"

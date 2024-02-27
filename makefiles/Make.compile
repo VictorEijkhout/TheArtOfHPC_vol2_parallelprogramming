@@ -5,7 +5,7 @@
 #### Victor Eijkhout
 #### eijkhout@tacc.utexas.edu
 ####
-#### copyright Victor Eijkhout 2012-2023
+#### copyright Victor Eijkhout 2012-2024
 ####
 #### Make include file with general compile rules
 ####
@@ -69,168 +69,14 @@ CXXFLAGS += ${CXX_STD_FLAGS}
 
 OPTFLAGS := -O${OPTLEVEL} -g
 ifeq "${TACC_FAMILY_COMPILER}" "intel"
-  OPTFLAGS += "-sox"
+  ## OPTFLAGS += "-sox"
 else ifeq "${TACC_FAMILY_COMPILER}" "gcc"
   OPTFLAGS += "-Wno-psabi"
 endif
 
-ifdef TACC_TAU_DIR
-  C_COMPILER = tau_cc.sh -optCompInst -optPreProcess
-  CXX_COMPILER = tau_cxx.sh -optCompInst -optPreProcess
-  F_COMPILER = tau_f90.sh -optCompInst -optPreProcess
-  F08_COMPILER = tau_f90.sh -optCompInst -optPreProcess
-  MPI_C_COMPILER = tau_cc.sh  -optCompInst -optPreProcess
-  MPI_CXX_COMPILER = tau_cxx.sh -optCompInst -optPreProcess
-  MPI_F_COMPILER = tau_f90.sh -optCompInst -optPreProcess
-  MPI_F08_COMPILER = tau_f90.sh -optCompInst -optPreProcess
-else
-
-    ##
-    ## Non_TAU modes
-    ##
-    MPI_C_COMPILER = mpicc
-    MPI_CXX_COMPILER = mpicxx
-    MPI_F_COMPILER = mpif90
-    MPI_F08_COMPILER = mpif90
-
-    ifeq "${MODE}" "mpi"
-      C_COMPILER   = ${MPI_C_COMPILER}
-      CXX_COMPILER = ${MPI_CXX_COMPILER}
-      F_COMPILER   = ${MPI_F_COMPILER}
-      F08_COMPILER   = ${MPI_F08_COMPILER}
-    else ifeq "${MODE}" "hybrid"
-      C_COMPILER   = ${MPI_C_COMPILER}
-      CXX_COMPILER = ${MPI_CXX_COMPILER}
-      F_COMPILER   = ${MPI_F_COMPILER}
-      F08_COMPILER   = ${MPI_F08_COMPILER}
-    else ifeq "${MODE}" "mpl"
-      C_COMPILER   = ${MPI_C_COMPILER}
-      CXX_COMPILER = ${MPI_CXX_COMPILER}
-      F_COMPILER   = ${MPI_F_COMPILER}
-      F08_COMPILER   = ${MPI_F08_COMPILER}
-    else ifeq "${MODE}" "1api"
-        CXX_COMPILER = icpx
-	CXXFLAGS +=  -fsycl
-        LINK_FLAGS += -fsycl
-    else ifeq "${MODE}" "petsc"
-      ##
-      ## annoyingly, there is only an mpicc/mpicxx/mpif90 script
-      ## in the petsc bin dir, if you have --download-mpich
-      ## this may have changed in 3.12.4
-      ##
-      C_COMPILER = mpicc
-      # ${PETSC_DIR}/${PETSC_ARCH}/bin/mpicc
-      CXX_COMPILER = mpicxx
-      #${PETSC_DIR}/${PETSC_ARCH}/bin/mpicxx
-      F_COMPILER = mpif90
-      F08_COMPILER = mpif90
-      #${PETSC_DIR}/${PETSC_ARCH}/bin/mpif90
-      MPI_C_COMPILER   = ${C_COMPILER}
-      MPI_CXX_COMPILER = ${CXX_COMPILER}
-      MPI_F_COMPILER   = ${F_COMPILER}
-      MPI_F08_COMPILER   = ${F08_COMPILER}
-
-      CFLAGS += ${PETSC_CC_INCLUDES} 
-      CXXFLAGS += ${PETSC_CXX_INCLUDES} 
-      FFLAGS += ${PETSC_FC_INCLUDES} 
-
-    else ifeq "${MODE}" "slepc"
-      ##
-      ## annoyingly, there is only an mpicc/mpicxx/mpif90 script
-      ## in the petsc bin dir, if you have --download-mpich
-      ## this may have changed in 3.12.4
-      ##
-      C_COMPILER = mpicc
-      # ${PETSC_DIR}/${PETSC_ARCH}/bin/mpicc
-      CXX_COMPILER = mpicxx
-      #${PETSC_DIR}/${PETSC_ARCH}/bin/mpicxx
-      F_COMPILER = mpif90
-      F08_COMPILER = mpif90
-      #${PETSC_DIR}/${PETSC_ARCH}/bin/mpif90
-      MPI_C_COMPILER   = ${C_COMPILER}
-      MPI_CXX_COMPILER = ${CXX_COMPILER}
-      MPI_F_COMPILER   = ${F_COMPILER}
-      MPI_F08_COMPILER   = ${F08_COMPILER}
-
-      CFLAGS += ${PETSC_CC_INCLUDES} 
-      CXXFLAGS += ${PETSC_CXX_INCLUDES} 
-      FFLAGS += ${PETSC_FC_INCLUDES} 
-
-    else ifeq "${MODE}" "cuda"
-      C_COMPILER   = nvcc
-      CXX_COMPILER = nvcc
-      F_COMPILER   = /bin/false
-      F08_COMPILER   = /bin/false
-
-      F_HOST_COMPILER   = no_such_f_compiler
-      F08_HOST_COMPILER   = no_such_f_compiler
-      ifeq "${TACC_FAMILY_COMPILER}" "intel"
-        C_HOST_COMPILER   = icc
-        CXX_HOST_COMPILER = icpc 
-	notHOST_FLAGS = -diag-disable=10441
-      else ifeq "${TACC_FAMILY_COMPILER}" "gcc"
-        C_HOST_COMPILER   = gcc
-        CXX_HOST_COMPILER = g++
-      else 
-        C_HOST_COMPILER   = no_such_compiler
-        CXX_HOST_COMPILER = no_such_compiler
-      endif
-
-    else # other modes use the regular compilers
-
-	ifeq "not" "true"
-	else ifeq "${TACC_FAMILY_COMPILER}" "intel"
-	    ifeq "${INTEL23}" "23"
-	      C_COMPILER   = icx
-	      CXX_COMPILER = icpx
-	      F_COMPILER   = ifx
-	      F08_COMPILER = ifx
-	    else ifeq "${INTEL24}" "24"
-	      C_COMPILER   = icx
-	      CXX_COMPILER = icpx
-	      F_COMPILER   = ifx
-	      F08_COMPILER = ifx
-	    else
-	      C_COMPILER   = icc
-	      CXX_COMPILER = icpc
-	      F_COMPILER   = ifort
-	      F08_COMPILER = ifort
-	    endif
-	else ifeq "${TACC_FAMILY_COMPILER}" "intelx"
-	  C_COMPILER   = icx
-	  CXX_COMPILER = icpx
-	  F_COMPILER   = ifx
-	  F08_COMPILER   = ifx
-	else ifeq "${TACC_FAMILY_COMPILER}" "oneapi"
-	  C_COMPILER   = icx
-	  CXX_COMPILER = icpx
-	  F_COMPILER   = ifort
-	  F08_COMPILER   = ifort
-	else ifeq "${TACC_FAMILY_COMPILER}" "gcc"
-	  C_COMPILER   = gcc
-	  CXX_COMPILER = g++
-	  F_COMPILER   = gfortran
-	  F08_COMPILER   = gfortran
-	else ifeq "${TACC_FAMILY_COMPILER}" "clang"
-	  C_COMPILER   = clang
-	  CXX_COMPILER = clang++
-	  F_COMPILER   = gfortran
-	  F08_COMPILER   = gfortran
-        else ifeq "${TACC_FAMILY_COMPILER}" "nvhpc"
-          C_COMPILER   = nvcc
-          CXX_COMPILER = nvcc
-          F_COMPILER   = /bin/false
-          F08_COMPILER   = /bin/false
-	else ifeq "${TACC_FAMILY_COMPILER}" "xl"
-	  C_COMPILER   = xlc
-	  CXX_COMPILER = xlc++
-	  F_COMPILER   = xlf
-	  F08_COMPILER   = xlf
-	else ifeq "${TACC_FAMILY_COMPILER}" "devcloud"
-	  CXX_COMPILER = dpcpp
-	endif # end of non-mpi compiler setting
-
-    endif # end of mode choices
+CFLAGS   += ${OPTFLAGS}
+CXXFLAGS += ${OPTFLAGS}
+FFLAGS   += ${OPTFLAGS}
 
 ## there are bugs in the qopenmp backend of Intel23
 ifdef INTEL_OMP_FLAG
@@ -246,8 +92,13 @@ OMPFLAGS_clang    = -fopenmp
 OMPFLAGS_cuda     = -mp=gpu
 OMPFLAGS_nvhpc    = -fopenmp
 OMPFLAGS_xl       = -qsmp=omp -qoffload
-OMPFLAGS = ${OMPFLAGS_${TACC_FAMILY_COMPILER}}
+OMPFLAGS := ${OMPFLAGS_${TACC_FAMILY_COMPILER}}
 
+# CFLAGS   += ${OMPFLAGS}
+# CXXFLAGS += ${OMPFLAGS}
+# FFLAGS   += ${OMPFLAGS}
+
+# these conditionals are not executed. why?
 ifeq "${MODE}" "omp"
   CFLAGS   += ${OMPFLAGS}
   CXXFLAGS += ${OMPFLAGS}
@@ -264,11 +115,137 @@ else ifeq "${MODE}" "mpl"
   CXXFLAGS += -I${TACC_MPL_INC}
 endif
 
-CFLAGS   += ${OPTFLAGS}
-CXXFLAGS += ${OPTFLAGS}
-FFLAGS   += ${OPTFLAGS}
+MPI_C_COMPILER = mpicc
+MPI_CXX_COMPILER = mpicxx
+MPI_F_COMPILER = mpif90
+MPI_F08_COMPILER = mpif90
 
-endif # end of TAU choices
+ifdef TACC_TAU_DIR
+  C_COMPILER = tau_cc.sh -optCompInst -optPreProcess
+  CXX_COMPILER = tau_cxx.sh -optCompInst -optPreProcess
+  F_COMPILER = tau_f90.sh -optCompInst -optPreProcess
+  F08_COMPILER = tau_f90.sh -optCompInst -optPreProcess
+  MPI_C_COMPILER = tau_cc.sh  -optCompInst -optPreProcess
+  MPI_CXX_COMPILER = tau_cxx.sh -optCompInst -optPreProcess
+  MPI_F_COMPILER = tau_f90.sh -optCompInst -optPreProcess
+  MPI_F08_COMPILER = tau_f90.sh -optCompInst -optPreProcess
+else ifeq "${MODE}" "mpi"
+  C_COMPILER   = ${MPI_C_COMPILER}
+  CXX_COMPILER = ${MPI_CXX_COMPILER}
+  F_COMPILER   = ${MPI_F_COMPILER}
+  F08_COMPILER   = ${MPI_F08_COMPILER}
+else ifeq "${MODE}" "hybrid"
+  C_COMPILER   = ${MPI_C_COMPILER}
+  CXX_COMPILER = ${MPI_CXX_COMPILER}
+  F_COMPILER   = ${MPI_F_COMPILER}
+  F08_COMPILER   = ${MPI_F08_COMPILER}
+else ifeq "${MODE}" "mpl"
+  C_COMPILER   = ${MPI_C_COMPILER}
+  CXX_COMPILER = ${MPI_CXX_COMPILER}
+  F_COMPILER   = ${MPI_F_COMPILER}
+  F08_COMPILER   = ${MPI_F08_COMPILER}
+else ifeq "${MODE}" "sycl"
+    CXX_COMPILER = icpx
+    CXXFLAGS +=  -fsycl
+    LINK_FLAGS += -fsycl
+else ifeq "${MODE}" "1api"
+    CXX_COMPILER = icpx
+    CXXFLAGS +=  -fsycl
+    LINK_FLAGS += -fsycl
+else ifeq "${MODE}" "petsc"
+  ##
+  ## annoyingly, there is only an mpicc/mpicxx/mpif90 script
+  ## in the petsc bin dir, if you have --download-mpich
+  ## this may have changed in 3.12.4
+  ##
+  C_COMPILER = mpicc
+  # ${PETSC_DIR}/${PETSC_ARCH}/bin/mpicc
+  CXX_COMPILER = mpicxx
+  #${PETSC_DIR}/${PETSC_ARCH}/bin/mpicxx
+  F_COMPILER = mpif90
+  F08_COMPILER = mpif90
+  #${PETSC_DIR}/${PETSC_ARCH}/bin/mpif90
+  MPI_C_COMPILER   = ${C_COMPILER}
+  MPI_CXX_COMPILER = ${CXX_COMPILER}
+  MPI_F_COMPILER   = ${F_COMPILER}
+  MPI_F08_COMPILER   = ${F08_COMPILER}
+
+  CFLAGS += ${PETSC_CC_INCLUDES} 
+  CXXFLAGS += ${PETSC_CXX_INCLUDES} 
+  FFLAGS += ${PETSC_FC_INCLUDES} 
+else # regular compiler modes
+
+  ifdef TACC_CXX
+    C_COMPILER=${TACC_CC}
+    CXX_COMPILER=${TACC_CXX}
+    F_COMPILER=${TACC_FC}
+    F08_COMPILER=${TACC_FC}
+  else ifeq "${MODE}" "cuda"
+    C_COMPILER   = nvcc
+    CXX_COMPILER = nvcc
+    F_COMPILER   = /bin/false
+    F08_COMPILER   = /bin/false
+
+    F_HOST_COMPILER   = no_such_f_compiler
+    F08_HOST_COMPILER   = no_such_f_compiler
+    ifeq "${TACC_FAMILY_COMPILER}" "intel"
+      C_HOST_COMPILER   = icc
+      CXX_HOST_COMPILER = icpc 
+	  notHOST_FLAGS = -diag-disable=10441
+    else ifeq "${TACC_FAMILY_COMPILER}" "gcc"
+      C_HOST_COMPILER   = gcc
+      CXX_HOST_COMPILER = g++
+	else 
+      C_HOST_COMPILER   = no_such_compiler
+      CXX_HOST_COMPILER = no_such_compiler
+	endif
+  else ifeq "${TACC_FAMILY_COMPILER}" "intel"
+      ifeq "${INTEL23}" "23"
+	C_COMPILER   = icx
+	CXX_COMPILER = icpx
+	F_COMPILER   = ifx
+	F08_COMPILER = ifx
+      else ifeq "${INTEL24}" "24"
+	C_COMPILER   = icx
+	    CXX_COMPILER = icpx
+	F_COMPILER   = ifx
+	F08_COMPILER = ifx
+      else
+	C_COMPILER   = icc
+	CXX_COMPILER = icpc
+	F_COMPILER   = ifort
+	F08_COMPILER = ifort
+	  endif
+  else ifeq "${TACC_FAMILY_COMPILER}" "oneapi"
+    C_COMPILER   = icx
+    CXX_COMPILER = icpx
+    F_COMPILER   = ifort
+    F08_COMPILER   = ifort
+  else ifeq "${TACC_FAMILY_COMPILER}" "gcc"
+    C_COMPILER   = gcc
+    CXX_COMPILER = g++
+    F_COMPILER   = gfortran
+    F08_COMPILER   = gfortran
+  else ifeq "${TACC_FAMILY_COMPILER}" "clang"
+    C_COMPILER   = clang
+    CXX_COMPILER = clang++
+    F_COMPILER   = gfortran
+    F08_COMPILER   = gfortran
+  else ifeq "${TACC_FAMILY_COMPILER}" "nvhpc"
+    C_COMPILER   = nvcc
+    CXX_COMPILER = nvcc
+    F_COMPILER   = /bin/false
+    F08_COMPILER   = /bin/false
+  else ifeq "${TACC_FAMILY_COMPILER}" "xl"
+    C_COMPILER   = xlc
+    CXX_COMPILER = xlc++
+    F_COMPILER   = xlf
+    F08_COMPILER   = xlf
+  else ifeq "${TACC_FAMILY_COMPILER}" "devcloud"
+    CXX_COMPILER = dpcpp
+  endif # end of non-mpi compiler setting
+
+endif
 
 # we need extra options with all compilers
 CFLAGS   += ${EXTRA_OPTIONS}
@@ -306,6 +283,8 @@ modules :
 ##
 %.o : %.c 
 	@make --no-print-directory modules
+	@if [ -z "${C_COMPILER}" ] ; then \
+	    echo "Variable C_COMPILER not set" && exit 1 ; fi
 	@cmdline="${C_COMPILER} -g  ${EXTRA_INCLUDES} ${CFLAGS} \
 	    -c $<" \
 	 && if [ "${ECHO}" = "1" ] ; then \
@@ -319,6 +298,8 @@ modules :
 %.o : %.cxx 
 	@program=$@ && program=$${program%%.o} \
 	 && make --no-print-directory modules PROGRAM=$${program}
+	@if [ -z "${CXX_COMPILER}" ] ; then \
+	    echo "Variable CXX_COMPILER not set" && exit 1 ; fi
 	@cmdline="${CXX_COMPILER} -g ${EXTRA_INCLUDES} ${CXXFLAGS} \
 	    -c $<" \
 	 && if [ "${ECHO}" = "1" ] ; then \
@@ -330,7 +311,10 @@ modules :
 	    ; fi \
 	 && eval $$cmdline
 %.o : %.cpp 
+	@echo "<${OMPFLAGS_intel}>> <<${OMPFLAGS}>> <<${CXXFLAGS}>>"
 	@make --no-print-directory modules
+	@if [ -z "${CXX_COMPILER}" ] ; then \
+	    echo "Variable CXX_COMPILER not set" && exit 1 ; fi
 	@cmdline="${CXX_COMPILER} -g ${EXTRA_INCLUDES} ${CXXFLAGS} \
 	    -c $<" \
 	 && if [ "${ECHO}" = "1" ] ; then \
@@ -390,6 +374,11 @@ C_LINKER   := ${MPI_C_COMPILER}
 CXX_LINKER := ${MPI_CXX_COMPILER}
 F_LINKER   := ${MPI_F_COMPILER}
 F08_LINKER   := ${MPI_F08_COMPILER}
+else ifeq "${MODE}" "mpl"
+C_LINKER   := ${MPI_C_COMPILER}
+CXX_LINKER := ${MPI_CXX_COMPILER}
+F_LINKER   := ${MPI_F_COMPILER}
+F08_LINKER   := ${MPI_F08_COMPILER}
 else ifeq "${MODE}" "hybrid"
 C_LINKER   := ${MPI_C_COMPILER}
 CXX_LINKER := ${MPI_CXX_COMPILER}
@@ -411,7 +400,9 @@ F08_LINKER   := ${F08_COMPILER}
 endif
 LINKER     := ${${LANGUAGE}_LINKER}
 
-ifeq "${MODE}" "petsc"
+ifeq "${MODE}" "mpl"
+  # header only
+else ifeq "${MODE}" "petsc"
   LINK_FLAGS += ${PETSC_LIB}
 else ifeq "${MODE}" "slepc"
   LINK_FLAGS += ${PETSC_LIB} -lslepc
