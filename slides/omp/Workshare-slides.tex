@@ -4,14 +4,14 @@
 %%%%
 %%%% This text file is part of the lecture slides for
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-6
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% Workshare-slides.tex : slides about OpenMP workshare constructs
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{frame}[containsverbatim]{What is worksharing again?}
+\begin{numberedframe}{What is worksharing again?}
   \begin{itemize}
   \item The \indextermtt{omp parallel} creates a team of threads.
   \item Now you need to distributed work among them.
@@ -22,9 +22,9 @@
     compiler support seems mediocre)
   \item Story in itself: \indextermtt{task}
   \end{itemize}
-\end{frame}
+\end{numberedframe}
 
-\begin{frame}[containsverbatim]{Sections}
+\begin{numberedframe}{Sections}
 \small
 Independent separate calculations:
 \begin{verbatim}
@@ -47,9 +47,9 @@ Adding them together:
   s = f(x)+g(x)+h(x);
 \end{verbatim}
 Use reduction.
-\end{frame}
+\end{numberedframe}
 
-\begin{frame}[containsverbatim]{Single}
+\begin{numberedframe}{Single}
 \begin{verbatim}
 int a;
 #pragma omp parallel
@@ -64,9 +64,26 @@ int a;
   \item Is executed by a single thread.
   \item Has implicit barrier, so the result is available to everyone
     after.
-  \item \indextermtt{master} is similar, does not have barrier.
   \end{itemize}
-\end{frame}
+\end{numberedframe}
+
+\begin{numberedframe}{Master}
+  \begin{itemize}
+  \item Master: single thread execution
+  \item Not a workshare, so no barrier
+  \end{itemize}
+\begin{verbatim}
+int a;
+#pragma omp parallel
+{
+  #pragma omp master
+    a = f(); // some computation
+  // WRONG: `a' may not be available
+  #pragma omp sections
+    // various different computations using `a'
+}
+\end{verbatim}
+\end{numberedframe}
 
 \begin{exerciseframe}
   \input {ex:omp-single-mpi}
@@ -74,35 +91,33 @@ int a;
 
 \endinput
 
-\begin{frame}[containsverbatim]{}
+\begin{numberedframe}{}
   \begin{itemize}
   \item 
   \end{itemize}
-\end{frame}
+\end{numberedframe}
 
-\begin{frame}[containsverbatim]{}
+\begin{numberedframe}{}
   \begin{itemize}
   \item 
   \end{itemize}
-\end{frame}
+\end{numberedframe}
 
-\begin{frame}[containsverbatim]{}
+\begin{numberedframe}{}
   \begin{itemize}
   \item 
   \end{itemize}
-\end{frame}
+\end{numberedframe}
 
-\begin{frame}[containsverbatim]{}
+\begin{numberedframe}{}
   \begin{itemize}
   \item 
   \end{itemize}
-\end{frame}
+\end{numberedframe}
 
-\endinput
-
-\begin{frame}[containsverbatim]{}
+\begin{numberedframe}{}
   \begin{itemize}
   \item 
   \end{itemize}
-\end{frame}
+\end{numberedframe}
 

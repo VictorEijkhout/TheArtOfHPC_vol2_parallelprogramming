@@ -82,8 +82,22 @@ First loop is completely finished before second.
 \end{numberedframe}
 
 \begin{numberedframe}{Critical sections and idle time}
-    \includegraphics{omp-idle}
+    \includegraphics[scale=.5]{omp-idle}
     In effect, the execution becomes sequential!
+\end{numberedframe}
+
+\begin{numberedframe}{Do not misuse critical sections}
+\begin{lstlisting}
+#pragma omp parallel for
+for ( /* i in whatever */ ) {
+  #pragma omp critical
+  s += /* expression with i */
+}
+\end{lstlisting}
+  \begin{itemize}
+  \item Use reduction if appropriate
+  \item Only use if the enough other work in the iteration
+  \end{itemize}
 \end{numberedframe}
 
 \begin{numberedframe}{Locks}
@@ -93,14 +107,6 @@ First loop is completely finished before second.
   \item     Suppose you update a big table\\
     updates to non-conflicting locations should be allowed
   \item Locks protect a single data item.
-  \end{itemize}
-\end{numberedframe}
-
-\endinput
-
-\begin{numberedframe}{}
-  \begin{itemize}
-  \item 
   \end{itemize}
 \end{numberedframe}
 

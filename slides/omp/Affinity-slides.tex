@@ -1,0 +1,51 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the lecture slides for
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2024
+%%%%
+%%%% Affinity-slides.tex : remaining OpenMP topics
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{numberedframe}{Random issues}
+  \begin{itemize}
+  \item If you have two threads and two cores, how do you place the threads?
+  \item The OS can `migrate' threads. Is that good?
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{}
+\includegraphics[scale=.5]{lstopo/frontera}
+\end{numberedframe}
+
+\begin{numberedframe}{}
+\includegraphics[scale=.5]{lstopo/ls6}
+\end{numberedframe}
+
+\begin{numberedframe}{Affinity}
+  \begin{itemize}
+  \item
+    \indexompshow{OMP_PROC_BIND}: either \lstinline{true/false} or \lstinline{close/spread}
+  \item 
+    \indexompshow{OMP_PLACES}: \lstinline{sockets/cores/threads} or explicit list.
+  \end{itemize}
+\end{numberedframe}
+
+\includepdf{amask.pdf}
+
+\begin{numberedframe}{False sharing}
+  
+\end{numberedframe}
+
+\endinput
+
+\begin{numberedframe}{}
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\end{numberedframe}
+

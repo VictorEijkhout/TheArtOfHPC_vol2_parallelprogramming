@@ -41,6 +41,28 @@
 Discuss.
 \end{numberedframe}
 
+\begin{numberedframe}{Loops are easy}
+C: directive followed by statement or block:
+\begin{lstlisting}
+#pragma omp parallel
+{
+#pragma omp for
+  for ( int i=0; i<N; i++)
+    ... something with i ...
+}
+\end{lstlisting}
+Fortran: matching end directive
+\begin{lstlisting}
+!$omp parallel
+!$omp do
+  do i=1,n
+    ... something with i ...
+  end do
+!$omp end do
+!$omp end parallel
+\end{lstlisting}
+\end{numberedframe}
+
 \begin{numberedframe}{Workshare constructs}
   Here's the two-step parallelization in OpenMP:
   \begin{itemize}
@@ -53,30 +75,17 @@ Discuss.
 \end{numberedframe}
 
 \begin{numberedframe}{Workshare construct for loops}
-C: directive followed by statement or block:
-\begin{verbatim}
-#pragma omp parallel
-{
-#pragma omp for
+Parallel and workshare together
+\begin{lstlisting}
+#pragma omp parallel for
   for (i=0; i<N; i++)
     ... something with i ...
-}
-\end{verbatim}
-Fortran: matching end directive
-\begin{verbatim}
-!$omp parallel
-!$omp do
-  do i=1,n
-    ... something with i ...
-  end do
-!$omp end do
-!$omp end parallel
-\end{verbatim}
+\end{lstlisting}
 \end{numberedframe}
 
 \begin{numberedframe}{Stuff inside a parallel region}
 \begin{multicols}{2}  
-\begin{verbatim}
+\begin{lstlisting}
 #pragma omp parallel
 {
   code1();
@@ -86,7 +95,7 @@ Fortran: matching end directive
   }
   code3();
 }
-\end{verbatim}
+\end{lstlisting}
 \columnbreak
 \includegraphics[scale=.07]{parallel-do}
 \end{multicols}
@@ -110,7 +119,7 @@ Fortran: matching end directive
   This is parallelizable:
 \begin{lstlisting}
   for (int i=low; i<hi; i++)
-     x[i] = // expression
+     x[i] = // expression without x
 \end{lstlisting}
 Is this?
 \begin{lstlisting}
@@ -204,10 +213,10 @@ Histograms / binning.
 
 \begin{numberedframe}{Nowait}
 \begin{lstlisting}
-#pragma omp parallel nowait
+#pragma omp parallel for nowait
 for ( int i=0; i<N; ++i )
   x[i] = // something
-#pragma omp parallel 
+#pragma omp parallel for
 for ( int i=0; i<N; ++i )
   y[i] = ... x[i] ...
 \end{lstlisting}
@@ -220,9 +229,25 @@ Needed:
 
 \Level 1 {Loop data}
 
+\begin{numberedframe}{Private vs shared}
+Statements such as:
+\begin{lstlisting}
+#pragma omp parallel private(x)
+#pragma omp parallel shared(y)
+#pragma omp parallel default(none) shared(x) private(y)
+\end{lstlisting}
+  \begin{itemize}
+  \item Shared data: comes from outside the parallel region
+  \item Private data: either private versions of outside, or local defined
+  \item Default is shared. Dangerous!
+  \item Parallel loop variables are always private.
+  \end{itemize}
+\end{numberedframe}
+
 \begin{numberedframe}{Where is the bug?}
 \begin{lstlisting}
   int i,j;
+  double temp;
 #pragma omp parallel for private(temp)
    for(i=0;i<N;i++){
     for (j=0;j<M;j++){
@@ -230,22 +255,74 @@ Needed:
        a[i][j] = temp * temp + d[i];
 } }  
 \end{lstlisting}
+Is there a different way of handling \lstinline{temp}?
+\end{numberedframe}
+
+\begin{numberedframe}{More private/shared}
+\begin{lstlisting}
+float x=5.5;
+#pragma omp parallel firstprivate(x)
+  // x is now private, and has value 5.5
+
+float y;
+#pragma omp parallel for lastprivate(y)
+for ( /* looping */ ) {
+  // stuff
+  y = something;
+}
+// now y has the sequentially last value
+\end{lstlisting}
 \end{numberedframe}
 
 \Level 1 {Reduction}
 
+\begin{exerciseframe}
+  \input{ex:omp-procthreadn}
+\end{exerciseframe}
+
+\begin{numberedframe}{Shared memory problems}
+Race condition: simultaneous update of shared data:
+\begin{tabbing}
+  process 1: \texttt{I=I+2}\\
+  process 2: \texttt{I=I+3}
+\end{tabbing}
+Results can be indeterminate:
+
+\tiny
+\begin{tabular}{|rr|rr|rr|}
+  \hline
+  \multicolumn{2}{|c|}{scenario 1.}& \multicolumn{2}{|c|}{scenario 2.}&
+  \multicolumn{2}{|c|}{scenario 3.}\\ \hline
+  \multicolumn{6}{|c|}{$\n{I}=0$}\\ \hline
+  read $\n{I}=0$&read $\n{I}=0$&
+    read $\n{I}=0$&read $\n{I}=0$&
+      read $\n{I}=0$& \\
+  compute $\n{I}=2$&compute $\n{I}=3$& 
+    compute $\n{I}=2$&compute $\n{I}=3$&
+      compute $\n{I}=2$& \\
+  write $\n{I}=2$& & &write $\n{I}=3$&write $\n{I}=2$& \\
+  &write $\n{I}=3$&write $\n{I}=2$& & &read $\n{I}=2$\\
+  &&&&&compute $\n{I}=5$\\
+  &&&&&write $\n{I}=5$\\
+  \hline
+  \multicolumn{2}{|c|}{$\n{I}=3$}& \multicolumn{2}{|c|}{$\n{I}=2$}&
+  \multicolumn{2}{|c|}{$\n{I}=5$}\\ \hline
+\end{tabular}
+\end{numberedframe}
+
 \begin{numberedframe}{Reductions}
   \begin{itemize}
   \item Inner product loop:
-\begin{verbatim}
-s = 0.;
-for (i=0; i<N; i++)
-  s += x[i]*y[i];
-\end{verbatim}
-\item Use the \indextermtt{reduction(+:s)} clause.
+    \cverbatimsnippet{inprodsum}
+  \item Use the \indextermtt{reduction(+:s)} clause.
   \item All the usual operations are available; you can also make your own.
   \end{itemize}
 \end{numberedframe}
+
+\begin{exerciseframe}[pi]
+  \footnotesize
+  \input ex:omp-pi
+\end{exerciseframe}
 
 \begin{exerciseframe}[piadapt]
   \footnotesize
@@ -289,27 +366,6 @@ for (i=0; i<N; i++)
   set \indexompshow{OMP_STACKSIZE}\\
   also see \indextermtt{ulimit} on the Unix level.
 \end{numberedframe}
-
-\begin{exerciseframe}[pi]
-  \footnotesize
-  \input ex:omp-pi
-\end{exerciseframe}
-
-%% \Level 1 {Affinity}
-
-%% \begin{numberedframe}{Threads vs cores}
-%%   \begin{itemize}
-%%   \item Threads are software: instructions and local data
-%%   \item OS can `migrate' threads
-%%   \item Expensive because of data movement
-%%   \item Destroys cache-locality.
-%%   \item $\Rightarrow$~prevent migration
-%%   \end{itemize}
-%% \begin{lstlisting}
-%% OMP_PROC_BIND=true
-%% \end{lstlisting}
-%% \lstinline{close/spread}, also \lstinline{OMP_PLACES=cores/sockets}
-%% \end{numberedframe}
 
 \Level 1 {Exercises}
 

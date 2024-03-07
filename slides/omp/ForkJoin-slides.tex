@@ -64,7 +64,8 @@
 
   The OS will place threads on different cores: parallel
   performance.\\
-  Note: threads are software. More threads than cores or fewer is allowed.
+  Note: threads are software. More threads than cores or fewer is allowed.\\
+  Ignore hyperthreads
 \end{numberedframe}
 
 \begin{numberedframe}{To write an OpenMP program}
@@ -91,6 +92,17 @@ icc -o foo foo.c -fopenmp
 # Intel compiler before 23 
 icc -o foo foo.c -qopenmp
 \end{verbatim}
+Run as ordinary program.
+\end{numberedframe}
+
+\begin{numberedframe}{CMake}
+\begin{lstlisting}
+find_package(OpenMP)
+# depending on language:
+target_link_libraries( ${program} PUBLIC OpenMP::OpenMP_C )
+target_link_libraries( ${program} PUBLIC OpenMP::OpenMP_CXX )
+target_link_libraries( ${program} PUBLIC OpenMP::OpenMP_Fortran )
+\end{lstlisting}
 \end{numberedframe}
 
 \begin{numberedframe}{Let's try an example}
@@ -124,7 +136,7 @@ done
 \begin{numberedframe}{Query threads'}
 Use a parallel region:
 \begin{lstlisting}[language=C]
-#omp parallel
+#pragma omp parallel
 {
   statements
 }
@@ -176,6 +188,34 @@ int t;
   than the number of cores? What happened?
 \end{numberedframe}
 
+\begin{numberedframe}{Enclosed scopes}
+  Data is (usually) shared in a parallel region:
+  \input{sl:omp:enclosed}
+  Note: this is usually the case,
+  but strictly not the default.
+\end{numberedframe}
+
+\begin{numberedframe}{Thread-local variables}
+  \input{sl:omp:thread-local}
+\end{numberedframe}
+
+\begin{numberedframe}{Locality of variables}
+  \includegraphics[scale=.1]{fork-join-vars}
+\end{numberedframe}
+
+\begin{numberedframe}{Thread control}
+  \begin{itemize}
+  \item Environment variable \indexompshow{OMP_NUM_THREADS=4}
+  \item Clause \indexompshow{num_threads(4)}\\
+\begin{lstlisting}
+#pragma omp parallel num_threads(4)
+\end{lstlisting}
+    usually not the best solution.
+  \item Environment variable \indexompshow{OMP_THREAD_LIMIT=56}\\
+    (useful for nested parallelism)
+  \end{itemize}
+\end{numberedframe}
+
 \begin{numberedframe}{Limits on paralleism}
 \begin{lstlisting}
 #pragma omp parallel if(N>50)
@@ -195,55 +235,6 @@ I mean, what's the harm of doing one small loop inefficiently?
   \end{itemize}
 \end{numberedframe}
 
-\begin{exerciseframe}
-  \input{ex:omp-procthreadn}
-\end{exerciseframe}
-
-\begin{numberedframe}{Shared memory problems}
-Race condition: simultaneous update of shared data:
-\begin{tabbing}
-  process 1: \texttt{I=I+2}\\
-  process 2: \texttt{I=I+3}
-\end{tabbing}
-Results can be indeterminate:
-
-\tiny
-\begin{tabular}{|rr|rr|rr|}
-  \hline
-  \multicolumn{2}{|c|}{scenario 1.}& \multicolumn{2}{|c|}{scenario 2.}&
-  \multicolumn{2}{|c|}{scenario 3.}\\ \hline
-  \multicolumn{6}{|c|}{$\n{I}=0$}\\ \hline
-  read $\n{I}=0$&read $\n{I}=0$&
-    read $\n{I}=0$&read $\n{I}=0$&
-      read $\n{I}=0$& \\
-  compute $\n{I}=2$&compute $\n{I}=3$& 
-    compute $\n{I}=2$&compute $\n{I}=3$&
-      compute $\n{I}=2$& \\
-  write $\n{I}=2$& & &write $\n{I}=3$&write $\n{I}=2$& \\
-  &write $\n{I}=3$&write $\n{I}=2$& & &read $\n{I}=2$\\
-  &&&&&compute $\n{I}=5$\\
-  &&&&&write $\n{I}=5$\\
-  \hline
-  \multicolumn{2}{|c|}{$\n{I}=3$}& \multicolumn{2}{|c|}{$\n{I}=2$}&
-  \multicolumn{2}{|c|}{$\n{I}=5$}\\ \hline
-\end{tabular}
-\end{numberedframe}
-
-\begin{numberedframe}{Enclosed scopes}
-  Data is (usually) shared in a parallel region:
-  \input{sl:omp:enclosed}
-  Note: this is usually the case,
-  but strictly not the default.
-\end{numberedframe}
-
-\begin{numberedframe}{Thread-local variables}
-  \input{sl:omp:thread-local}
-\end{numberedframe}
-
-\begin{numberedframe}{Locality of variables}
-  \includegraphics[scale=.1]{fork-join-vars}
-\end{numberedframe}
-
 \begin{numberedframe}{Nested parallelism}
   \input{sl:omp:nest-code}
 \end{numberedframe}
@@ -260,19 +251,6 @@ or
 OMP_MAX_ACTIVE_LEVELS=3
 \end{verbatim}
 (Deprecated: boolean switch \indexompshow{OMP_NESTED})
-\end{numberedframe}
-
-\begin{numberedframe}{Thread control}
-  \begin{itemize}
-  \item Environment variable \indexompshow{OMP_NUM_THREADS=4}
-  \item Clause \indexompshow{num_threads(4)}\\
-\begin{lstlisting}
-#pragma omp parallel num_threads(4)
-\end{lstlisting}
-    usually not the best solution.
-  \item Environment variable \indexompshow{OMP_THREAD_LIMIT=56}\\
-    (useful for nested parallelism)
-  \end{itemize}
 \end{numberedframe}
 
 \endinput
