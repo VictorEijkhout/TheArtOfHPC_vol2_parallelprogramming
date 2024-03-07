@@ -54,7 +54,6 @@ int main(int argc,char **argv) {
      * After that, exit if reduction by 10^5
      */
     error=0.;
-    #pragma omp parallel for reduction(+:error)
     for ( long int i=0; i<vectorsize; ++i ) 
       error += pow( xvector[i]-solution[i],2 );
     error = sqrt(error);
@@ -67,7 +66,6 @@ int main(int argc,char **argv) {
      * - conpute into a temp vector
      * - copy temp back into x
      */
-    #pragma omp parallel for
     for ( long int i=0; i<vectorsize; ++i ) {
       double nxb = rhs[i];
       if (i<vectorsize-1) 
@@ -77,7 +75,6 @@ int main(int argc,char **argv) {
       tvector[i] = nxb/diag;
       // COMMENT OUT THE NEXT THREE LINES TO GET A GAUSS-JORDAN METHOD
     }
-    #pragma omp parallel for
     for ( long int i=0; i<vectorsize; ++i ) {
       xvector[i] = tvector[i];
     }

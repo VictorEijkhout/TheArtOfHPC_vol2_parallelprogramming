@@ -1,47 +1,47 @@
-/****************************************************************
- ****
- **** This program file is part of the book 
- **** `Parallel programming for Science and Engineering'
- **** by Victor Eijkhout, eijkhout@tacc.utexas.edu
- ****
- **** copyright Victor Eijkhout 2012-7
- ****
- **** OpenMP Exercise
- ****
- ****************************************************************/
+/* %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   %%%%
+   %%%% This program file is part of the book and course
+   %%%% "Parallel Computing"
+   %%%% by Victor Eijkhout, copyright 2013-2024
+   %%%%
+   %%%% taskfactor.c : use OMP tasks to factor a prime number
+   %%%%
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+   %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+*/
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
 #include <omp.h>
 
+int bignum = 2000000111, maxfactor = 42000, the_factor = -1;
+
+void try_as_factor( int i ) {
+  /*
+   * Can you make the whole process stopp
+   * when any factor has been found?
+   */
+/**** your code here ****/
+
+  if (bignum%i==0) {
+    {
+      printf("found %d\n",i);	  
+      the_factor = i;
+    }
+  }
+  return;
+}
+
 int main() {
 
-  int N = 2999*3001;
-
-  // Exercise:
-  // -- turn the factor-testing block into a task
-  // -- run your program several times.
-  //    for i in `seq 1 1000` ; do ./taskfactor ; done | grep -v 2999
-  //    why does it find the wrong solution? try to fix this
-  int factor=0;
-#pragma omp parallel
-#pragma omp single
-  for (int f=2; f<4000; f++) {
 /**** your code here ****/
-    { // see if `f' is a factor
-      if (N%f==0) { // found factor!
+  for (int i=2; i<bignum; i++) {
 /**** your code here ****/
-	  factor = f;
-      }
-    }
-    if (factor>0)
-      break;
+    try_as_factor(i);
   }
-  if (factor>0)
-    printf("Found a factor: %d\n",factor);
-  else
-    printf("Prime number!\n");
-  
+/**** your code here ****/
+
   return 0;
 }
