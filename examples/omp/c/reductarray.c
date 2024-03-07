@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%% "Parallel Computing"
-   %%%% by Victor Eijkhout, copyright 2013-2022
+   %%%% by Victor Eijkhout, copyright 2013-2024
    %%%%
    %%%% reductarray.c : reduction on array
    %%%%
@@ -25,7 +25,9 @@ int main(int argc,char **argv) {
   nthreads = omp_get_num_threads();
 
   { // C static
+    //codesnippet creductstatic
     int data[nthreads];
+    //codesnippet end
     for (int i=0; i<nthreads; i++)
       data[i] = 0;
 
