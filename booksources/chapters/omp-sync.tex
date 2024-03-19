@@ -107,6 +107,46 @@ while other threads are still working on the first. Since the two loops use the 
 schedule here, an iteration that uses \n{a[i]} can indeed rely on it that that 
 value has been computed.
 
+\Level 1 {A barrier idiom}
+
+Replacing implicit barriers by explicit can be used to
+make larger parallel regions and thereby cutting down
+on thread creation cost:
+\begin{multicols}{2}
+Multiple parallel regions:
+\begin{lstlisting}
+#pragma omp parallel
+// some workshare
+
+#pragma omp parallel
+// another workshare
+\end{lstlisting}
+\columnbreak
+Merged into one:
+\begin{lstlisting}
+#pragma omp parallel
+{
+  // some workshare
+  #pragma omp barrier
+  // another workshare
+}
+\end{lstlisting}
+\end{multicols}
+For example, although \indextermtt{while} loops are strictly parallelizable,
+you can enclose the loop in a parallel region and use barriers
+to synchronize:
+\begin{lstlisting}
+#pragma omp parallel
+{
+  while ( /* something * ) {
+    // single thread code
+    #pragma omp barrier
+    #pragma omp for
+      for ( /* ... */ ) ...
+  }
+}
+\end{lstlisting}
+
 \Level 0 {Mutual exclusion}
 
 Sometimes it is necessary to limit a piece of code
@@ -282,6 +322,15 @@ otherwise it return false and continues execution with the next statement.
 
 Unsetting a lock needs to be done by the thread that set it.
 
+Here is a simple example:
+\begin{multicols}{2}
+Create and destroy:
+\cverbatimsnippet{lockinit}
+\columnbreak
+Use:
+\cverbatimsnippet{lockupdate}
+\end{multicols}
+
 Lock operations implicitly have a \indexpragma{flush};
 see section \ref{sec:omp:flush}.
 
@@ -349,32 +398,7 @@ the update operator.
 
 \Level 1 {Example: histogram / binning}
 
-One simple example of the use of locks is generation of a \indexterm{histogram}
-(also known as the \emph{binning}\index{binning|see{histogram}} problem).
-A~histogram consists of a number of bins, that get updated depending on some data.
-Here is the basic structure of such a code:
-\begin{lstlisting}
-int count[100];
-float x = some_function();
-int ix = (int)x;
-if (ix>=100)
-  error();
-else
-  count[ix]++;
-\end{lstlisting}
-It would be possible to guard the last line:
-\begin{lstlisting}
-#pragma omp critical
-  count[ix]++;
-\end{lstlisting}
-but that is unnecessarily restrictive. If there are enough bins in the
-histogram, and if the \n{some_function} takes enough time, there are unlikely to be
-conflicting writes. The solution then is to create an array of locks, with
-one lock for each \n{count} location.
-
-Another solution would be to give each thread a local copy
-of the result array, and perform a reduction on these.
-See section~\ref{sec:omp-array-reduct}.
+See section~\ref{sec:omp-histogram}.
 
 \Level 1 {Nested locks}
 

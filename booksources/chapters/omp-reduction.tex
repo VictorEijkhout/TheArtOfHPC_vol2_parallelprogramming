@@ -81,7 +81,7 @@ For multiple reduction with different operators, use more than one clause.
   for instance \indextermtt{KMP_DETERMINISTIC_REDUCTION} for the Intel runtime.
 \end{remark}
 
-\Level 1 {Code your own solution}
+\Level 1 {Code your own reduction}
 
 While using a \lstinline{reduction} clause is the preferred way of dealing
 with codes as in section~\ref{sec:reduct-intro} above,
@@ -215,7 +215,7 @@ double result = 0;
 \begin{exercise}[jacobi]
   \label{ex:omp-jacobi1}
   The Jacobi method for solving linear system $Ax=b$ is given by
-  \[ x^{(n+1)}_i = a_{ii}(b_i-\sum_{j\not=i}a_{ij}x^{(n)}_j \]
+  \[ x^{(n+1)}_i = a_{ii}\left(b_i-\sum_{j\not=i}a_{ij}x^{(n)}_j\right) \]
   Insert OpenMP directives in the code, and check that it converges
   with the same precision, regardless the number of threads.
 

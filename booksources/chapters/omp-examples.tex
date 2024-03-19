@@ -4,12 +4,63 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2021
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% omp-examples.tex : non-trivial example programs
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Level 0 {Histograms}
+\label{sec:omp-histogram}
+
+A \indexterm{histogram} is a way of counting a large number of objects
+into a small number of bins:
+\begin{lstlisting}
+for ( i /* lots of cases */ )
+  bin[ property(i) ]++;
+\end{lstlisting}
+Without a specific application, we let the bin number
+be random:
+\cverbatimsnippet{histobasic}
+(Here we use \indextermtt{rand_r} as a threadsafe variant of \indextermtt{rand}.)
+
+\begin{exercise}
+  Realize this code by only a putting a parallel region around it.
+  Observe that the sum over the bins is not the total number of
+  cases executed. Why is this?
+
+  Experiment with number of threads and bins.
+\end{exercise}
+
+The simplest correct solution to this code uses a reduction.
+See section~\ref{sec:omp-array-reduct} for the syntax.
+
+\begin{exercise}
+  Use a reduction to get the right result of the histogram.
+
+  Investigate runtime as a function of the number of threads and bins.
+
+  C++ only: can you make a histogram class with an overloaded plus-operator?
+\end{exercise}
+
+A different solution would be the use of locks; section~\ref{sec:ompref:locks}.
+Here we would have a lock for each bin:
+\cverbatimsnippet{histolockalloc}
+and each time we want to update a bit, we first lock it.
+
+\begin{exercise}
+  Write correct histogramming code using locks.
+
+  Investigate runtime as a function of the number of threads and bins.
+
+  C++ only: can you make a bin class that incorporates the lock?
+  Overload the increment operator, or use an increment function
+  to set/unset the lock.
+\end{exercise}
+
+Did you see the runtime go down as a function of increasing number of bins?
+Can you explain?
 
 \Level 0 {N-body problems}
 

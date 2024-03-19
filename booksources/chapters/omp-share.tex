@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% omp-share.tex : work sharing
 %%%%
@@ -62,29 +62,15 @@ This construct can be used to divide large blocks of independent work.
 Suppose that in the following line, both \n{f(x)} and \n{g(x)}
 are big calculations:
 \begin{lstlisting}
-  y = f(x) + g(x)
+  y = f(x) + g(x) + h(x)
 \end{lstlisting}
 You could then write
-\begin{lstlisting}
-double y1,y2;
-#pragma omp sections
-{
-#pragma omp section
-  y1 = f(x)
-#pragma omp section
-  y2 = g(x)
-}
-y = y1+y2;
-\end{lstlisting}
+\cverbatimsnippet{ompsections1}
 Instead of using two temporaries, you could also use a critical
 section; see section~\ref{sec:critical}.  However, the best solution
 is have a \lstinline{reduction} clause on the \lstinline{parallel sections} directive.
-For the sum
-\begin{lstlisting}
-  y = f(x) + g(x)
-\end{lstlisting}
 You could then write
-\cverbatimsnippet{ompsectreduct}
+\cverbatimsnippet{ompsections2}
 
 \Level 0 {Single/master}
 \label{sec:omp-single}
