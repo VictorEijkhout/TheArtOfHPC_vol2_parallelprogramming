@@ -2,7 +2,7 @@
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    %%%%
    %%%% This program file is part of the book and course
-   %%%% "Parallel Programming in MPI and OpenMP"
+   %%%% "Parallel Computing"
    %%%% by Victor Eijkhout, copyright 2013-2024
    %%%%
    %%%% vectorsum.c : parallel loops
@@ -62,7 +62,7 @@ int main( int argc,char **argv ) {
     for ( int iloop=0; iloop<500; ++iloop ) {
       for ( int i=0; i<vectorsize; ++i )
 	outvec[i] += invec[i]*factor;
-      factor /= 1.1;
+      factor /= 2.;
     }
       double duration = omp_get_wtime()-tstart;
       printf("Sequential t= %8.5f sec\n",duration);

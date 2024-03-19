@@ -19,7 +19,7 @@ info ::
 	@echo "================================================================"
 	@echo "available rules:"
 
-EXERCISES = parallel pi piadapt jacobi taskfactor vectorsum
+EXERCISES = parallel pi piadapt histogramlock fibtask jacobi taskfactor vectorsum
 
 MODE = omp
 LANGUAGE = C
