@@ -25,44 +25,37 @@
 \end{numberedframe}
 
 \begin{numberedframe}{Sections}
-\small
 Independent separate calculations:
-\begin{verbatim}
+\begin{lstlisting}
   double fx = f(x), gx = g(x), hx = h(x);
   ..... fx ... gx ... hx ....
-\end{verbatim}
-\begin{verbatim}
-#pragma omp sections
-{
-  #pragma omp section
-  fx = f(x)
-  #pragma omp section
-  gx = g(x)
-  #pragma omp section
-  hx = h(x)
-}
-\end{verbatim}
-Adding them together:
-\begin{verbatim}
-  s = f(x)+g(x)+h(x);
-\end{verbatim}
-Use reduction.
+\end{lstlisting}
+\cverbatimsnippet{ompsections1}
+\end{numberedframe}
+
+\begin{numberedframe}{Sections with reduction}
+Same code, but with reduction:
+\cverbatimsnippet{ompsections2}
 \end{numberedframe}
 
 \begin{numberedframe}{Single}
-\begin{verbatim}
+\begin{lstlisting}
 int a;
 #pragma omp parallel
 {
+  #pragma omp for reduction(+:x)
+  for ( ... i ... )
+    x += // something
   #pragma omp single
-    a = f(); // some computation
-  #pragma omp sections
-    // various different computations using `a'
+    y = fx();
+  #pragma omp for
+  for ( ... i ... )
+    z[i] = ... i ... y ...
 }
-\end{verbatim}
+\end{lstlisting}
   \begin{itemize}
   \item Is executed by a single thread.
-  \item Has implicit barrier, so the result is available to everyone
+  \item Has implicit barrier, so the result is available to all threads
     after.
   \end{itemize}
 \end{numberedframe}
@@ -72,7 +65,20 @@ int a;
   \item Master: single thread execution
   \item Not a workshare, so no barrier
   \end{itemize}
-\begin{verbatim}
+\begin{lstlisting}
+int a;
+#pragma omp parallel
+{
+  // stuff
+  #pragma omp master
+    printf("...",a);
+  // stuff
+}
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Master wrong used}
+\begin{lstlisting}
 int a;
 #pragma omp parallel
 {
@@ -82,7 +88,7 @@ int a;
   #pragma omp sections
     // various different computations using `a'
 }
-\end{verbatim}
+\end{lstlisting}
 \end{numberedframe}
 
 \begin{exerciseframe}

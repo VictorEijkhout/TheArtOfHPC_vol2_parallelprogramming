@@ -22,14 +22,14 @@
   \item Tasks are very flexible:\\
     you create work, it goes on a queue, gets executed later
   \end{itemize}
-\begin{verbatim}
+\begin{lstlisting}
 p = head_of_list();
 while (!end_of_list(p)) {
 #pragma omp task
   process( p );
   p = next_element(p);
 }
-\end{verbatim}
+\end{lstlisting}
 \end{numberedframe}
 
 \begin{numberedframe}{Threads, tasks, queues}
@@ -55,6 +55,26 @@ while (!end_of_list(p)) {
 \end{lstlisting}
 \end{numberedframe}
 
+\begin{numberedframe}{Recursive generation}
+\begin{lstlisting}
+void f() {
+  do_something();
+  #pragma omp task
+  do_task();
+  do_some_more();
+}
+...
+#pragma omp parallel
+#pragma omp single
+#pragma omp task
+  f();
+\end{lstlisting}
+  \begin{itemize}
+  \item Any thread can create tasks
+  \item including threads that are executing tasks
+  \end{itemize}
+\end{numberedframe}
+
 \begin{exerciseframe}[taskfactor]
   \input ex:taskfactor
 \end{exerciseframe}
@@ -63,7 +83,26 @@ while (!end_of_list(p)) {
   \begin{itemize}
   \item Environment captured as \lstinline{firstprivate}
     unless explicitly otherwise
+  \item Makes sense: execution is deferred
+\begin{lstlisting}
+#pragma omp parallel
+#pragma omp single
+for ( int i /* ... */ )
+  #pragma omp task
+  f(i);
+\end{lstlisting}
+  \item Shared data has to be captured explicitly
   \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Task data: tricky exception}
+\begin{lstlisting}
+#pragma omp parallel shared(i)
+#pragma omp single
+for ( i /* ... */ ) // note: no `int'
+  #pragma omp task firstprivate(i)
+  f(i);
+\end{lstlisting}
 \end{numberedframe}
 
 \begin{numberedframe}{Task synchronization}
@@ -75,65 +114,143 @@ while (!end_of_list(p)) {
   \end{itemize}
 \end{numberedframe}
 
+\begin{numberedframe}{Task wait}
+Insider parallel region:
+\begin{lstlisting}
+#pragma omp task
+...
+#pragma omp task
+...
+#pragma omp taskwait
+\end{lstlisting}
+  \begin{itemize}
+  \item Wait on tasks spawned directly
+  \item Not `descendant' tasks
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Task group}
+\begin{lstlisting}
+#pragma omp taskgroup
+{
+  #pragma omp task
+  foo(0);
+  #pragma omp task
+  for ( int i=1; i<N; ++i )
+    #pragma omp task
+    foo(i)
+}
+\end{lstlisting}
+  \begin{itemize}
+  \item Wait for tasks on this level
+  \item \ldots~and tasks created by tasks on this level
+  \end{itemize}
+\end{numberedframe}
+
 \begin{numberedframe}{Example: tree traversal}
-\begin{verbatim}
+\begin{lstlisting}
 int process( node n ) {
   if (n.is_leaf)
     return n.value;
   for ( c : n.children) {
-#pragma omp task
+    #pragma omp task
     process(c);
 #pragma omp taskwait
   return sum_of_children();
 }
-\end{verbatim}
+\end{lstlisting}
 \end{numberedframe}
 
-\begin{numberedframe}{Example: Fibonacci}
-\begin{verbatim}
+\begin{numberedframe}{Exercise: Fibonacci}
+  Fix the errors in this program.
+\begin{lstlisting}
 long fib(int n) {
   if (n<2) return n;
   else { long f1,f2;
-#pragma omp task
-  f1 = fib(n-1);
-#pragma omp task
-  f2 = fib(n-2);
-#pragma omp taskwait
-  return f1+f2;
+    #pragma omp task
+    f1 = fib(n-1);
+    #pragma omp task
+    f2 = fib(n-2);
+    return f1+f2;
+  }
 }
 
 #pragma omp parallel
 #pragma omp single
   printf("Fib(50)=%ld",fib(50));
-\end{verbatim}
-(what is conceptually wrong with this example?)
+\end{lstlisting}
 \end{numberedframe}
 
-\begin{numberedframe}{Fibonacci once more}
-\begin{verbatim}
-long fibs[100];
-void fib(n) {
+\begin{numberedframe}{Task dependencies}
+\begin{multicols}{2}
+\begin{lstlisting}
+#pragma omp task
+  x = f()
+#pragma omp task
+  y = g(x)
+\end{lstlisting}
+\columnbreak
+\footnotesize
+\begin{lstlisting}
+#pragma omp task depend(out:x)
+  x = f()
+#pragma omp task depend(in:x)
+  y = g(x)
+\end{lstlisting}
+\end{multicols}
+
+ Sequence tasks by indicating
+  \begin{itemize}
+  \item The output of one task
+  \item the needed input of another
+  \item (only between sibling tasks)
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Exercise: dependencies}
+\begin{lstlisting}
+for i in [1:N]:
+    x[0,i] = some_function_of(i)
+    x[i,0] = some_function_of(i)
+
+for i in [1:N]:
+    for j in [1:N]:
+        x[i,j] = x[i-1,j]+x[i,j-1]
+\end{lstlisting}
+  \begin{itemize}
+  \item Use tasks
+  \item Is there a different way to do this?
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Fibonacci memo'ization}
+\begin{lstlisting}
+long fibvalues[100];
+void fibonacci(n) {
   if (n>=2) {
     #pragma omp task \
-       depend( in:fibs[n-2],in:fibs[n-1] ) \
-       depend( out:fibs[n] )
-    fibs[n] = fibs[n-2]+fibs[n-1];
+       depend( in:fibvalues[n-2],in:fibvalues[n-1] ) \
+       depend( out:fibvalues[n] )
+    fibvalues[n] = fibvalues[n-2]+fibvalues[n-1];
 };
 
 #pragma omp parallel
 #pragma omp single
   for (i<50)
-    fib(i);
-\end{verbatim}
+    fibonacci(i);
+\end{lstlisting}
 \end{numberedframe}
 
-\endinput
 
-\begin{numberedframe}{}
+\begin{numberedframe}{Taskloop}
 \begin{lstlisting}
+#pragma omp taskloop grainsize(5)
+for ( int i=0; i<N; ++i )
+  f(i)
 \end{lstlisting}
   \begin{itemize}
-  \item 
+  \item Turn iterations into tasks
+  \item Implicit taskgroup, unless \lstinline{nogroup} specified
   \end{itemize}
 \end{numberedframe}
 

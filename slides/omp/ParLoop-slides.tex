@@ -194,11 +194,21 @@ Histograms / binning.
 \cverbatimsnippet{ompnbodycollapse}
 \end{numberedframe}
 
-\begin{numberedframe}{More loop topics}
+\begin{numberedframe}{Ordered loops}
   \begin{itemize}
   \item Ordered iterations: normally OpenMP can execute iterations in
-    any sequence. You can force ordering if you absolutely have
-    to. Bad for performance!
+    any sequence.
+    You can force ordering if you absolutely have to.
+  \item Bad for performance and generally not needed.
+  \item Use for I/O:
+\begin{lstlisting}
+#pragma omp parallel for ordered schedule(dynamic)
+for ( i=... ) {
+  x[i] = ...
+  #pragma omp ordered
+    printf(x[i])
+}
+\end{lstlisting}
   \end{itemize}
 \end{numberedframe}
 
@@ -213,15 +223,19 @@ Histograms / binning.
 
 \begin{numberedframe}{Nowait}
 \begin{lstlisting}
-#pragma omp parallel for nowait
-for ( int i=0; i<N; ++i )
-  x[i] = // something
-#pragma omp parallel for
-for ( int i=0; i<N; ++i )
-  y[i] = ... x[i] ...
+#pragma omp parallel
+{
+  #pragma omp for nowait
+  for ( int i=0; i<N; ++i )
+    x[i] = // something
+  #pragma omp for
+  for ( int i=0; i<N; ++i )
+    y[i] = ... x[i] ...
+}
 \end{lstlisting}
 Needed:
   \begin{itemize}
+  \item In the same parallel region (why?)
   \item Same number of iterations
   \item Same schedule
   \end{itemize}

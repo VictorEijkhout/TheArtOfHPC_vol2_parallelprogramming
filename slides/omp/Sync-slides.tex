@@ -110,6 +110,56 @@ for ( /* i in whatever */ ) {
   \end{itemize}
 \end{numberedframe}
 
+\begin{numberedframe}{Lock create and destoy}
+  \begin{itemize}
+  \item Variable to hold lock
+  \item Create/destroy actual lock
+  \end{itemize}
+\cverbatimsnippet{lockinit}
+\end{numberedframe}
+
+\begin{numberedframe}{Use of lock}
+  \begin{itemize}
+  \item Same thread sets/unsets lock
+  \item While lock is set, other threadds can not pass
+  \end{itemize}
+\cverbatimsnippet{lockupdate}
+\end{numberedframe}
+
+\begin{numberedframe}{Exercise: histogram}
+  Basic idea:
+\begin{lstlisting}
+for ( i /* lots of cases */ )
+  bin[ property(i) ]++;
+\end{lstlisting}
+Without a specific application, we let the bin number
+be random:
+\cverbatimsnippet{histobasic}
+\end{numberedframe}
+
+\begin{numberedframe}{Histogram 2}
+  \begin{itemize}
+  \item Make this omp parallel
+  \item Observe that the result is not correct.
+  \item   Experiment with number of threads and bins.
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Histogram 3}
+  \begin{itemize}
+  \item Solve with histogram
+  \item Experiment with number of threads and bins.
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Histogram 3}
+  \begin{itemize}
+  \item Solve with locks\\
+    (How many locks are needed?)
+  \item Experiment with number of threads and bins.
+  \end{itemize}
+\end{numberedframe}
+
 \endinput
 
 \begin{numberedframe}{}
