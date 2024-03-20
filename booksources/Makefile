@@ -4,7 +4,7 @@
 ####
 #### This is the makefile for the book
 #### `Parallel Programming in MPI and OpenMP'
-#### by Victor Eijkhout, copyright 2012-2023
+#### by Victor Eijkhout, copyright 2012-2024
 ####
 ################################################################
 ################################################################
@@ -20,6 +20,7 @@ onepass :
 	TEXINPUTS=.:graphics//:mpireference:snippets:macros:graphics:../examples//:hwloc:..//:${TEXINPUTS} \
 	    ${LATEXENGINE} ${BOOKNAME}
 pdf :
+	@mkdir -p frames
 	make --no-print-directory onepass
 	make --no-print-directory exercises_extract
 	make --no-print-directory onepass
