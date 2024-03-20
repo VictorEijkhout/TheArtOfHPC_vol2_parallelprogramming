@@ -546,8 +546,40 @@ programmer's job to ensure proper rounding behavior.
 \cxxverbatimsnippet{reduceprimeomp}
 \cxxverbatimsnippet{reduceprimecpp}
 
-\lstinputlisting{examples/tbb/cxx/reducepolicy-scaling-ls6.runout}
+%% \lstinputlisting{examples/tbb/cxx/reducepolicy-scaling-ls6.runout}
+\begingroup \tiny
+\begin{verbatim}
+Threads:  1
+TBB:  Time:      391 msec
+Stat: Time:      390 msec
+Dyn:  Time:      389 msec
 
+Threads: 25
+TBB:  Time:       20 msec
+Stat: Time:       17 msec
+Dyn:  Time:       17 msec
+
+Threads: 51
+TBB:  Time:       13 msec
+Stat: Time:        9 msec
+Dyn:  Time:        8 msec
+
+Threads: 76
+TBB:  Time:       14 msec
+Stat: Time:        8 msec
+Dyn:  Time:        5 msec
+
+Threads: 102
+TBB:  Time:       76 msec
+Stat: Time:        5 msec
+Dyn:  Time:        4 msec
+
+Threads: 128
+TBB:  Time:       80 msec
+Stat: Time:        4 msec
+Dyn:  Time:        3 msec
+\end{verbatim}
+\endgroup
 
 \endinput
 

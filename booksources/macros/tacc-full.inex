@@ -1,8 +1,8 @@
 % -*- latex -*-
+%%%%%%%%%%%%%%%%
+%%%% full course settings
+%%%%%%%%%%%%%%%%
 
-%%
-%% include definitions for the full courses at TACC
-%%
 \includecomment{full}
 \excludecomment{condensed}
 \excludecomment{online}

@@ -1,4 +1,8 @@
 % -*- latex -*-
+%%%%%%%%%%%%%%%%
+%%%% manual settings
+%%%%%%%%%%%%%%%%
+
 \excludecomment{lulu}
 \includecomment{download}
 \includecomment{fullsources}
