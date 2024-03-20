@@ -1,0 +1,2 @@
+// histogramreduct.c
+#pragma omp parallel reduction(+:bins[0:nbins])

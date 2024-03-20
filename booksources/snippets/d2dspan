@@ -1,0 +1,6 @@
+//! pointer to the data as 2D array
+auto data2d() {
+  return md::mdspan
+    ( std::vector<real>::data(),
+      md::extents{_m+2*border,_n+2*border} );
+};

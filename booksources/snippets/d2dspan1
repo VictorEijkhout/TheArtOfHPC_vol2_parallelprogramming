@@ -1,0 +1,11 @@
+// base.cpp
+template< typename real >
+bordered_array_base<real>::bordered_array_base( size_t m,size_t n,int border )
+  : _m(m),_n(n),_border(static_cast<size_t>(border))
+  , _n2b( n+2*border )
+  , _data( new real[ (m+2*border)*(n+2*border) ] )
+  , data_owned(true)
+  , cartesian_data
+    ( md::mdspan
+      ( _data,md::extents{m+2*border,n+2*border} )
+	) 

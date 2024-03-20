@@ -1,0 +1,13 @@
+// linalg.cpp
+template< typename real >
+void bordered_array<real>::central_difference_from
+    ( const linalg::bordered_array<real>& other,bool trace ) {
+  auto out = this->data2d();
+  auto in = other.data2d();
+#   pragma omp parallel for 
+  for ( auto ij : inner() ) {
+    auto [i,j] = ij;
+    out[ i,j ] = 4*in[ i,j ]
+	- in[ i-1,j ] - in[ i+1,j ] - in[ i,j-1 ] - in[ i,j+1 ];
+  }
+};

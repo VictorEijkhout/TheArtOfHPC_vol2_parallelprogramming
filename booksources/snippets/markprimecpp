@@ -1,0 +1,8 @@
+// primepolicy.cxx
+transform
+  ( std::execution::par,
+    numbers.begin(),numbers.end(),
+    results.begin(),
+    [] (int n ) -> int {
+      return one_if_prime(n); }
+    );

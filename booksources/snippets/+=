@@ -1,0 +1,13 @@
+if (view)
+  Y.view("Operator applied");
+// norm computation
+auto bnorm = Y.l2norm();
+bw += 2.*msize*nsize; fl += msize*nsize; //snippetskip
+if ( trace and procno==0 )
+  print("[{:>2}] y norm: {}\n",it,bnorm);
+// // copy over
+// X.copy_interior_from(Y);
+// bw += 2.*msize*nsize; fl += 0.*msize*nsize; //snippetskip
+if ( view )
+  X.view("Scaled");
+}

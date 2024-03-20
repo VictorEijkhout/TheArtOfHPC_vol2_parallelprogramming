@@ -1,0 +1,10 @@
+float s=0;
+#pragma omp parallel sections reduction(+:s)
+{
+  #pragma omp section
+  s += f(1.);
+  #pragma omp section
+  s += g(1.);
+  #pragma omp section
+  s += h(1.);
+}

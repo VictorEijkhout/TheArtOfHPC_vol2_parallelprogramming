@@ -1,0 +1,5 @@
+// privateno.cxx
+class foo { public: int x; };
+int main() {
+  foo thing;
+#pragma omp parallel private(thing.x) // NOPE

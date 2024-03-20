@@ -1,0 +1,5 @@
+mpl::cartesian_communicator::dimensions pbrick
+  ( { mpl::cartesian_communicator::non_periodic,
+      mpl::cartesian_communicator::periodic,
+      mpl::cartesian_communicator::non_periodic } );
+pbrick = mpl::dims_create(nprocs,pbrick);

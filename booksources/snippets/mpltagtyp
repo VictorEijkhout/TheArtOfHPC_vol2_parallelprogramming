@@ -1,0 +1,9 @@
+// tagtype.cxx
+auto tag = mpl::tag_t(25);
+if (world.rank()==pinger) {
+  world.send(x, ponger, tag );
+  world.recv(x, ponger, tag );
+} else if (world.rank()==ponger) {
+  world.recv(x, pinger, tag );
+  world.send(x, pinger, tag );
+}

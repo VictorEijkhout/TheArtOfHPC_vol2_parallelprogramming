@@ -1,0 +1,2 @@
+## scangather.py
+comm.Exscan(my_number_of_elements,my_first_index,MPI.SUM)

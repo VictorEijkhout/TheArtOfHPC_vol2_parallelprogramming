@@ -1,0 +1,17 @@
+comm.Gather(
+   my_number_of_elements,size_buffer,0
+   );
+## where are they going to go in the big buffer?
+displ_buffer = np.zeros( nprocs,dtype=np.intc )
+comm.Gather(
+   my_first_index,displ_buffer,0
+   );
+## now create the big buffer
+gather_buffer = np.zeros(total_number_of_elements,dtype=np.intc)
+
+## 
+##  Use Gatherv to collect the small buffers into a big one
+##
+comm.Gatherv(
+   my_elements,[gather_buffer,size_buffer],0
+   )

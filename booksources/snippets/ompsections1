@@ -1,0 +1,11 @@
+// sections.c
+#pragma omp parallel sections
+{
+  #pragma omp section
+  fx = f(1.);
+  #pragma omp section
+  gx = g(1.);
+  #pragma omp section
+  hx = h(1.);
+}
+float s = fx+gx+hx;

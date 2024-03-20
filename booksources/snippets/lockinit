@@ -1,0 +1,4 @@
+// lock.c
+omp_lock_t the_lock;
+omp_init_lock( &the_lock );
+omp_destroy_lock( &the_lock );

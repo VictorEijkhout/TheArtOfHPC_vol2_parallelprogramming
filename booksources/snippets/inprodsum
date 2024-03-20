@@ -1,0 +1,5 @@
+// reductsum.c
+float s = 0;
+#pragma omp parallel for reduction(+:s)
+for (int idata=0; idata<ndata; idata++)
+  s += x[idata]*y[idata];

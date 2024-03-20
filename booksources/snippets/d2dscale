@@ -1,0 +1,14 @@
+template< typename real >
+void bordered_array<real>::scale_interior
+    ( const linalg::bordered_array<real>& other,real factor ) {
+  const auto otherinner = other.inner();
+  transform
+    ( 
+	otherinner().begin(),otherinner().end(),
+      this->inner().begin(),
+      [out = data2d(),factor] ( auto idx ) {
+      auto [i,j] = idx;
+      out[i,j] *= factor; }
+      );
+  log_flops(_m*_n*1); log_bytes( sizeof(real)*_m*_n*2 );
+};

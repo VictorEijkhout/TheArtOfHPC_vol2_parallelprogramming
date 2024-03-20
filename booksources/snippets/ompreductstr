@@ -1,0 +1,7 @@
+// reductstring.cxx
+string result{""};
+#pragma omp parallel for reduction( +:result )
+for ( const auto& t : letters ) {
+  result = result + t;
+  cout << ":" << result << '\n';
+}

@@ -1,0 +1,2 @@
+// seq.cpp
+#define IINDEX( i,j,b,n2b ) ((i)+b)*n2b + (j)+b

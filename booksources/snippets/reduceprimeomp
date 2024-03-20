@@ -1,0 +1,6 @@
+#pragma omp parallel for \
+  schedule(guided,8) \
+  reduction(+:prime_count)
+for ( auto n : numbers ) {
+  prime_count += one_if_prime( n );
+}

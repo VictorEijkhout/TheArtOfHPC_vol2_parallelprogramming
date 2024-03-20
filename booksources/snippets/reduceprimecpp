@@ -1,0 +1,9 @@
+// reducepolicy.cxx
+prime_count = transform_reduce
+  ( std::execution::par,
+    numbers.begin(),numbers.end(),
+    0,
+    std::plus<>{},
+    [] ( int n ) -> int {
+        return one_if_prime(n); }
+    );

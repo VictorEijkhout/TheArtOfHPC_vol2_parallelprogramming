@@ -1,0 +1,24 @@
+// charcountoverload.cxx
+template<typename key>
+class bincounter : public map<key,int> {
+public:
+// insert one char in this map
+  void inc(char k) {
+    if ( map<key,int>::contains(k) )
+      this->at(k) += 1;
+    else
+      this->insert( {k,1} );
+  };
+// merge this with other map
+  auto operator+( const bincounter<key>& other ) {
+    auto plussed(*this); plussed += other;
+    return plussed;
+  };
+  void operator+=( const bincounter<key>& other ) {
+    for ( auto [k,v] : other )
+      if ( map<key,int>::contains(k) ) // c++20
+	this->at(k) += v;
+      else
+	this->insert( {k,v} );
+  };
+};

@@ -1,0 +1,41 @@
+// distalg.cpp
+template< typename real >
+distributed_array<real>::distributed_array
+    ( const mpl::cartesian_communicator& comm,size_t m,size_t n,bool trace )
+      : comm(comm),m_global(m),n_global(n) {
+  auto rank = comm.rank();
+  /*
+   * set up processor grid
+   */
+  dimensions = comm.get_dimensions();
+  auto [pmsize,pnsize] = proc_grid_size();
+  proc_start_m = vector<size_t>(pmsize+1);
+  proc_start_n = vector<size_t>(pnsize+1);
+  /*
+   * Fill in processor details
+   */
+  for ( int pi=0; pi<=pmsize; pi++ )
+    proc_start_m.at(pi) = pi*m/pmsize;
+  for ( int pi=0; pi<=pnsize; pi++ )
+    proc_start_n.at(pi) = pi*n/pnsize;
+  if (rank==0 and trace) {
+    rng::for_each( proc_start_m,
+		     [init=true] ( auto p ) mutable {
+		       if (init) { init=false; cout << format("pm: {}",p); } 
+		       else cout << format(", {}",p); } ); cout << format("\n");
+    rng::for_each( proc_start_n,
+		     [init=true] ( auto p ) mutable {
+		       if (init) { init=false; cout << format("pn: {}",p); } 
+		       else cout << format(", {}",p); } ); cout << format("\n");
+  }
+  /*
+   * This process in particular
+   */
+  coord = comm.coordinates(rank);
+  auto pm = coord[0], pn = coord[1];
+  auto
+    sm = proc_start_m[pm+1]-proc_start_m[pm],
+    sn = proc_start_n[pn+1]-proc_start_n[pn];
+  data = bordered_array<real>(sm,sn);
+  set_neighbors(trace);
+};

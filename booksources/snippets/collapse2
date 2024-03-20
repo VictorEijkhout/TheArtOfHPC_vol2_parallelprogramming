@@ -1,0 +1,9 @@
+// collapse.cxx
+#       pragma omp parallel for
+        for ( int i=0; i<nsize; i++ )
+          for ( int j=0; j<nsize; j++ )
+            data[ i*nsize+j] += sqrt(x*y);
+#       pragma omp parallel for reduction(+:s)
+        for ( int i=0; i<nsize; i++ )
+          for ( int j=0; j<nsize; j++ )
+            s + sqrt(data[ i*nsize+j]);

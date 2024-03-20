@@ -1,0 +1,1 @@
+bordered_array_base( std::size_t m,std::size_t n,int border );

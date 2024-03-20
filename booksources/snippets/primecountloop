@@ -1,0 +1,5 @@
+// primesched.c
+for (int n = 0; n < N; n++) {
+  if (is_prime(n))
+    j++;
+}

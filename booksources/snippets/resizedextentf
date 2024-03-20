@@ -1,0 +1,6 @@
+!! stridescatter.F90
+  integer(kind=MPI_Address_kind) :: l,e
+     call MPI_Type_get_extent(scattertype,l,e)
+     e = c_sizeof(i)
+     call MPI_Type_create_resized(scattertype,l,e,interleavetype)
+     call MPI_Type_commit(interleavetype)

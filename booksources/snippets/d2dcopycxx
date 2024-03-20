@@ -1,0 +1,10 @@
+template< typename real >
+void bordered_array<real>::copy_interior_from( linalg::bordered_array<real> other ) {
+  auto out = this->data();
+  auto in = other.data();
+  for ( size_t i=0; i<_m; i++ )
+    for ( size_t j=0; j<_n; j++ ) {
+      out[ IINDEX(i,j) ] = in[ IINDEX(i,j) ];
+    }
+  log_flops(_m*_n*0); log_bytes( sizeof(real)*_m*_n*3 );
+};

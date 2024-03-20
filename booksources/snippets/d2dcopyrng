@@ -1,0 +1,14 @@
+template< typename real >
+void bordered_array<real>::copy_interior_from
+    ( const linalg::bordered_array<real>& other ) {
+  auto out = this->data2d();
+  auto in = other.data2d();
+#   pragma omp parallel for 
+  for ( auto ij : inner() ) {
+    auto [i,j] = ij;
+    out[ i,j ] = in[ i,j ];
+  }
+};
+
+//! Scale the interior, leaving the border alone
+//codesnippet d2dscalerng

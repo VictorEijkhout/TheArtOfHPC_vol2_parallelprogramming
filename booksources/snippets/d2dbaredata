@@ -1,0 +1,2 @@
+real* data() { return _data; };
+real const * const data() const { return _data; };

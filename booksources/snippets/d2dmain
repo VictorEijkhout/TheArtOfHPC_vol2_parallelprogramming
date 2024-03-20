@@ -1,0 +1,11 @@
+// main.cpp
+for ( int it=0; it<itcount; it++ ) {
+  /*
+   * Matrix-vector product
+   */
+  Y->central_difference_from( *X,trace );
+// norm computation
+  auto bnorm = Y->l2norm();
+// scale
+  X->scale_interior( *Y,1./bnorm );
+ }

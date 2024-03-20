@@ -1,0 +1,6 @@
+// ijwrongright.c
+int i,j;
+#pragma omp parallel for
+for ( i=0; i<matrix_size; ++i )
+  for ( j=0; j<matrix_size; ++j )
+    matrix[INDEX(i,j)] *= 3.14;

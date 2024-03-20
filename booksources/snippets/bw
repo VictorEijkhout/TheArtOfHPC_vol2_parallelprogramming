@@ -1,0 +1,5 @@
+// if ( view )
+//   X.view("Copied");
+// scale
+X.scale_interior( Y,1./bnorm );
+bw += 1.*msize*nsize; fl += msize*nsize; //snippetskip

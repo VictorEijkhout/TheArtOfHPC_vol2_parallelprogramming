@@ -1,0 +1,10 @@
+// private.cxx
+class foo {
+private:
+  int x;
+public:
+  void f() {
+#pragma omp parallel private(x)
+    somefunction(x);
+  };
+};

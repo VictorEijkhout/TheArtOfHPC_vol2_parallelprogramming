@@ -1,0 +1,8 @@
+// procname.cxx
+procno = comm_world.rank();
+string procname =
+  mpl::environment::processor_name();
+stringstream ss;
+ss << "[" << procno << "] "
+   << " Running on: " << procname;
+cout << ss.str() << '\n';

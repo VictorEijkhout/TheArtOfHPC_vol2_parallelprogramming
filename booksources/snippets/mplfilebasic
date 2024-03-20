@@ -1,0 +1,6 @@
+// filewrite.cxx
+mpl::file mpifile
+  (comm_world,"filewrite.dat",
+   mpl::file::access_mode::create | mpl::file::access_mode::write_only
+   );
+mpifile.close();

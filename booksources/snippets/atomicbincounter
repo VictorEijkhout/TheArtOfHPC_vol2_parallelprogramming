@@ -1,0 +1,14 @@
+// mapreduceatomic.cxx
+class CharCounter : public array<atomic<int>,26> {
+public:
+  CharCounter() {
+    for ( int ic=0; ic<26; ic++ )
+      (*this)[ic] = 0;
+  };
+// insert one char in this map
+  void inc(char k) {
+    if (k==' ') return;
+    int ik = k-'a';
+    (*this)[ik]++;
+  };
+};

@@ -1,0 +1,4 @@
+// diff2d.cpp
+mpl::cartesian_communicator::dimensions brick(2);
+brick = mpl::dims_create(nprocs,brick);
+mpl::cartesian_communicator cart_comm( comm_world,brick );

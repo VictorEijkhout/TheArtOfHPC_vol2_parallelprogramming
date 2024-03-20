@@ -1,0 +1,16 @@
+// mandeldeque.cxx
+optional<bool> fill() {
+  omp_set_lock( &coordinate_lock );
+  if (coordinates.size()<block_size) {
+//cout << "fill at x=" << x << ", y=" << y << '\n';
+    for ( int icoord=0; icoord<block_size; icoord++ ) {
+	coordinates.push_back( {x,y} );
+	x += h; coord_count++;
+	if (x>=2) {
+	  x=-2; y += h; if (y>=2) { done = true; break; }
+	}
+    }
+  }
+  omp_unset_lock( &coordinate_lock );
+  if (done) return true; else return {};
+};

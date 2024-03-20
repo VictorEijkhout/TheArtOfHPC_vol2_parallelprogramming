@@ -1,0 +1,7 @@
+coord = comm.coordinates(rank);
+auto pm = coord[0], pn = coord[1];
+auto
+  sm = proc_start_m[pm+1]-proc_start_m[pm],
+  sn = proc_start_n[pn+1]-proc_start_n[pn];
+data = bordered_array_seq<real>(sm,sn,1);
+set_neighbors(trace);

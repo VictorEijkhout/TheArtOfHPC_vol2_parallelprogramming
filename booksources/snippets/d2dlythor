@@ -1,0 +1,2 @@
+layout = shared_ptr<mpl::layout<real>>
+  ( make_shared<mpl::contiguous_layout<real>>(n-2*b) );

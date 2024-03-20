@@ -1,0 +1,5 @@
+// base.hpp
+template< typename real >
+class bordered_array_base {
+protected:
+  std::size_t _m{0},_n{0},_border{0}; 

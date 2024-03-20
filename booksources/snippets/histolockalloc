@@ -1,0 +1,2 @@
+// histogramlock.c
+omp_lock_t locks[nbins];

@@ -1,0 +1,12 @@
+template< typename real >
+real bordered_array<real>::l2norm() {
+  real sum_of_squares{0};
+  auto out = this->data();
+  for ( size_t i=0; i<_m; i++ )
+    for ( size_t j=0; j<_n; j++ ) {
+      auto v = out[ IINDEX(i,j) ];
+      sum_of_squares += v*v;
+    }
+  log_flops(_m*_n*3); log_bytes( sizeof(real)*_m*_n*1 );
+  return std::sqrt(sum_of_squares);
+};

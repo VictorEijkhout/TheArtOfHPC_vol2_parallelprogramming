@@ -1,0 +1,3 @@
+mpifile.write_at
+  ( /* offset: */ procno*sizeof(int),
+    /* data: */ procno );

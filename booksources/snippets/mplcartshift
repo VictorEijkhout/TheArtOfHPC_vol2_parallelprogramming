@@ -1,0 +1,5 @@
+int pred,succ;
+mpl::shift_ranks shifted = cart_comm.shift
+	( /* dim: */ 1,/* up: */ 1 );
+pred = shifted.source; succ = shifted.destination;
+print("non-periodic: src={}, tgt={}\n",pred,succ);

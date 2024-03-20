@@ -1,0 +1,5 @@
+// directive.cxx
+int nthreads;
+[[omp::directive( parallel ) ]]
+[[omp::directive( master ) ]]
+nthreads = omp_get_num_threads();

@@ -1,0 +1,19 @@
+// mandel_tools1.cxx
+#pragma omp parallel
+#pragma omp single
+  {
+    nt = omp_get_num_threads();
+    for (;;) {
+      struct coordinate xy; int res;
+      workcircle->next_coordinate(xy);
+      if (workcircle->is_valid_coordinate(xy)) {
+	this->total_tasks += 1;
+#pragma omp task
+	{
+	  res = belongs(xy,workcircle->infty);
+	  coordinate_to_image(xy,res);
+	}
+      }
+      else break;
+    }
+#pragma omp taskwait

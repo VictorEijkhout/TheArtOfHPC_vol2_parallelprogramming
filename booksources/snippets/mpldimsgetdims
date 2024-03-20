@@ -1,0 +1,3 @@
+// cartcoord.cxx
+int dsize = dimensions.size(idim);
+auto p = dimensions.periodicity(idim);

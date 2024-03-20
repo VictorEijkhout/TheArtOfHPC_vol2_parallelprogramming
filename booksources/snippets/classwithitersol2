@@ -1,0 +1,8 @@
+template<typename T>
+T&  NewVector<T>::iter::operator*() {
+  return *searcher; };
+// needed for OpenMP
+template<typename T>
+int   NewVector<T>::iter::operator-
+    ( const NewVector<T>::iter& other ) const {
+  return searcher-other.searcher; };

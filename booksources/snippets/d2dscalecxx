@@ -1,0 +1,8 @@
+template< typename real >
+void bordered_array<real>::scale_interior( real factor ) {
+  auto out = this->data();
+  for ( size_t i=0; i<_m; i++ )
+    for ( size_t j=0; j<_n; j++ )
+      out[ IINDEX(i,j) ] *= factor;
+  log_flops(_m*_n*1); log_bytes( sizeof(real)*_m*_n*2 );
+};

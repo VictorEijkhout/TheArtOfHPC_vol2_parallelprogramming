@@ -1,0 +1,4 @@
+// range.cxx
+#     pragma omp parallel for reduction(+:count)
+      for ( auto e : data )
+	count += e;

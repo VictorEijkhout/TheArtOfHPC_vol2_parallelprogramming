@@ -1,0 +1,10 @@
+// fivepoint.cxx
+#       pragma omp parallel for
+        for ( int i=0; i<nsize; i++ )
+          for ( int j=0; j<nsize; j++ )
+	    data_out[index(i,j)] = (4+s)*data_in[index(i,j)] 
+	      - data_in[index(i-1,j)] - data_in[index(i+1,j)] - data_in[index(i,j-1)] - data_in[index(i,j+1)];
+#       pragma omp parallel for reduction(+:s)
+        for ( int i=0; i<nsize; i++ )
+          for ( int j=0; j<nsize; j++ )
+            s += sqrt(data_out[index(i,j)]);

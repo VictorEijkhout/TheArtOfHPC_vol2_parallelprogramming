@@ -1,0 +1,6 @@
+#pragma omp parallel
+  {
+    omp_set_lock( &the_lock );
+    sum += omp_get_thread_num();
+    omp_unset_lock( &the_lock );
+  }

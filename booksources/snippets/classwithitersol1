@@ -1,0 +1,14 @@
+template<typename T>
+bool  NewVector<T>::iter::operator==
+    ( const NewVector<T>::iter &other ) const {
+  return searcher==other.searcher; };
+template<typename T>
+bool  NewVector<T>::iter::operator!=
+    ( const NewVector<T>::iter &other ) const {
+  return searcher!=other.searcher; };
+template<typename T>
+NewVector<T>::iter& NewVector<T>::iter::operator++() {
+  searcher++; return *this; };
+template<typename T>
+NewVector<T>::iter& NewVector<T>::iter::operator+=( int add ) {
+  searcher += add; return *this; };

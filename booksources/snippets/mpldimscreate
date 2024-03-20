@@ -1,0 +1,2 @@
+mpl::cartesian_communicator::dimensions brick(3);
+brick = mpl::dims_create(nprocs,brick);

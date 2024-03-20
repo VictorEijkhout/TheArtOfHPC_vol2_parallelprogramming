@@ -1,0 +1,133 @@
+optional< vector<coordinate> > read() {
+// read attempt until successful
+  while (not done) {
+// lock and test size
+    omp_set_lock( &coordinate_lock );
+    if ( not coordinates.empty() ) {
+	// if there are coordinates, copy them
+	vector<coordinate> result(block_size);
+	// auto [x,y] = coordinates.front();
+	// cout << "reading from x=" << x << " y=" << y << '\n';
+	for ( int icoord=0; icoord<block_size and not coordinates.empty(); icoord++ ) {
+	  result[icoord] = coordinates.front();
+	  coordinates.pop_front();
+	}
+	omp_unset_lock( &coordinate_lock );
+	return result;
+    } else
+	// if there are no coordinates, cycle the while loop
+	omp_unset_lock( &coordinate_lock );
+  }
+  return {};
+};
+//answersnippet mandeldeqread
+};
+
+class mandelset {
+private:
+int limit{1000};
+size_t n_interior{0};
+double runtime{0};
+public:
+void set_limit( int l=300 ) { limit=l; };
+void test( const vector<coordinate>& coordinates ) {
+  auto tstart = omp_get_wtime();
+  for ( auto [xc,yc] : coordinates ) {
+    pair<float,float> iterate{0,0};
+    bool interior{true};
+    for ( int step=0; step<limit and interior; step++) {
+	auto [xt,yt] = iterate;
+	if (xt*xt+yt*yt>4)
+	  interior = false;
+	iterate = pair<float,float>{ xt*xt-yt*yt + xc, 2*xt*yt + yc };
+    }
+    if (interior)
+#       pragma omp atomic
+      n_interior++;
+  }
+  auto duration = omp_get_wtime()-tstart;
+#   pragma omp atomic
+  runtime += duration;
+};
+void report() {
+  cout << "Interior: " << n_interior << '\n';
+  cout << "Compute time: " << runtime << '\n';
+};
+};
+
+int main(int argc,char **argv) {
+
+cxxopts::Options options
+  ("Mandeldeque",
+   "================================\nPrime numbers\n================================");
+options.add_options()
+  ("h,help","usage information")
+  ("b,blocksize","block size",cxxopts::value<int>()->default_value("50"))
+  ("l,limit","iteration limit",cxxopts::value<int>()->default_value("200"))
+  ("s,stepsize","step size",cxxopts::value<float>()->default_value(".01f"))
+  ("t,threads","number of threads",cxxopts::value<int>()->default_value("2"))
+  ("v,verbose","verbose mode",cxxopts::value<int>()->default_value("0"))
+  ;
+auto result = options.parse(argc,argv);
+if (result.count("help")) {
+  std::cout << options.help() << '\n';
+  return 1;
+}
+auto block_size   = result["b"].as<int>();
+auto limit        = result["l"].as<int>();
+auto step_size    = result["s"].as<float>();
+auto verbose_level = result["v"].as<int>();
+
+int nthreads;
+if (result.count("threads"))
+  nthreads = result["t"].as<int>();
+else {
+#   pragma omp parallel 
+#   pragma omp single
+  nthreads = omp_get_num_threads();
+}
+printf("================ #threads = %d ================\n",nthreads);
+
+coordinate_generator coordinates;
+coordinates.set_verbose(verbose_level);
+coordinates.set_stepsize(step_size);
+coordinates.set_blocksize(block_size);
+
+mandelset picture;
+picture.set_limit(limit);
+
+auto tstart = omp_get_wtime();
+#pragma omp parallel shared(coordinates) num_threads(nthreads)
+{
+  int mythread = omp_get_thread_num();
+  if (mythread==nthreads-1) {
+// generate coordinates
+    while (true) {
+	auto done = coordinates.fill();
+	if (done.has_value() and done.value()) {
+	  if (verbose_level>0)
+	    cout << "done generating\n";
+	  break;
+	}
+    }
+  } else {
+// get coordinates
+    while (true) {
+	auto oneblock = coordinates.read();
+	if (oneblock.has_value())
+	  picture.test(oneblock.value());
+	else {
+	  if (verbose_level>0)
+	    cout << mythread << " done processing\n";
+	  break;
+	}
+    }
+  }
+}
+auto duration = omp_get_wtime()-tstart;
+cout << "Time: " << duration << '\n';
+coordinates.report();
+picture.report();
+
+return 0;
+}

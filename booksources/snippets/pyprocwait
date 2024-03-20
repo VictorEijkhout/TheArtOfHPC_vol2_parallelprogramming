@@ -1,0 +1,10 @@
+import time
+def say_wait(iproc):
+    print(f"Process {iproc} waiting 5 seconds")
+    time.sleep(5)
+    print(f"Process {iproc} done")
+
+if __name__ == '__main__':
+    tic = time.perf_counter()
+    processes = [ mp.Process(target=say_wait,args=[iproc])
+                  for iproc in range(nprocs) ]

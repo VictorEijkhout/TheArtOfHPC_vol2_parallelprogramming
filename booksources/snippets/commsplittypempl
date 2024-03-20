@@ -1,0 +1,6 @@
+// commsplittype.cxx
+mpl::communicator shared_comm
+  ( mpl::communicator::split_shared_memory, world_comm );
+int
+  onnode_procno = shared_comm.rank(),
+  onnode_nprocs = shared_comm.size();

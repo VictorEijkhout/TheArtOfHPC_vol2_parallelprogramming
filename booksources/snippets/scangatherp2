@@ -1,0 +1,4 @@
+for i_element in range(my_number_of_elements[0]):
+    my_elements[i_element] = my_first_index+i_element
+
+comm.Reduce( my_number_of_elements,total_number_of_elements,MPI.SUM,0)

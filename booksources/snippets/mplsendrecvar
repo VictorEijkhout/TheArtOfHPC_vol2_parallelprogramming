@@ -1,0 +1,6 @@
+// sendrecvarray.cxx
+mpl::tag_t t0(0);
+mpl::contiguous_layout<double> twofloats(2);
+comm_world.sendrecv
+  ( mydata,twofloats,sendto,t0,
+    leftdata,twofloats,recvfrom,t0 );

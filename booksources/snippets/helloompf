@@ -1,0 +1,5 @@
+!! hello.F90
+!$omp parallel private(mythread)
+  mythread = omp_get_thread_num()
+  print *,"Hello world from",mythread
+!$omp end parallel

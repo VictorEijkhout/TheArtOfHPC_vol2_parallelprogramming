@@ -1,0 +1,5 @@
+// histogramwrong.c
+for ( long int experiment=0; experiment<nexperiments; ++experiment ) {
+  int bin  = rand_r(&seed)%nbins;
+  bins[bin]++;
+}

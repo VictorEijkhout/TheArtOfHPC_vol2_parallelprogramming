@@ -1,0 +1,12 @@
+// filtertask.cxx
+vector<int> filtered;
+int ithread=0;
+#pragma omp parallel 
+{
+  vector<int> local;
+  int threadnum = omp_get_thread_num();
+#   pragma omp for
+  for ( auto e : data )
+    if ( e%5==0 )
+	local.push_back(e);
+// create task to add local to filtered

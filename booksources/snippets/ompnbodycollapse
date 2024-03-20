@@ -1,0 +1,11 @@
+// triangle.c
+#pragma omp parallel for collapse(2)
+  for ( int i=0; i<vectorsize; ++i ) {
+    for ( int j=i+1; j<vectorsize; ++j ) {
+      double
+	dx= particles[XCOORD(i)]-particles[XCOORD(j)],
+	dy= particles[YCOORD(i)]-particles[YCOORD(j)];
+      double r = sqrt( dx*dx + dy*dy ), 
+	f = (particles[MASS(i)]*particles[MASS(j)])/(r*r);
+    }
+  }

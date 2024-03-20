@@ -1,0 +1,4 @@
+//! pointer to the data as 2D array
+auto& data2d() {
+  return cartesian_data;
+};

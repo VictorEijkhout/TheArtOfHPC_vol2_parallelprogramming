@@ -1,0 +1,18 @@
+template< typename real >
+void distributed_array<real>::set_neighbors( bool trace ) {
+  mpl::shift_ranks shifted = comm.shift
+    ( /* dim: */ 0,/* increasing: */ 1 );
+  neighbors['S'] = 
+    [shifted] () { auto v = shifted.destination; 
+                   return (v<0 ? mpl::proc_null : v); }();
+  neighbors['N'] = 
+    [shifted] () { auto v = shifted.source; 
+                   return (v<0 ? mpl::proc_null : v); }();
+  shifted = comm.shift
+    ( /* dim: */ 1,/* increasing: */ 1 );
+  neighbors['E'] = 
+    [shifted] () { auto v = shifted.destination;
+                   return (v<0 ? mpl::proc_null : v); }();
+  neighbors['W'] = 
+    [shifted] () { auto v = shifted.source; 
+                   return (v<0 ? mpl::proc_null : v); }();

@@ -1,0 +1,7 @@
+for ( int ip=0; ip<nprocs; ip++ ) {
+  mpl::cartesian_communicator::vector
+	coord = cart_comm.coordinates(ip);
+  print("[{:2}] coord: [",ip);
+  for ( int id=0; id<dim; id++ )
+	print("{},",coord[id]);
+  print("]\n");
