@@ -5,7 +5,7 @@
    %%%% "Parallel Computing"
    %%%% by Victor Eijkhout, copyright 2020
    %%%%
-   %%%% sendscalar.cxx : send a scalar in MPL
+   %%%% collectarray.cxx : collective routines on static arrays in MPL
    %%%%
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -16,25 +16,35 @@
 #include <iostream>
 using std::cout;
 using std::endl;
+
+#include <vector>
+using std::vector;
+
 #include <mpl/mpl.hpp>
  
 int main() {
-  const mpl::communicator &comm_world=mpl::environment::comm_world();
-  if (comm_world.size()<2)
-    return EXIT_FAILURE;
 
-  // send and receive a single floating point number
-  //codesnippet mplsendscalar
-  if (comm_world.rank()==0) {
-    double pi=3.14;
-    comm_world.send(pi, 1);  // send to rank 1
-    cout << "sent: " << pi << '\n';
-  } else if (comm_world.rank()==1) {
-    double pi=0;
-    comm_world.recv(pi, 0);  // receive from rank 0
-    cout << "got : " << pi << '\n';
-  }
+  // MPI Comm world
+  const mpl::communicator &comm_world=mpl::environment::comm_world();
+  int nprocs = comm_world.size(), procno = comm_world.rank();
+  int iprint = procno==nprocs-1;
+
+  /*
+   * Reduce a 2 int buffer
+   */
+  if (iprint) cout << "Reducing 2p, 2p+1" << endl;
+
+  float
+    xrank = static_cast<float>( comm_world.rank() );
+  //codesnippet mplallreducearray
+  float rank2p2p1[2] = { 2*xrank,2*xrank+1 };
+  mpl::contiguous_layout<float> p2layout(2);
+  comm_world.allreduce(mpl::plus<float>(), rank2p2p1, p2layout);
   //codesnippet end
+  if ( iprint )
+    cout << "Got: " << rank2p2p1[0] << ","
+	 << rank2p2p1[1] << endl;
+
   return EXIT_SUCCESS;
 }
 

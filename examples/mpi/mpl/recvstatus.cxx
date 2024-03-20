@@ -26,10 +26,12 @@ int main() {
     comm_world.send(pi, 1);  // send to rank 1
     std::cout << "sent: " << pi << '\n';
   } else if (comm_world.rank()==1) {
+    //codesnippet mplrecvcount
     double pi=0;
     auto s = comm_world.recv(pi, 0);  // receive from rank 0
     int c = s.get_count<double>();
     std::cout << "got : " << c << " scalar(s): " << pi << '\n';
+    //codesnippet end
   }
   return EXIT_SUCCESS;
 }

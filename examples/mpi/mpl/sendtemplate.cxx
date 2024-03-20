@@ -31,6 +31,7 @@ int main() {
 
   if (comm_world.rank()==0)
     cout << "testing with complex<float> " << sizeof(complex<float>) << endl;
+  //codesnippet mplsendtemplate
 #include <complex>
   vector<complex<float>> c(8);
   send_and_recv( comm_world,c );
@@ -39,13 +40,16 @@ int main() {
     cout << "testing with complex<double> " << sizeof(complex<double>) << endl;
   vector<complex<double>> d(8);
   send_and_recv( comm_world,d );
+  //codesnippet end
 
   return EXIT_SUCCESS;
 }
 
+//codesnippet mplsendtemplate
 template <typename T>
 void send_and_recv( const mpl::communicator &comm, vector<T> &v ) {
   mpl::contiguous_layout<T> v_layout(v.size());
+  //codesnippet end
 
   // Initialize the data
   if (comm.rank()==0) {
@@ -56,7 +60,9 @@ void send_and_recv( const mpl::communicator &comm, vector<T> &v ) {
       init += 1;
     }
     
+    //codesnippet mplsendtemplate
     comm.send(v.data(), v_layout, 1); // send to rank 1
+    //codesnippet end
     cout << "sent: ";
     for (T &x : v) 
       cout << x << ' ';

@@ -27,7 +27,9 @@ int main() {
   if (comm_world.size()<2)
     return EXIT_FAILURE;
 
+  //codesnippet mplsendrange
   vector<double> v(15);
+  //codesnippet end
 
   if (comm_world.rank()==0) {
     
@@ -37,14 +39,18 @@ int main() {
     /*
      * Send and report
      */
+    //codesnippet mplsendrange
     comm_world.send(v.begin(), v.end(), 1);  // send to rank 1
+    //codesnippet end
 
   } else if (comm_world.rank()==1) {
 
     /*
      * Receive data and report
      */
+    //codesnippet mplsendrange
     comm_world.recv(v.begin(), v.end(), 0);  // receive from rank 0
+    //codesnippet end
 
     cout << "Got:";
     for ( auto x : v )

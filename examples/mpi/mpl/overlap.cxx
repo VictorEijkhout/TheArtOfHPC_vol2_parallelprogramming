@@ -3,9 +3,9 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%% "Parallel Computing"
-   %%%% by Victor Eijkhout, copyright 2020
+   %%%% by Victor Eijkhout, copyright 2020-2024
    %%%%
-   %%%% sendbuffer.cxx : send a buffer in MPL
+   %%%% overlap.cxx : error by overlapping buffer
    %%%%
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -24,10 +24,8 @@ int main() {
   /*
    * To send a std::vector we declare a contiguous layout
    */
-  //codesnippet mplsendbuffer
   std::vector<double> v(8);
-  mpl::contiguous_layout<double> v_layout(v.size());
-  //codesnippet end
+  mpl::contiguous_layout<double> v_layout(v.size()-1);
 
   // Initialize the data
   if (comm_world.rank()==0) {
@@ -40,9 +38,14 @@ int main() {
     /*
      * Send and report
      */
-    //codesnippet mplsendbuffer
-    comm_world.send(v.data(), v_layout, 1);  // send to rank 1
-    //codesnippet end
+    try {
+      comm_world.sendrecv // send to rank 1
+	(v.data(), v_layout, 1, mpl::tag_t(0),
+	 v.data()+1, v_layout, comm_world.size(), mpl::tag_t(0) );
+    } catch(...) {
+      std::cout << "process zero failed\n"; 
+      return 1;
+    }
     std::cout << "sent: ";
     for (double &x : v) 
       std::cout << x << ' ';
@@ -53,9 +56,14 @@ int main() {
     /*
      * Receive data and report
      */
-    //codesnippet mplsendbuffer
-    comm_world.recv(v.data(), v_layout, 0);  // receive from rank 0
-    //codesnippet end
+    try {
+      comm_world.sendrecv // send to rank 1
+	(v.data(), v_layout, 0, mpl::tag_t(0),
+	 v.data()+1, v_layout, -2, mpl::tag_t(0) );
+    } catch(...) {
+      std::cout << "process one failed\n"; 
+      return 1;
+    }
     std::cout << "got : ";
     for (double &x : v) 
       std::cout << x << ' ';

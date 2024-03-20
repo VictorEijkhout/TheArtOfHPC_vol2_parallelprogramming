@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%% "Parallel Computing"
-   %%%% by Victor Eijkhout, copyright 2020-2022
+   %%%% by Victor Eijkhout, copyright 2020-2023
    %%%%
    %%%% commcompare.c : basics in MPL
    %%%%
@@ -20,6 +20,7 @@ using namespace std;
  
 int main() {
 
+  //codesnippet mplcompare
   const mpl::communicator &comm =
     mpl::environment::comm_world();
   cout << "same: " << boolalpha << (comm==comm) << endl;
@@ -30,6 +31,7 @@ int main() {
 
   mpl::communicator init = comm;
   cout << "init: " << boolalpha << (init==comm) << endl;
+  //codesnippet end
 
   // WRONG: copy = comm;
   // error: overload resolution selected deleted operator '='
@@ -45,6 +47,7 @@ int main() {
 
   cout << "Rawcompare\n";
   {
+    //codesnippet mplcommraw
     const mpl::communicator &comm =
       mpl::environment::comm_world();
     MPI_Comm
@@ -53,12 +56,13 @@ int main() {
     int result;
     MPI_Comm_compare(world_extract,world_given,&result);
     cout << "Compare raw comms: " << "\n"
-	 << "identical: " << (result==MPI_IDENT)
-	 << "\n"
-	 << "congruent: " << (result==MPI_CONGRUENT)
-	 << "\n"
-	 << "unequal  : " << (result==MPI_UNEQUAL)
-	 << "\n";
+         << "identical: "
+         << (result==MPI_IDENT) << "\n"
+         << "congruent: "
+         << (result==MPI_CONGRUENT) << "\n"
+         << "unequal  : "
+         << (result==MPI_UNEQUAL) << "\n";
+    //codesnippet end
   }
   cout << "rawcompare\n";
 

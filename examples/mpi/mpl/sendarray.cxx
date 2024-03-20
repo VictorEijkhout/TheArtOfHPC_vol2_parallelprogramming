@@ -29,7 +29,9 @@ int main() {
   /*
    * The compiler knows about arrays so we can send them `as is'
    */
+  //codesnippet mplsendarray
   double v[2][2][2];
+  //codesnippet end
 
   // Initialize the data
   if (comm_world.rank()==0) {
@@ -40,7 +42,9 @@ int main() {
     /*
      * Send and report
      */
+    //codesnippet mplsendarray
     comm_world.send(v, 1);  // send to rank 1
+    //codesnippet end
 
     stringstream s;
     s << "sent: ";
@@ -59,7 +63,9 @@ int main() {
     /*
      * Receive data and report
      */
+    //codesnippet mplsendarray
     comm_world.recv(v, 0);  // receive from rank 0
+    //codesnippet end
 
     stringstream s;
     s << "got : ";

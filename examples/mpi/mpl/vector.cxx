@@ -34,26 +34,32 @@ int main(int argc,char **argv) {
   }
   int sender = 0, receiver = 1, the_other = 1-procno,
     count = 5,stride=2;
+  //codesnippet vectormpl
   vector<double>
     source(stride*count);
+  //codesnippet end
   vector<double>
     target(count);
 
   for (int i=0; i<stride*count; i++)
     source[i] = i+.5;
 
+  //codesnippet vectormpl
   if (procno==sender) {
     mpl::strided_vector_layout<double>
       newvectortype(count,1,stride);
     comm_world.send
       (source.data(),newvectortype,the_other);
   }
+  //codesnippet end
   else if (procno==receiver) {
     int recv_count;
+    //codesnippet mplstatuscreate
     mpl::contiguous_layout<double> target_layout(count);
     mpl::status_t recv_status =
       comm_world.recv(target.data(),target_layout, the_other);
     recv_count = recv_status.get_count<double>();
+    //codesnippet end
     assert(recv_count==count);
   }
   

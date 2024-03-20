@@ -18,11 +18,13 @@ using namespace std;
 
 #include <mpl/mpl.hpp>
  
+//codesnippet mplcommpass
 // BAD! this does a MPI_Comm_dup.
 void comm_val( const mpl::communicator comm );
 
 // correct!
 void comm_ref( const mpl::communicator &comm );
+//codesnippet end
 
 void comm_val( const mpl::communicator comm ) {
   const mpl::communicator &world =

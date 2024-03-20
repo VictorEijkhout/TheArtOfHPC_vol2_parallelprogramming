@@ -22,15 +22,19 @@ int main(int argc,char **argv) {
   auto procno = comm_world.rank();
   auto nprocs = comm_world.size();
 
+  //snippet commsplitmpl
   // create sub communicator modulo 2
   int color2 = procno % 2;
-  mpl::communicator comm2( mpl::communicator::split, comm_world, color2 );
+  mpl::communicator comm2
+    ( mpl::communicator::split, comm_world, color2 );
   auto procno2 = comm2.rank();
 
   // create sub communicator modulo 4 recursively
   int color4 = procno2 % 2;
-  mpl::communicator comm4( mpl::communicator::split, comm2, color4 );
+  mpl::communicator
+    comm4( mpl::communicator::split, comm2, color4 );
   auto procno4 = comm4.rank();
+  //snippet end
 
   int mod4ranks[nprocs];
   comm_world.gather( 0, procno4,mod4ranks );

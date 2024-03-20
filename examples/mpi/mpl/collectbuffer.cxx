@@ -34,6 +34,7 @@ int main() {
    */
   if (iprint) cout << "Reducing 2p, 2p+1" << endl;
 
+  //codesnippet mplallreducebuffer
   float
     xrank = static_cast<float>( comm_world.rank() );
   vector<float> rank2p2p1{ 2*xrank,2*xrank+1 },reduce2p2p1{0,0};
@@ -43,13 +44,16 @@ int main() {
   if ( iprint )
     cout << "Got: " << reduce2p2p1.at(0) << ","
 	 << reduce2p2p1.at(1) << endl;
+  //codesnippet end
 
   /*
    * Scatter one number to each proc
    */
   if (iprint) cout << "Scattering 0--p" << endl;
 
+  //codesnippet mplscattergatherx
   vector<float> v;
+  //codesnippet end
 
   if (comm_world.rank()==0)
     for (int i=0; i<comm_world.size(); ++i)
@@ -57,8 +61,10 @@ int main() {
 
   // if you scatter, everyone gets a number equal to their rank.
   // rank 0 scatters data to all processes
+  //codesnippet mplscattergatherx
   float x;
   comm_world.scatter(0, v.data(), x);
+  //codesnippet end
 
   if (iprint)
     cout << "rank " << procno << " got " << x << '\n';
@@ -69,7 +75,9 @@ int main() {
 
   if (iprint) cout << "Scatter 0--2p" << endl;
 
+  //codesnippet mplscattergatherv
   vector<float> vrecv(2),vsend(2*nprocs);
+  //codesnippet end
 
   if (comm_world.rank()==0)
     for (int i=0; i<2*nprocs; ++i)
@@ -77,9 +85,11 @@ int main() {
 
   // rank 0 scatters data to all processes
   // if you scatter, everyone gets 2p,2p+1
+  //codesnippet mplscattergatherv
   mpl::contiguous_layout<float> twonums(2);
   comm_world.scatter
     (0, vsend.data(),twonums, vrecv.data(),twonums );
+  //codesnippet end
 
   if (iprint)
     cout << "rank " << procno << " got "
@@ -90,7 +100,9 @@ int main() {
   x*=2;
   
   // rank 0 gathers data from all processes
+  //codesnippet mplscattergatherb
   comm_world.gather(0, x, v.data());
+  //codesnippet end
   if (comm_world.rank()==0) {
     cout << "got";
     for (int i=0; i<comm_world.size(); ++i)

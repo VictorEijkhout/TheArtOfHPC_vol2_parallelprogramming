@@ -39,9 +39,11 @@ int main(int argc,char **argv) {
 
   const int count = 5;
   if (procno==sender) {
+    //codesnippet indexedbmpl
     mpl::indexed_block_layout<int>
       indexed_where(  1, {2,3,5,7,11} );
     comm_world.send( source_buffer.data(),indexed_where, receiver );
+    //codesnippet end
   } else if (procno==receiver) {
     mpl::contiguous_layout<int>
       fiveints(count);

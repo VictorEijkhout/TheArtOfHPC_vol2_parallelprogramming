@@ -3,22 +3,22 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%% "Parallel Computing"
-   %%%% by Victor Eijkhout, copyright 2020
+   %%%% by Victor Eijkhout, copyright 2020-2024
    %%%%
-   %%%% MPI example for contiguous type of types
+   %%%% procname.cxx : processor name
    %%%%
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 */
 
 #include <iostream>
-#include <iomanip>
+using std::cout;
+#include <string>
+using std::string;
 #include <sstream>
-#include <vector>
-using namespace std;
-#include <mpl/mpl.hpp>
+using std::stringstream;
 
-#define BLOCKSIZE 4
+#include <mpl/mpl.hpp>
 
 int main(int argc,char **argv) {
 
@@ -26,12 +26,16 @@ int main(int argc,char **argv) {
   int nprocs,procno;
   // compute communicator rank and size
   nprocs = comm_world.size();
+  //codesnippet mplprocname
   procno = comm_world.rank();
-
-  //codesnippet mplcontvector
-  mpl::contiguous_layout<int> type1(7);
-  mpl::vector_layout<int> type2(8,type1);
+  string procname =
+    mpl::environment::processor_name();
+  stringstream ss;
+  ss << "[" << procno << "] "
+     << " Running on: " << procname;
+  cout << ss.str() << '\n';
   //codesnippet end
 
-  return 0;
+  return EXIT_SUCCESS;
+
 }

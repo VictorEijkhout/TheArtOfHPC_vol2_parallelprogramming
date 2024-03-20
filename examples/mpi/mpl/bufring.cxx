@@ -31,10 +31,12 @@ int main(int argc,char **argv) {
 
 #define BUFLEN 10000
 
+  //codesnippet bsendbufmpl
   vector<float> sbuf(BUFLEN), rbuf(BUFLEN);
   int size{ comm_world.bsend_size<float>(mpl::contiguous_layout<float>(BUFLEN)) };
   mpl::bsend_buffer buff(size);
   comm_world.bsend(sbuf.data(),mpl::contiguous_layout<float>(BUFLEN), next);
+  //codesnippet end
 
   printf("Send succeeded on %d\n",procno);
   comm_world.recv(rbuf.data(),mpl::contiguous_layout<float>(BUFLEN), prev);

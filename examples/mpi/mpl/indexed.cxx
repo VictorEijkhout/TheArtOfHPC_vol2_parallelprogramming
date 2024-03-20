@@ -37,6 +37,7 @@ int main(int argc,char **argv) {
   for (int i=0; i<totalcount; ++i)
     source_buffer[i] = i;
 
+  //codesnippet indexedmpl
   const int count = 5;
   mpl::contiguous_layout<int>
     fiveints(count);
@@ -51,6 +52,7 @@ int main(int argc,char **argv) {
     int recv_count = recv_status.get_count<int>();
     assert(recv_count==count);
   }
+  //codesnippet end
   
   if (procno==receiver) {
     int i=3,val=7;

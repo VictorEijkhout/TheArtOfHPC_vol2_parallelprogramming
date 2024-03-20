@@ -22,6 +22,7 @@ int main() {
   const mpl::communicator &comm_world =
     mpl::environment::comm_world();
 
+  //codesnippet mplireduce  
   float x{1.},sum;
   auto reduce_request =
     comm_world.ireduce(mpl::plus<float>(), 0, x, sum);
@@ -29,6 +30,7 @@ int main() {
   if (comm_world.rank()==0) {
     std::cout << "sum = " << sum << '\n';
   }
+  //codesnippet end  
 
   return EXIT_SUCCESS;
 }

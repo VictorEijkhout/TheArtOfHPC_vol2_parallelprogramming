@@ -18,7 +18,9 @@
 using namespace std;
  
 void send_and_recv( const mpl::communicator &comm, vector<long long> &v ) {
+  //codesnippet mplsendlong
   mpl::contiguous_layout<long long> v_layout(v.size());
+  //codesnippet end
 
   // Initialize the data
   if (comm.rank()==0) {
@@ -30,7 +32,9 @@ void send_and_recv( const mpl::communicator &comm, vector<long long> &v ) {
       ++init;
     }
     
+    //codesnippet mplsendlong
     comm.send(v.data(), v_layout, 1); // send to rank 1
+    //codesnippet end
     cout << "sent: ";
     for (long long &x : v) 
       cout << x << ' ';

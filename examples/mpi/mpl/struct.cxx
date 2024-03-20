@@ -33,6 +33,7 @@ int main(int argc,char **argv) {
     return -1;
   }
   int sender = 0, receiver = 1, the_other = 1-procno;
+  //codesnippet structurempl
   char c; vector<double> x(2); int i;
   if (procno==sender) {
     c = 'x'; x[0] = 2.7; x[1] = 1.5; i = 37; }
@@ -45,6 +46,7 @@ int main(int argc,char **argv) {
   } else if (procno==receiver) {
     comm_world.recv( mpl::absolute,object,sender );
   }
+  //codesnippet end
 
   if (procno==receiver) {
     printf("Char '%c' double0=%e double1=%e int=%d\n",

@@ -19,6 +19,7 @@
 #include <mpl/mpl.hpp>
  
 // calculate least common multiple of two arguments 
+//codesnippet mpluserreduct
 template<typename T>
 class lcm {
 public:
@@ -29,6 +30,7 @@ public:
       return -t;
     return t;
   }
+//codesnippet end
 private:
   // helper: calculate greatest common divisor
   T gcd(T a, T b) {
@@ -51,7 +53,9 @@ int main() {
   if (comm_world.rank()==0) {
     int result;
     // calculate least common multiple
+    //codesnippet mpluserreductuse
     comm_world.reduce(lcm<int>(), 0, v, result);
+    //codesnippet end
     // display data from all ranks
     std::cout << "Arguments:\n";
     for (int r=0; r<comm_world.size(); ++r) {
@@ -70,10 +74,11 @@ int main() {
   }
   {
     int data = comm_world.rank();
+    //codesnippet mpllambdareduce
     comm_world.reduce
-      ( [] (int i,int j) -> int 
-           { return i+j; },
+      ( [] (int i,int j) -> int { return i+j; },
 	0,data );
+    //codesnippet end
     if (comm_world.rank()==0)
       std::cout << " reduce: " << data << std::endl;
   }

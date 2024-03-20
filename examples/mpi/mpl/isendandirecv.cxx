@@ -29,16 +29,20 @@ int main(int argc,char **argv) {
   int sender = 0,receiver = nprocs-1;
 
   if (procno==sender) {
+    //codesnippet isendexamplempl
     double send_data = 1.;
     mpl::irequest send_request
       ( comm_world.isend( send_data, receiver ) );
     send_request.wait();
+    //codesnippet end
     printf("[%d] Isend successfully concluded\n",procno);
   } else if (procno==receiver) {
+    //codesnippet irecvexamplempl
     double recv_data;
     mpl::irequest recv_request =
       comm_world.irecv( recv_data,sender );
     recv_request.wait();
+    //codesnippet end
     printf("[%d] Ireceive successfully concluded\n",procno);
   }
 

@@ -1,0 +1,11 @@
+TACC:  Starting up job 6051291 
+TACC:  Starting parallel tasks... 
+[6] Running on: c204-031.frontera.tacc.utexas.edu
+[7] Running on: c204-031.frontera.tacc.utexas.edu
+[2] Running on: c204-029.frontera.tacc.utexas.edu
+[4] Running on: c204-030.frontera.tacc.utexas.edu
+[0] Running on: c204-028.frontera.tacc.utexas.edu
+[3] Running on: c204-029.frontera.tacc.utexas.edu
+[1] Running on: c204-028.frontera.tacc.utexas.edu
+[5] Running on: c204-030.frontera.tacc.utexas.edu
+TACC:  Shutdown complete. Exiting. 

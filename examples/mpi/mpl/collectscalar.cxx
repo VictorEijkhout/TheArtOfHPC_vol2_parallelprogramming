@@ -23,15 +23,19 @@ int main() {
   const mpl::communicator &comm_world=mpl::environment::comm_world();
 
   // vector of consecutive floats
+  //codesnippet mplscattergather
   std::vector<float> v;
+  //codesnippet end
   if (comm_world.rank()==0)
     for (int i=0; i<comm_world.size(); ++i)
       v.push_back(i);
 
   // if you scatter, everyone gets a number equal to their rank.
   // rank 0 scatters data to all processes
+  //codesnippet mplscattergather
   float x;
   comm_world.scatter(0, v.data(), x);
+  //codesnippet end
   std::cout << "rank " << comm_world.rank() << " got " << x << '\n';
   
   // wait until all processes have reached this point
@@ -41,7 +45,9 @@ int main() {
   x*=2;
   
   // rank 0 gathers data from all processes
+  //codesnippet mplscattergather
   comm_world.gather(0, x, v.data());
+  //codesnippet end
   if (comm_world.rank()==0) {
     std::cout << "got";
     for (int i=0; i<comm_world.size(); ++i)
@@ -65,6 +71,7 @@ int main() {
 
   // calculate global sum and pass result to all
   {
+    //codesnippet mplallreduce
     float
       xrank = static_cast<float>( comm_world.rank() ),
       xreduce;
@@ -72,6 +79,7 @@ int main() {
     comm_world.allreduce(mpl::plus<float>(), xrank,xreduce);
     // in place
     comm_world.allreduce(mpl::plus<float>(), xrank);
+    //codesnippet end
     if ( comm_world.rank()==comm_world.size()-1 )
       std::cout << "Allreduce got: separate=" << xreduce
                 << ", inplace=" << xrank << std::endl;
@@ -79,6 +87,7 @@ int main() {
 
   // calculate global sum and pass result to root
   {
+    //codesnippet mplrootreduce
     int root = 1;
     float
       xrank = static_cast<float>( comm_world.rank() ),
@@ -90,6 +99,7 @@ int main() {
     if ( comm_world.rank()==root )
       std::cout << "Allreduce got: separate=" << xreduce
 		<< ", inplace=" << xrank << std::endl;
+    //codesnippet end
   }
 
   return EXIT_SUCCESS;
