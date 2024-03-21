@@ -4,7 +4,7 @@
  **** `Parallel programming for Science and Engineering'
  **** by Victor Eijkhout, eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-2021
+ **** copyright Victor Eijkhout 2012-2024
  ****
  **** tools.h : support routine prototypes
  ****
@@ -42,3 +42,8 @@ int test_all_the_same_int( int value,MPI_Comm comm );
  */
 void print_final_result( int cond,MPI_Comm comm );
 void error_process_print(int error_proc, MPI_Comm comm);
+
+/*
+ * Cartesian grid print
+ */
+void print_grid( int nprocs,int dim,int dimensions[] );

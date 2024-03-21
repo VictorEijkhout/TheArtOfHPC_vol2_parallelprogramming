@@ -2,7 +2,7 @@
 ################################################################
 ####
 #### This makefile is part of `Parallel Programming in MPI and OpenMP'
-#### by Victor Eijkhout, copyright 2013-2023
+#### by Victor Eijkhout, copyright 2013-2024
 #### eijkhout@tacc.utexas.edu
 ####
 #### Makefile for MPI course exercises in C
@@ -22,8 +22,8 @@ info ::
 EXERCISES = hello \
     commrank prime randommax onenorm sumsquares \
     pingpong sendrecv scangather transposeblock \
-    isendirecv isendirecvarray setdiff setdiffprobe \
-    bucketblock bucketpipenonblock \
+    isendirecv isendirecvarray isendirecvcart \
+    setdiff setdiffprobe bucketblock bucketpipenonblock \
     stridesend stridescatter cubegather procgrid procgridnonblock \
     randomput countdown onesidedbuild lockall lockfetch lockfetchshared \
     blockwrite blockadvance blockseek blockall viewwrite scatterwrite \

@@ -4,9 +4,9 @@
  **** `Parallel programming for Science and Engineering'
  **** by Victor Eijkhout, eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-2021
+ **** copyright Victor Eijkhout 2012-2024
  ****
- **** tools.c : support routines for the MPI exercises
+ **** tools.cxx : support routines for the MPI exercises
  ****
  ****************************************************************/
 
@@ -55,3 +55,14 @@ void print_final_result( int cond,MPI_Comm comm ) {
       printf("First error occurred on proc %d\n",errors);
   }
 };
+
+/*
+ * Cartesian grid
+ */
+void print_grid( int nprocs,int dim,int dimensions[] ) {
+  printf("Grid of size %d in %d dimensions:\n  ",nprocs,dim);
+  for (int idim=0; idim<dim; idim++) {
+    printf("%2d",dimensions[idim]);
+    if (idim<dim-1) printf(" x ");
+  } printf("\n");
+}

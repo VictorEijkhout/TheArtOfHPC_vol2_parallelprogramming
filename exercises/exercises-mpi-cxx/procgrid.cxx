@@ -4,7 +4,7 @@
  **** `Parallel programming for Science and Engineering'
  **** by Victor Eijkhout, eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-9
+ **** copyright Victor Eijkhout 2012-2024
  ****
  **** MPI Exercise for communicator splitting
  ****
@@ -82,6 +82,14 @@ int main() {
 /**** your code here ****/
 		);
 
+  /*
+   * Correctness check:
+   * `error' will be:
+   * - the lowest process number where an error occured, or
+   * - `nprocs' if no error.
+   */
+  int error=nprocs,errors;
+
   //
   // Now check that the rank in the row equals the column number
   //
@@ -89,6 +97,7 @@ int main() {
     proctext << "[" << procno << "=" << row_no << "," << col_no << "] wrong row rank "
 	     << row_rank << endl;
     cerr << proctext.str(); proctext.clear();
+    error = procno;
   }
 
   //
@@ -98,11 +107,15 @@ int main() {
     proctext << "[" << procno << "=" << row_no << "," << col_no << "] wrong col rank "
 	     << col_rank << endl;
     cerr << proctext.str(); proctext.clear();
+    error = procno;
   }
 
+  MPI_Allreduce(&error,&errors,1,MPI_INT,MPI_MIN,comm);
   if (procno==0) {
-    proctext << "Finished" << endl;
-    cerr << proctext.str(); proctext.clear();
+    if (errors==nprocs) 
+      printf("Finished; all results correct\n");
+    else
+      printf("First error occurred on proc %d\n",errors);
   }
   
   MPI_Finalize();

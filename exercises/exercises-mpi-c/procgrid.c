@@ -4,7 +4,7 @@
  **** `Parallel programming for Science and Engineering'
  **** by Victor Eijkhout, eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-8
+ **** copyright Victor Eijkhout 2012-2024
  ****
  **** MPI Exercise for communicator splitting
  ****
@@ -106,9 +106,9 @@ int main(int argc,char **argv) {
   MPI_Allreduce(&error,&errors,1,MPI_INT,MPI_MIN,comm);
   if (procno==0) {
     if (errors==nprocs) 
-      printf("Part 1 finished; all results correct\n");
+      printf("Finished; all results correct\n");
     else
-      printf("Part 1: First error occurred on proc %d\n",errors);
+      printf("First error occurred on proc %d\n",errors);
   }
   
   MPI_Finalize();
