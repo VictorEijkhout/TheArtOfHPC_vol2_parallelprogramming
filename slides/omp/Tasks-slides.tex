@@ -51,8 +51,10 @@ while (!end_of_list(p)) {
   #pragma omp task
   { ... }
   #pragma omp taskwait
+  ...
 }
 \end{lstlisting}
+(Complicated logic of scheduling points; hardly ever matters)
 \end{numberedframe}
 
 \begin{numberedframe}{Recursive generation}
