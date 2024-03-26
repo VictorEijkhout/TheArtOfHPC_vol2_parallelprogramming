@@ -72,8 +72,19 @@ is have a \lstinline{reduction} clause on the \lstinline{parallel sections} dire
 You could then write
 \cverbatimsnippet{ompsections2}
 
-\Level 0 {Single/master}
+\Level 0 {Single thread execution}
 \label{sec:omp-single}
+
+OpenMP has two mechanisms for letting a code section be executed by only
+a single thread.
+(Note: that is different from critical section which are executed by a single
+thread \textsl{at a time}.)
+The \indexpragma{single} directive is to be used for sections
+that are part of the control flow, since it has an implicit concluding barrier.
+The \indexpragma{master} and \indexpragma{masked} directives are similar,
+but assign the execution to the primary thread, and have no concluding barrier.
+
+\Level 1 {Single}
 
 The \indexpragmadef{single} pragma
 limits the execution of a block to a single thread. 
@@ -113,10 +124,19 @@ local memory (see section~\ref{sec:omp:flush}).
   computation would be parallelized in MPI?
 \end{exercise}
 
-The \indexpragma{master} directive also enforces execution
-on a single thread, specifically the master thread of the team.
+\Level 1 {Masked/master}
+
+The \indexpragmadef{masked} and \indexpragmadef{master} directives
+also enforces execution on a single thread,
+specifically the primary thread of the team.
 This is not a work sharing construct, and therefore
 does not have the synchronization through the implicit barrier.
+
+\begin{remark}
+  The \indexpragma{masked} directive is new in \ompstandard{5.1}.
+  The \indexpragma{master} directive is deprecated
+  as of \ompstandard{5.2}.
+\end{remark}
 
 \begin{exercise}
   Modify the above code to read:
@@ -132,6 +152,14 @@ int a;
 \end{lstlisting}
   This code is no longer correct. Explain.
 \end{exercise}
+
+The \indexpragma{masked} directive has a \indexclause{filter} clause,
+that can be used to select other threads than the primary:
+\begin{lstlisting}
+#pragma omp masked filter(2) // thread #2
+\end{lstlisting}
+
+\Level 1 {More}
 
 Above we motivated the \lstinline{single} directive as a way of initializing
 shared variables. It is also possible to use \lstinline{single} to initialize

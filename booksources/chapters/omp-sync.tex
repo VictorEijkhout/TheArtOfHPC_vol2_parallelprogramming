@@ -85,7 +85,7 @@ but there is some overhead associated with creating and deleting the
 team of threads in between the regions.
 
 At the end of a parallel region the team of threads is dissolved and
-only the master thread continues. Therefore, there is an
+only the primary thread continues. Therefore, there is an
 \emph{implicit barrier at the end of a parallel region}%
 \index[omp]{parallel region!barrier at the end of}.
 This barrier behavior can be canceled with the \indexclause{nowait}

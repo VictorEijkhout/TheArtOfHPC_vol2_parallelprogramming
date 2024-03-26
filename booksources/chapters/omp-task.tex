@@ -222,8 +222,28 @@ Explanation: when the statement computing \n{z} is executed, the task
 computing~\n{y} has only been scheduled;
 it has not necessarily been executed yet.
 
-In order to have a guarantee that a task is finished,
-you need the \indexompshow{taskwait} directive.
+\Level 1 {Deferred vs undeferred tasks}
+
+Tasks are unusally `deferred': meaning that they are executed
+at some undetermined point in the future.
+Tasks can also be undeferred, meaning that they are executed
+synchronously, and the creating thread does not progress beyond them
+until they are fully executed.
+
+Prime example of undeferred tasks: with \lstinline{if} clause
+\begin{lstlisting}
+#pragma omp task if (level>5)
+  {
+    ...
+  }
+\end{lstlisting}
+Note that, even though the body of the task is executed as if it were inlined,
+a~task is stil created, with all its data space implications.
+
+\Level 1 {Undeferred task waiting}
+
+In order to have a guarantee that a deferred task is finished,
+you can first of all use the \indexompshow{taskwait} directive.
 The following creates two tasks, which can be executed
 in parallel, and then waits for the results:
 \begin{quotation}

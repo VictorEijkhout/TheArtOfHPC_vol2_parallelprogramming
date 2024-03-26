@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2021
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% openmp.tex : topics that have not been rolled into their
 %%%%              own chapter yet.
@@ -30,6 +30,7 @@ The runtime functions are:
   \indexompshow{omp_get_max_threads}, \indexompshow{omp_get_num_procs};
   see section~\ref{sec:omp-howmany}.
 \item Querying the current thread: \indexompshow{omp_get_thread_num}, \indexompshow{omp_in_parallel}
+\item \indexompshow{omp_get_cancellation}
 \item \indexompshow{omp_set_dynamic}
 \item \indexompshow{omp_get_dynamic}
 \item \indexompshow{omp_set_nested}
@@ -52,15 +53,23 @@ Here are the OpenMP \emph{environment variables}:
 \begin{itemize}
 \item \indexompshow{OMP_CANCELLATION} Set whether cancellation is activated;
   see section~\ref{sec:omp-cancel}.
+  Can be queried with \indexompshow{omp_get_cancellation} but there is no
+  routine for setting the value.
 \item \indexompshow{OMP_DISPLAY_ENV} Show OpenMP version (section~\ref{sec:omp-standards})
   and environment variables.
 \item \indexompdef{OMP_DEFAULT_DEVICE} Set the device used in target regions
-\item \indexompdef{OMP_DYNAMIC} Dynamic adjustment of threads
+\item \indexompdef{OMP_DYNAMIC} Dynamic adjustment of threads.
+  Set and query with  \indexompshow{omp_set_dynamic} and \indexompshow{omp_get_dynamic}
+  respectively.
 \item \indexompshow{OMP_MAX_ACTIVE_LEVELS} Set the maximum number of nested parallel
   regions; section~\ref{sec:omp-levels}.
+  Access with  \indexompshow{omp_set_max_active_levels} and
+  \indexompshow{omp_get_max_active_levels}.
+\item \indexompdef{OMP_NESTED} Use of nested parallel regions.
+  Access with \indexompshow{omp_set_nested} and \indexompshow{omp_get_nested}.
+  Deprecated: use `active levels' instead.
 \item \indexompshow{OMP_MAX_TASK_PRIORITY} Set the maximum task priority value;
   section~\ref{sec:omp-task-hint}.
-\item \indexompdef{OMP_NESTED} Nested parallel regions
 \item \indexompdef{OMP_NUM_THREADS} Specifies the number of threads to use
 \item \indexompshow{OMP_PROC_BIND} Whether theads may be moved between CPUs;
   section~\ref{sec:omp-proc-bind}.
