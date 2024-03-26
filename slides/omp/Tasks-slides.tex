@@ -107,6 +107,18 @@ for ( i /* ... */ ) // note: no `int'
 \end{lstlisting}
 \end{numberedframe}
 
+\begin{numberedframe}{Deferred and undeferred tasks}
+  \begin{itemize}
+  \item Tasks are unusally `deferred': they are executed
+    at some undetermined point in the future.
+  \item Tasks can also be undeferred: executed here and now.
+  \item Prime example: with \lstinline{if} clause
+  \end{itemize}
+\begin{lstlisting}
+#pragma omp task if (level>5)
+\end{lstlisting}
+\end{numberedframe}
+
 \begin{numberedframe}{Task synchronization}
   Mechanisms for task synchronization:
   \begin{itemize}

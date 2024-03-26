@@ -60,9 +60,9 @@ int a;
   \end{itemize}
 \end{numberedframe}
 
-\begin{numberedframe}{Master}
+\begin{numberedframe}{Masked/Master}
   \begin{itemize}
-  \item Master: single thread execution
+  \item Masked/Master: single thread execution
   \item Not a workshare, so no barrier
   \end{itemize}
 \begin{lstlisting}
@@ -75,9 +75,10 @@ int a;
   // stuff
 }
 \end{lstlisting}
+(\lstinline{masked} introduced in 5.1; \lstinline{master} deprecated in 5.2)
 \end{numberedframe}
 
-\begin{numberedframe}{Master wrong used}
+\begin{numberedframe}{Master wrongly used}
 \begin{lstlisting}
 int a;
 #pragma omp parallel
@@ -95,13 +96,17 @@ int a;
   \input {ex:omp-single-mpi}
 \end{exerciseframe}
 
-\endinput
-
-\begin{numberedframe}{}
+\begin{numberedframe}{Fortran: workshare}
+  \fverbatimsnippet{fworkshare}
   \begin{itemize}
-  \item 
+  \item Parallel execution of loop over array
+   \item Single or multiple statements, even \lstinline{WHERE}
+  \item 1D, 2D,~\ldots
+  \item Same speedup as on loopso
   \end{itemize}
 \end{numberedframe}
+
+\endinput
 
 \begin{numberedframe}{}
   \begin{itemize}
