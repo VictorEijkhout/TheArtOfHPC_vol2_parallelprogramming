@@ -2,7 +2,7 @@
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    %%%%
    %%%% This program file is part of the book and course
-   %%%% "Parallel Computing"
+   %%%%   "Parallel Computing for Science and Engineering"
    %%%% by Victor Eijkhout, copyright 2013-2020
    %%%%
    %%%% finalize.c : code with a parallelism bug

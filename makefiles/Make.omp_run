@@ -96,6 +96,8 @@ scaling_logname :
 # Utility targets
 #
 .PHONY: num_cores
+info ::
+	@echo "make num_cores : based on SLURM_CPUS_ON_NODE, override with NP"
 num_cores :
 	@if [ ! -z ${NP} ] ; then \
 	        echo ${NP} \
