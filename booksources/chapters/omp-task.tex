@@ -23,7 +23,7 @@ Thus, task-based code usually looks something like this:
 #pragma omp parallel
 {
   // generate a bunch of tasks
-# pragma omp taskwait
+  #pragma omp taskwait
   // the result from the tasks is now available  
 }
 \end{lstlisting}
@@ -39,7 +39,7 @@ Parallel loop:
 \begin{lstlisting}
 for (int ib=0; ib<nblocks; ib++) {
   int first=... last=... ;
-# pragma omp task
+  #pragma omp task
   for (int i=first; i<last; i++)
     f(i)
 }
@@ -58,7 +58,7 @@ The following code has a serious problem:
 #pragma omp parallel
 for (int ib=0; ib<nblocks; ib++) {
   int first=... last=... ;
-# pragma omp task
+  #pragma omp task
   for (int i=first; i<last; i++)
     f(i)
 }
@@ -71,7 +71,7 @@ Instead, we use the following idiom:
 #pragma omp single
 for (int ib=0; ib<nblocks; ib++) {
   // setup stuff
-# pragma omp task
+  #pragma omp task
   // task stuff
 }
 \end{lstlisting}
@@ -154,7 +154,7 @@ int count = 100;
 #pragma omp single
 {
   while (count>0) {
-#   pragma omp task
+    #pragma omp task
     {
       int countcopy = count;
       if (count==50) {
@@ -176,7 +176,7 @@ int count = 100;
 {
   int count = 100;
   while (count>0) {
-#   pragma omp task
+    #pragma omp task
     {
       int countcopy = count;
       if (count==50) {
@@ -213,10 +213,10 @@ it is impossible to say when
 the code after the \indexompshow{task} directive will be executed.
 This means that the following code is incorrect:
 \begin{lstlisting}
-  x = f();
+x = f();
 #pragma omp task
-  { y = g(x); }
-  z = h(y);  
+{ y = g(x); }
+z = h(y);  
 \end{lstlisting}
 Explanation: when the statement computing \n{z} is executed, the task
 computing~\n{y} has only been scheduled;
@@ -409,6 +409,19 @@ there are four types of dependencies.
 \end{description}
 \index{OpenMP!tasks!dependencies|)}
 
+In addition to tasks, the \indexpragma{taskwait} can also
+have a \indexclause{depend} clause.
+This can be used to wait for only certain tasks.
+In this example:
+\begin{lstlisting}
+#pragma omp task 
+{ f1(); }
+#pragma omp task shared(x) depend(out:x)
+{ x = f2(); }
+#pragma omp taskwait depend(in:x)
+\end{lstlisting}
+the \indexclause{taskwait} waits only for the second task.
+
 \Level 0 {Task reduction}
 
 The \indexclause{reduction} clause only pertains to ordinary parallel loops,
@@ -471,6 +484,8 @@ There are two ways of executing the task code directly:
 #pragma omp task if (n>100)
   f(n)
 \end{lstlisting}
+Note that this will still create a task, with
+all the implications for dataspace it implies.
 \item The \indexompshow{if} clause may still lead to recursively
   generated tasks. On the other hand, \indexompshow{final}
   will execute the code, and will also skip any recursively created tasks:
