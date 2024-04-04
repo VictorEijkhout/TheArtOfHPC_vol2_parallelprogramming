@@ -51,6 +51,17 @@ int main( int argc,char **argv ) {
   }
 
   /*
+   * Set up loop coefficients:
+   * each coefficient will be used throughout
+   * an inner loop
+   */
+  const int nloops=500;
+  double *loopcoeff = (double*) malloc( nloops*sizeof(double) );
+  loopcoeff[0] = 1.;
+  for ( int iloop=1; iloop<nloops; ++iloop )
+    loopcoeff[iloop] = loopcoeff[iloop-1]*1.1;
+
+  /*
    * This is the sequential version
    * - copy this block and make a parallel version
    * - does the sequential version run at the same
@@ -58,15 +69,15 @@ int main( int argc,char **argv ) {
    */
   {
     double tstart = omp_get_wtime();
-    double factor=1.;
-    for ( int iloop=0; iloop<500; ++iloop ) {
-      for ( int i=0; i<vectorsize; ++i )
-	outvec[i] += invec[i]*factor;
-      factor /= 2.;
+    double factor=1;
+    for ( int iloop=0; iloop<nloops; ++iloop ) {
+      for ( int i=0; i<vectorsize; ++i ) {
+        outvec[i] += invec[i]*loopcoeff[iloop];
+      }
     }
-      double duration = omp_get_wtime()-tstart;
-      printf("Sequential t= %8.5f sec\n",duration);
-    }
+    double duration = omp_get_wtime()-tstart;
+    printf("Sequential t= %8.5f sec\n",duration);
+  }
 
   {
     double tstart = omp_get_wtime();
@@ -85,5 +96,7 @@ int main( int argc,char **argv ) {
   }
   if (s<0) printf("%e\n",s);
   
+  free(invec); free(outvec); free(loopcoeff);
+
   return 0;
 }

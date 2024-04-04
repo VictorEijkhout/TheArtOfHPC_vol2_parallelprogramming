@@ -1,4 +1,4 @@
-// reducepolicy.cxx
+// reducepolicy.cpp
 prime_count = transform_reduce
   ( std::execution::par,
     numbers.begin(),numbers.end(),

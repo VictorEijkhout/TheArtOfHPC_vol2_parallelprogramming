@@ -1,4 +1,4 @@
-// primepolicy.cxx
+// primepolicy.cpp
 transform
   ( std::execution::par,
     numbers.begin(),numbers.end(),

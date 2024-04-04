@@ -20,7 +20,7 @@ info ::
 	    echo "Please set MODE variable" && echo \
 	 ; else \
 	    case ${MODE} in \
-	        ( cuda | mpi | mpl | omp | hybrid | petsc | slepc | tbb | 1api ) \
+	        ( cuda | mpi | mpl | omp | ompg | hybrid | petsc | slepc | tbb | 1api ) \
 	            echo "using mode=${MODE}" ;; \
 	        ( * ) echo && echo "Unknown MODE=${MODE}" && echo ;; \
 	    esac \
@@ -32,6 +32,8 @@ info ::
 	@echo "    [ EXTRA_LIBS=... ]"
 	@echo "    [ EXTRA_LINK_FLAGS=... ]"
 	@echo "    [ ECHO=0/1 : echo commandline ]"
+	@if [ "${MODE}" = "omp" ] ; then \
+	    echo "    [ OMPFLAGS=... (default: ${OMPFLAGS}) ]" ; fi
 OPTLEVEL = 2
 
 EXT_c = c
@@ -96,14 +98,18 @@ OMPFLAGS_clang    = -fopenmp
 OMPFLAGS_cuda     = -mp=gpu
 OMPFLAGS_nvhpc    = -fopenmp
 OMPFLAGS_xl       = -qsmp=omp -qoffload
-OMPFLAGS := ${OMPFLAGS_${TACC_FAMILY_COMPILER}}
-
-# CFLAGS   += ${OMPFLAGS}
-# CXXFLAGS += ${OMPFLAGS}
-# FFLAGS   += ${OMPFLAGS}
+ifeq "${MODE}" "ompg"
+  OMPFLAGS := -fiopenmp -fopenmp-targets=spir64
+else
+  OMPFLAGS := ${OMPFLAGS_${TACC_FAMILY_COMPILER}}
+endif
 
 # these conditionals are not executed. why?
 ifeq "${MODE}" "omp"
+  CFLAGS   += ${OMPFLAGS}
+  CXXFLAGS += ${OMPFLAGS}
+  FFLAGS   += ${OMPFLAGS}
+else ifeq "${MODE}" "ompg"
   CFLAGS   += ${OMPFLAGS}
   CXXFLAGS += ${OMPFLAGS}
   FFLAGS   += ${OMPFLAGS}
@@ -412,6 +418,8 @@ else ifeq "${MODE}" "slepc"
 else ifeq "${MODE}" "hybrid"
   LINK_FLAGS += ${OMPFLAGS}
 else ifeq "${MODE}" "omp"
+  LINK_FLAGS += ${OMPFLAGS}
+else ifeq "${MODE}" "ompg"
   LINK_FLAGS += ${OMPFLAGS}
 else ifeq "${MODE}" "tbb"
   LINK_FLAGS += ${OMPFLAGS}
