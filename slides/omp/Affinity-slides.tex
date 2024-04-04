@@ -19,7 +19,7 @@
 \end{numberedframe}
 
 \begin{numberedframe}{Frontera}
-\includegraphics[scale=.2]{lstopo/frontera}
+\includegraphics[scale=.12]{lstopo/frontera}
 \end{numberedframe}
 
 \begin{numberedframe}{Lonestar6}
@@ -35,15 +35,70 @@
   \end{itemize}
 \end{numberedframe}
 
+\begin{numberedframe}{Affinity utility}    
 \includepdf{amask.pdf}
-
-\begin{numberedframe}{False sharing}
-  
 \end{numberedframe}
+
+\begin{numberedframe}{NUMA}
+  \includegraphics[scale=.13]{stampede-node}
+\end{numberedframe}
+
+\begin{numberedframe}{NUMA}
+  \includegraphics[scale=.5]{ranger-numa}
+\end{numberedframe}
+
+\begin{numberedframe}{Virtual memory}
+\begin{itemize}
+\item
+  Memory is organized in `pages', typically~4K, or 1M~for `large' pages.
+\item User code uses `logical addresses' into these pages
+\item Black magic translates logical addresses to physical.
+\end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{First-touch}
+\begin{lstlisting}
+double *x = (double*) malloc( lots );
+// no memory has been reserved by malloc
+for ( lots )
+  // now the pages get created
+  x[i] = something
+\end{lstlisting}
+
+  \begin{itemize}
+  \item Pages get `instantiated' (placed in memory) when they are first touched.
+  \item In multi-socket designs, pages are instantiated
+    in the memory of the touching thread.
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{First touch}
+\begin{lstlisting}
+double *x = (double*) malloc( lots );
+for ( lots )
+  x[i] = 0.;
+#pragma omp parallel for
+for ( lots )
+  x[i] = f(i);
+\end{lstlisting}
+  \begin{itemize}
+  \item first loop instantiates pages on the socket
+    of the primary thread
+  \item second loop: half the threads need to pull
+    data from the other socket.
+  \item Solution?
+  \end{itemize}
+\end{numberedframe}
+
+%% \begin{numberedframe}{False sharing}
+%%   Used to be a problem, much less the
+%% \end{numberedframe}
 
 \endinput
 
 \begin{numberedframe}{}
+\begin{lstlisting}
+\end{lstlisting}
   \begin{itemize}
   \item 
   \end{itemize}
