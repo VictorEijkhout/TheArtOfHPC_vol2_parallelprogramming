@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% petsc-tools.tex : guess.
 %%%%
@@ -57,8 +57,6 @@ should only be used for PETSc library routines.)
 
 You can effect your own error return by using
 the variadic function \indexpetscref{SETERRQ}.
-(Before \petscstandard{3.17} there were separate functions
-\indexpetsc{SETERRQ1}, \indexpetsc{SETERRQ2}, et cetera.)
 
 Example. We write a routine that sets an error:
 \cverbatimsnippet[examples/petsc/c/backtrace.c]{petscbacktrace}
@@ -93,7 +91,7 @@ Running this gives, in process~zero, the output
 \end{remark}
 
 \begin{exercise}
-  Look up the definition of \indexpetscshow{SETERRQ1}.
+  Look up the definition of \indexpetscshow{SETERRQ}.
   Write a routine to compute square roots that is used as follows:
 \begin{lstlisting}
   x = 1.5; ierr = square_root(x,&rootx); CHKERRQ(ierr);
@@ -386,6 +384,8 @@ For instance,
 \cverbatimsnippet[examples/petsc/c/kspcg.c]{optionint}
 %
 declares the existence of an option \n{-n} to be followed by an integer.
+(The first argument is an options database or \lstinline{NULL};
+the second argument is a prefix for the option or \lstinline{NULL}.)
 
 Now executing
 \begin{verbatim}

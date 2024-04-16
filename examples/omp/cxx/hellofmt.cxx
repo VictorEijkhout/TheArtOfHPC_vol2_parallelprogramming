@@ -15,22 +15,19 @@
 using std::cerr;
 using std::cout;
 using std::endl;
-#include <sstream>
-using std::stringstream;
+#include <format>
 
 #include <omp.h>
 
 int main(int argc,char **argv) {
 
-//codesnippet hello-omp-cxx
+//codesnippet hello-omp-fmt
 #pragma omp parallel
-  {
-    int t = omp_get_thread_num();
-    stringstream proctext;
-    proctext << "Hello world from "
-             << t << '\n';
-    cerr << proctext.str();
-  }
+{
+int t = omp_get_thread_num();
+std::cout <<
+  std::format("Hello world from {}\n",t);
+}
 //codesnippet end
 
   return 0;

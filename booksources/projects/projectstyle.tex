@@ -4,12 +4,17 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% projectstyle.tex : guidelins for project writeup
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newenvironment
+    {tldr}
+    {\begin{mdframed}TLDR}
+    {\end{mdframed}}
 
 Here are some guidelines for how to submit assignments and projects.
 As a general rule, consider programming as an experimental science,
@@ -59,6 +64,14 @@ Start with the obvious stuff.
 \item Bibliography.
 \end{itemize}
 
+\begin{tldr}
+  \begin{itemize}
+  \item
+  \item Descriptive title. Not just `Project'.
+  \item Intro and conclusion.
+  \end{itemize}
+\end{tldr}
+
 \Level 1 {Consider your audience}
 
 An article is written for a specific audience: a journal,  a conference,
@@ -78,6 +91,15 @@ and then show relevant bits of code.
 That does not mean that turning in the code is sufficient, nor code plus sample output.
 Write an article.
 
+\begin{tldr}
+  Equal billing to 
+  \begin{itemize}
+  \item science
+  \item computation
+  \item code
+  \end{itemize}
+\end{tldr}
+
 \Level 1 {Observe, measure, hypothesize, deduce}
 
 Treat 
@@ -93,6 +115,10 @@ In most applications of computing machinery we care about the efficiency with wh
 we find the solution. Thus, make sure that you do measurements. In general, make
 observations that allow you to judge whether your program behaves the way you
 would expect it to.
+
+\begin{tldr}
+  Not just numbers: explain them.
+\end{tldr}
 
 \Level 1 {Reporting}
 
@@ -110,6 +136,10 @@ Again: no screenshots.
 
 For parallel runs you can, but are not required to,
 use TAU plots; see~\CARPref{tut:tau}.
+
+\begin{tldr}
+  Graphs are better than tables are better than words.
+\end{tldr}
 
 \Level 1 {Repository organization}
 
@@ -131,6 +161,10 @@ Discuss in detail:
 \item What kind of parallelism did you use? Mostly MPI collectives or point-to-point operations?
   OpenMP loop parallelism or tasks? Why?
 \end{itemize}
+
+\begin{tldr}
+  Go into detail on parallelism!
+\end{tldr}
 
 \Level 1 {Performance}
 
@@ -181,14 +215,21 @@ and scaling tests you will often see a drop in (relative) performance
 going from one node to two.  Therefore you need to run your code in a
 variety of scenarios, using more than one node.
 
-\Level 1 {Graphs}
+\begin{tldr}
+  \begin{itemize}
+  \item Large enough parallelism
+  \item Large enough problem
+  \end{itemize}
+\end{tldr}
+
+\Level 1 {Graphs and tables}
 
 In parallel programming, speedup and scaling are the test of
 how good your work is.
 So it's up to you to report this as well as you can.
+Mere numbers in a table or graph are not enough:
+they need to tell a story.
 
-The numbers are not the point of a graph: the point is
-the conclusions you can draw from them.
 Thus, if you do a scaling analysis,
 a graph reporting runtimes should make this point visible.
 In particular, do not use a linear time axis, as
@@ -202,6 +243,20 @@ This may depend on your application.
 
 Use enough data points! Writing a short script to run
 your program multiple times takes very little time.
+
+Supply a caption for your graph or table: `weak scaling efficiency of problem 2'
+or `speedup as a function of thread count'.
+Graphs and tables need to have a number that you refer to in the text
+of your writeup.
+
+\begin{tldr}
+  \begin{itemize}
+  \item
+    Find the right thing to plot or tabulate
+  \item Say what the data means: caption and number that you
+    refer to in the body text.
+  \end{itemize}
+\end{tldr}
 
 \Level 0 {Remarks}
 
