@@ -4,13 +4,13 @@
  **** `Introduction to the PETSc library'
  **** by Victor Eijkhout eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-2022
+ **** copyright Victor Eijkhout 2012-2023
  ****
  ****************************************************************/
 
 #include "petscksp.h"
 
-PetscErrorCode FivePointMatrix(MPI_Comm,int,int,PetscScalar,Mat*);
+PetscErrorCode FivePointMatrix(MPI_Comm,PetscInt,PetscInt,PetscScalar,Mat*);
 
 #undef __FUNCT__
 #define __FUNCT__ "main"
@@ -32,18 +32,19 @@ int main(int argc,char **args)
    * Read the domain size, and square it to get the matrix size
   */
   PetscBool flag;
-  int domain_size = 100; 
+  PetscInt domain_size = 100; 
   ierr = PetscOptionsGetInt
-    (NULL,PETSC_NULL,"-n",&domain_size,&flag); CHKERRQ(ierr);
+    (NULL,NULL,"-n",&domain_size,&flag); CHKERRQ(ierr);
   PetscPrintf(comm,"Using domain size %d\n",domain_size);
 
   /*
    * Read the amount of umsymmetry to be added to the matrix
    */
-  PetscScalar unsymmetry=0.;
+  PetscReal real_unsymmetry=0.;
   ierr = PetscOptionsGetReal
     (
-     NULL,PETSC_NULL,"-unsymmetry",&unsymmetry,&flag); CHKERRQ(ierr);
+     NULL,NULL,"-unsymmetry",&real_unsymmetry,&flag); CHKERRQ(ierr);
+  PetscScalar unsymmetry=real_unsymmetry;
 
   /*
    * Create the five-point laplacian matrix, with unsymmetry.
@@ -55,7 +56,7 @@ int main(int argc,char **args)
    * Create right hand side and solution vectors
    */
   PetscInt localsize;
-  ierr = MatGetLocalSize(A,&localsize,PETSC_NULL); CHKERRQ(ierr);
+  ierr = MatGetLocalSize(A,&localsize,NULL); CHKERRQ(ierr);
   ierr = VecCreateMPI(comm,localsize,PETSC_DECIDE,&Rhs); CHKERRQ(ierr);
   ierr = VecDuplicate(Rhs,&Sol); CHKERRQ(ierr);
   ierr = VecSet(Rhs,one); CHKERRQ(ierr);
@@ -139,9 +140,10 @@ int main(int argc,char **args)
  * We have an `unsymmetry' parameter: higher values are harder on the iterative method. 
  */
 PetscErrorCode FivePointMatrix
-    (MPI_Comm comm,int domain_m,int domain_n,double unsymmetry,Mat *rA)
+    (MPI_Comm comm,PetscInt domain_m,PetscInt domain_n,PetscScalar unsymmetry,Mat *rA)
 {
-  int i,j, ierr;
+  PetscInt i,j;
+  PetscErrorCode ierr;
   Mat A;
 
   PetscFunctionBegin;
@@ -151,9 +153,9 @@ PetscErrorCode FivePointMatrix
    */
   ierr = MatCreate(comm,&A); CHKERRQ(ierr);
   ierr = MatSetType(A,MATMPIAIJ); CHKERRQ(ierr);
-  int matrix_size = domain_m*domain_n;
+  PetscInt matrix_size = domain_m*domain_n;
   ierr = MatSetSizes(A,PETSC_DECIDE,PETSC_DECIDE,matrix_size,matrix_size); CHKERRQ(ierr);
-  ierr = MatMPIAIJSetPreallocation(A,5,PETSC_NULL,2,PETSC_NULL); CHKERRQ(ierr);
+  ierr = MatMPIAIJSetPreallocation(A,5,NULL,2,NULL); CHKERRQ(ierr);
   ierr = MatSetOption(A, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_FALSE); CHKERRQ(ierr);
   ierr = MatSetFromOptions(A); CHKERRQ(ierr);
 
@@ -167,7 +169,7 @@ PetscErrorCode FivePointMatrix
   ierr = MatGetOwnershipRange(A,&first,&last); CHKERRQ(ierr);
   for ( i=0; i<domain_m; i++ ) {
     for ( j=0; j<domain_n; j++ ) {
-      int iglobal = j + domain_m*i, jglobal;
+      PetscInt iglobal = j + domain_m*i, jglobal;
       if (iglobal<first || iglobal>=last)
 	continue;
 

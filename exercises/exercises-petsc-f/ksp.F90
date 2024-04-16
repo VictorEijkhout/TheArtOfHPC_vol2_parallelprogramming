@@ -168,7 +168,8 @@ program ksp
   !!
   !! Create the five-point laplacian matrix, with unsymmetry
   !!
-  call FivePointMatrix(comm,dom_size,dom_size,unsymmetry,A,ierr);  CHKERRA(ierr)
+  call FivePointMatrix(comm,dom_size,dom_size,unsymmetry,A,ierr);
+  CHKERRA(ierr)
 !!  call MatView(A,PETSC_VIEWER_STDOUT_WORLD,ierr)
 
   !!
@@ -203,12 +204,15 @@ program ksp
   if (reason<0) then
      write(textbuf,20) reason
 20   format("Failure to converge",i3,".\n")
-     call PetscPrintf(comm,textbuf,ierr); CHKERRA(ierr)
+     call PetscPrintf(comm,textbuf,ierr)
+     CHKERRA(ierr)
   else
-     call KSPGetIterationNumber(Solver,its,ierr); CHKERRA(ierr)
+     call KSPGetIterationNumber(Solver,its,ierr)
+     CHKERRA(ierr)
      write(textbuf,10) its
 10   format("Converged in",I5," iterations.\n")
-     call PetscPrintf(comm,textbuf,ierr); CHKERRA(ierr)
+     call PetscPrintf(comm,textbuf,ierr)
+     CHKERRA(ierr)
   end if
 
   !!

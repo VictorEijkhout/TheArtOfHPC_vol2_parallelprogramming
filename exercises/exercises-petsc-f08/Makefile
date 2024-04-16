@@ -5,7 +5,7 @@
 #### `Introduction to the PETSc library'
 #### by Victor Eijkhout eijkhout@tacc.utexas.edu
 ####
-#### copyright Victor Eijkhout 2012-2022
+#### copyright Victor Eijkhout 2012-2023
 ####
 #### Makefile for Fortran90 exercises
 ####
@@ -17,7 +17,9 @@ info ::
 	@echo "================================================================"
 	@echo "available rules:"
 
+ifdef PETSC_DIR
 include ${PETSC_DIR}/lib/petsc/conf/variables
+endif
 LOCDIR = fsolutions
 
 EXERCISE = hello
@@ -31,7 +33,7 @@ include ../course-support/Make.compile
 include ../course-support/Make.mpi_run
 ## include ../course-support/Make.petscrun
 
-shell : fivepoint.o
+shell :: fivepoint.o
 
 ##skip
 info ::

@@ -130,6 +130,9 @@ MPI_CXX_COMPILER = mpicxx
 MPI_F_COMPILER = mpif90
 MPI_F08_COMPILER = mpif90
 
+##
+## Set the compiler
+##
 ifdef TACC_TAU_DIR
   C_COMPILER = tau_cc.sh -optCompInst -optPreProcess
   CXX_COMPILER = tau_cxx.sh -optCompInst -optPreProcess
@@ -154,14 +157,6 @@ else ifeq "${MODE}" "mpl"
   CXX_COMPILER = ${MPI_CXX_COMPILER}
   F_COMPILER   = ${MPI_F_COMPILER}
   F08_COMPILER   = ${MPI_F08_COMPILER}
-else ifeq "${MODE}" "sycl"
-    CXX_COMPILER = icpx
-    CXXFLAGS +=  -fsycl
-    LINK_FLAGS += -fsycl
-else ifeq "${MODE}" "1api"
-    CXX_COMPILER = icpx
-    CXXFLAGS +=  -fsycl
-    LINK_FLAGS += -fsycl
 else ifeq "${MODE}" "petsc"
   ##
   ## annoyingly, there is only an mpicc/mpicxx/mpif90 script
@@ -183,9 +178,12 @@ else ifeq "${MODE}" "petsc"
   CFLAGS += ${PETSC_CC_INCLUDES} 
   CXXFLAGS += ${PETSC_CXX_INCLUDES} 
   FFLAGS += ${PETSC_FC_INCLUDES} 
-else # regular compiler modes
 
-  ifeq "${MODE}" "cuda"
+#
+# modes with specific compiler names
+#
+
+else ifeq "${MODE}" "cuda"
     C_COMPILER   = nvcc
     CXX_COMPILER = nvcc
     F_COMPILER   = /bin/false
@@ -198,63 +196,70 @@ else # regular compiler modes
       CXX_HOST_COMPILER = icpc 
 	  notHOST_FLAGS = -diag-disable=10441
     else ifeq "${TACC_FAMILY_COMPILER}" "gcc"
-      C_HOST_COMPILER   = gcc
-      CXX_HOST_COMPILER = g++
-    else 
-      C_HOST_COMPILER   = no_such_compiler
-      CXX_HOST_COMPILER = no_such_compiler
-	endif
-  else ifdef TACC_CXX
+	C_HOST_COMPILER = gcc
+	CXX_HOST_COMPILER = g++
+    endif
+else ifdef TACC_CXX
     C_COMPILER=${TACC_CC}
     CXX_COMPILER=${TACC_CXX}
     F_COMPILER=${TACC_FC}
     F08_COMPILER=${TACC_FC}
-  else ifeq "${TACC_FAMILY_COMPILER}" "intel"
-      ifeq "${INTEL23}" "23"
+else ifeq "${TACC_FAMILY_COMPILER}" "intel"
+    #
+    # stupid intel sub cases
+    #
+   ifeq "${INTEL23}" "23"
 	C_COMPILER   = icx
 	CXX_COMPILER = icpx
 	F_COMPILER   = ifx
 	F08_COMPILER = ifx
-      else ifeq "${INTEL24}" "24"
+   else ifeq "${INTEL24}" "24"
 	C_COMPILER   = icx
 	    CXX_COMPILER = icpx
 	F_COMPILER   = ifx
 	F08_COMPILER = ifx
-      else
+   else
 	C_COMPILER   = icc
 	CXX_COMPILER = icpc
 	F_COMPILER   = ifort
 	F08_COMPILER = ifort
-	  endif
-  else ifeq "${TACC_FAMILY_COMPILER}" "oneapi"
+    endif
+else ifeq "${TACC_FAMILY_COMPILER}" "gcc"
+      C_COMPILER   = gcc
+      CXX_COMPILER = g++
+else ifeq "${MODE}" "sycl"
+    CXX_COMPILER = icpx
+    CXXFLAGS +=  -fsycl
+    LINK_FLAGS += -fsycl
+else ifeq "${MODE}" "1api"
+    CXX_COMPILER = icpx
+    CXXFLAGS +=  -fsycl
+    LINK_FLAGS += -fsycl
+else ifeq "${TACC_FAMILY_COMPILER}" "oneapi"
     C_COMPILER   = icx
     CXX_COMPILER = icpx
     F_COMPILER   = ifort
     F08_COMPILER   = ifort
-  else ifeq "${TACC_FAMILY_COMPILER}" "gcc"
-    C_COMPILER   = gcc
-    CXX_COMPILER = g++
-    F_COMPILER   = gfortran
-    F08_COMPILER   = gfortran
-  else ifeq "${TACC_FAMILY_COMPILER}" "clang"
+else ifeq "${TACC_FAMILY_COMPILER}" "clang"
     C_COMPILER   = clang
     CXX_COMPILER = clang++
     F_COMPILER   = gfortran
     F08_COMPILER   = gfortran
-  else ifeq "${TACC_FAMILY_COMPILER}" "nvhpc"
+else ifeq "${TACC_FAMILY_COMPILER}" "nvhpc"
     C_COMPILER   = nvcc
     CXX_COMPILER = nvcc
     F_COMPILER   = /bin/false
     F08_COMPILER   = /bin/false
-  else ifeq "${TACC_FAMILY_COMPILER}" "xl"
+else ifeq "${TACC_FAMILY_COMPILER}" "xl"
     C_COMPILER   = xlc
     CXX_COMPILER = xlc++
     F_COMPILER   = xlf
     F08_COMPILER   = xlf
-  else ifeq "${TACC_FAMILY_COMPILER}" "devcloud"
+else ifeq "${TACC_FAMILY_COMPILER}" "devcloud"
     CXX_COMPILER = dpcpp
-  endif # end of non-mpi compiler setting
-
+else 
+      C_HOST_COMPILER   = no_such_compiler
+      CXX_HOST_COMPILER = no_such_compiler
 endif
 
 # we need extra options with all compilers

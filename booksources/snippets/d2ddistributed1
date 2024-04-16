@@ -1,8 +1,10 @@
 // dist.cpp
 template< typename real >
 distributed_array<real>::distributed_array
-    ( const mpl::cartesian_communicator& comm,size_t m,size_t n,bool trace )
+    ( const mpl::cartesian_communicator& comm,size_t m,size_t n,
+	bool trace )
       : comm(comm)
+	, rank( comm.rank() )
 	, m_global(m),n_global(n)
-	, data( 1,1,1 ) /* place holder array */ {
-  auto rank = comm.rank();
+{
+//    auto rank = comm.rank();

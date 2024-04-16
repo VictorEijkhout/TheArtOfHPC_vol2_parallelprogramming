@@ -4,7 +4,7 @@
  **** `Introduction to the PETSc library'
  **** by Victor Eijkhout eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-9
+ **** copyright Victor Eijkhout 2012-2023
  ****
  ****************************************************************/
 
@@ -15,7 +15,7 @@ int main(int Argc,char **Args)
 {
   int ierr,procno,nprocs;
 
-  ierr = PetscInitialize(&Argc,&Args,PETSC_NULL,PETSC_NULL); CHKERRQ(ierr);
+  ierr = PetscInitialize(&Argc,&Args,NULL,NULL); CHKERRQ(ierr);
   MPI_Comm comm = PETSC_COMM_WORLD;
   
   MPI_Comm_rank(comm,&procno);

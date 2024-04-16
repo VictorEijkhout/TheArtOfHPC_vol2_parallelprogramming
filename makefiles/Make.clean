@@ -19,7 +19,7 @@ info ::
 clean :: local_clean
 codeclean :
 	@/bin/rm -rf \
-	    *.a *.o *~ *.gch *.inst.c *.pp.F90 *.mod *.optrpt events.* *.mod a.out *.pyc \
+	    *.a *.o *.o.tmp *~ *.gch *.inst.c *.pp.F90 *.mod *.optrpt events.* *.mod a.out *.pyc \
 	    *.drawio.bkp \
 	    ${APPS} ${EXERCISES} ${WRONGS} ${INPROGRESS} \
 	    *.dSYM MULTI__*  __pycache__ fort.[0-9]* \

@@ -5,7 +5,7 @@
 #### `Introduction to the PETSc library'
 #### by Victor Eijkhout eijkhout@tacc.utexas.edu
 ####
-#### copyright Victor Eijkhout 2012-2022
+#### copyright Victor Eijkhout 2012-2023
 ####
 #### Makefile for petsc C exercises
 ####
@@ -17,11 +17,13 @@ info ::
 	@echo "================================================================"
 	@echo "available rules:"
 
+ifdef PETSC_DIR
 include ${PETSC_DIR}/lib/petsc/conf/variables
+endif
 LOCDIR = csolutions
 
 EXERCISE = hello
-EXERCISES = hello root vec matvec ksp shell oddeven grid plex
+EXERCISES = hello root vec matvec ksp shell oddeven grid plex viewer
 #grid mat ksp shell ex46 ex46a
 np_root = 1
 np_oddeven = 2
