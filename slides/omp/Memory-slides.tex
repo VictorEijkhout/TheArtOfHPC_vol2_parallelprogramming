@@ -11,43 +11,142 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\begin{numberedframe}{Atomic operations}
-fill in  
+\begin{numberedframe}{Sequential consistency}
+  Multi-threaded code:
+  \begin{itemize}
+  \item Instructions from threads are not ordered
+  \item Instruction in each thread are ordered
+  \item $\Rightarrow$~total execution is `as if'
+    some interleaving of the threads
+  \item not a unique interleaving\\
+    $\Rightarrow$~result is not unique
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Dekker's algorithm}
+\begin{lstlisting}
+    int a=0,b=0,r1,r2;
+#pragma omp parallel sections shared(a, b, r1, r2)
+    {
+#pragma omp section
+      {
+        a = 1;
+        r1 = b;
+      }
+#pragma omp section
+      {
+        b = 1;
+        r2 = a;
+      }
+    }
+\end{lstlisting}
+Complicated interaction between threads!
+\end{numberedframe}
+
+\begin{numberedframe}{Execution 1}
+  \begin{tabular}{|l|l|}
+    \hline
+    a=0&b=0\\ \hline
+    a=1&\\
+    r1=b=0&\\
+    &b=1\\
+    &r2=a=1\\ \hline
+    \multicolumn{2}{|c|}{r1+r2=1}\\
+    \hline
+  \end{tabular}
+\begin{lstlisting}
+\end{lstlisting}
+  \begin{itemize}
+  \item Thread 1 completely before 2
+  \item By symmetry, sum$=1$ the other way too
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Execution 2}
+  \begin{tabular}{|l|l|}
+    \hline
+    a=0&b=0\\ \hline
+    a=1&\\
+    &b=1\\
+    r1=b=1&\\
+    &r2=a=1\\ \hline
+    \multicolumn{2}{|c|}{r1+r2=2}\\
+    \hline
+  \end{tabular}
+\begin{lstlisting}
+\end{lstlisting}
+  \begin{itemize}
+  \item Both threads first statement
+  \item \ldots~before both threads second statement
+  \item $\Rightarrow$~sum$=2$ regardless micro-timing.
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Compiler optimizations}
+  \begin{itemize}
+  \item Compiler doesn't know about threads
+  \item Compiler is allowed to exchange independent statements
+  \end{itemize}
+  \begin{tabular}{|l|l|}
+    \hline
+    a=0&b=0\\
+    r1=b=0&\\
+    &r2=a=0\\
+    a=1&\\
+    &b=1\\ \hline
+    \multicolumn{2}{|c|}{r1+r2=0}\\
+    \hline
+  \end{tabular}
+  Not sequentially consistent!
+\end{numberedframe}
+
+\begin{numberedframe}{Weak memory model}
+  \begin{itemize}
+  \item Threads may keep a local copy of values
+  \item $\Rightarrow$~a write by one thread may not be visible
+    by another.
+  \item Fix: explicitly `flush' data to memory.
+  \end{itemize}
 \end{numberedframe}
 
 \begin{numberedframe}{Flush}
-\begin{multicols}{2}
 \begin{lstlisting}
-a = foo();
-flag = 1;
+    int a=0,b=0,r1,r2;
+#pragma omp parallel sections shared(a, b, r1, r2)
+    {
+#pragma omp section
+      {
+        a = 1;
+#pragma omp flush (a,b)
+        r1 = b;
+        tasks++;
+      }
+#pragma omp section
+      {
+        b = 1;
+#pragma omp flush (a,b)
+        r2 = a;
+        tasks++;
+      }
+    }
 \end{lstlisting}
-\columnbreak
-\begin{lstlisting}
-while (!flag) ;
-b = a;
-\end{lstlisting}
-\end{multicols}
 \end{numberedframe}
 
-\begin{numberedframe}{Flush'}
-\begin{multicols}{2}
+\endinput
+
+\begin{numberedframe}{}
 \begin{lstlisting}
-a = foo();
-#pragma omp flush
-#pragma omp atomic write
-flag = 1;
-#pragma omp flush
 \end{lstlisting}
-\columnbreak
-\begin{lstlisting}
-myflag = 0;
-while (!myflag){
-#pragma omp flush
-#pragma omp atomic read
-   myflag = flag;
-}
-#pragma omp flush
-b = a;
-\end{lstlisting}
-\end{multicols}
+  \begin{itemize}
+  \item 
+  \end{itemize}
 \end{numberedframe}
+
+\begin{numberedframe}{}
+\begin{lstlisting}
+\end{lstlisting}
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\end{numberedframe}
+
