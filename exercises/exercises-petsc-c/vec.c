@@ -4,7 +4,7 @@
  **** `Introduction to the PETSc library'
  **** by Victor Eijkhout eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-2020
+ **** copyright Victor Eijkhout 2012-2024
  ****
  ****************************************************************/
 
@@ -30,27 +30,26 @@ int main(int argc,char **argv)
   /*
    * Get a commandline argument for the size of the problem
    */
-  ierr = PetscOptionsGetInt
-    (NULL,NULL,"-n",&n,NULL); CHKERRQ(ierr);
+  PetscCall( PetscOptionsGetInt(NULL,NULL,"-n",&n,NULL) ); 
 
   /*
    * Create vector `x' with a default layout
    */
-  ierr = VecCreate(comm,&x);CHKERRQ(ierr);
-  ierr = VecSetSizes(x,PETSC_DECIDE,n);CHKERRQ(ierr);
-  ierr = VecSetFromOptions(x);CHKERRQ(ierr);
+  PetscCall( VecCreate(comm,&x) );
+  PetscCall( VecSetSizes(x,PETSC_DECIDE,n) );
+  PetscCall( VecSetFromOptions(x) );
 
   /*
    * Duplicate some work vectors (of the same format and
    * partitioning as the initial vector).
   */
-  ierr = VecDuplicate(x,&y);CHKERRQ(ierr);
+  PetscCall( VecDuplicate(x,&y) );
 
   /*
    * Set x,y values
   */
   PetscScalar    one = 1.0,two = 2.0;
-  ierr = VecSet(x,one);CHKERRQ(ierr);
+  PetscCall( VecSet(x,one) );
   {
     /*
      * Exercise 1:
@@ -60,20 +59,20 @@ int main(int argc,char **argv)
      *    Set the correct index
      */
     PetscInt myfirst,mylast,localsize,globalsize;
-    ierr = VecGetSize(y,&globalsize); CHKERRQ(ierr);
-    ierr = VecGetLocalSize(y,&localsize); CHKERRQ(ierr);
-    ierr = VecGetOwnershipRange(y,&myfirst,&mylast); CHKERRQ(ierr);
+    PetscCall( VecGetSize(y,&globalsize) ); 
+    PetscCall( VecGetLocalSize(y,&localsize) ); 
+    PetscCall( VecGetOwnershipRange(y,&myfirst,&mylast) ); 
     for (PetscInt index=
 /**** your code here ****/
 	 index++) {
       PetscScalar value = sin( index * 2. * 3.14159 / globalsize );
-      ierr = VecSetValue(y,
+      PetscCall( VecSetValue(y,
 /**** your code here ****/
-			 value,INSERT_VALUES); CHKERRQ(ierr);
+        	     value,INSERT_VALUES) );
     }
-    ierr = VecAssemblyBegin(y); CHKERRQ(ierr);
-    ierr = VecAssemblyEnd(y); CHKERRQ(ierr);
-    //ierr = VecSet(y,two);CHKERRQ(ierr);
+    PetscCall( VecAssemblyBegin(y) ); 
+    PetscCall( VecAssemblyEnd(y) ); 
+    //PetscCall( VecSet(y,two) );
   }
 
   /*
@@ -82,8 +81,7 @@ int main(int argc,char **argv)
    */
   PetscScalar inprod;
 /**** your code here ****/
-  ierr = PetscPrintf
-    (comm,"Computed inner product as %f, should be about zero\n",inprod); CHKERRQ(ierr);
+  PetscCall( PetscPrintf(comm,"Computed inner product as %f, should be about zero\n",inprod) ); 
 
   /* 
    * Exercise 3:
@@ -98,9 +96,9 @@ int main(int argc,char **argv)
      Free work space.  All PETSc objects should be destroyed when they
      are no longer needed.
   */
-  ierr = VecDestroy(&x);CHKERRQ(ierr);
-  ierr = VecDestroy(&y);CHKERRQ(ierr);
+  PetscCall( VecDestroy(&x) );
+  PetscCall( VecDestroy(&y) );
 
-  ierr = PetscFinalize();
+  PetscFinalize();
   return 0;
 }

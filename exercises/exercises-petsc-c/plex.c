@@ -4,7 +4,7 @@
  **** `Introduction to the PETSc library'
  **** by Victor Eijkhout eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-7
+ **** copyright Victor Eijkhout 2012-2024
  ****
  ****************************************************************/
 
@@ -15,7 +15,7 @@
 int main(int argc,char **argv) {
 
   PetscErrorCode ierr;
-  ierr = PetscInitialize(&argc,&argv,0,0); CHKERRQ(ierr);
+  PetscCall( PetscInitialize(&argc,&argv,0,0) ); 
 
   MPI_Comm comm = MPI_COMM_WORLD;
   int nprocs,procno;
@@ -23,7 +23,7 @@ int main(int argc,char **argv) {
   MPI_Comm_rank(comm,&procno);
 
   int iprocs=1,jprocs;
-  ierr = PetscOptionsGetInt(PETSC_NULL,PETSC_NULL,"-pi",&iprocs,PETSC_NULL); CHKERRQ(ierr);
+  PetscCall( PetscOptionsGetInt(PETSC_NULL,PETSC_NULL,"-pi",&iprocs,PETSC_NULL) ); 
   if (nprocs%iprocs!=0) {
     PetscPrintf(comm,"ip value %d does not divide nprocs=%d\n",iprocs,nprocs);
     iprocs = 1;

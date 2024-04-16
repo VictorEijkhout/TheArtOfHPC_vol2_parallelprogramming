@@ -33,59 +33,56 @@ int main(int argc,char **args)
   */
   PetscBool flag;
   PetscInt domain_size = 100; 
-  ierr = PetscOptionsGetInt
-    (NULL,NULL,"-n",&domain_size,&flag); CHKERRQ(ierr);
+  PetscCall( PetscOptionsGetInt(NULL,NULL,"-n",&domain_size,&flag) ); 
   PetscPrintf(comm,"Using domain size %d\n",domain_size);
 
   /*
    * Read the amount of umsymmetry to be added to the matrix
    */
   PetscReal real_unsymmetry=0.;
-  ierr = PetscOptionsGetReal
-    (
-     NULL,NULL,"-unsymmetry",&real_unsymmetry,&flag); CHKERRQ(ierr);
+  PetscCall( PetscOptionsGetReal(NULL,NULL,"-unsymmetry",&real_unsymmetry,&flag) ); 
   PetscScalar unsymmetry=real_unsymmetry;
 
   /*
    * Create the five-point laplacian matrix, with unsymmetry.
   */
-  ierr = FivePointMatrix(comm,domain_size,domain_size,unsymmetry,&A); CHKERRQ(ierr);
+  PetscCall( FivePointMatrix(comm,domain_size,domain_size,unsymmetry,&A) ); 
   //MatView(A,PETSC_VIEWER_STDOUT_WORLD);
 
   /*
    * Create right hand side and solution vectors
    */
   PetscInt localsize;
-  ierr = MatGetLocalSize(A,&localsize,NULL); CHKERRQ(ierr);
-  ierr = VecCreateMPI(comm,localsize,PETSC_DECIDE,&Rhs); CHKERRQ(ierr);
-  ierr = VecDuplicate(Rhs,&Sol); CHKERRQ(ierr);
-  ierr = VecSet(Rhs,one); CHKERRQ(ierr);
+  PetscCall( MatGetLocalSize(A,&localsize,NULL) ); 
+  PetscCall( VecCreateMPI(comm,localsize,PETSC_DECIDE,&Rhs) ); 
+  PetscCall( VecDuplicate(Rhs,&Sol) ); 
+  PetscCall( VecSet(Rhs,one) ); 
 
   /*
    * Create iterative method and preconditioner
    */
-  ierr = KSPCreate(comm,&Solver);
-  ierr = KSPSetOperators(Solver,A,A); CHKERRQ(ierr);
-  ierr = KSPSetType(Solver,KSPCG); CHKERRQ(ierr);
+  PetscCall( KSPCreate(comm,&Solver) );
+  PetscCall( KSPSetOperators(Solver,A,A) ); 
+  PetscCall( KSPSetType(Solver,KSPCG) ); 
   {
     PC Prec;
-    ierr = KSPGetPC(Solver,&Prec); CHKERRQ(ierr);
-    ierr = PCSetType(Prec,PCJACOBI); CHKERRQ(ierr);
+    PetscCall( KSPGetPC(Solver,&Prec) ); 
+    PetscCall( PCSetType(Prec,PCJACOBI) ); 
   }
 
   /*
    * Incorporate any commandline options for the KSP
    */
-  ierr = KSPSetFromOptions(Solver); CHKERRQ(ierr);
+  PetscCall( KSPSetFromOptions(Solver) ); 
 
   /*
    * Solve the system and analyze the outcome
    */
-  ierr = KSPSolve(Solver,Rhs,Sol); CHKERRQ(ierr);
+  PetscCall( KSPSolve(Solver,Rhs,Sol) ); 
   {
     PetscInt its; KSPConvergedReason reason; 
-    ierr = KSPGetConvergedReason(Solver,&reason);
-    ierr = KSPGetIterationNumber(Solver,&its); CHKERRQ(ierr);
+    PetscCall( KSPGetConvergedReason(Solver,&reason) );
+    PetscCall( KSPGetIterationNumber(Solver,&its) ); 
     if (reason<0) {
       PetscPrintf(comm,"Failure to converge after %d iterations; reason %s\n",
 		  its,KSPConvergedReasons[reason]);
@@ -122,12 +119,12 @@ int main(int argc,char **args)
   /*
    * Clean up allocated objects.
    */
-  ierr = MatDestroy(&A); CHKERRQ(ierr);
-  ierr = KSPDestroy(&Solver); CHKERRQ(ierr);
-  ierr = VecDestroy(&Rhs); CHKERRQ(ierr);
-  ierr = VecDestroy(&Sol); CHKERRQ(ierr);
+  PetscCall( MatDestroy(&A) ); 
+  PetscCall( KSPDestroy(&Solver) ); 
+  PetscCall( VecDestroy(&Rhs) ); 
+  PetscCall( VecDestroy(&Sol) ); 
   
-  ierr = PetscFinalize();
+  PetscFinalize();
   PetscFunctionReturn(0);
 }
 
@@ -151,22 +148,22 @@ PetscErrorCode FivePointMatrix
   /*
    * Do the basic creation of the matrix
    */
-  ierr = MatCreate(comm,&A); CHKERRQ(ierr);
-  ierr = MatSetType(A,MATMPIAIJ); CHKERRQ(ierr);
+  PetscCall( MatCreate(comm,&A) ); 
+  PetscCall( MatSetType(A,MATMPIAIJ) ); 
   PetscInt matrix_size = domain_m*domain_n;
-  ierr = MatSetSizes(A,PETSC_DECIDE,PETSC_DECIDE,matrix_size,matrix_size); CHKERRQ(ierr);
-  ierr = MatMPIAIJSetPreallocation(A,5,NULL,2,NULL); CHKERRQ(ierr);
-  ierr = MatSetOption(A, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_FALSE); CHKERRQ(ierr);
-  ierr = MatSetFromOptions(A); CHKERRQ(ierr);
+  PetscCall( MatSetSizes(A,PETSC_DECIDE,PETSC_DECIDE,matrix_size,matrix_size) ); 
+  PetscCall( MatMPIAIJSetPreallocation(A,5,NULL,2,NULL) ); 
+  PetscCall( MatSetOption(A, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_FALSE) ); 
+  PetscCall( MatSetFromOptions(A) ); 
 
-  ierr = MatAssemblyBegin(A,MAT_FLUSH_ASSEMBLY); CHKERRQ(ierr);
-  ierr = MatAssemblyEnd(A,MAT_FLUSH_ASSEMBLY); CHKERRQ(ierr);
+  PetscCall( MatAssemblyBegin(A,MAT_FLUSH_ASSEMBLY) ); 
+  PetscCall( MatAssemblyEnd(A,MAT_FLUSH_ASSEMBLY) ); 
 
   /*
    * Fill in the matrix elements
    */
   PetscInt first,last;
-  ierr = MatGetOwnershipRange(A,&first,&last); CHKERRQ(ierr);
+  PetscCall( MatGetOwnershipRange(A,&first,&last) ); 
   for ( i=0; i<domain_m; i++ ) {
     for ( j=0; j<domain_n; j++ ) {
       PetscInt iglobal = j + domain_m*i, jglobal;
@@ -175,47 +172,47 @@ PetscErrorCode FivePointMatrix
 
       // diagonal element
       PetscScalar v = 4.0;
-      ierr = MatSetValues(A,1,&iglobal,1,&iglobal,&v,INSERT_VALUES); CHKERRQ(ierr);
+      PetscCall( MatSetValues(A,1,&iglobal,1,&iglobal,&v,INSERT_VALUES) ); 
 
       // previous row; we set an amount of unsymmetry if this is a periodic point
       jglobal = iglobal - domain_n; v = -1.0;
       if ( i>0 ) {
-	ierr = MatSetValues(A,1,&iglobal,1,&jglobal,&v,INSERT_VALUES); CHKERRQ(ierr);
+	PetscCall( MatSetValues(A,1,&iglobal,1,&jglobal,&v,INSERT_VALUES) ); 
       } else {
 	jglobal += matrix_size; v = -unsymmetry;
-	ierr = MatSetValues(A,1,&iglobal,1,&jglobal,&v,INSERT_VALUES); CHKERRQ(ierr);
+	PetscCall( MatSetValues(A,1,&iglobal,1,&jglobal,&v,INSERT_VALUES) ); 
       }
 
       // next row; we set an amount of unsymmetry if this is a periodic point
       jglobal = iglobal + domain_n; v = -1.0;
       if ( i<domain_m-1 ) {
-	ierr = MatSetValues(A,1,&iglobal,1,&jglobal,&v,INSERT_VALUES); CHKERRQ(ierr);
+	PetscCall( MatSetValues(A,1,&iglobal,1,&jglobal,&v,INSERT_VALUES) ); 
       } else {
 	jglobal -= matrix_size; v = +unsymmetry;
-	ierr = MatSetValues(A,1,&iglobal,1,&jglobal,&v,INSERT_VALUES); CHKERRQ(ierr);
+	PetscCall( MatSetValues(A,1,&iglobal,1,&jglobal,&v,INSERT_VALUES) ); 
       }
 
       // previous point; we set an amount of unsymmetry if this is a periodic point
       jglobal = iglobal - 1; v = -1.0;
       if ( j>0 )   {
-	ierr = MatSetValues(A,1,&iglobal,1,&jglobal,&v,INSERT_VALUES); CHKERRQ(ierr);
+	PetscCall( MatSetValues(A,1,&iglobal,1,&jglobal,&v,INSERT_VALUES) ); 
       } else {
 	jglobal += domain_n; v = -unsymmetry;
-	ierr = MatSetValues(A,1,&iglobal,1,&jglobal,&v,INSERT_VALUES); CHKERRQ(ierr);
+	PetscCall( MatSetValues(A,1,&iglobal,1,&jglobal,&v,INSERT_VALUES) ); 
       }
 
       // next point; we set an amount of unsymmetry if this is a periodic point
       jglobal = iglobal + 1; v = -1.0;
       if ( j<domain_n-1 ) {
-	ierr = MatSetValues(A,1,&iglobal,1,&jglobal,&v,INSERT_VALUES); CHKERRQ(ierr);
+	PetscCall( MatSetValues(A,1,&iglobal,1,&jglobal,&v,INSERT_VALUES) ); 
       } else {
 	jglobal -= domain_n; v = +unsymmetry;
-	ierr = MatSetValues(A,1,&iglobal,1,&jglobal,&v,INSERT_VALUES); CHKERRQ(ierr);
+	PetscCall( MatSetValues(A,1,&iglobal,1,&jglobal,&v,INSERT_VALUES) ); 
       }
     }
   }
-  ierr = MatAssemblyBegin(A,MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
-  ierr = MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+  PetscCall( MatAssemblyBegin(A,MAT_FINAL_ASSEMBLY) ); 
+  PetscCall( MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY) ); 
 
   *rA = A;
   PetscFunctionReturn(0);

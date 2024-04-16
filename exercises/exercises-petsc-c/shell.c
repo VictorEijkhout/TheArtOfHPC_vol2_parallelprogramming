@@ -4,7 +4,7 @@
  **** `Introduction to the PETSc library'
  **** by Victor Eijkhout eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-9
+ **** copyright Victor Eijkhout 2012-2024
  ****
  ****************************************************************/
 
@@ -36,93 +36,92 @@ int main(int argc,char **args)
   /*
     read the domain size, and square it to get the matrix size
   */
-  ierr = PetscOptionsGetInt(PETSC_NULL,PETSC_NULL,"-n",&domain_size,&flag); CHKERRQ(ierr);
+  PetscCall( PetscOptionsGetInt(PETSC_NULL,PETSC_NULL,"-n",&domain_size,&flag) ); 
   if (!flag) domain_size = 10;
   matrix_size = domain_size*domain_size;
   localsize=PETSC_DECIDE;
-  ierr = PetscSplitOwnership(comm,&localsize,&matrix_size); CHKERRQ(ierr);
+  PetscCall( PetscSplitOwnership(comm,&localsize,&matrix_size) ); 
 
   /*
    * Determine how unsymmetric is the matrix going to be
    */
-  ierr = PetscOptionsGetReal(PETSC_NULL,PETSC_NULL,"-u",&u,&flag); CHKERRQ(ierr);
+  PetscCall( PetscOptionsGetReal(PETSC_NULL,PETSC_NULL,"-u",&u,&flag) ); 
   if (!flag) u = .1;
 
   /*
     create the five-point laplacian matrix
   */
-  ierr = MatCreate(comm,&Afivept); CHKERRQ(ierr);
-  ierr = MatSetType(Afivept,MATMPIAIJ); CHKERRQ(ierr);
-  ierr = MatSetSizes
-    (Afivept,localsize,localsize,matrix_size,matrix_size); CHKERRQ(ierr);
-  ierr = MatMPIAIJSetPreallocation(Afivept,5,NULL,2,NULL); CHKERRQ(ierr);
-  ierr = FivePointMatrix(comm,domain_size,domain_size,Afivept); CHKERRQ(ierr);
+  PetscCall( MatCreate(comm,&Afivept) ); 
+  PetscCall( MatSetType(Afivept,MATMPIAIJ) ); 
+  PetscCall( MatSetSizes(Afivept,localsize,localsize,matrix_size,matrix_size) ); 
+  PetscCall( MatMPIAIJSetPreallocation(Afivept,5,NULL,2,NULL) ); 
+  PetscCall( FivePointMatrix(comm,domain_size,domain_size,Afivept) ); 
   /* make the matrix nicely unsymmetric */
-  ierr = MatSetValue(Afivept,0,matrix_size-1,u,INSERT_VALUES); CHKERRQ(ierr);
-  ierr = MatAssemblyBegin(Afivept,MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
-  ierr = MatAssemblyEnd(Afivept,MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+  PetscCall( MatSetValue(Afivept,0,matrix_size-1,u,INSERT_VALUES) ); 
+  PetscCall( MatAssemblyBegin(Afivept,MAT_FINAL_ASSEMBLY) ); 
+  PetscCall( MatAssemblyEnd(Afivept,MAT_FINAL_ASSEMBLY) ); 
 
   /*
    * Create a shell matrix, and set its MatMult routine to your own 
    */
-  ierr = MatCreate(comm,&AtA); CHKERRQ(ierr);
-  ierr = MatSetSizes(AtA,localsize,localsize,matrix_size,matrix_size); CHKERRQ(ierr);
-  ierr = MatSetType(AtA,MATSHELL); CHKERRQ(ierr);
-  ierr = MatSetFromOptions(AtA); CHKERRQ(ierr);
-  ierr = MatShellSetOperation(AtA,MATOP_MULT,(void*)&mymatmult); CHKERRQ(ierr);
-  ierr = MatShellSetContext(AtA,(void*)Afivept); CHKERRQ(ierr);
-  ierr = MatSetUp(AtA); CHKERRQ(ierr);
+  PetscCall( MatCreate(comm,&AtA) ); 
+  PetscCall( MatSetSizes(AtA,localsize,localsize,matrix_size,matrix_size) ); 
+  PetscCall( MatSetType(AtA,MATSHELL) ); 
+  PetscCall( MatSetFromOptions(AtA) ); 
+  PetscCall( MatShellSetOperation(AtA,MATOP_MULT,(void*)&mymatmult) ); 
+  PetscCall( MatShellSetContext(AtA,(void*)Afivept) ); 
+  PetscCall( MatSetUp(AtA) ); 
 
   /*
    * create right hand side and solution vectors
    */
-  ierr = VecCreateMPI(comm,PETSC_DECIDE,matrix_size,&Rhs); CHKERRQ(ierr);
-  ierr = VecDuplicate(Rhs,&Sol); CHKERRQ(ierr);
-  ierr = VecSet(Rhs,one); CHKERRQ(ierr);
+  PetscCall( VecCreateMPI(comm,PETSC_DECIDE,matrix_size,&Rhs) ); 
+  PetscCall( VecDuplicate(Rhs,&Sol) ); 
+  PetscCall( VecSet(Rhs,one) ); 
 
   /*
    * create iterative method and preconditioner
    */
-  ierr = KSPCreate(comm,&Solve);
-  ierr = KSPSetOperators(Solve,Afivept,AtA); CHKERRQ(ierr);
-  ierr = KSPSetType(Solve,KSPCG); CHKERRQ(ierr);
+  PetscCall( KSPCreate(comm,&Solve) );
+  PetscCall( KSPSetOperators(Solve,Afivept,AtA) ); 
+  PetscCall( KSPSetType(Solve,KSPCG) ); 
   {
     PC Prec;
-    ierr = KSPGetPC(Solve,&Prec); CHKERRQ(ierr);
-    ierr = PCSetType(Prec,PCNONE); CHKERRQ(ierr);
+    PetscCall( KSPGetPC(Solve,&Prec) ); 
+    PetscCall( PCSetType(Prec,PCNONE) ); 
   }
-  ierr = KSPSetFromOptions(Solve); CHKERRQ(ierr);
+  PetscCall( KSPSetFromOptions(Solve) ); 
 
   /*
    * solve the system and analyse the outcome
    */
-  ierr = KSPSolve(Solve,Rhs,Sol); CHKERRQ(ierr);
+  PetscCall( KSPSolve(Solve,Rhs,Sol) ); 
   {
     PetscInt its; KSPConvergedReason reason; 
     Vec Res; PetscReal norm;
-    ierr = KSPGetConvergedReason(Solve,&reason);
+    PetscCall( KSPGetConvergedReason(Solve,&reason) );
     if (reason<0) {
       PetscPrintf(comm,"Failure to converge\n");
     } else {
-      ierr = KSPGetIterationNumber(Solve,&its); CHKERRQ(ierr);
+      PetscCall( KSPGetIterationNumber(Solve,&its) ); 
       PetscPrintf(comm,"Number of iterations: %d\n",its);
     }
-    ierr = VecDuplicate(Rhs,&Res); CHKERRQ(ierr);
-    ierr = MatMult(AtA,Sol,Res); CHKERRQ(ierr);
-    ierr = VecAXPY(Res,-1,Rhs); CHKERRQ(ierr);
-    ierr = VecNorm(Res,NORM_2,&norm); CHKERRQ(ierr);
-    ierr = PetscPrintf(MPI_COMM_WORLD,"residual norm: %e\n",norm); CHKERRQ(ierr);
-    ierr = VecDestroy(&Res); CHKERRQ(ierr);
+    PetscCall( VecDuplicate(Rhs,&Res) ); 
+    PetscCall( MatMult(AtA,Sol,Res) ); 
+    PetscCall( VecAXPY(Res,-1,Rhs) ); 
+    PetscCall( VecNorm(Res,NORM_2,&norm) ); 
+    PetscCall( PetscPrintf(MPI_COMM_WORLD,"residual norm: %e\n",norm) ); 
+    PetscCall( VecDestroy(&Res) ); 
   }
 
   /*
    * clean up
    */
-  ierr = KSPDestroy(&Solve); CHKERRQ(ierr);
-  ierr = VecDestroy(&Rhs); CHKERRQ(ierr);
-  ierr = VecDestroy(&Sol); CHKERRQ(ierr);
+  PetscCall( KSPDestroy(&Solve) ); 
+  PetscCall( VecDestroy(&Rhs) ); 
+  PetscCall( VecDestroy(&Sol) ); 
   
-  ierr = PetscFinalize();
+  PetscFinalize();
   PetscFunctionReturn(0);
 }
 
@@ -133,11 +132,11 @@ PetscErrorCode mymatmult(Mat mat,Vec in,Vec out)
   Mat A; PetscErrorCode ierr;
   Vec t;
   PetscFunctionBegin;
-  ierr = VecDuplicate(in,&t); CHKERRQ(ierr);
-  ierr = MatShellGetContext(mat,(void**)&A); CHKERRQ(ierr);
-  ierr = MatMult(A,in,t);
+  PetscCall( VecDuplicate(in,&t) ); 
+  PetscCall( MatShellGetContext(mat,(void**)&A) ); 
+  PetscCall( MatMult(A,in,t) );
   CHKMEMQ;
-  ierr = MatMultTranspose(A,t,out); CHKERRQ(ierr);
-  ierr = VecDestroy(&t); CHKERRQ(ierr);
+  PetscCall( MatMultTranspose(A,t,out) ); 
+  PetscCall( VecDestroy(&t) ); 
   PetscFunctionReturn(0);
 }

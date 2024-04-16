@@ -4,7 +4,7 @@
  **** `Introduction to the PETSc library'
  **** by Victor Eijkhout eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-2023
+ **** copyright Victor Eijkhout 2012-2024
  ****
  ****************************************************************/
 
@@ -15,7 +15,7 @@ int main(int Argc,char **Args)
 {
   int ierr,procno,nprocs;
 
-  ierr = PetscInitialize(&Argc,&Args,NULL,NULL); CHKERRQ(ierr);
+  PetscCall( PetscInitialize(&Argc,&Args,NULL,NULL) ); 
   MPI_Comm comm = PETSC_COMM_WORLD;
   
   MPI_Comm_rank(comm,&procno);
@@ -30,24 +30,24 @@ int main(int Argc,char **Args)
 	 "Hello, I'm processor %d and %d processors have just initialized\n",
 	 procno,nprocs
 	 );
-  ierr = PetscPrintf
+  PetscCall( PetscPrintf
     (
 /**** your code here ****/
-     ); CHKERRQ(ierr);
+     ) );
 
   /*
    * Exercise 2:
    * -- use PetscSynchronizedPrintf to let each processor print in sequence
    */
 #if 0
-  ierr = PetscSynchronizedPrintf
+  PetscCall( PetscSynchronizedPrintf
     (
 /**** your code here ****/
-     ); CHKERRQ(ierr);
-  ierr = PetscSynchronizedFlush(comm,stdout); CHKERRQ(ierr);
+     ) );
+  PetscCall( PetscSynchronizedFlush(comm,stdout) ); 
 #endif
 
-  ierr = PetscFinalize(); CHKERRQ(ierr);
+  PetscCall( PetscFinalize() ); 
 
   return 0;
 }

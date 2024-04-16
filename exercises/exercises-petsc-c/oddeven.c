@@ -3,7 +3,7 @@
  **** This program file is part of the tutorial
  **** `Introduction to the PETSc library'
  **** by Victor Eijkhout eijkhout@tacc.utexas.edu
- **** copyright Victor Eijkhout 2012-2020
+ **** copyright Victor Eijkhout 2012-2024
  ****
  **** 
  **** oddeven.c : split a parallel vector into odd/even indices
@@ -43,25 +43,25 @@ int main(int argc,char **args)
    */
   {
     PetscInt x=4;
-    ierr = PetscOptionsGetInt(PETSC_NULL,PETSC_NULL,"-x",&x,NULL); CHKERRQ(ierr);
+    PetscCall( PetscOptionsGetInt(PETSC_NULL,PETSC_NULL,"-x",&x,NULL) ); 
     Nglobal *= x;
   }
 
   Vec in,out;
-  ierr = VecCreate(comm,&in); CHKERRQ(ierr);
-  ierr = VecSetType(in,VECMPI); CHKERRQ(ierr);
-  ierr = VecSetSizes(in,PETSC_DECIDE,Nglobal); CHKERRQ(ierr);
-  ierr = VecDuplicate(in,&out); CHKERRQ(ierr);
+  PetscCall( VecCreate(comm,&in) ); 
+  PetscCall( VecSetType(in,VECMPI) ); 
+  PetscCall( VecSetSizes(in,PETSC_DECIDE,Nglobal) ); 
+  PetscCall( VecDuplicate(in,&out) ); 
   
   {
     PetscInt myfirst,mylast;
-    ierr = VecGetOwnershipRange(in,&myfirst,&mylast); CHKERRQ(ierr);
+    PetscCall( VecGetOwnershipRange(in,&myfirst,&mylast) ); 
     for (PetscInt index=myfirst; index<mylast; index++) {
       PetscScalar v = index;
-      ierr = VecSetValue(in,index,v,INSERT_VALUES); CHKERRQ(ierr);
+      PetscCall( VecSetValue(in,index,v,INSERT_VALUES) ); 
     }
-    ierr = VecAssemblyBegin(in); CHKERRQ(ierr);
-    ierr = VecAssemblyEnd(in); CHKERRQ(ierr);
+    PetscCall( VecAssemblyBegin(in) ); 
+    PetscCall( VecAssemblyEnd(in) ); 
   }
 
   /*
@@ -76,30 +76,27 @@ int main(int argc,char **args)
      * here is code for the original ordering, first enable this,
      * then figure out how to reverse it.
      */
-    //    ierr = ISCreateStride(comm,Nglobal/2,0,2,&oddeven); CHKERRQ(ierr);
+    //    PetscCall( ISCreateStride(comm,Nglobal/2,0,2,&oddeven) ); 
 /**** your code here ****/
   } else {
-    //    ierr = ISCreateStride(comm,Nglobal/2,1,2,&oddeven); CHKERRQ(ierr);
+    //    PetscCall( ISCreateStride(comm,Nglobal/2,1,2,&oddeven) ); 
 /**** your code here ****/
   }
   ISView(oddeven,0);
 
   VecScatter separate;
-  ierr = VecScatterCreate
-    (in,oddeven,out,NULL,&separate); CHKERRQ(ierr);
-  ierr = VecScatterBegin
-    (separate,in,out,INSERT_VALUES,SCATTER_FORWARD); CHKERRQ(ierr);
-  ierr = VecScatterEnd
-    (separate,in,out,INSERT_VALUES,SCATTER_FORWARD); CHKERRQ(ierr);
+  PetscCall( VecScatterCreate(in,oddeven,out,NULL,&separate) ); 
+  PetscCall( VecScatterBegin(separate,in,out,INSERT_VALUES,SCATTER_FORWARD) ); 
+  PetscCall( VecScatterEnd(separate,in,out,INSERT_VALUES,SCATTER_FORWARD) ); 
 
-  ierr = ISDestroy(&oddeven); CHKERRQ(ierr);
-  ierr = VecScatterDestroy(&separate); CHKERRQ(ierr);
+  PetscCall( ISDestroy(&oddeven) ); 
+  PetscCall( VecScatterDestroy(&separate) ); 
 
-  ierr = VecView(in,0); CHKERRQ(ierr);
-  ierr = VecView(out,0); CHKERRQ(ierr);
+  PetscCall( VecView(in,0) ); 
+  PetscCall( VecView(out,0) ); 
 
-  ierr = VecDestroy(&in); CHKERRQ(ierr);
-  ierr = VecDestroy(&out); CHKERRQ(ierr);
+  PetscCall( VecDestroy(&in) ); 
+  PetscCall( VecDestroy(&out) ); 
 
   PetscFunctionReturn(0);
 }

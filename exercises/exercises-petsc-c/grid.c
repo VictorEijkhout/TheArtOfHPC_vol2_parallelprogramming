@@ -4,7 +4,7 @@
  **** `Introduction to the PETSc library'
  **** by Victor Eijkhout eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-2020
+ **** copyright Victor Eijkhout 2012-2024
  ****
  ****************************************************************/
 
@@ -16,7 +16,7 @@
 int main(int argc,char **argv) {
 
   PetscErrorCode ierr;
-  ierr = PetscInitialize(&argc,&argv,0,0); CHKERRQ(ierr);
+  PetscCall( PetscInitialize(&argc,&argv,0,0) ); 
 
   MPI_Comm comm = MPI_COMM_WORLD;
   int nprocs,procno;
@@ -30,7 +30,7 @@ int main(int argc,char **argv) {
    * Create a 2d grid and a matrix on that grid.
    */
   DM grid;
-  ierr = DMDACreate2d            // IN:
+  PetscCall( DMDACreate2d            // IN:
     ( comm,                      // collective on this communicator
       DM_BOUNDARY_NONE,DM_BOUNDARY_NONE, // no periodicity and such
       DMDA_STENCIL_STAR,         // no cross connections
@@ -40,22 +40,22 @@ int main(int argc,char **argv) {
       1,                         // stencil width
       NULL,NULL,                 // arrays of local sizes in each direction
       &grid                      // OUT: resulting object
-      ); CHKERRQ(ierr);
-  ierr = DMSetUp(grid); CHKERRQ(ierr);
+      ) );
+  PetscCall( DMSetUp(grid) ); 
 
   Mat A;
-  ierr = DMCreateMatrix(grid,&A); CHKERRQ(ierr);
+  PetscCall( DMCreateMatrix(grid,&A) ); 
 
   /*
    * Print out how the grid is distributed over processors
    */
   DMDALocalInfo  info;
-  ierr = DMDAGetLocalInfo(grid,&info);CHKERRQ(ierr);
-  ierr = PetscSynchronizedPrintf
+  PetscCall( DMDAGetLocalInfo(grid,&info) );
+  PetscCall( PetscSynchronizedPrintf
     (comm,
      "[%d] Local part = %d-%d x %d-%d\n",
-     procno,info.xs,info.xs+info.xm,info.ys,info.ys+info.ym); CHKERRQ(ierr);
-  ierr = PetscSynchronizedFlush(comm,stdout); CHKERRQ(ierr);
+     procno,info.xs,info.xs+info.xm,info.ys,info.ys+info.ym) );
+  PetscCall( PetscSynchronizedFlush(comm,stdout) ); 
 
   /*
    * Fill in the elements of the matrix
@@ -103,7 +103,7 @@ int main(int argc,char **argv) {
       if (i<info.mx-1 && j<info.my-1)
 	               {col[ncols].j = j+1; col[ncols].i = i+1; v[ncols++] = -1.;}
       */
-      ierr = MatSetValuesStencil(A,1,&row,ncols,col,v,INSERT_VALUES);CHKERRQ(ierr);
+      PetscCall( MatSetValuesStencil(A,1,&row,ncols,col,v,INSERT_VALUES) );
     }
   }
   /*
@@ -117,8 +117,8 @@ int main(int argc,char **argv) {
    * Create vectors on the grid
    */
   Vec x,y;
-  ierr = DMCreateGlobalVector(grid,&x); CHKERRQ(ierr);
-  ierr = VecDuplicate(x,&y); CHKERRQ(ierr);
+  PetscCall( DMCreateGlobalVector(grid,&x) ); 
+  PetscCall( VecDuplicate(x,&y) ); 
 
   /*
    * Set vector values: first locally, then global
@@ -126,19 +126,19 @@ int main(int argc,char **argv) {
   PetscReal one = 1.;
   {
     Vec xlocal;
-    ierr = DMCreateLocalVector(grid,&xlocal); CHKERRQ(ierr);
-    ierr = VecSet(xlocal,one); CHKERRQ(ierr);
-    ierr = DMLocalToGlobalBegin(grid,xlocal,INSERT_VALUES,x); CHKERRQ(ierr);
-    ierr = DMLocalToGlobalEnd(grid,xlocal,INSERT_VALUES,x); CHKERRQ(ierr);
-    ierr = VecDestroy(&xlocal); CHKERRQ(ierr);
+    PetscCall( DMCreateLocalVector(grid,&xlocal) ); 
+    PetscCall( VecSet(xlocal,one) ); 
+    PetscCall( DMLocalToGlobalBegin(grid,xlocal,INSERT_VALUES,x) ); 
+    PetscCall( DMLocalToGlobalEnd(grid,xlocal,INSERT_VALUES,x) ); 
+    PetscCall( VecDestroy(&xlocal) ); 
   }
 
   /*
    * Solve a linear system on the grid
    */
   KSP solver;
-  ierr = KSPCreate(comm,&solver); CHKERRQ(ierr);
-  ierr = KSPSetType(solver,KSPBCGS); CHKERRQ(ierr);
+  PetscCall( KSPCreate(comm,&solver) ); 
+  PetscCall( KSPSetType(solver,KSPBCGS) ); 
   /*
    * Exercise:
    * -- there is a line missing here.
@@ -146,16 +146,16 @@ int main(int argc,char **argv) {
    *    (Or look anywhere else for inspiration.)
    */
 /**** your code here ****/
-  ierr = KSPSetFromOptions(solver); CHKERRQ(ierr);
-  ierr = KSPSolve(solver,x,y); CHKERRQ(ierr);
+  PetscCall( KSPSetFromOptions(solver) ); 
+  PetscCall( KSPSolve(solver,x,y) ); 
 
   /*
    * Report on success of the solver, or lack thereof
    */
   {
     PetscInt its; KSPConvergedReason reason; 
-    ierr = KSPGetConvergedReason(solver,&reason);
-    ierr = KSPGetIterationNumber(solver,&its); CHKERRQ(ierr);
+    PetscCall( KSPGetConvergedReason(solver,&reason) );
+    PetscCall( KSPGetIterationNumber(solver,&its) ); 
     if (reason<0) {
       PetscPrintf(comm,"Failure to converge after %d iterations; reason %s\n",
 		  its,KSPConvergedReasons[reason]);
@@ -167,11 +167,11 @@ int main(int argc,char **argv) {
   /*
    * Clean up
    */
-  ierr = KSPDestroy(&solver); CHKERRQ(ierr);
-  ierr = VecDestroy(&x); CHKERRQ(ierr);
-  ierr = VecDestroy(&y); CHKERRQ(ierr);
-  ierr = MatDestroy(&A); CHKERRQ(ierr);
-  ierr = DMDestroy(&grid); CHKERRQ(ierr);
+  PetscCall( KSPDestroy(&solver) ); 
+  PetscCall( VecDestroy(&x) ); 
+  PetscCall( VecDestroy(&y) ); 
+  PetscCall( MatDestroy(&A) ); 
+  PetscCall( DMDestroy(&grid) ); 
 
   PetscFinalize();
   return 0;

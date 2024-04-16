@@ -4,7 +4,7 @@
  **** `Introduction to the PETSc library'
  **** by Victor Eijkhout eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-2020
+ **** copyright Victor Eijkhout 2012-2024
  ****
  ****************************************************************/
 
@@ -28,38 +28,38 @@ PetscErrorCode CreateMatrix(MPI_Comm comm,int nlocal,Mat *rA) {
   PetscErrorCode ierr;
   int procno,nglobal;
 
-  ierr = MatCreate(comm,&A); CHKERRQ(ierr);
-  ierr = MatSetType(A,MATMPIAIJ); CHKERRQ(ierr);
+  PetscCall( MatCreate(comm,&A) ); 
+  PetscCall( MatSetType(A,MATMPIAIJ) ); 
 
   MPI_Comm_rank(comm,&procno);
   if (procno==0)
     nlocal = 1;
-  ierr = MatSetSizes(A,nlocal,nlocal,PETSC_DECIDE,PETSC_DECIDE); CHKERRQ(ierr);
+  PetscCall( MatSetSizes(A,nlocal,nlocal,PETSC_DECIDE,PETSC_DECIDE) ); 
   /*
    * Exercise
    * - what happens if you preallocate insufficient space?
    */
-  ierr = MatMPIAIJSetPreallocation(A,3,NULL,1,NULL); CHKERRQ(ierr);
+  PetscCall( MatMPIAIJSetPreallocation(A,3,NULL,1,NULL) ); 
 
-  ierr = MatAssemblyBegin(A,MAT_FLUSH_ASSEMBLY); CHKERRQ(ierr);
-  ierr = MatAssemblyEnd(A,MAT_FLUSH_ASSEMBLY); CHKERRQ(ierr);
+  PetscCall( MatAssemblyBegin(A,MAT_FLUSH_ASSEMBLY) ); 
+  PetscCall( MatAssemblyEnd(A,MAT_FLUSH_ASSEMBLY) ); 
 
-  ierr = MatGetSize(A,&nglobal,PETSC_NULL); CHKERRQ(ierr);
-  ierr = MatGetOwnershipRange(A,&first,&last); CHKERRQ(ierr);
+  PetscCall( MatGetSize(A,&nglobal,PETSC_NULL) ); 
+  PetscCall( MatGetOwnershipRange(A,&first,&last) ); 
   for (int row=first; row<last; row++) {
     PetscInt col = row; PetscScalar v = 2.;
-    ierr = MatSetValue(A,row,col,v,INSERT_VALUES); CHKERRQ(ierr);
+    PetscCall( MatSetValue(A,row,col,v,INSERT_VALUES) ); 
     col = row-1; v = -1.;
     if (col>=0) {
-      ierr = MatSetValue(A,row,col,v,INSERT_VALUES); CHKERRQ(ierr);
+      PetscCall( MatSetValue(A,row,col,v,INSERT_VALUES) ); 
     }
     col = row+1; v = -1.;
     if (col<nglobal) {
-      ierr = MatSetValue(A,row,col,v,INSERT_VALUES); CHKERRQ(ierr);
+      PetscCall( MatSetValue(A,row,col,v,INSERT_VALUES) ); 
     }
   }
-  ierr = MatAssemblyBegin(A,MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
-  ierr = MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY); CHKERRQ(ierr);
+  PetscCall( MatAssemblyBegin(A,MAT_FINAL_ASSEMBLY) ); 
+  PetscCall( MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY) ); 
 
   *rA = A;
   return 0;
@@ -83,22 +83,21 @@ int main(int argc,char **argv)
   /*
    * Get a commandline argument for the size of the problem
    */
-  ierr = PetscOptionsGetInt
-    (NULL,NULL,"-n",&nlocal,NULL); CHKERRQ(ierr);
+  PetscCall( PetscOptionsGetInt(NULL,NULL,"-n",&nlocal,NULL) ); 
 
   /*
    * Call the matrix creation routine.
    * (Note the way we are treating the pointer to the matrix object.)
    */
-  ierr = CreateMatrix(comm,nlocal,&A); CHKERRQ(ierr);
+  PetscCall( CreateMatrix(comm,nlocal,&A) ); 
   // just checking: screen output
   //MatView(A,PETSC_VIEWER_STDOUT_WORLD);
 
   /*
    * Start creating a vector
    */
-  ierr = VecCreate(comm,&x); CHKERRQ(ierr);
-  ierr = VecSetType(x,VECMPI); CHKERRQ(ierr);
+  PetscCall( VecCreate(comm,&x) ); 
+  PetscCall( VecSetType(x,VECMPI) ); 
 
   /*
    * Exercise:
@@ -106,48 +105,47 @@ int main(int argc,char **argv)
    */
   {
     PetscInt rowsize;
-    ierr = MatGetLocalSize
+    PetscCall( MatGetLocalSize
       (A,
 /**** your code here ****/
-       ); CHKERRQ(ierr);
-    ierr = VecSetSizes
+       ) );
+    PetscCall( VecSetSizes
       (x,
 /**** your code here ****/
-       ); CHKERRQ(ierr);
+       ) );
   }
 
   /*
    * Duplicate some work vectors (of the same format and
    * partitioning as the initial vector).
   */
-  ierr = VecDuplicate(x,&y); CHKERRQ(ierr);
+  PetscCall( VecDuplicate(x,&y) ); 
 
   /*
    * Set x to constant one
    */
   PetscScalar    one = 1.0;
-  ierr = VecSet(x,one); CHKERRQ(ierr);
+  PetscCall( VecSet(x,one) ); 
 
   /*
    * Exercise:
    * -- fill in the correct parameters to compute 
    *    the matrix vector product y = Ax
    */
-  ierr = MatMult
+  PetscCall( MatMult
     (
 /**** your code here ****/
-     ); CHKERRQ(ierr);
+     ) );
 
   /*
    * First check on the product
    */
   double norm;
-  ierr = VecNorm(y,NORM_1,&norm); CHKERRQ(ierr);
+  PetscCall( VecNorm(y,NORM_1,&norm) ); 
   if ( fabs(2.-norm)>1.e-14) {
-    ierr = PetscPrintf(comm,"Wrong norm: %e should be 2.\n",norm); CHKERRQ(ierr);
+    PetscCall( PetscPrintf(comm,"Wrong norm: %e should be 2.\n",norm) ); 
   } else {
-    ierr = PetscPrintf(comm,
-	   "Global norm test succeeds on all %d processes\n",nprocs); CHKERRQ(ierr);
+    PetscCall( PetscPrintf(comm,"Global norm test succeeds on all %d processes\n",nprocs) ); 
   }
 
   //#if 0
@@ -162,10 +160,10 @@ int main(int argc,char **argv)
     /*
      * Create a single-process vector with the size of the local part of y
      */
-    ierr = VecCreate(PETSC_COMM_SELF,&localvec); CHKERRQ(ierr);
-    ierr = VecSetType(localvec,VECSEQ); CHKERRQ(ierr);
-    ierr = VecGetLocalSize(y,&localsize); CHKERRQ(ierr);
-    ierr = VecSetSizes(localvec,localsize,PETSC_DECIDE); CHKERRQ(ierr);
+    PetscCall( VecCreate(PETSC_COMM_SELF,&localvec) ); 
+    PetscCall( VecSetType(localvec,VECSEQ) ); 
+    PetscCall( VecGetLocalSize(y,&localsize) ); 
+    PetscCall( VecSetSizes(localvec,localsize,PETSC_DECIDE) ); 
     /*
      * Exercise:
      * -- put y's data into the local vector,
@@ -178,7 +176,7 @@ int main(int argc,char **argv)
      * Compute the norm: it should be 1 on the first & last process,
      * zero elsewhere
      */
-    ierr = VecNorm(localvec,NORM_1,&norm); CHKERRQ(ierr);
+    PetscCall( VecNorm(localvec,NORM_1,&norm) ); 
     if (procno==0 || procno==nprocs-1)
       norm_shouldbe = 1.;
     else norm_shouldbe = 0.;
@@ -195,7 +193,7 @@ int main(int argc,char **argv)
      *    (this mostly serves to prevent memory leaks)
      */
 /**** your code here ****/
-    ierr = VecDestroy(&localvec); CHKERRQ(ierr);
+    PetscCall( VecDestroy(&localvec) ); 
   }
   //#endif
 
@@ -203,10 +201,10 @@ int main(int argc,char **argv)
      Free work space.  All PETSc objects should be destroyed when they
      are no longer needed.
   */
-  ierr = MatDestroy(&A); CHKERRQ(ierr);
-  ierr = VecDestroy(&x); CHKERRQ(ierr);
-  ierr = VecDestroy(&y); CHKERRQ(ierr);
+  PetscCall( MatDestroy(&A) ); 
+  PetscCall( VecDestroy(&x) ); 
+  PetscCall( VecDestroy(&y) ); 
 
-  ierr = PetscFinalize();
+  PetscFinalize();
   return 0;
 }

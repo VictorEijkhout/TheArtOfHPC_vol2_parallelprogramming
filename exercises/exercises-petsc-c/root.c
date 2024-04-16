@@ -4,7 +4,7 @@
  **** `Introduction to the PETSc library'
  **** by Victor Eijkhout eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-2020
+ **** copyright Victor Eijkhout 2012-2024
  ****
  **** root.c : exercise for backtracing error messages
  ****
@@ -32,12 +32,12 @@ int main(int argc,char **argv)
   PetscErrorCode ierr;
 
   char help[] = "\nInit example.\n\n";
-  ierr = PetscInitialize(&argc,&argv,(char*)0,help); CHKERRQ(ierr);
+  PetscCall( PetscInitialize(&argc,&argv,(char*)0,help) ); 
   PetscReal x,rootx;
-  x = 1.5; ierr = square_root(x,&rootx); CHKERRQ(ierr);
+  x = 1.5; PetscCall( square_root(x,&rootx) ); 
   PetscPrintf(PETSC_COMM_WORLD,"Root of %f is %f\n",x,rootx);
-  x = -2.6; ierr = square_root(x,&rootx); CHKERRQ(ierr);
+  x = -2.6; PetscCall( square_root(x,&rootx) ); 
   PetscPrintf(PETSC_COMM_WORLD,"Root of %f is %f\n",x,rootx);
-  ierr = PetscFinalize(); CHKERRQ(ierr);
+  PetscCall( PetscFinalize() ); 
   return 0;
 }
