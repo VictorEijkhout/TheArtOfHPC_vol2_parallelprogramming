@@ -5,46 +5,29 @@
 %%%% `Introduction to the PETSc library'
 %%%% by Victor Eijkhout, eijkhout@tacc.utexas.edu
 %%%%
-%%%% copyright Victor Eijkhout 2012-2023
+%%%% copyright Victor Eijkhout 2012-2024
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \documentclass[11pt]{beamer}
 
-\beamertemplatenavigationsymbolsempty
-\usepackage{beamerthemeTACC}
-\usetheme{Boadilla}
-\usecolortheme{seagull}
-%% left align frame title
-\setbeamertemplate{frametitle}{\insertframetitle} 
+\input courseformat
+  
+\def\qrcode{qrvol2}
+\input lang
 
-\AtBeginSection[]
-{
-    \begin{frame}
-      \scriptsize
-        \frametitle{Table of Contents}
-        \tableofcontents[currentsection]
-    \end{frame}
-}
-
-%% \parskip=.5\baselineskip plus .5\baselineskip
-
-\event{PETSc Course 2022}
-\def\hpcteachers{Victor Eijkhout}
-
-\input commonmacs
-\input slidemacs
-\input snippetmacs
-\input coursemacs
-\let\sectionframe\section
-
-\usepackage{graphicx,multicol,amsmath}
+\author[Eijkhout]{Victor Eijkhout}
+\date[2024]{2024 COE 379L / CSE 392}
+%% \normalsize last formatted \today}
+\title[PETSc]{PETSc Course}
 
 %%%%
 %%%% In/exclude this that and the other
 %%%%
 % \usepackage{comment} already in coursemacs
 \excludecomment{higher}
+% exclude for pcse:
+\excludecomment{standalone}
 
 % not for edit
 \excludecomment{details}
@@ -63,28 +46,19 @@
 \parskip=12pt plus 2pt
 
 %%%%
-%%%% language specific
-%%%%
-\input lang
-
-%%%%
 %%%% And here we go....
 %%%%
 \begin{document}
-
-\title{Introduction to the PETSc library}
-\author[Victor Eijkhout]{Victor Eijkhout\\
-\tt\normalsize eijkhout@tacc.utexas.edu}
-\date[2022/02/04]{TACC Training 2022/02/04}
 \frame{\titlepage}
-
-%% \begin{frame}{Exercises}
-%%   \printindex[programming]
-%% \end{frame}
 
 \section{Introduction}
 \input introduction
+
+%% PCSE students have already seen this
+\begin{standalone}
 \input spmd
+\end{standalone}
+
 \input starting
 \input vector
 \input matrix
