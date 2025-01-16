@@ -1,0 +1,134 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2022-2024
+%%%%
+%%%% ompcpp4-slides.tex
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{numberedframe}{Threadprivate random number generators}
+  \input{cppnote-threadprivate-random-number-generators.cut}
+\end{numberedframe}
+
+\begin{numberedframe}{Threadprivate random use}
+  \input{cppnote-threadprivate-random-use.cut}
+\end{numberedframe}
+
+\begin{numberedframe}{Uninitialized containers}
+  Multi-socket systems:\\
+  parallel initialization instantiates pages on sockets:\\
+  `first touch'
+  \begin{lstlisting}
+    double *x = (double*)malloc( N*sizeof(double));
+    #pragma omp parallel for
+    for (int i=0; i<N; i++)
+      x[i] = f(i);
+  \end{lstlisting}
+  This does not work with
+  \begin{lstlisting}
+    std::vector<double> x(N);
+    #pragma omp parallel for
+    for (int i=0; i<N; i++)
+      x[i] = f(i);
+  \end{lstlisting}
+  because of value initialization in the \lstinline{vector} container.
+\end{numberedframe}
+
+\begin{numberedframe}{Uninitialized containers, 2}
+  Trick to create a vector of uninitialized data:
+  %
+  \cxxverbatimsnippet{cppuninitial}
+  %
+  so that we can create vectors that behave normally:
+  %
+  \cxxverbatimsnippet{cppuninitialvec}
+  %% \input{cppnote-uninitialized-containers.cut}
+  (Question: why not use \lstinline{reserve}?)
+\end{numberedframe}
+
+\begin{numberedframe}{Uninitialized containers, 3}
+  Easy way of dealing with this:
+\begin{lstlisting}
+template<typename T>
+class ompvector : public vector<uninitialized<T>> {
+public:
+  ompvector( size_t s )
+    : vector<uninitialized<T>>::vector<uninitialized<T>>(s) {};
+};
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Atomic scalar updates}
+  Can you atomically update scalars?
+  \begin{itemize}
+  \item Make an object that has data plus a lock;
+  \item Disable copy and copy-assignment operators;
+  \item Destructor does \indexompshow{omp_destroy_lock};
+  \item Overload arithmetic operator.
+  \end{itemize}
+  (Quick self-test: why lock, not critical?)
+\end{numberedframe}
+
+\begin{numberedframe}{Atomic updates: class with OMP lock}
+  \cverbatimsnippet[examples/omp/cxx/lockobject.cxx]{lockobject}
+\end{numberedframe}
+
+\begin{numberedframe}{Atomic updates: atomic ops}
+  \cverbatimsnippet[examples/omp/cxx/lockobject.cxx]{lockobjectops}
+\end{numberedframe}
+
+\begin{numberedframe}{Atomic updates: usage}
+  \cverbatimsnippet[examples/omp/cxx/lockobject.cxx]{lockobjectuse}
+\end{numberedframe}
+
+\begin{numberedframe}{Atomic updates, comparison to native}
+  Timing comparison on simplest case:
+\begin{multicols}{2}
+  \let\snippetoutputsize\scriptsize
+  Object with built-in lock:
+\cxxverbatimsnippet{lockobjectuse}
+\columnbreak
+Native C++ atomics:
+\cxxverbatimsnippet{atomicintuse}
+\end{multicols}
+
+  Native solution is 10x faster.
+
+\end{numberedframe}
+
+\begin{numberedframe}{False sharing prevention}
+  \begin{lstlisting}
+    #include <new>
+
+    #ifdef __cpp_lib_hardware_interference_size
+    const int spread = std::hardware_destructive_interference_size
+            / sizeof(datatype);
+    #else
+    const int spread = 8;
+    #endif
+
+    vector<datatype> k(nthreads*spread);
+    #pragma omp parallel for schedule( static, 1 )
+    for ( datatype i = 0; i < N; i++ ) {
+      k[ (i%nthreads) * spread ] += 2;
+  \end{lstlisting}
+  Since \cppstandard{17}
+\end{numberedframe}
+
+\begin{numberedframe}{Beware vector-of-bool!}
+  Does not compile:
+  \cxxverbatimsnippet{boolrange}
+  More subtle:
+  \cxxsnippetwithoutput{booliter}{code/omp/cxx}{booliter}
+  Different \lstinline{bits[i]} are falsely shared.
+\end{numberedframe}
+
+\begin{numberedframe}{CMake}
+  \lstinputlisting{../../makefiles/CMakeLists.omp.cxx.txt}
+\end{numberedframe}
+

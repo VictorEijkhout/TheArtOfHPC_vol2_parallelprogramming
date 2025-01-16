@@ -1,0 +1,130 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2022-2024
+%%%%
+%%%% ompcpp2-slides.tex : course in C++ aspects of OpenMP
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{numberedframe}{Questions}
+  \begin{enumerate}
+  \item Do regular OpenMP loops look different in C++?
+  \item Is there a relation between OpenMP parallel loops and iterators?
+  \item OpenMP parallel loops vs parallel execution policies on algorithms.
+  \end{enumerate}
+\end{numberedframe}
+
+\begin{numberedframe}{Range syntax}
+  \input{cppnote-range-syntax.cut}
+\end{numberedframe}
+
+\begin{numberedframe}{General idea}
+  OpenMP can parallelize any loop over a C++ construct
+  that has a `random-access' iterator.
+\end{numberedframe}
+
+\begin{numberedframe}{C++ ranges header}
+  \input{cppnote-c++20-ranges-header.cut}
+\end{numberedframe}
+
+\begin{numberedframe}{C++ ranges speedup}
+  \input{cppnote-c++20-ranges-speedup.cut}
+\end{numberedframe}
+
+\begin{numberedframe}{Ranges and indices}
+  \input{cppnote-ranges-and-indices.cut}  
+\end{numberedframe}
+
+\begin{numberedframe}{Custom iterators, 0}
+  Recall that
+\begin{multicols}{2}
+Short hand:
+\begin{lstlisting}
+vector<float> v;
+for ( auto e : v )
+   ... e ...
+\end{lstlisting}
+\columnbreak for:
+\begin{lstlisting}
+for ( vector<float>::iter
+      e=v.begin();
+      e!=v.end(); e++ )
+  ... *e ...
+\end{lstlisting}
+\end{multicols}
+If we want 
+\begin{lstlisting}
+for ( auto e : my_object )
+    ... e ...
+\end{lstlisting}
+we need a sub-class for the iterator with methods such as
+\lstinline{begin}, \lstinline{end},
+\lstinline|*| and \lstinline|++|.\\
+Probably also \lstinline|+=| and \lstinline|-|
+\end{numberedframe}
+
+\begin{numberedframe}{Custom iterators, 1}
+  OpenMP can parallelize any range-based loop with a random-access iterator.
+  \begin{multicols}{2}
+    Class:
+    \cxxverbatimsnippet{classwithiter}
+    \columnbreak
+    Main:
+    \cxxverbatimsnippet{ompcustompar}    
+  \end{multicols}
+  %%  \input{cppnote-custom-iterators.cut}
+\end{numberedframe}
+
+\begin{numberedframe}{Custom iterators, 2}
+  Required iterator methods:
+  \cxxverbatimsnippet{omprandaccess}  
+  This is a little short of a full random-access iterator;
+  the difference depends on the OpenMP implementation.
+\end{numberedframe}
+
+\begin{numberedframe}{Custom iterators, exercise}
+  Write the missing iterator methods.\\
+  Here's something to get you started.
+  \cxxverbatimsnippet{classwithiteriter}  
+\end{numberedframe}
+
+\begin{numberedframe}{Custom iterators, solution}
+  \cxxverbatimsnippet{classwithitersol1}
+\end{numberedframe}
+
+\begin{numberedframe}{Custom iterators, solution}
+  \cxxverbatimsnippet{classwithitersol2}
+\end{numberedframe}
+
+\begin{numberedframe}{OpenMP vs standard parallelism}
+  Application: prime number marking
+  (load unbalanced)
+
+  \cxxverbatimsnippet{markprimeomp}
+  \cxxverbatimsnippet{markprimecpp}
+
+  Standard parallelism uses \ac{TBB} as backend
+\end{numberedframe}
+
+\begin{numberedframe}{Timing}
+  \lstinputlisting{examples/tbb/cxx/primepolicy-scaling-ls6.runout}
+\end{numberedframe}
+
+\begin{numberedframe}{Reductions vs standard parallelism}
+  Application: prime number counting
+  (load unbalanced)
+
+  \cxxverbatimsnippet{reduceprimeomp}
+  \cxxverbatimsnippet{reduceprimecpp}
+
+\end{numberedframe}
+
+\begin{numberedframe}{Timing}
+  \lstinputlisting{examples/tbb/cxx/reducepolicy-scaling-ls6.runout}
+\end{numberedframe}
+

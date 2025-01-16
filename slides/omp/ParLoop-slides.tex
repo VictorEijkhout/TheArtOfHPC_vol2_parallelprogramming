@@ -51,14 +51,16 @@ C: directive followed by statement or block:
     ... something with i ...
 }
 \end{lstlisting}
-Fortran: matching end directive
+\end{numberedframe}
+
+\begin{numberedframe}{Loops in Fortran}
+Fortran: optional matching end directive
 \begin{lstlisting}
 !$omp parallel
 !$omp do
   do i=1,n
     ... something with i ...
   end do
-!$omp end do
 !$omp end parallel
 \end{lstlisting}
 \end{numberedframe}

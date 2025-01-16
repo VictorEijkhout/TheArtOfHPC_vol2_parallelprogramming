@@ -1,0 +1,53 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2022-2024
+%%%%
+%%%% ompcpp1-slides.tex
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{numberedframe}{Bracket syntax}
+  \input{cppnote-bracket-syntax.cut}
+\end{numberedframe}
+
+\begin{numberedframe}{Output streams in parallel}
+  \input{cppnote-output-streams-in-parallel.cut}
+\end{numberedframe}
+
+\begin{numberedframe}{Parallel regions in lambdas}
+  \input{cppnote-parallel-regions-in-lambdas.cut}
+\end{numberedframe}
+
+\begin{numberedframe}{Dynamic scope for class methods}
+  \def\snippetoutputsize{\footnotesize}
+  \input{cppnote-dynamic-scope-for-class-methods.cut}
+\end{numberedframe}
+
+\begin{numberedframe}{Privatizing class members}
+  \input{cppnote-privatizing-class-members.cut}
+\end{numberedframe}
+
+\begin{numberedframe}{More privatization}
+  Reference types can not be private.
+
+  Private objects are constructed/destructed by each thread.
+\end{numberedframe}
+
+\begin{numberedframe}{Vectors are copied, unlike arrays, 1}
+  %% \input{cppnote-vectors-are-copied,-unlike-arrays.cut}
+  C arrays: private pointer, but shared array:
+  %
+  \csnippetwithoutput{privatepointer}{examples/omp/c}{pointarray}
+\end{numberedframe}
+
+\begin{numberedframe}{Vectors are copied, unlike arrays, 2}
+  C++ vectors: copy constructor also copies data:
+  %
+  \cxxsnippetwithoutput{privatevector}{examples/omp/cxx}{privvector}
+\end{numberedframe}
+

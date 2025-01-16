@@ -1,0 +1,169 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2022-2024
+%%%%
+%%%% ompcpp1-slides.tex
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{numberedframe}{Questions}
+  \begin{enumerate}
+  \item Are simple reductions the same as in C?
+  \item Can you reduce \lstinline{std::vector} like an array?
+  \item Precisely \emph{what} can you reduce?
+  \item Any interesting examples?
+  \item Compare reductions to native C++ mechanisms.
+  \end{enumerate}
+\end{numberedframe}
+
+\begin{numberedframe}{Scalar reductions}
+  Same as in C,\\
+  you can now use range syntax for the loop.
+  %
+  \cxxverbatimsnippet{omprangereduct}
+\end{numberedframe}
+
+\begin{numberedframe}{Reductions on vectors}
+  \input{cppnote-reductions-on-vectors.cut}
+\end{numberedframe}
+
+\begin{numberedframe}{Reduction on class objects}
+  \input{cppnote-reduction-on-class-objects.cut}
+\end{numberedframe}
+
+\begin{numberedframe}{Reduction illustrated}
+  \label{fig:omp-reduct}
+
+  Reduction of four items on two threads.
+  \n{i}~is the OpenMP initialization, and \n{u}~is the
+  user initialization; each \n{p}~stands for a partial reduction value.
+  \includegraphics[scale=.1]{omp-reduct.jpeg}
+\end{numberedframe}
+
+\begin{numberedframe}{User-defined reductions, syntax}
+  \begin{lstlisting}
+    #pragma omp declare reduction 
+    ( identifier : typelist : combiner )
+    [initializer(initializer-expression)]
+  \end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Reduction over iterators}
+  \input{cppnote-reduction-over-iterators.cut}
+\end{numberedframe}
+
+\begin{numberedframe}{Lambda expressions in declared reductions}
+  \input{cppnote-lambda-expressions-in-declared-reductions.cut}
+\end{numberedframe}
+
+%% \begin{numberedframe}{Example: reduction over a map}
+%%   \input{cppnote-example:-reduction-over-a-map.cut}
+%% \end{numberedframe}
+
+\begin{numberedframe}{Example category: histograms}
+  Count which elements fall into what bin:
+  \begin{lstlisting}
+    for ( auto e : some_range )
+      histogram[ value(e)]++;
+  \end{lstlisting}
+  Collisions are possible, but unlikely, so critical section is very inefficient
+\end{numberedframe}
+
+\begin{numberedframe}{Histogram: intended main program}
+  Declare a reduction on a histogram object;\\
+  each thread gets a local map:
+  \cxxverbatimsnippet{ompbinreduce}
+  Q: why does the \lstinline{inc} not have to be atomic?
+\end{numberedframe}
+
+\begin{numberedframe}{Histogram solution: reduction operator}
+  Give the class a \lstinline{+=} operator to do the combining:
+  \footnotesize
+  \cxxverbatimsnippet{ompbincounter}
+\end{numberedframe}
+
+\begin{numberedframe}{Histogram in native C++}
+  Use atomics because there is no reduction mechanism:
+  \cxxverbatimsnippet{atomicbincounter}
+\end{numberedframe}
+
+\begin{numberedframe}{Histogram in native C++, comparison}
+  OpenMP reduction on \lstinline{array<int,26>}:
+  \footnotesize
+  \lstinputlisting{code/omp/cxx/mapatomic-frontera.runout}
+\end{numberedframe}
+
+\begin{numberedframe}{Exercise: mapreduce}
+  Make an OpenMP parallel version of:
+\begin{lstlisting}
+intcounter primecounter;
+for ( auto n : numbers )
+  if ( isprime(n) )
+    primecounter.add(n);
+\end{lstlisting}
+  where \lstinline{primecounter} contains a \lstinline|map<int,int>|.
+
+  Use skeleton: \n{mapreduce.cxx}  
+\end{numberedframe}
+
+\begin{numberedframe}{Example category: list filtering}
+The sequential code is as follows:
+\begin{lstlisting}
+vector<int> data(100);
+// fil the data
+vector<int> filtered;
+for ( auto e : data ) {
+  if ( f(e) )
+    filtered.push_back(e);
+}
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{List filtering, solution 1}
+  Let each thread have a local array,
+  and then to concatenate these:
+\begin{lstlisting}
+#pragma omp parallel
+{
+  vector<int> local;
+# pragma omp for
+  for ( auto e : data )
+    if ( f(e) ) local.push_back(e);
+  filtered += local;
+}
+\end{lstlisting}
+where we have used an append operation on vectors:
+\cxxverbatimsnippet{cppvectorplusis}
+\end{numberedframe}
+
+\begin{numberedframe}{List filtering, not quite solution 2}
+We could use the plus-is operation to declare a reduction:
+\cxxverbatimsnippet{cppvectorplusreduct}
+
+Problem: OpenMP reductions can not be declared non-commutative,
+so the contributions from the threads
+may not appear in order.
+
+\cxxsnippetwithoutput{cppvectordoreduct}{code/omp/cxx}{filterreduct}
+\end{numberedframe}
+
+\begin{numberedframe}{List filtering, task-based solution}
+  Parallel region, without for:
+  %
+\cxxsnippetwithoutput{cppvectordomain}{code/omp/cxx}{filtertask}
+\end{numberedframe}
+
+\begin{numberedframe}{List filtering, task-based solution'}
+  The task spins until it's its turn:
+\cxxsnippetwithoutput{cppvectordotask}{code/omp/cxx}{filtertask}
+\end{numberedframe}
+
+\begin{numberedframe}{Templated reductions}
+  \input{cppnote-templated-reductions.cut}
+\end{numberedframe}
+
