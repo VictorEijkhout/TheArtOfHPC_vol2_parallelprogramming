@@ -1,2 +1,2 @@
 layout = shared_ptr<mpl::layout<real>>
-  ( make_shared<mpl::strided_vector_layout<real>>(m-2*b,b,n) );
+  ( make_shared<mpl::strided_vector_layout<real>>(m,1,n+2*b) );

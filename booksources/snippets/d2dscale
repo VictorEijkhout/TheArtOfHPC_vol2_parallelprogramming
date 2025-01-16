@@ -4,6 +4,9 @@ void bordered_array<real>::scale_interior
   const auto otherinner = other.inner();
   transform
     ( 
+#ifdef USE_TBB
+      exec::par_unseq,
+#endif
 	otherinner().begin(),otherinner().end(),
       this->inner().begin(),
       [out = data2d(),factor] ( auto idx ) {

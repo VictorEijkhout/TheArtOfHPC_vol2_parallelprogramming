@@ -4,7 +4,7 @@
  **** `Parallel programming for Science and Engineering'
  **** by Victor Eijkhout, eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-2021
+ **** copyright Victor Eijkhout 2012-2024
  ****
  **** MPI Exercise for the use of Scan/Exscan
  ****
@@ -67,22 +67,23 @@ int main(int argc,char **argv) {
   for (int i_element=0; i_element<my_number_of_elements; i_element++)
     my_elements.at(i_element) = my_first_index+i_element;
 
-  if (procno==0) {
+  const int root=0;
+  if (procno==root) {
     comm_world.reduce
-      ( mpl::plus<int>(),0,
+      ( mpl::plus<int>(),root,
         my_number_of_elements,total_number_of_elements );
     stringstream proctext;
     proctext << "Total number of elements: " << total_number_of_elements;
     cout << proctext.str() << endl;
   } else {
     comm_world.reduce
-      ( mpl::plus<int>(),0,my_number_of_elements );
+      ( mpl::plus<int>(),root,my_number_of_elements );
   }
 
   /*
    * Use Gatherv to collect the small buffers into a big one
    */
-  if (procno==0) {
+  if (procno==root) {
     vector<int> size_buffer(nprocs);
     comm_world.gather
       (
@@ -128,10 +129,10 @@ int main(int argc,char **argv) {
      * If you are not the root, do versions with only send buffers
      */
     comm_world.gather
-      ( 0,my_number_of_elements );
+      ( root,my_number_of_elements );
 
     comm_world.gatherv
-      ( 0,my_elements.data(),mpl::contiguous_layout<int>(my_number_of_elements) );
+      ( root,my_elements.data(),mpl::contiguous_layout<int>(my_number_of_elements) );
   }
 
   return 0;

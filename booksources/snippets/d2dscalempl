@@ -1,5 +1,5 @@
 template< typename real >
 void distributed_array<real>::scale_interior
-    ( const distributed_array<real>& other, real factor ) {
-  data.scale_interior(other.data,factor);
+    ( const linalg::distributed_array<real>& other, real factor ) {
+  subdomain->scale_interior( *(other.subdomain),factor);
 };

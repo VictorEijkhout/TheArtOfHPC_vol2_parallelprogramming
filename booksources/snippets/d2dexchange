@@ -1,10 +1,10 @@
 template< typename real >
-void distributed_array<real>::halo_exchange( bool trace ) {
+void distributed_array<real>::halo_exchange( bordered_array_base<real>& data, bool trace ) {
   for ( auto [f,t] : { make_pair('W','E'),{'E','W'},{'N','S'},{'S','N'} } ) {
 // inner edge to send in the `to' direction
-    auto [snd_ptr,snd_layout] = this->get_edge(t);
+    auto [snd_ptr,snd_layout] = get_edge(data,t);
 // halo region to receive from the `from' direction
-    auto [rcv_ptr,rcv_layout] = this->get_halo(f);
+    auto [rcv_ptr,rcv_layout] = get_halo(data,f);
 // neighbor ranks
     auto from = neighbors[f], to = neighbors[t];
     mpl::tag_t t0{0};

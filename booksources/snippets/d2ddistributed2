@@ -3,13 +3,3 @@ dimensions = comm.get_dimensions();
 auto
   pmsize = dimensions.size(0),
   pnsize = dimensions.size(1);
-std::cout << std::format("Process grid: {}x{}\n",pmsize,pnsize);
-/*
- * Start and end for each processor
- */
-proc_start_m = segmentize(m,pmsize); 
-proc_start_n = segmentize(n,pnsize);
-/*
- * This process in particular
- */
-//codesnippet d2ddistributed3

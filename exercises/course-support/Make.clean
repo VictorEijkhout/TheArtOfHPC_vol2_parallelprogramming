@@ -28,7 +28,7 @@ codeclean :
 	    tautrace_* dcvserver.out
 texclean :
 	@/bin/rm -rf \
-	    *.{aux,blg,idx,ilg,ind,log,mod,mw,nav,out,snm,svn,toc,vrb,wrt} *.cut texput.*
+	    *.{aux,auxlock,blg,idx,ilg,ind,log,mod,mw,nav,out,snm,svn,toc,vrb,wrt} *.cut texput.*
 localclean local_clean :: codeclean texclean
 	@/bin/rm -rf \
 	    ddt.o[0-9]* jobtest.o* tautrace_* __pycache__ \

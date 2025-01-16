@@ -1,9 +1,9 @@
-#     pragma omp parallel for reduction(+:count)
-      for ( auto e : data
+#pragma omp parallel for reduction(+:itcount)
+for ( auto e : data
 	      | std::ranges::views::drop(1) )
-	count += e;
-#     pragma omp parallel for reduction(+:count)
-      for ( auto e : data
+	itcount += e;
+#pragma omp parallel for reduction(+:itcount)
+for ( auto e : data
 	      | std::ranges::views::transform
 	      ( []( auto e ) { return 2*e; } ) )
-	count += e;
+	itcount += e;

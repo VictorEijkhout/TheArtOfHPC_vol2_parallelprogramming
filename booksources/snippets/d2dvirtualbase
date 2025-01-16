@@ -1,6 +1,3 @@
 // base.hpp
 template< typename real >
 class bordered_array_base {
-  friend class distributed_array<real>;
-protected:
-  std::int64_t _m{0},_n{0}; int _border{0}; 

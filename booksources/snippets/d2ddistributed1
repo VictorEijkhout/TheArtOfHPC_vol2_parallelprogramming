@@ -1,10 +1,9 @@
 // dist.cpp
 template< typename real >
 distributed_array<real>::distributed_array
-    ( const mpl::cartesian_communicator& comm,size_t m,size_t n,
+    ( const mpl::cartesian_communicator& comm,size_t m,size_t n,int border,
 	bool trace )
       : comm(comm)
 	, rank( comm.rank() )
 	, m_global(m),n_global(n)
 {
-//    auto rank = comm.rank();

@@ -57,16 +57,31 @@
 \edef\revision{\svnrev}
 \def\lulurevision{}
 
+\newcommand\codesnippetsdir{snippets}
 \input commonmacs
+\input pcsecommonmacs
 \input acromacs
 \input blockmacs
 \input exmacs
+\input standardmacs
 \input tutmacs
+%%
+%% indexing
+%%
+\usepackage{morewrites}
+\usepackage[original,nonewpage]{imakeidx}
+\makeindex % default index
 \input idxmacs
-\input idxpkgmacs
-%% \makeindex
+\input alsoidxmacs
+\input pcseidxmacs
+
 \input bookmacs
+\input listingmacs
+\input pcselistingmacs
+\def\snippetstyle{booksnippetcode}
+\lstset{style=\snippetstyle}
 \input snippetmacs
+\input pcsesnippetmacs
 
 \ifincludesources
   \def\chaptersourcelisting#1{

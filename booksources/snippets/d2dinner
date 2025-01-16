@@ -1,11 +1,18 @@
-auto inner() {
-  const auto& s = data2d();
-  int b = this->border();
-  std::int64_t
-    lo_m = static_cast<std::int64_t>(b),
-	hi_m = static_cast<std::int64_t>(s.extent(0)-b),
-	lo_n = static_cast<std::int64_t>(b),
-	hi_n = static_cast<std::int64_t>(s.extent(1)-b);
-  return rng::views::cartesian_product
-	( rng::views::iota(lo_m,hi_m),rng::views::iota(lo_n,hi_n) );
+mutable std::optional< decltype( rng::views::cartesian_product
+                         ( rng::views::iota(idxint{0},idxint{0}),
+                           rng::views::iota(idxint{0},idxint{0}) ) ) >
+        range2d = {};
+auto inner() const {
+  if (not range2d.has_value()) {
+    const auto& s = data2d();
+    int b = this->border();
+    idxint
+      lo_m = static_cast<idxint>(b),
+      hi_m = static_cast<idxint>(s.extent(0)-b),
+      lo_n = static_cast<idxint>(b),
+      hi_n = static_cast<idxint>(s.extent(1)-b);
+    range2d = rng::views::cartesian_product
+      ( rng::views::iota(lo_m,hi_m),rng::views::iota(lo_n,hi_n) );
+  }
+  return *range2d;
 };

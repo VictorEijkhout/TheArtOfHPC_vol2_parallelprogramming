@@ -4,7 +4,7 @@ auto
   sm = proc_start_m[pm+1]-proc_start_m[pm],
   sn = proc_start_n[pn+1]-proc_start_n[pn];
 subdomain = unique_ptr<bordered_array_base<real>>
-  ( make_unique<bordered_array_seq<real>>(sm,sn,1) );
+  ( make_unique<bordered_array_seq<real>>(sm,sn,border) );
 tmp = unique_ptr<bordered_array_base<real>>
-  ( make_unique<bordered_array_seq<real>>(sm,sn,1) );
+  ( make_unique<bordered_array_seq<real>>(sm,sn,border) );
 set_neighbors(trace);

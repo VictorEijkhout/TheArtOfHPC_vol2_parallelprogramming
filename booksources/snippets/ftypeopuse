@@ -5,4 +5,3 @@ Type(inttype) :: intsum = inttype(0)
 do i=1,nsize
    intsum = intsum + intarray(i)
 end do
-!$OMP end parallel do

@@ -1,7 +1,4 @@
-float
-  xrank = static_cast<float>( comm_world.rank() ),
-  xreduce;
 // separate recv buffer
-comm_world.allreduce(mpl::plus<float>(), xrank,xreduce);
+comm_world.allreduce(mpl::plus<float>(), proc_data,reduce_data);
 // in place
-comm_world.allreduce(mpl::plus<float>(), xrank);
+comm_world.allreduce(mpl::plus<float>(), proc_data);

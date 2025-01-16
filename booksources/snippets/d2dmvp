@@ -4,6 +4,9 @@ void bordered_array<real>::central_difference_from
     ( const linalg::bordered_array<real>& other,bool trace ) {
   for_each
     ( 
+#ifdef USE_TBB
+      exec::par_unseq,
+#endif
       this->inner().begin(),this->inner().end(),
       [out = data2d(), in = other.data2d()] ( auto idx ) {
       auto [i,j] = idx;

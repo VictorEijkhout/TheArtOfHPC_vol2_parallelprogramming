@@ -85,13 +85,13 @@ CXXFLAGS += ${OPTFLAGS}
 FFLAGS   += ${OPTFLAGS}
 
 ## there are bugs in the qopenmp backend of Intel23
-ifdef INTEL_OMP_FLAG
-  OMPFLAGS_intel = ${INTEL_OMP_FLAG}
-else ifeq "${INTEL23}" "23"
-  OMPFLAGS_intel    = -fopenmp 
-else
-  OMPFLAGS_intel    = -qopenmp 
-endif
+# ifdef INTEL_OMP_FLAG
+#   OMPFLAGS_intel = ${INTEL_OMP_FLAG}
+# else ifeq "${INTEL23}" "23"
+# else
+#   OMPFLAGS_intel    = -qopenmp 
+# endif
+OMPFLAGS_intel    = -fopenmp 
 OMPFLAGS_oneapi   = -qopenmp 
 OMPFLAGS_gcc      = -ggdb -fopenmp
 OMPFLAGS_clang    = -fopenmp
@@ -104,8 +104,12 @@ else
   OMPFLAGS := ${OMPFLAGS_${TACC_FAMILY_COMPILER}}
 endif
 
-# these conditionals are not executed. why?
-ifeq "${MODE}" "omp"
+# are these conditionals executed?
+ifeq "${MODE}" ""
+else ifeq "${MODE}" "sycl"
+  CXXFLAGS += -fsycl
+  LINK_FLAGS += -fsycl
+else ifeq "${MODE}" "omp"
   CFLAGS   += ${OMPFLAGS}
   CXXFLAGS += ${OMPFLAGS}
   FFLAGS   += ${OMPFLAGS}
@@ -315,8 +319,7 @@ modules :
 	 && make --no-print-directory modules PROGRAM=$${program}
 	@if [ -z "${CXX_COMPILER}" ] ; then \
 	    echo "Variable CXX_COMPILER not set" && exit 1 ; fi
-	@cmdline="${CXX_COMPILER} -g ${EXTRA_INCLUDES} ${CXXFLAGS} \
-	    -c $<" \
+	@cmdline="${CXX_COMPILER} -g ${EXTRA_INCLUDES} ${CXXFLAGS} -c $<" \
 	 && if [ "${ECHO}" = "1" ] ; then \
 	        echo "Compiling: $$cmdline" \
 	         && echo "with ${CXX_COMPILER}=$$( which ${CXX_COMPILER} )" \
