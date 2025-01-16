@@ -1,16 +1,15 @@
-% -*- latex
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
 %%%% This text file is part of the source of 
-%%%% `Introduction to High-Performance Scientific Computing'
-%%%% by Victor Eijkhout, copyright 2021-2023
+%%%% `The Art of HPC, vol 1: The Science of Computing'
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
 %%%% The Saylor Foundation \url{http://www.saylor.org}.
 %%%%
-%%%% acromacs : acronym definitions
+%%%% macros for acronyms.
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -19,45 +18,110 @@
 \newwrite\acrowrite
 \openout\acrowrite=acronyms.tex
 \def\acroitem#1#2{\acrodef{#1}{#2}
-    \write\acrowrite{\message{defining #1}\noexpand\acitem{#1}{#2}}
+    \expandafter \let \csname ifneed#1\endcsname \iffalse
+    \write\acrowrite{\noexpand\acitem{#1}{#2}}
 }
-\acroitem{API}{Application Programmer Interface}
+%\def\acitem#1#2{\item[#1] #2}
+\def\acitem#1#2{\csname ifneed#1\endcsname \item[#1]{#2}\index{#1|see{#2}}\fi }
+\def\acitemi#1#2#3{\item[#1]{#2}\index{#1|see{#3}}}
+
+\acroitem{ABI}{Application Binary Interface}
+\acroitem{ADL}{Argument-Dependent Lookup}
 \acroitem{AMG}{Algebraic MultiGrid}
+\acroitem{AMR}{Adaptive Mesh Refinement}
+\acroitem{AOS}{Array-Of-Structures}
+\acroitem{API}{Application Programmer Interface}
 \acroitem{AVX}{Advanced Vector Extensions}
+
+\acroitem{BEM}{Boundary Element Method}
+\acroitem{BFS}{Breadth-First Search}
 \acroitem{BLAS}{Basic Linear Algebra Subprograms}
+\acroitem{BM}{Bowers-Moore}
 \acroitem{BSP}{Bulk Synchronous Parallel}
+\acroitem{BVP}{Boundary Value Problem}
+
 \acroitem{CAF}{Co-array Fortran}
-\acroitem{CPP}{C PreProcessor}
+\acroitem{CCS}{Compressed Column Storage}
+\acroitem{CG}{Conjugate Gradients}
+\acroitem{CGS}{Classical Gram-Schmidt}
+\acroitem{COO}{Coordinate Storage}
+\acroitem{CPP}{C~Preprocessor}
+\acroitem{CPU}{Central Processing Unit}
 \acroitem{CRS}{Compressed Row Storage}
 \acroitem{CSP}{Communicating Sequential Processes}
-\acroitem{CG}{Conjugate Gradients}
+\acroitem{CSV}{comma-separated values}
+\acroitem{CTAD}{Class Template Argument Deduction}
+\acroitem{TAD}{Template Argument Deduction}
 \acroitem{CUDA}{Compute-Unified Device Architecture}
+
 \acroitem{DAG}{Directed Acyclic Graph}
 \acroitem{DFS}{Depth First Search}
+\acroitem{DL}{Deep Learning}
 \acroitem{DPCPP}{Data Parallel C++}
+\acroitem{DRAM}{Dynamic Random-Access Memory}
 \acroitem{DSP}{Digital Signal Processing}
+
+\acroitem{FD}{Finite Difference}
+\acroitem{FDM}{Finite Difference Method}
+\acroitem{FE}{Finite Elements}
 \acroitem{FEM}{Finite Element Method}
-\acroitem{FIFO}{First-In~/ First-Out}
+\acroitem{FMA}{Fused Multiply-Add}
+\acroitem{FEM}{Finite Element Method}
+\acroitem{FIFO}{First-in-first-out}
+\acroitem{FMM}{Fast Multipole Method}
+\acroitem{FOM}{Full Orthogonalization Method}
+\acroitem{FPGA}{Field Programmable Gate Array}
 \acroitem{FPU}{Floating Point Unit}
 \acroitem{FFT}{Fast Fourier Transform}
-\acroitem{FPGA}{Field Programmable Gate Array}
 \acroitem{FSA}{Finite State Automaton}
+\acroitem{FSB}{Front-Side Bus}
+
+\acroitem{GMRES}{Generalized Minimum Residual}
 \acroitem{GPU}{Graphics Processing Unit}
+\acroitem{GPGPU}{General Purpose Graphics Processing Unit}
+\acroitem{GS}{Gram-Schmidt}
+\acroitem{GSL}{Guideline Support Library}
+\acroitem{GnuSL}{GNU Scientific Library}
+\acroitem{GUI}{Graphical User Interface}
+
+\acroitem{HDFS}{Hadoop File System}
 \acroitem{HPC}{High-Performance Computing}
 \acroitem{HPF}{High Performance Fortran}
 \acroitem{HPL}{High Performance Linpack}
+
+\acroitem{IBVP}{Initial Boundary Value Problem}
 \acroitem{ICV}{Internal Control Variable}
+\acroitem{IDE}{Integrated Development Environment}
+\acroitem{ILP}{Instruction Level Parallelism}
+\acroitem{ILU}{Incomplete LU}
+\acroitem{IMP}{Integrative Model for Parallelism}
+\acroitem{IVP}{Initial Value Problem}
+
 \acroitem{LAPACK}{Linear Algebra Package}
-\acroitem{MG}{Multi-Grid}
+\acroitem{LAN}{Local Area Network}
+\acroitem{LBM}{Lattice Boltzmann Method}
+\acroitem{LRU}{Least Recently Used}
+
+\acroitem{MG}{Multigrid}
+\acroitem{MGS}{Modified Gram-Schmidt}
 \acroitem{MIC}{Many Integrated Cores}
 \acroitem{MIMD}{Multiple Instruction Multiple Data}
+\acroitem{MGS}{Modified Gram-Schmidt}
+\acroitem{MKL}{Math Kernel Library}
+\acroitem{ML}{Machine Learning}
 \acroitem{MPI}{Message Passing Interface}
-\acroitem{MPL}{Message Passing Layer}
-\acroitem{NCCL}{NVIDIA Collective Communication Library}
-\acroitem{MPMD}{Multiple Program Multiple Data}
+\acroitem{MPL}{Message Passing Library}
+\acroitem{MPMD}{Multiple Programm Multiple Data}
+\acroitem{MSI}{Modified-Shared-Invalid}
 \acroitem{MTA}{Multi-Threaded Architecture}
+\acroitem{MTSP}{Multiple Traveling Salesman Problem}
+
+\acroitem{NCCL}{NVidia Collective Communication Library}
 \acroitem{NIC}{Network Interface Card}
+\acroitem{NTTP}{Non-Type Template Parameter}
 \acroitem{NUMA}{Non-Uniform Memory Access}
+
+\acroitem{ODE}{Ordinary Diffential Equation}
 \acroitem{OO}{Object-Oriented}
 \acroitem{OOP}{Object-Oriented Programming}
 \acroitem{OS}{Operating System}
@@ -66,23 +130,35 @@
 \acroitem{PRAM}{Parallel Random Access Machine}
 \acroitem{RDMA}{Remote Direct Memory Access}
 \acroitem{RMA}{Remote Memory Access}
+\acroitem{RNG}{Random Number Generator}
+\acroitem{RVO}{Return Value Optimization}
+
 \acroitem{SAN}{Storage Area Network}
-\acroitem{SaaS}{Software as-a Service}
+\acroitem{SAS}{Software As a Service}
+\acroitem{SCS}{Shortest Common Superset}%dna
 \acroitem{SFC}{Space-Filling Curve}
+\acroitem{SGD}{Stochastic Gradient Descent}
 \acroitem{SIMD}{Single Instruction Multiple Data}
 \acroitem{SIMT}{Single Instruction Multiple Thread}
 \acroitem{SLURM}{Simple Linux Utility for Resource Management}
 \acroitem{SM}{Streaming Multiprocessor}
 \acroitem{SMP}{Symmetric Multi Processing}
+\acroitem{SMT}{Symmetric Multi Threading}
+\acroitem{SOA}{Structure-Of-Arrays}
 \acroitem{SOR}{Successive Over-Relaxation}
+\acroitem{SSOR}{Symmetric Successive Over-Relaxation}
 \acroitem{SP}{Streaming Processor}
 \acroitem{SPMD}{Single Program Multiple Data}
 \acroitem{SPD}{symmetric positive definite}
+\acroitem{SRAM}{Static Random-Access Memory}
 \acroitem{SSE}{SIMD Streaming Extensions}
+\acroitem{SSSP}{Single Source Shortest Path}
 \acroitem{STL}{Standard Template Library}
-\acroitem{TACC}{Texas Advanced Computing Center}
-\acroitem{TBB}{Thread Building Blocks}
+\acroitem{TBB}{Threading Building Blocks}
+\acroitem{TDD}{Test-Driven Development}
 \acroitem{TLB}{Translation Look-aside Buffer}
+\acroitem{TSP}{Traveling Salesman Problem}
+\acroitem{UB}{Undefined Behavior}
 \acroitem{UMA}{Uniform Memory Access}
 \acroitem{UPC}{Unified Parallel C}
 \acroitem{URI}{Uniform Resource Identifier}

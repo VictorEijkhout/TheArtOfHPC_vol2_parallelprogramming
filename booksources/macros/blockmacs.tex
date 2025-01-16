@@ -43,6 +43,7 @@
 \generalcommentarg{block}
   {\refstepcounter{framecounter}%
     \begingroup
+    \TopLevelCodeSnippetfalse
     \def\ProcessCutFile{}\par
     \def\PrepareCutFile{\immediate\write\CommentStream
       {\noexpand\begin{frameblock}{\CommentBlockName}}}

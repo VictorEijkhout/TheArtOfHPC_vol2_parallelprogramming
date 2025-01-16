@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% mpi-derived.tex : derived datatypes
 %%%%
@@ -101,7 +101,7 @@ call MPI_Type_free(newvectortype)
   In \ac{MPL} type creation routines are in the main namespace,
   templated over the datatypes.
   %
-  \cxxverbatimsnippet[examples/mpi/mpl/vector.cxx]{vectormpl}
+  \mplverbatimsnippet[examples/mpi/mpl/vector.cxx]{vectormpl}
   %
   The commit call is part of the type creation,
   and freeing is done in the destructor.
@@ -191,8 +191,7 @@ This is illustrated in figure~\ref{fig:data-contiguous}.
 \begin{mplnote}{Contiguous type}
   The \ac{MPL} interface makes extensive use of
   \indexmpldef{contiguous_layout},
-  as it is the main way to declare a nonscalar buffer;
-  see note~\ref{mpl:vec-buf}.
+  as it is the main way to declare a nonscalar buffer.
 \end{mplnote}
 
 \begin{mplnote}{Contiguous composing}
@@ -201,7 +200,7 @@ This is illustrated in figure~\ref{fig:data-contiguous}.
   as their `old' type.
   To make a contiguous type for other layouts, use \indexmpidef{vector_layout}:
   %
-  \cxxverbatimsnippet{mplcontvector}
+  \mplverbatimsnippet{mplcontvector}
   %
   (Contrast this with \indexmplshow{strided_vector_layout}; note~\ref{mpl:strided_vector}.)
 \end{mplnote}
@@ -263,7 +262,7 @@ declared as \lstinline{Integer}:
   MPL has the \indexmpldef{strided_vector_layout} class as equivalent
   of the vector type:
   %
-  \cxxverbatimsnippet[examples/mpi/mpl/vector.cxx]{vectormpl}
+  \mplverbatimsnippet[examples/mpi/mpl/vector.cxx]{vectormpl}
 
   (See note~\ref{mpl:cont_vector} for nonstrided vectors.)
 \end{mplnote}
@@ -507,7 +506,7 @@ For Fortran we show the legacy syntax for once:
   In \ac{MPL}, the \indexmpldef{indexed_layout} is based on a vector
   of 2-tuples denoting block length~/ block location.
   %
-  \cxxverbatimsnippet[examples/mpi/mpl/indexed.cxx]{indexedmpl}
+  \mplverbatimsnippet[examples/mpi/mpl/indexed.cxx]{indexedmpl}
 \end{mplnote}
 
 \begin{mplnote}{Layouts for gatherv}
@@ -516,14 +515,14 @@ For Fortran we show the legacy syntax for once:
   \indexmpldef{layouts} object, which is basically a vector of
   \indexmplshow{layout} objects.
   %
-  \cxxverbatimsnippet{mpllayouts}
+  \mplverbatimsnippet{mpllayouts}
 \end{mplnote}
 
 \begin{mplnote}{Indexed block type}
   For the case where all block lengths are the same,
   use \indexmpldef{indexed_block_layout}:
   %
-  \cxxverbatimsnippet[examples/mpi/mpl/indexedblock.cxx]{indexedbmpl}
+  \mplverbatimsnippet[examples/mpi/mpl/indexedblock.cxx]{indexedbmpl}
 \end{mplnote}
 
 You can also \indexmpishow{MPI_Type_create_hindexed} which describes blocks
@@ -626,7 +625,7 @@ MPI_Type_create_struct(struclen+1,.....);
   An \ac{MPL} \indexmplshow{heterogeneous_layout} on the other hand,
   incorporates the actual data. Thus you could write
   %
-  \cxxverbatimsnippet[examples/mpi/mpl/struct.cxx]{structuremplscalar}
+  \mplverbatimsnippet[examples/mpi/mpl/struct.cxx]{structuremplscalar}
   %
   Here, the \indexmplshow{absolute} indicates the lack of an implicit buffer:
   the layout is absolute rather than a relative description.
@@ -635,7 +634,7 @@ MPI_Type_create_struct(struclen+1,.....);
 \begin{mplnote}{Struct type general}
   More complicated data than scalars takes more work:
   %
-  \cxxverbatimsnippet[examples/mpi/mpl/struct.cxx]{structurempl}
+  \mplverbatimsnippet[examples/mpi/mpl/struct.cxx]{structurempl}
   %
   Note the \indexmplshow{make_absolute} in addition to
   \indexmplshow{absolute} mentioned above.

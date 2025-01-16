@@ -21,9 +21,6 @@
 \excludecomment{fullsources}
 \let\slidebreak\relax
 
-\input listingmacs
-\lstset{style=reviewcode}
-
 %%%%
 %%%% Page layout
 %%%%
@@ -195,12 +192,12 @@
 \newcommand\LinkRepoSource[1]{
   \expandafter\url\expandafter{\SourceRepoRoot /#1}
 }
-\newcommand\ListStrippedSource[1]{
-  \begingroup \footnotesize
-  \immediate \write 18 { ./stripsource #1 }
-  \verbatiminput{input.cut}
-  \endgroup
-}
+%% \newcommand\ListStrippedSource[1]{
+%%   \begingroup \footnotesize
+%%   \immediate \write 18 { ./stripsource #1 }
+%%   \verbatiminput{input.cut}
+%%   \endgroup
+%% }
 \def\LSR{\LSR}
 \def\ChapterSourceHeader#1\LSR{
   \def\test{#1\LSR}

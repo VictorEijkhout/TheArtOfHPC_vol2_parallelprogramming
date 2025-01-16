@@ -25,9 +25,9 @@ any thread using a variable~\n{x} will access the same memory location
 associated with that variable.
 
 Example:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
   int x = 5;
-#pragma omp parallel
+  #pragma omp parallel
   {
     x = x+1;
     printf("shared: x is %d\n",x);
@@ -73,18 +73,18 @@ private variable and global one.
   \cxxverbatimsnippet{ompprivateuse}
 \end{cppnote}
 
-The \indexpragma{private} directive declares data to have a separate copy 
+The \indexomppragma{private} directive declares data to have a separate copy 
 in the memory of each thread. 
 Such private variables are initialized as they would be in a main program.
 Any computed value goes away at the end 
 of the parallel region.
-(However, see \lstinline{lastprivate} below.)
+(However, see \lstinline[language=omp]{lastprivate} below.)
 Thus, you should not rely on any initial value, or on the value of the outer variable
 after the region.
 
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
   int x = 5;
-#pragma omp parallel private(x)
+  #pragma omp parallel private(x)
   {
     x = x+1; // dangerous
     printf("private: x is %d\n",x);
@@ -92,7 +92,7 @@ after the region.
   printf("after: x is %d\n",x);
 \end{lstlisting}
 
-Data that is declared private with the \indexpragma{private} directive is
+Data that is declared private with the \indexomppragma{private} directive is
 put on a separate \indextermbus{stack}{per thread}.
 The OpenMP standard
 does not dictate the size of these stacks,
@@ -154,7 +154,7 @@ parallel region. The rules for variables in that function are as follows:
 
 It is common to have a variable that is set and used in each loop
 iteration:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel for
 for ( ... i ... ) {
   x = i*h;
@@ -187,18 +187,18 @@ First the default behavior:
 \begin{itemize}
 \item Variables declared outside a a parallel region
   are shared as described above;
-\item Loop variables in an \indexpragma{omp for} are private;
+\item Loop variables in an \indexomppragma{omp for} are private;
 \item Local variables in the parallel region are private.
 \end{itemize}
 You can alter this default behavior with the \indexclause{default} clause:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel default(shared) private(x)
 { ... }
 #pragma omp parallel default(private) shared(matrix)
 { ... }
 \end{lstlisting}
 and if you want to play it safe:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel default(none) private(x) shared(matrix)
 { ... }
 \end{lstlisting}
@@ -234,13 +234,13 @@ between a private variable and a global counterpart.
 
 First of all, private variables are created with an undefined value.
 You can force their initialization with \indexclause{firstprivate}.
-\begin{lstlisting}
-  int t=2;
+\begin{lstlisting}[language=omp]
+int t=2;
 #pragma omp parallel firstprivate(t)
-  {
-    t += f( omp_get_thread_num() );
-    g(t);
-  }
+{
+  t += f( omp_get_thread_num() );
+  g(t);
+}
 \end{lstlisting}
 The variable \n{t} behaves like a private variable, except that it is
 initialized to the outside value.
@@ -255,9 +255,9 @@ environment outside the parallel region. This really only makes sense
 in one case, where you
 preserve a private variable
 from the last iteration of a parallel loop, or the last section in an
-\indexpragma{sections} construct.
+\indexomppragma{sections} construct.
 This is done with \indexclause{lastprivate}:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel for \
         lastprivate(tmp)
 for (int i=0; i<N; i+) {
@@ -273,7 +273,7 @@ for (int i=0; i<N; i+) {
 The rules for arrays are slightly different from those for scalar data:
 \begin{enumerate}
 \item Statically allocated data, that is with a syntax like
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 int array[100];
 integer,dimension(:) :: array(100}
 \end{lstlisting}
@@ -302,7 +302,7 @@ object:
   Compare
   \csnippetwithoutput{privatepointer}{examples/omp/c}{pointarray}
   and
-  \cxxsnippetwithoutput{privatevector}{examples/omp/c}{privvector}
+  \cxxsnippetwithoutput{privatevector}{examples/omp/cxx}{privvector}
 \end{cppnote}
 
 \Level 0 {Persistent data through \texttt{threadprivate}}
@@ -314,9 +314,9 @@ region and fully private.
 There is also a mechanism for \emph{thread-private
   data}\index{thread!private data},
 which is not limited in lifetime to one parallel region.
-The \indexpragma{threadprivate} pragma is used to declare that each thread
+The \indexomppragma{threadprivate} pragma is used to declare that each thread
 is to have a private copy of a variable:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp threadprivate(var)
 \end{lstlisting}
 The variable needs be:
@@ -352,7 +352,7 @@ Example:
 
 On the other hand, if the thread private data starts out identical in
 all threads, the \indexclause{copyin} clause can be used:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp threadprivate(private_var)
 
 private_var = 1;
@@ -362,7 +362,7 @@ private_var = 1;
 
 If one thread needs to set all thread private data to its value, the
 \indexclause{copyprivate} clause can be used:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel
 {
   ...
@@ -427,13 +427,13 @@ There are several ways of using the OpenMP memory allocators.
 \begin{itemize}
 \item
   First, in a directory on a static array:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 float A[N], B[N];
 #pragma omp allocate(A) \
     allocator(omp_large_cap_mem_alloc)
 \end{lstlisting}
 \item As a clause on private variables:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp task private(B) allocate(omp_const_mem_alloc: B)
 \end{lstlisting}
 \item

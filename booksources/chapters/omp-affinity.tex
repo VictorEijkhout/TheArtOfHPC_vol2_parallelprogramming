@@ -58,14 +58,14 @@ but typically:
 \item \indexompshow{true}: threads are bound to their initial placement;
 \item \indexompshow{false}: threads are not bound to their initial placement;
 \end{itemize}
-where the values \lstinline{master,close,spread} are ordained by the standard,
+where the values \lstinline[language=omp]{master,close,spread} are ordained by the standard,
 and the others depend on the implementation.
 
 There is no runtime function for setting the binding, but the \ac{ICV} \indexompshow{bind-var}
 can be retrieved with \indexompshow{omp_get_proc_bind}.
 The binding can also be set with the \indexompclause{proc_bind} clause
-on the \lstinline{parallel} directive,
-with values \lstinline{master,close,spread}.
+on the \lstinline[language=omp]{parallel} directive,
+with values \lstinline[language=omp]{master,close,spread}.
 
 Example: if you have two sockets and you define
 \begin{verbatim}
@@ -122,7 +122,7 @@ The value \n{OMP_PROC_BIND=master} puts the threads in the same place
 as the master of the team. This is convenient if you create teams
 recursively. In that case you would use the \indexclause{proc\_bind}
 clause rather than the environment variable, set to \n{spread} for the
-initial team, and to \indexpragma{master} for the recursively created team.
+initial team, and to \indexomppragma{master} for the recursively created team.
 
 \Level 1 {Effects of thread binding}
 \label{sec:omp:bindeffect}
@@ -234,7 +234,7 @@ Values for \indextermtt{OMP_PROC_BIND} are: \n{false, true, master, close, sprea
 
 This effect can be made local by
 giving the \indexclause{proc\_bind} clause in the
-\indexpragma{parallel} directive.
+\indexomppragma{parallel} directive.
 
 A safe default setting is
 \begin{verbatim}
@@ -288,7 +288,8 @@ phenomemon.
 %%packtsnippet firsttouch
 
 A little background knowledge. Memory is organized in
-\indextermbus{memory}{page}s\index{page, memory|see{memory, page}},
+\indextermbus{memory}{page}s\index{page, memory|see{memory, page}}
+(see \HPSCref{sec:smallpage}),
 and what we think of as `addresses' really are
 \indextermsub{virtual}{address}es,
 mapped to \indextermsub{physical}{address}es
@@ -299,10 +300,11 @@ In particular, on a \indextermsub{dual}{socket} node,
 the memory can be mapped to either of the sockets.
 
 The next thing to know is that
-memory allocated with \indextermtt{malloc} and like
-routines is not immediately mapped; that only happens when data is
+memory allocated with \indextermtt{malloc}~/ \indexc{new}
+and like routines
+is not immediately mapped; that only happens when data is
 written to it. In light of this, consider the following OpenMP code:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 double *x = (double*) malloc(N*sizeof(double));
 
 for (i=0; i<N; i++)
@@ -324,7 +326,12 @@ which induces a considerable delay, and performance degradation.
 Let's consider an example. We make the initialization
 parallel subject to an option:
 %
-\cverbatimsnippet{heatinitfirst}
+\begin{packt}
+  \ompverbatimsnippet{heatinitfirst}
+\end{packt}
+\begin{nopackt}
+  \cverbatimsnippet{heatinitfirst}
+\end{nopackt}
 
 If the initialization is not parallel, the array will be mapped
 to the socket of the master thread; if it is parallel,
@@ -334,7 +341,12 @@ As a simple application
 we run a heat equation, which is parallel,
 though not embarassingly so:
 %
-\cverbatimsnippet{heatmethodrun}
+\begin{nopackt}
+  \cverbatimsnippet{heatmethodrun}
+\end{nopackt}
+\begin{packt}
+  \ompverbatimsnippet{heatmethodrun}
+\end{packt}
 
 On the \indextermbus{TACC}{Frontera} machine, with dual 28-core
 \indextermbus{Intel}{Cascade Lake} processors,
@@ -365,8 +377,6 @@ for algorithms with higher arithmetic intensity.
 
 \Level 1 {Solution in C++}
 
-\lstset{language=C++}
-
 The problem with realizing first-touch in \emph{C++}%
 \index{C++!first-touch|see{first-touch, in C++}}%
 \index{first-touch!in C++}
@@ -383,11 +393,11 @@ Here is a solution.
   Default initialization is a problem.
   We make a template for uninitialized types:
   %
-  \cxxverbatimsnippet{cppuninitial}
-
+  \ompverbatimsnippet{cppuninitial}
+  %
   so that we can create vectors that behave normally:
   %
-  \cxxverbatimsnippet{cppuninitialvec}
+  \ompverbatimsnippet{cppuninitialvec}
 \end{cppnote}
 
 Running the code with the regular definition of a vector,
@@ -395,14 +405,14 @@ and the above modification,
 reproduces the runtimes of the C~variant above.
 
 Another option is to wrap memory allocated with \lstinline{new}
-in a \lstinline+unique_ptr+:
+in a \lstinline{unique_ptr}:
 %
-\cxxverbatimsnippet{newuninitial}
+\ompverbatimsnippet{newuninitial}
 
 Note that this gives fairly elegant code,
 since square bracket indexing is overloaded for \lstinline+unique_ptr+.
 The only disadvantage is that we can not query the \lstinline{size}
-of these arrays. Or do bound checking with \lstinline{at},
+of these arrays, or do bound checking with \lstinline{at},
 but in high performance contexts that is usually not appropriate anyway.
 
 %%packtsnippet end
@@ -415,7 +425,7 @@ but in high performance contexts that is usually not appropriate anyway.
   Finish the following fragment and run it with first all the cores of
   one socket, then all cores of both sockets. (If you know how to do
   explicit placement, you can also try fewer cores.)
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
   for (int i=0; i<nlocal+2; i++)
     in[i] = 1.;
   for (int i=0; i<nlocal; i++)
@@ -443,7 +453,7 @@ By regarding affinity,
 in effect you are adopting an \ac{SPMD} style of programming.
 You could make this explicit by having each thread allocate its part
 of the arrays separately, and storing a private pointer as
-\indexpragma{threadprivate}~\cite{Liu:2003:OMP-SPMD}. However, this
+\indexomppragma{threadprivate}~\cite{Liu:2003:OMP-SPMD}. However, this
 makes it impossible for threads to access each other's parts of the
 distributed array, so this is only suitable for
 total \indextermsub{data}{parallel} or

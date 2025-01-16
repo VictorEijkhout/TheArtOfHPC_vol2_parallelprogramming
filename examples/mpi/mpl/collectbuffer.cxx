@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%% "Parallel Computing"
-   %%%% by Victor Eijkhout, copyright 2020-2021
+   %%%% by Victor Eijkhout, copyright 2020-2024
    %%%%
    %%%% collectbuffer.cxx : collective routines on buffers in MPL
    %%%%
@@ -34,9 +34,9 @@ int main() {
    */
   if (iprint) cout << "Reducing 2p, 2p+1" << endl;
 
-  //codesnippet mplallreducebuffer
   float
     xrank = static_cast<float>( comm_world.rank() );
+  //codesnippet mplallreducebuffer
   vector<float> rank2p2p1{ 2*xrank,2*xrank+1 },reduce2p2p1{0,0};
   mpl::contiguous_layout<float> two_floats(rank2p2p1.size());
   comm_world.allreduce

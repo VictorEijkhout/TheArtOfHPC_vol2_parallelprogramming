@@ -19,7 +19,7 @@ if you specify something as being a task, OpenMP will create
 a `block of work': a~section of code plus the data environment
 in which it occurred. This block is set aside for execution at some later point.
 Thus, task-based code usually looks something like this:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel
 {
   // generate a bunch of tasks
@@ -30,13 +30,13 @@ Thus, task-based code usually looks something like this:
 For instance, a parallel loop was always implicitly translated to something like:
 \begin{multicols}{2}
 Sequential loop:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 for (int i=0; i<N; i++)
   f(i);
 \end{lstlisting}
 \columnbreak
 Parallel loop:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 for (int ib=0; ib<nblocks; ib++) {
   int first=... last=... ;
   #pragma omp task
@@ -53,7 +53,7 @@ for (int ib=0; ib<nblocks; ib++) {
 If we stick with this example of implementing a parallel loop
 through tasks, the next question is: precisely who generates the tasks?
 The following code has a serious problem:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 // WRONG. DO NOT WRITE THIS
 #pragma omp parallel
 for (int ib=0; ib<nblocks; ib++) {
@@ -66,7 +66,7 @@ for (int ib=0; ib<nblocks; ib++) {
 because the parallel region creates a team, and each thread in the team
 executes the task-generating code.
 Instead, we use the following idiom:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel
 #pragma omp single
 for (int ib=0; ib<nblocks; ib++) {
@@ -148,7 +148,7 @@ data becomes \indexclause{firstprivate}. To see the distinction, consider two
 code fragments.
 
 \begin{multicols}{2}
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 int count = 100;
 #pragma omp parallel
 #pragma omp single
@@ -170,7 +170,7 @@ int count = 100;
 
 \columnbreak
 
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel
 #pragma omp single
 {
@@ -212,7 +212,7 @@ Even though the above segment looks like a linear set of statements,
 it is impossible to say when
 the code after the \indexompshow{task} directive will be executed.
 This means that the following code is incorrect:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 x = f();
 #pragma omp task
 { y = g(x); }
@@ -230,8 +230,8 @@ Tasks can also be undeferred, meaning that they are executed
 synchronously, and the creating thread does not progress beyond them
 until they are fully executed.
 
-Prime example of undeferred tasks: with \lstinline{if} clause
-\begin{lstlisting}
+Prime example of undeferred tasks: with \lstinline[language=omp]{if} clause
+\begin{lstlisting}[language=omp]
 #pragma omp task if (level>5)
   {
     ...
@@ -320,7 +320,7 @@ containing only a \indexompshow{taskloop}.
 
 It is possible to put a partial ordering on
 tasks through use of the \indexclause{depend} clause. For example, in
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp task
   x = f()
 #pragma omp task
@@ -328,7 +328,7 @@ tasks through use of the \indexclause{depend} clause. For example, in
 \end{lstlisting}
 it is conceivable that the second task is executed before the first,
 possibly leading to an incorrect result. This is remedied by specifying:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp task depend(out:x)
   x = f()
 #pragma omp task depend(in:x)
@@ -346,7 +346,7 @@ possibly leading to an incorrect result. This is remedied by specifying:
 
 \begin{exercise}
 Consider the following code:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 for i in [1:N]:
     x[0,i] = some_function_of(i)
     x[i,0] = some_function_of(i)
@@ -374,7 +374,7 @@ there are four types of dependencies.
 \item[RaW (Read after Write)] The second task reads an item that the
   first task writes. The second task has to be executed after the
   first:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 ... omp task depend(OUT:x)
   foo(x)
 ... omp task depend( IN:x)
@@ -383,7 +383,7 @@ there are four types of dependencies.
 \item[WaR (Write after Read)] The first task reads and item, and the
   second task overwrites it. The second task has to be executed second
   to prevent overwriting the initial value:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 ... omp task depend( IN:x)
   foo(x)
 ... omp task depend(OUT:x)
@@ -392,7 +392,7 @@ there are four types of dependencies.
 \item[WaW (Write after Write)] Both tasks set the same variable. Since
   the variable can be used by an intermediate task, the two writes
   have to be executed in this order.
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 ... omp task depend(OUT:x)
   foo(x)
 ... omp task depend(OUT:x)
@@ -400,7 +400,7 @@ there are four types of dependencies.
 \end{lstlisting}
 \item[RaR (Read after Read)] Both tasks read a variable. Since neither
   tasks has an `out' declaration, they can run in either order.
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 ... omp task depend(IN:x)
   foo(x)
 ... omp task depend(IN:x)
@@ -409,11 +409,11 @@ there are four types of dependencies.
 \end{description}
 \index{OpenMP!tasks!dependencies|)}
 
-In addition to tasks, the \indexpragma{taskwait} can also
+In addition to tasks, the \indexomppragma{taskwait} can also
 have a \indexclause{depend} clause.
 This can be used to wait for only certain tasks.
 In this example:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp task 
 { f1(); }
 #pragma omp task shared(x) depend(out:x)
@@ -429,12 +429,12 @@ not to \indexompshow{taskgroup} loops of tasks.
 To do a reduction over computations in tasks you need the
 \indexclausedef{task_reduction} clause
 (a~\ompstandard{5.0} feature):
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp taskgroup task_reduction(+:sum)
 \end{lstlisting}
 The task group can contain both task that contribute to the reduction,
 and ones that don't. The former type needs a clause \indexclausedef{in_reduction}:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp task in_reduction(+:sum)
 \end{lstlisting}
 
@@ -465,7 +465,7 @@ that the value of a thread-id does not stay fixed. Also locks become a problem.
 
 Example: if a thread is waiting for a lock, with a scheduling point it
 can suspend the task and work on another task.
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 while (!omp_test_lock(lock))
 #pragma omp taskyield
   ;
@@ -480,7 +480,7 @@ There are two ways of executing the task code directly:
 \begin{itemize}
 \item The \indexompshow{if} clause will only create a task
   if the test is true:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp task if (n>100)
   f(n)
 \end{lstlisting}
@@ -489,18 +489,19 @@ all the implications for dataspace it implies.
 \item The \indexompshow{if} clause may still lead to recursively
   generated tasks. On the other hand, \indexompshow{final}
   will execute the code, and will also skip any recursively created tasks:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp task final(level<3)
 \end{lstlisting}
 \end{itemize}
 
 If you want to indicate that certain tasks are more important
 than others, use the \indexompshow{priority} clause:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp task priority(5)
 \end{lstlisting}
 where the priority is any non-negative scalar
-less than \indexompdef{OMP_MAX_TASK_PRIORITY}.
+less than the value of environment variable \indexompdef{OMP_MAX_TASK_PRIORITY}.
+The default value is zero, meaning that priority clauses are effectively ignored.
 
 \Level 1 {Task canceling}
 

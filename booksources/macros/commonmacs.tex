@@ -2,35 +2,36 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
-%%%% This LaTeX file is part of the source of 
-%%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% This text file is part of the source of 
+%%%% `The Art of HPC, vol 1: The Science of Computing'
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
-%%%% commonmacs.tex : common macros for book and slides and all
+%%%% commonmacs : very common macros
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\usepackage{verbatim,wrapfig}
-\def\verbatimsnippet#1{\begingroup\small \verbatiminput{snippets/#1}\endgroup}
-\usepackage{comment}
-
-%%
-%% verbatim
-%%
-\newcommand\InnocentChars{%
-  \catcode`\$=12 \catcode`\#=12
-  \catcode`\_=12 \catcode`\>=12 \catcode`\<=12\relax
-  \catcode`\&=12 \catcode`\^=12 \catcode`\~=12\relax
-  \def\\{\char`\\}\relax
+% regular formatting
+\newcommand\innocentcharacters{%
+  \catcode`\_=12 \catcode`\#=12
+  \catcode`\>=12 \catcode`\<=12
+  \catcode`\&=12 \catcode`\^=12
+  \catcode`\$=12 \catcode`\~=12
 }
+\def\n#{\bgroup
+  \innocentcharacters
+  \def\\{\char`\\}\relax
+  \tt \let\next=}
+\let\InnocentChars\innocentcharacters
 
-\def\n#{\bgroup \InnocentChars \tt \let\next=}
+\newcommand\makeusletter{\catcode`\_=11 }
+\newcommand\makeusother{\catcode`\_=12 }
 
-%%
-%% math stuff
-%%
-\newcommand\inv{^{-1}}\newcommand\invt{^{-t}}
+\usepackage{listings,verbatim,xcolor}% needed for parsing some aux files
+\usepackage{booktabs}
+
+\newcommand\inv{^{-1}}
+\newcommand\invt{^{-t}}
 \newcommand\setspan[1]{[\![#1]\!]}
 \newcommand\fp[2]{#1\cdot10^{#2}}
 \newcommand\fxp[2]{\langle #1,#2\rangle}
@@ -39,133 +40,63 @@
 \newcommand\argmin{\mathop{\mathrm {argmin}}}
 \newcommand\defined{
   \mathrel{\lower 5pt \hbox{${\equiv\atop\mathrm{\scriptstyle D}}$}}}
+\newcommand\lulubreak{\message{Hard page break!}\pagebreak\relax}
 
 \newcommand\bbP{\mathbb{P}}
 \newcommand\bbR{\mathbb{R}}
 
-% custom arrays and tables
-\usepackage{amsmath}
-\usepackage{array,booktabs,multirow,multicol}
-\newcolumntype{R}{>{\hbox to 1.2em\bgroup\hss}{r}<{\egroup}}
-\newcolumntype{T}{>{\hbox to 8em\bgroup}{c}<{\hss\egroup}}
-\newcolumntype{L}{>{\hbox to 20pt \bgroup$}{l}<{$\hss\egroup}}
-
 %%%%
-%%%% standards
+%%%% input file without header
 %%%%
-\newcommand\cstandard[1]{C#1\index{C!C#1}}
-\newcommand\cppstandard[1]{C++#1\index{C++!C++#1}}
-\newcommand\fstandard[1]{Fortran#1\index{Fortran!Fortran#1}}
-\newcommand\mpistandard[1]{MPI-#1\index{MPI!MPI-#1}}
-\newcommand\mpistandardsub[2]{MPI-#1\index{MPI!MPI-#1!#2}}
-\newcommand\ompstandard[1]{OpenMP-#1\index{OpenMP!OpenMP-#1}}
-\newcommand\petscstandard[1]{PETSc-#1\index{PETSc!PETSc-#1}}
-\newcommand\syclstandard[1]{SYCL-#1\index{SYCL!SYCL-#1}}
-
-%%%%
-%%%% jordan stuff
-%%%%
-\newenvironment{jordan}
-{
-  \begin{equation*}
-    \begin{array}{|RRR|r|R|T|L|}
-      \hline
-      \multicolumn{3}{|c|}{\hbox{matrix}}&\hbox{sol}&rhs&action&scaling\\
-      \hline
+\newcommand\strippedinput[2]{
+  \immediate\write18{
+    cd #1 && ls #2 
+    && awk 'p==1 && !/codesnippet/ {print} NF==0 {p=1}' #2 > #2.stripped.out
+  }
+  \IfFileExists
+      {#1/#2.stripped.out}
+      {\lstinputlisting{#1/#2.stripped.out}}
+      {\message{Could not strip file #1/#2}
+        \lstset{basicstyle=\tiny\ttfamily}
+        \lstinputlisting{#1/#2}}
 }
-{
-      \hline
-    \end{array}
-  \end{equation*}
+%% something similar
+\newcommand\ListStrippedSource[2]{
+  \begingroup \footnotesize
+  \IfFileExists{#1/#2.stripped}
+  {}
+  {\immediate \write 18
+    { cd #1 ; /Users/eijkhout/Current/istc/scientific-computing-private/stripsource #2 }}
+  \message{Inputting stripped source: #1/#2.stripped}
+  \verbatiminput{#1/#2.stripped}
+  
+  \endgroup
 }
 
-%%%%
-%%%% algorithms
-%%%%
+%%
+%% title page
+%%
+\newcommand\formattime{%
+  \begingroup
+  \count0=\time \divide\count0 by 60
+  \count1=\count0 \multiply\count1 by 60
+  \advance\time by -\count1 
+  last formatted \today, \the\count0\relax:\the\time\relax
+  \endgroup}
 
-\usepackage[algo2e,noline,noend]{algorithm2e}
-\newenvironment{displayalgorithm}
- {\begin{algorithm2e}[H]\leftskip=\unitindent \DontPrintSemicolon
-  \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
- }
- {\end{algorithm2e}}
-\newenvironment{displayprocedure}[2]
- {\everymath{\strut}
-  \begin{procedure}[H]\leftskip=\unitindent\caption{#1(#2)}}
- {\end{procedure}}
-
-%%%%
-%%%% Chapter macros
-%%%%
-\newwrite\nx
-\newcommand\CHAPTER[2]{
-  \Level 0 {#1}\label{ch:#2}
-  \def\chapshortname{#2}
-
-  % start scooping up example codes used in this chapter
-  \addchaptersource{header}%kludge because we have a bug for zero sources
-
-  % input the chapter
-  \SetBaseLevel 1 \input chapters/#2
-
-  % include the sources used in this chapter
-  \chaptersourcelisting{\chapshortname}
-
-  % write this chapter to a list of chapters
-  \write\chapterlist{\chapshortname}
-  \openout\nx=exercises/\chapshortname-nx.tex
-  \write\nx{\arabic{excounter}}
-  \closeout\nx
-
-  \SetBaseLevel 0
+%%
+%% cmake
+%%
+\begin{packt}
+\newcommand\cmakeExampleFiles[1]{}
+\end{packt}
+\begin{nopackt}
+\newcommand\cmakeExampleFiles[1]{%
+  (The files for this example are in \n{#1}.)
 }
+\end{nopackt}
 
-\includecomment{tutorials}
-\newcommand\TUTORIAL[2]{
-  \Level 0 {#1}\label{tut:#2}
-  \def\chapshortname{#2}
-  \setcounter{excounter}0\relax
-  \SetBaseLevel 1 \input tutorials/#2
-  \write\chapterlist{\chapshortname}
-  \openout\nx=exercises/\chapshortname-nx.tex
-  \write\nx{\arabic{excounter}}
-  \closeout\nx
-  \SetBaseLevel 0
-}
-\newif\ifprojects\projectsfalse
-\newcommand\PROJECT[2]{
-\ifprojects \vfill\pagebreak \else \projectstrue \fi
-\Level 0 {#1}\label{prj:#2}
-\def\chapshortname{#2}
-{\SetBaseLevel 1 \input projects/#2
-\write\chapterlist{\chapshortname}
-\openout\nx=exercises/\chapshortname-nx.tex
-\write\nx{\arabic{excounter}}
-\closeout\nx
-\SetBaseLevel 0
-}}
-\newcommand\APPENDIX[3]{
-  \vfill\pagebreak \Level 1 {#1}\label{app:#3}
-  \def\chapshortname{#3}
-  {\SetBaseLevel 2 {\index{#2|(}}
-   \setcounter{excounter}0
-   \input appendices/#3 {\index{#2|)}}
-   \write\chapterlist{\chapshortname}
-   \openout\nx=exercises/\chapshortname-nx.tex
-   \write\nx{\arabic{excounter}}
-   \closeout\nx
-   \SetBaseLevel 0
-}}
-\newcommand\APPENDIXac[3]{
-  \vfill\pagebreak \Level 1 {#1}\label{app:#3}
-  \def\chapshortname{#3}
-  {\SetBaseLevel 2 {\indexacstart{#2}}
-   \setcounter{excounter}0
-   \input appendices/#3 {\indexacend{#2}}
-   \write\chapterlist{\chapshortname}
-   \openout\nx=exercises/\chapshortname-nx.tex
-   \write\nx{\arabic{excounter}}
-   \closeout\nx
-   \SetBaseLevel 0
-}}
-
+%%
+%% random stuff
+%%
+\newcommand\intelmkl{Intel's \ac{MKL}\index{Intel!MKL}~\cite{IntelMKL}}

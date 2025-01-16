@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% mpi-topo.tex : about communicator topologies
 %%%%
@@ -93,11 +93,11 @@ the input number of nodes.
   The \indexmplshow{dims_create} routine takes a \indexmplshow{dimensions}
   object with only the dimensionality specified, and creates one
   with the sizes filled in.
-  \cxxverbatimsnippet{mpldimscreate}
+  \mplverbatimsnippet{mpldimscreate}
   To have certain dimensions be periodic,
   the initial \indexmplshow{dimensions} object needs to be
   create with periodicity values \indexmplshow{periodic} or \indexmplshow{non_periodic}.
-  \cxxverbatimsnippet{mpldimscreatep}
+  \mplverbatimsnippet{mpldimscreatep}
 \end{mplnote}
 
 \Level 1 {Cartesian topology communicator}
@@ -115,7 +115,7 @@ any processes not included get \indexmpishow{MPI_COMM_NULL} as output.)
 \begin{mplnote}{Cartesian communicator create}
   The actual Cartesian communicator has a constructor that
   takes a \indexmplshow{dimensions} object as input.
-  \cxxverbatimsnippet{mplcartcreate}
+  \mplverbatimsnippet{mplcartcreate}
 \end{mplnote}
 
 For a given communicator, you can test what type it is
@@ -132,9 +132,9 @@ and \indexmpidef{MPI_Cart_get}:
 \begin{mplnote}{Get the dimensions object}
   The \indexmplshow{dimensions} object can be extracted
   from the communicator
-  \cxxverbatimsnippet{mplcartgetdims}
+  \mplverbatimsnippet{mplcartgetdims}
   after which dimensions and periodicies can be extracted:
-  \cxxverbatimsnippet{mpldimsgetdims}
+  \mplverbatimsnippet{mpldimsgetdims}
 \end{mplnote}
 
 \Level 1 {Cartesian vs world rank}
@@ -158,7 +158,7 @@ in the new communicator that is different from in the old one.
 \begin{mplnote}{Rank to coord translation}
   The \lstinline{coordinates} method of the cartesian communicator
   returns a vector-like object describing the process coordinate:
-  \cxxverbatimsnippet{mplcartrankcoord}
+  \mplverbatimsnippet{mplcartrankcoord}
 \end{mplnote}
 
 \Level 1 {Cartesian communication}
@@ -185,7 +185,7 @@ and a legitimate target.
   and gives the source and destination
   as a \indexmplshow{shifted_ranks} object, which is basically
   a tuple of two integers:
-  \cxxverbatimsnippet{mplcartshift}
+  \mplverbatimsnippet{mplcartshift}
 \end{mplnote}
 
 \begin{exercise}

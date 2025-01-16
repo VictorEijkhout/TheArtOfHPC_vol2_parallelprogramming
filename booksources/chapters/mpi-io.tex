@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% mpi-io.tex : MPI/O
 %%%%
@@ -107,7 +107,7 @@ Similarly, \indexmpidef{MPI_File_close} is collective.
   Files are objects of type \lstinline{mpl::file}.
   You can use the default constructor, and the \lstinline{open} method,
   or open the file in the constructor:
-  \cxxverbatimsnippet{mplfilebasic}
+  \mplverbatimsnippet{mplfilebasic}
   \begin{itemize}
   \item Failure to open throws an \lstinline{mpl::io_failure} exception;
     the \lstinline{what} method of this exception gives an error string.
@@ -209,7 +209,7 @@ sending a receiving:
 \begin{mplnote}{File writing}
   Routines with the obvious names exist:
   %
-  \cxxverbatimsnippet{mplfilewrite}
+  \mplverbatimsnippet{mplfilewrite}
   Also
   \lstinline{read}, \lstinline{write},
   \lstinline{iread}, \lstinline{iwrite},

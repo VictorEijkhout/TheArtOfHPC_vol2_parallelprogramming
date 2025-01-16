@@ -1,0 +1,173 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This LaTeX file is part of the source of 
+%%%% `Parallel Computing'
+%%%% by Victor Eijkhout, copyright 2012-2024
+%%%%
+%%%% pcsecommonmacs.tex : common macros for book and slides and all
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%
+%%%% Chapter macros
+%%%%
+\newwrite\nx
+\newcommand\CHAPTER[2]{
+  \Level 0 {#1}\label{ch:#2}
+  \def\chapshortname{#2}
+
+  % start scooping up example codes used in this chapter
+  \addchaptersource{header}%kludge because we have a bug for zero sources
+
+  % input the chapter
+  \SetBaseLevel 1 \input chapters/#2
+
+  % include the sources used in this chapter
+  \chaptersourcelisting{\chapshortname}
+
+  % write this chapter to a list of chapters
+  \write\chapterlist{\chapshortname}
+  \openout\nx=exercises/\chapshortname-nx.tex
+  \write\nx{\arabic{excounter}}
+  \closeout\nx
+
+  \SetBaseLevel 0
+}
+
+\includecomment{tutorials}
+\newcommand\TUTORIAL[2]{
+  \Level 0 {#1}\label{tut:#2}
+  \def\chapshortname{#2}
+  \setcounter{excounter}0\relax
+  \SetBaseLevel 1 \input tutorials/#2
+  \write\chapterlist{\chapshortname}
+  \openout\nx=exercises/\chapshortname-nx.tex
+  \write\nx{\arabic{excounter}}
+  \closeout\nx
+  \SetBaseLevel 0
+}
+\newif\ifprojects\projectsfalse
+\newcommand\PROJECT[2]{
+\ifprojects \vfill\pagebreak \else \projectstrue \fi
+\Level 0 {#1}\label{prj:#2}
+\def\chapshortname{#2}
+{\SetBaseLevel 1 \input projects/#2
+\write\chapterlist{\chapshortname}
+\openout\nx=exercises/\chapshortname-nx.tex
+\write\nx{\arabic{excounter}}
+\closeout\nx
+\SetBaseLevel 0
+}}
+\newcommand\APPENDIX[3]{
+  \vfill\pagebreak \Level 1 {#1}\label{app:#3}
+  \def\chapshortname{#3}
+  {\SetBaseLevel 2 {\index{#2|(}}
+   \setcounter{excounter}0
+   \input appendices/#3 {\index{#2|)}}
+   \write\chapterlist{\chapshortname}
+   \openout\nx=exercises/\chapshortname-nx.tex
+   \write\nx{\arabic{excounter}}
+   \closeout\nx
+   \SetBaseLevel 0
+}}
+\newcommand\APPENDIXac[3]{
+  \vfill\pagebreak \Level 1 {#1}\label{app:#3}
+  \def\chapshortname{#3}
+  {\SetBaseLevel 2 {\indexacstart{#2}}
+   \setcounter{excounter}0
+   \input appendices/#3 {\indexacend{#2}}
+   \write\chapterlist{\chapshortname}
+   \openout\nx=exercises/\chapshortname-nx.tex
+   \write\nx{\arabic{excounter}}
+   \closeout\nx
+   \SetBaseLevel 0
+}}
+
+%% %%%%
+%% %%%% standards
+%% %%%%
+%% \newcommand\cstandard[1]{C#1\index{C!C#1}}
+%% \newcommand\cppstandard[1]{C++#1\index{C++!C++#1}}
+%% \newcommand\fstandard[1]{Fortran#1\index{Fortran!Fortran#1}}
+%% \newcommand\mpistandard[1]{MPI-#1\index{MPI!MPI-#1}}
+%% \newcommand\mpistandardsub[2]{MPI-#1\index{MPI!MPI-#1!#2}}
+%% \newcommand\ompstandard[1]{OpenMP-#1\index{OpenMP!OpenMP-#1}}
+%% \newcommand\petscstandard[1]{PETSc-#1\index{PETSc!PETSc-#1}}
+%% \newcommand\syclstandard[1]{SYCL-#1\index{SYCL!SYCL-#1}}
+
+% custom arrays and tables
+\usepackage{amsmath}
+\usepackage{array,booktabs,multirow,multicol}
+\newcolumntype{R}{>{\hbox to 1.2em\bgroup\hss}{r}<{\egroup}}
+\newcolumntype{T}{>{\hbox to 8em\bgroup}{c}<{\hss\egroup}}
+\newcolumntype{L}{>{\hbox to 20pt \bgroup$}{l}<{$\hss\egroup}}
+
+%%%%
+%%%% jordan stuff
+%%%%
+\newenvironment{jordan}
+{
+  \begin{equation*}
+    \begin{array}{|RRR|r|R|T|L|}
+      \hline
+      \multicolumn{3}{|c|}{\hbox{matrix}}&\hbox{sol}&rhs&action&scaling\\
+      \hline
+}
+{
+      \hline
+    \end{array}
+  \end{equation*}
+}
+
+%%%%
+%%%% algorithms
+%%%%
+
+\usepackage[algo2e,noline,noend]{algorithm2e}
+\newenvironment{displayalgorithm}
+ {\begin{algorithm2e}[H]\leftskip=\unitindent \DontPrintSemicolon
+  \SetKwInOut{Input}{Input}\SetKwInOut{Output}{Output}
+ }
+ {\end{algorithm2e}}
+\newenvironment{displayprocedure}[2]
+ {\everymath{\strut}
+  \begin{procedure}[H]\leftskip=\unitindent\caption{#1(#2)}}
+ {\end{procedure}}
+
+\endinput
+
+\usepackage{verbatim,wrapfig}
+%% \def\verbatimsnippet#1{\begingroup\small \verbatiminput{snippets/#1}\endgroup}
+\usepackage{comment}
+
+%%
+%% verbatim
+%%
+\newcommand\InnocentChars{%
+  \catcode`\$=12 \catcode`\#=12
+  \catcode`\_=12 \catcode`\>=12 \catcode`\<=12\relax
+  \catcode`\&=12 \catcode`\^=12 \catcode`\~=12\relax
+  \def\\{\char`\\}\relax
+}
+
+\def\n#{\bgroup \InnocentChars \tt \let\next=}
+
+%%
+%% math stuff
+%%
+\newcommand\inv{^{-1}}\newcommand\invt{^{-t}}
+\newcommand\setspan[1]{[\![#1]\!]}
+\newcommand\fp[2]{#1\cdot10^{#2}}
+\newcommand\fxp[2]{\langle #1,#2\rangle}
+
+\newcommand\diag{\mathop{\mathrm {diag}}}
+\newcommand\argmin{\mathop{\mathrm {argmin}}}
+\newcommand\defined{
+  \mathrel{\lower 5pt \hbox{${\equiv\atop\mathrm{\scriptstyle D}}$}}}
+
+\newcommand\bbP{\mathbb{P}}
+\newcommand\bbR{\mathbb{R}}
+

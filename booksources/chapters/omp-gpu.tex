@@ -21,7 +21,7 @@ is not automatically reflected in the other.
 
 OpenMP transfers data (or maps it) when you enter an \indexompclause{target}
 construct.
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp target
 {
   // do stuff on the GPU
@@ -30,7 +30,7 @@ construct.
 
 You can test whether the target region is indeed executed on a device
 with \indexompdef{omp_is_initial_device}:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp target
   if (omp_is_initial_device()) printf("Offloading failed\n");
 \end{lstlisting}
@@ -63,7 +63,7 @@ This requires a \indexompshow{taskwait} directive to synchronize host and device
 \end{itemize}
 
 For explicit mapping with \indexompclauseoption{target}{map}:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp target map(...)
 {
   // do stuff on the GPU
@@ -94,7 +94,7 @@ the device explicitly,
 using the \indexompclauseoption{target}{enter data} and
 \indexompclauseoption{target}{exit data} directives.
 
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp target enter data map(to: x,y)
 #pragma omp target
 {
@@ -113,7 +113,7 @@ Also \indexompclauseoption{target}{update to}
 
 For parallel execution of a loop on the device
 use the \indexompclause{teams} clause:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp target teams distribute parallel do
 \end{lstlisting}
 

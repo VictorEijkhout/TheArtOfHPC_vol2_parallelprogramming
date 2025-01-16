@@ -106,12 +106,13 @@ Each of these needs some elucidation.
 \end{exercise}
 
 \begin{mplnote}{Allreduce operator}
-  The usual reduction operators are given as templated operators:
+  Versions with separate send/receive buffers,
+  and reduction in place:
   %
-  \cxxverbatimsnippet[examples/mpi/mpl/collectscalar.cxx]{mplallreduce}
+  \mplverbatimsnippet[examples/mpi/mpl/collectscalar.cxx]{mplallreduce}
   %
   Note the parentheses after the operator.
-  Also note that the operator comes first, not last.
+  Also note that the operator comes first, not last as in the C~\ac{API}.
 
   Available: \lstinline{max}, \lstinline{min}, \lstinline{plus}, \lstinline{multiplies},
   \lstinline{logical_and}, \lstinline{logical_or}, \lstinline{logical_xor},
@@ -279,9 +280,7 @@ For even more complicated effects, use \n{numpy.frombuffer}:
 \begin{lstlisting}
 float x,y;
 comm.bcast( 0,x ); // note: root first
-comm.allreduce( mpl::plus<float>(), x,y ); // op first
 \end{lstlisting}
-where the reduction function needs to be compatible with the type of the buffer.
 \end{mplnote}
 
 \begin{mplnote}{Vector buffers}
@@ -303,7 +302,7 @@ part of a buffer specification.
 \begin{mplnote}{Array buffers}
   \label{mpl:vec-arr}
   You can pass a C-style array as buffer, requiring a layout:
-  \cxxverbatimsnippet[examples/mpi/mpl/collectarray.cxx]{mplallreducearray}
+  \mplverbatimsnippet[examples/mpi/mpl/collectarray.cxx]{mplallreducearray}
 \end{mplnote}
 
 \begin{mplnote}{Iterator buffers}
@@ -311,14 +310,15 @@ part of a buffer specification.
   MPL point-to-point routines have a way of specifying the buffer(s)
   through a \lstinline{begin} and \lstinline{end} iterator.
   %
-  \cxxverbatimsnippet[examples/mpi/mpl/sendrange.cxx]{mplsendrange}
+  \mplverbatimsnippet[examples/mpi/mpl/sendrange.cxx]{mplsendrange}
   %
   Not available for collectives.
 \end{mplnote}
 
 \begin{mplnote}{Send vs recv buffer}
-  There is a separate variant for non-root usage of rooted collectives:
-  \cxxverbatimsnippet{mplreduceroot}
+  There are separate variants for root vs non-root processes
+  in rooted collectives:
+  \mplverbatimsnippet{mplreduceroot}
 \end{mplnote}
 
 \Level 0 {Rooted collectives: broadcast, reduce}
@@ -455,11 +455,11 @@ in different branches of a condition is infelicitous. The following may be prefe
   The in-place variant is activated by
   specifying only one instead of two buffer arguments.
   %
-  \cxxverbatimsnippet[examples/mpi/mpl/collectscalar.cxx]{mplallreduce}
+  \mplverbatimsnippet[examples/mpi/mpl/collectscalar.cxx]{mplallreduce}
   %
   Reducing a buffer requires specification of a \lstinline+contiguous_layout+:
   %
-  \cxxverbatimsnippet[examples/mpi/mpl/collectbuffer.cxx]{mplallreducebuffer}
+  \mplverbatimsnippet[examples/mpi/mpl/collectbuffer.cxx]{mplallreducebuffer}
   %
   Note that the buffers are of type \lstinline+T *+, so it is necessary
   to take the \lstinline+data()+ of any \lstinline+std::vector+ and such.

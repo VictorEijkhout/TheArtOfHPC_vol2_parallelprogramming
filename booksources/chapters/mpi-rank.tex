@@ -44,7 +44,7 @@ The maximum needed length is \indexmpishow{MPI_MAX_PROCESSOR_NAME}.
   The processor name is a method of the environment class:
 \def\snippetcodefraction{.44}
 \def\snippetlistfraction{.55} 
-  \cxxsnippetwithoutput{mplprocname}{examples/mpi/mpl}{procname}
+  \mplsnippetwithoutput{mplprocname}{examples/mpi/mpl}{procname}
 \end{mplnote}
 
 \begin{fortrannote}{Processor name}
@@ -113,21 +113,21 @@ comm.Send( buffer, target )
 \begin{mplnote}{World communicator}
   The naive way of declaring a communicator would be:
   %
-  \cxxverbatimsnippet[examples/mpi/mpl/commrank.cxx]{mplcommcopy}
+  \mplverbatimsnippet[examples/mpi/mpl/commrank.cxx]{mplcommcopy}
   %
   calling the predefined environment method \indexmplshow{comm_world}.
 
   However, if the variable will always correspond to the world communicator,
   it is better to make it \lstinline{const} and declare it to be a reference:
   %
-  \cxxverbatimsnippet[examples/mpi/mpl/commrank.cxx]{mplcommref}
+  \mplverbatimsnippet[examples/mpi/mpl/commrank.cxx]{mplcommref}
 \end{mplnote}
 
 \begin{mplnote}{Communicator copying}
   The communicator class has its copy operator deleted;
   however, copy initialization exists:
   %
-  \cxxverbatimsnippet[examples/mpi/mpl/commcompare.cxx]{mplcompare}
+  \mplverbatimsnippet[examples/mpi/mpl/commcompare.cxx]{mplcompare}
   %
   (This outputs true/false/false respectively.)
 
@@ -139,7 +139,7 @@ comm.Send( buffer, target )
 \begin{mplnote}{Communicator passing}
   Pass communicators by reference to avoid communicator duplication:
   %
-  \cxxverbatimsnippet{mplcommpass}
+  \mplverbatimsnippet{mplcommpass}
 \end{mplnote}
 
 You will
@@ -210,8 +210,8 @@ nprocs = comm.Get_size()
 \end{pythonnote}
 
 \begin{mplnote}{Rank and size}
-  The rank of a process (by \lstinline+mpl::communicator::+\indexmpldef{rank}) and
-  the size of a communicator (by \lstinline+mpl::communicator::+\indexmpldef{size})
+  The rank of a process and
+  the size of a communicator 
   are both methods of the \indexmplshow{communicator} class:
 \begin{lstlisting}
 const mpl::communicator &comm_world =

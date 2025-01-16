@@ -80,14 +80,17 @@ MPI realizes this through matched send and receive calls:
 We will now discuss the send and receive routines in detail.
 
 \Level 1 {Example: ping-pong}
+%%packtsnippet pingpong
 \label{sec:mpi-send-recv}
 
 A simple scenario for information exchange between just two processes
 is the \indexterm{ping-pong}: process~A sends data to process~B, which
 sends data back to~A.
 This is not an operation that is particularly relevant to applications,
-although it is often used as a benchmark.
-Here we discuss it for to explain basic ideas.
+although it is often used as a benchmark:
+half the time of a ping-pong is the time for a single sent message.
+(Why can you generally not time a single message?)
+Here we discuss it to explain basic ideas.
 
 This means that process~A executes the code
 \begin{lstlisting}
@@ -109,6 +112,8 @@ if ( /* I am process A */ ) {
   MPI_Send( /* to: */ A ..... );
 }
 \end{lstlisting}
+
+%%packtsnippet end
 
 \begin{remark}
   The structure of the send and receive calls shows the symmetric nature of MPI: every
@@ -186,32 +191,32 @@ they need to be in the same communicator.
 \end{mplnote}
 
 \begin{mplnote}{Blocking send and receive}
+  In its scalar form, send and receive calls specify the data
+  to be communicated and the source and target processes.
   \ac{MPL} uses a default value for the tag, and it can deduce the type
   of the buffer. Sending a scalar becomes:
   %
-  \cxxverbatimsnippet[examples/mpi/mpl/sendscalar.cxx]{mplsendscalar}
-  %
-  (See also note~\ref{mpl:buf-scalar}.)
+  \mplverbatimsnippet[examples/mpi/mpl/sendscalar.cxx]{mplsendscalar}
 \end{mplnote}
 
-\begin{mplnote}{Sending arrays}
+\begin{mplnote}{Sending automatic arrays}
   \ac{MPL} can send \indextermsub{static}{array}s
   without further layout specification:
   %
-  \cxxverbatimsnippet[examples/mpi/mpl/sendarray.cxx]{mplsendarray}
+  \mplverbatimsnippet[examples/mpi/mpl/sendarray.cxx]{mplsendarray}
+\end{mplnote}
 
-  Sending vectors uses a general mechanism:
+\begin{mplnote}{Sending arrays}
+  Sending vector data uses a pointer and a layout:
   %
-  \cxxverbatimsnippet[examples/mpi/mpl/sendbuffer.cxx]{mplsendbuffer}
-  
-  (See also note~\ref{mpl:vec-buf}.)
+  \mplverbatimsnippet[examples/mpi/mpl/sendbuffer.cxx]{mplsendbuffer}
 \end{mplnote}
 
 \begin{comment}
   \begin{mplnote}{Iterator buffers}
     It is possible to to send containers by iterators
     %
-    \cxxverbatimsnippet[examples/mpi/mpl/sendrange.cxx]{mplsendrange}
+    \mplverbatimsnippet[examples/mpi/mpl/sendrange.cxx]{mplsendrange}
   \end{mplnote}
 \end{comment}
 
@@ -665,9 +670,9 @@ count zero.
   Also, the send and receive tag need to be specified; they do not have default values.
 
   \begin{multicols}{2}
-    \cxxverbatimsnippet{mplsendrecv}
+    \mplverbatimsnippet{mplsendrecv}
     \columnbreak
-    \cxxverbatimsnippet{mplsendrecvar}    
+    \mplverbatimsnippet{mplsendrecvar}    
   \end{multicols}
 \end{mplnote}
 

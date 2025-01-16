@@ -46,7 +46,6 @@ The runtime functions are:
 \item \indexompshow{omp_get_active_level}
 \item \indexompshow{omp_get_ancestor_thread_num}
 \item \indexompshow{omp_get_team_size}
-%\item \indexompdef{omp_}
 \end{itemize}
 
 Here are the OpenMP \emph{environment variables}:
@@ -57,7 +56,8 @@ Here are the OpenMP \emph{environment variables}:
   routine for setting the value.
 \item \indexompshow{OMP_DISPLAY_ENV} Show OpenMP version (section~\ref{sec:omp-standards})
   and environment variables.
-\item \indexompdef{OMP_DEFAULT_DEVICE} Set the device used in target regions
+\item \indexompdef{OMP_DEFAULT_DEVICE} Set the device used in target regions;
+  see chapter~\ref{ch:omp-gpu}.
 \item \indexompdef{OMP_DYNAMIC} Dynamic adjustment of threads.
   Set and query with  \indexompshow{omp_set_dynamic} and \indexompshow{omp_get_dynamic}
   respectively.
@@ -216,17 +216,15 @@ for ( .... ) {
 \end{lstlisting}
 has a clear race condition, as the iterations of the loop
 may get different \n{next_one} values, as they are supposed to,
-or not. This can be solved by using an \indexpragma{critical}
+or not. This can be solved by using an \indexomppragma{critical}
 pragma for the \n{next_one} call; another solution 
-is to use an \indexpragma{threadprivate} declaration for \n{isave}.
+is to use an \indexomppragma{threadprivate} declaration for \n{isave}.
 This is for instance the right solution if  the \n{next_one}
 routine implements a \indexterm{random number generator}.
 
 \index{thread-safe|)}
 
 \Level 0 {Performance and tuning}
-
-%See the EPCC benchmark suite~\cite{epcc-ompbench}.
 
 The performance of an OpenMP code can be influenced by the following.
 
@@ -369,7 +367,7 @@ and the \emph{standard versions}:
   \begin{itemize}
   \item Better support for C11, C++11/14/18, Fortran2008
   \item Non-rectangular loop nests.
-  \item \indexpragma{scan} extended to have in/exclusive versions
+  \item \indexomppragma{scan} extended to have in/exclusive versions
   \item reduction on tasks, taskloops.
   \item memory spaces.
   \end{itemize}

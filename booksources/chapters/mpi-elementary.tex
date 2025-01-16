@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% mpi-elementary.tex : predefined datatypes
 %%%%
@@ -150,7 +150,7 @@ See table~\ref{tab:elemen-c}.
 
 \Level 1 {Fortran}
 \index{datatype!predefined!in Fortran}
-\lstset{style=reviewcode,language=Fortran} %pyskip
+\lstset{language=Fortran} %pyskip
 
 \begin{table}[ht]
 \hbox{
@@ -253,7 +253,7 @@ CALL MPI_Type_create_f90_complex( 15 , 300 , complextype , error )
   so there is no need to commit or free them.
 \end{remark}
 
-\lstset{style=reviewcode,language=C} %pyskip
+\lstset{language=C} %pyskip
 
 \Level 1 {Python}
 \label{sec:py-predefined}
@@ -342,11 +342,11 @@ The equivalent of
 %\indexmpishowsub{MPI_Aint}{in Fortran}
 \indexmpishowf{MPI_Aint} in Fortran
 is an integer of kind \indexmpidef{MPI_ADDRESS_KIND}:
-\lstset{style=reviewcode,language=Fortran} %pyskip
+\lstset{language=Fortran} %pyskip
 \begin{lstlisting}
 integer(kind=MPI_ADDRESS_KIND) :: winsize
 \end{lstlisting}
-\lstset{style=reviewcode,language=C} %pyskip
+\lstset{language=C} %pyskip
 
 Using this integer kind to compute the size of a window
 also requires being able to query the size of the datatype

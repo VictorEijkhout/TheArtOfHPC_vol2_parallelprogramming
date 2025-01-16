@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2021
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% mpi-gatherscatter.tex : about gather & scatter collectives
 %%%%
@@ -97,12 +97,12 @@ Two things to note about these routines:
   a single scalar takes a scalar argument
   and a raw array:
   %
-  \cxxverbatimsnippet[examples/mpi/mpl/collectbuffer.cxx]{mplscattergatherx}
+  \mplverbatimsnippet[examples/mpi/mpl/collectbuffer.cxx]{mplscattergatherx}
   %
   If more than a single scalar is gathered, or scattered into,
   it becomes necessary to specify a layout:
   %
-  \cxxverbatimsnippet[examples/mpi/mpl/collectbuffer.cxx]{mplscattergatherv}  
+  \mplverbatimsnippet[examples/mpi/mpl/collectbuffer.cxx]{mplscattergatherv}  
 \end{mplnote}
 
 \begin{mplnote}{Gather on nonroot}
@@ -110,7 +110,7 @@ Two things to note about these routines:
   the gather call only has a send buffer.
   MPL supports this by having two variants that only specify the send data.
   %
-  \cxxverbatimsnippet{mplgathernonroot}
+  \mplverbatimsnippet{mplgathernonroot}
 \end{mplnote}
 
 \Level 1 {Examples}

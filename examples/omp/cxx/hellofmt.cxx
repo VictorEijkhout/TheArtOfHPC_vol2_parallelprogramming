@@ -24,9 +24,9 @@ int main(int argc,char **argv) {
 //codesnippet hello-omp-fmt
 #pragma omp parallel
 {
-int t = omp_get_thread_num();
-std::cout <<
-  std::format("Hello world from {}\n",t);
+  int t = omp_get_thread_num();
+  std::cout << std::format
+    ("Hello world from {}\n",t);
 }
 //codesnippet end
 

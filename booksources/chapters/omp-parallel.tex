@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% omp-parallel.tex : about parallel regions, nesting and stuff.
 %%%%
@@ -17,13 +17,13 @@
 
 In OpenMP you need to indicate explicitly what passages are
 parallel. Creating parallelism, which here means: creating a team of threads,
-is done with the \indexpragma{parallel} pragma.
+is done with the \indexomppragma{parallel} pragma.
 A~block preceded by the \n{omp parallel} pragma
 is called a \emph{parallel region}; it
 is executed by a newly created team of threads. 
 This is an instance of the \indexac{SPMD} model: all threads execute the same
 segment of code.
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel
 {
   // this is executed by a team of threads
@@ -66,11 +66,11 @@ or in Fortran
 \end{cppnote}
 
 The following example uses parallelism for an actual calculation:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 result = f(x)+g(x)+h(x)
 \end{lstlisting}
 you could parallelize this as
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 double result,fresult,gresult,hresult;
 #pragma omp parallel
 { int num = omp_get_thread_num();
@@ -120,7 +120,7 @@ that function itself contains a parallel region?
 \begin{block}{Nested parallelism}
   \label{sl:omp:nest-code}
 \begin{multicols}{2}
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 int main() {
   ...
 #pragma omp parallel
@@ -132,7 +132,7 @@ int main() {
 } // end of main
 \end{lstlisting}
 \columnbreak
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 void func(...) {
 #pragma omp parallel
   {
@@ -162,7 +162,7 @@ Equivalently, there are functions
 OMP_MAX_ACTIVE_LEVELS=3
 \end{verbatim}
 or
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 void omp_set_max_active_levels(int);
 int omp_get_max_active_levels(void);
 \end{lstlisting}
@@ -229,7 +229,7 @@ Writing subprograms that are called in a parallel region illustrates
 the following point: directives are evaluation with respect to the
 \emph{dynamic scope}\index{parallel region!dynamic scope} of the
 parallel region, not just the lexical scope. In the following example:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel
 {
   f();
@@ -263,15 +263,15 @@ regions, you can test which is the case with \indexompshow{omp_in_parallel}.
 
 It is possible to terminate a parallel construct early
 with the \indexompdef{cancel} directive:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 !$omp cancel construct [if (expr)]
 \end{lstlisting}
 where construct is
-\lstinline{parallel},
-\lstinline{sections},
-\lstinline{do}
+\lstinline[language=omp]{parallel},
+\lstinline[language=omp]{sections},
+\lstinline[language=omp]{do}
 or
-\lstinline{taskgroup}.
+\lstinline[language=omp]{taskgroup}.
 
 See section~\ref{sec:omp-dfs-example} for an example.
 
@@ -282,8 +282,9 @@ The state of cancellation can be queried with \indexompdef{omp_get_cancellation}
 but there is no function to set it.
 
 Cancellation can happen at most obvious places where OpenMP is active,
-but additional cancellation points can be set with 
-\begin{lstlisting}
+but additional cancellation points can be set with
+the \indexompdef{cancellation point} directive:
+\begin{lstlisting}[language=omp]
 #pragma omp cancellation point <construct>
 \end{lstlisting}
 where the construct is \indexompshow{parallel}, \indexompshow{sections},

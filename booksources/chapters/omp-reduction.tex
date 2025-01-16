@@ -20,7 +20,7 @@
 Parallel tasks often produce some quantity that needs to be summed
 or otherwise combined.
 If you write:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
   int sum=0;
   #pragma omp parallel for
   for (int i=0; i<N; i++)
@@ -63,7 +63,7 @@ without any work sharing:
 \cverbatimsnippet[examples/omp/c/reductpar.c]{reductpar}
 
 If you want to reduce multiple variables with the same operator, use
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 reduction(+:x,y,z)
 \end{lstlisting}
 For multiple reduction with different operators, use more than one clause.
@@ -83,13 +83,13 @@ For multiple reduction with different operators, use more than one clause.
 
 \Level 1 {Code your own reduction}
 
-While using a \lstinline{reduction} clause is the preferred way of dealing
+While using a \lstinline[language=omp]{reduction} clause is the preferred way of dealing
 with codes as in section~\ref{sec:reduct-intro} above,
 it can be instructive to look at other mechanisms.
 
 The most immediate way is to eliminate the race condition
 by declaring a \indexterm{critical section}:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 double result = 0;
 #pragma omp parallel
 {
@@ -106,7 +106,7 @@ double result = 0;
 This is a good solution if the amount of serialization in the critical section
 is small compared to computing the functions~$f,g,h$. On the other hand, you
 may not want to do that in a loop:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 double result = 0;
 #pragma omp parallel
 {
@@ -131,7 +131,7 @@ realize the above scheme by hand by
 `duplicating' the global variable and gather the contributions later.
 This example presumes three threads, and gives each a location of their
 own to store the result computed on that thread:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 double result,local_results[3];
 #pragma omp parallel
 {
@@ -150,7 +150,7 @@ This means that the cores will be wasting a lot of time and bandwidth updating
 each other's copy of this cacheline.
 
 False sharing can be prevent by giving each thread its own cacheline:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 double result,local_results[3][8];
 #pragma omp parallel
 {
@@ -161,14 +161,14 @@ double result,local_results[3][8];
 \end{lstlisting}
 A more elegant solution gives each thread a true local variable,
 and uses a critical section to sum these, at the very end:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 double result = 0;
 #pragma omp parallel
 {
   double local_result;
   local_result = .....
-#pragam omp critical
-  result += local_result;
+  #pragam omp critical
+    result += local_result;
 }
 \end{lstlisting}
 
@@ -191,8 +191,8 @@ double result = 0;
   \item Put a \indexompshow{parallel} directive around your loop. Does it still
     compute the right result? Does the time go down with the number of
     threads? (The answers should be no and no.)
-  \item Change the \lstinline{parallel} to \lstinline{parallel for}
-    (or \lstinline{parallel do}). Now is the result correct? Does execution speed up? (The
+  \item Change the \lstinline[language=omp]{parallel} to \lstinline[language=omp]{parallel for}
+    (or \lstinline[language=omp]{parallel do}). Now is the result correct? Does execution speed up? (The
     answers should now be no and yes.)
   \item Put a \indexompshow{critical} directive in front of the update. (Yes and
     very much no.)
@@ -226,7 +226,7 @@ double result = 0;
   \label{ex:omp-jacobi2}
   How much performance improvement do you get from considering
   \begin{itemize}
-  \item removing barriers by \lstinline{nowait} clauses
+  \item removing barriers by \lstinline[language=omp]{nowait} clauses
   \item affinity
   \item first-touch
   \end{itemize}
@@ -281,7 +281,7 @@ on statically and dynamically allocated arrays:
 \begin{cppnote}{Reductions on vectors}
   Use the \lstinline{data} method to extract the array
   on which to reduce. However, this does not work:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 vector<float> x;
 #pragma omp parallel reduction(+:x.data())
 \end{lstlisting}
@@ -299,7 +299,7 @@ environment variable.
 \Level 0 {Initial value for reductions}
 
 The treatment of initial values in reductions is slightly involved.
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
   x = init_x
 #pragma omp parallel for reduction(min:x)
   for (int i=0; i<N; i++)
@@ -347,7 +347,7 @@ We discuss two strategies:
 \begin{enumerate}
 \item In non-\ac{OO} languages you can define a function,
   and declare that to be a reduction operator with the
-  \indexpragma{declare}~\indexclause{reduction} construct.
+  \indexomppragma{declare}~\indexclause{reduction} construct.
 \item In \ac{OO} languages (C++ and \fstandard{2003})
   you can overload ordinary operators for types, including class objects.
 \end{enumerate}
@@ -369,7 +369,7 @@ This takes two steps.
 
 This is the syntax of the definition of the reduction, which can then
 be used in multiple \indexclause{reduction} clauses.
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp declare reduction 
     ( identifier : typelist : combiner )
     [initializer(initializer-expression)]
@@ -415,7 +415,7 @@ for the above loop
   \cxxverbatimsnippet{cppreductlambda}
   %
   You can not assign the lambda expression to a variable and use that,
-  because \lstinline{omp_in/out} are the only variables allowed
+  because \lstinline[language=omp]{omp_in/omp_out} are the only variables allowed
   in the explicit expression.
 \end{cppnote}
 
@@ -434,7 +434,7 @@ For instance, recreating the maximum reduction would look like this:
 \begin{cppnote}{Reduction over iterators}
   Support for
   \emph{C++ iterators}\index{C++ iterators!in OMP reduction}
-\begin{lstlisting}[language=C++]
+\begin{lstlisting}[language=omp][language=C++]
 #pragma omp declare reduction \
     (merge             // identifier 
     : std::vector<int> // typelist
@@ -476,7 +476,7 @@ For instance, recreating the maximum reduction would look like this:
     \columnbreak
     \fverbatimsnippet{ftypeopuse}
   \end{multicols}
-  But note the extra \lstinline{declare} clause.  
+  But note the extra \lstinline[language=omp]{declare} clause.  
 \end{fortrannote}
 
 \begin{cppnote}{Reduction on class objects}
@@ -505,21 +505,21 @@ For this OpenMP, as of \ompstandard{5.0}, has the \indexompdef{scan} directive.
 This needs the following:
 \begin{itemize}
 \item The reduction clause gets a modifier \indexompclause{inscan}:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel for reduction(inscan,+:sumvar)
 \end{lstlisting}
 \item In the body of the parallel loop there is a \indexompshow{scan} directive
   that allows you to store the partial results.
   For inclusive scans the reduction variable is updated before the \indexompshow{scan} pragma:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
   sumvar // update
-#pragma omp scan inclusive(sumvar)
+  #pragma omp scan inclusive(sumvar)
   partials[i] = sumvar
 \end{lstlisting}
   For exclusive scans the reduction variable is updated after the \indexompshow{scan} pragma:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
   partials[i] = sumvar
-#pragma omp scan inclusive(sumvar)
+  #pragma omp scan inclusive(sumvar)
   sumvar // update
 \end{lstlisting}
 \end{itemize}

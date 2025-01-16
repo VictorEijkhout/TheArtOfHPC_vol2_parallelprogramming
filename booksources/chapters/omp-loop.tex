@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% omp-loop.tex : the OpenMP loop construct
 %%%%
@@ -17,12 +17,12 @@ OpenMP parallel loops are a first example of OpenMP `worksharing'
 constructs (see section~\ref{sec:work-sharing} for the full list):
 constructs that take an amount of work and distribute it over the
 available threads in a parallel region,
-created with the \indexpragma{parallel} pragma.
+created with the \indexomppragma{parallel} pragma.
 
 The parallel execution of a loop can be handled a number of different ways.
 For instance, you can create a parallel region around the loop, and
 adjust the loop bounds:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel
 {
   int threadnum = omp_get_thread_num(),
@@ -34,7 +34,7 @@ adjust the loop bounds:
 }
 \end{lstlisting}
 In effect, this is how you would parallelize a loop in MPI:
-the \indexpragma{parallel} pragma creates a team of threads,
+the \indexomppragma{parallel} pragma creates a team of threads,
 each thread executes the block of code,
 and based on its thread number finds a unique block of work to do.
 
@@ -47,10 +47,10 @@ and based on its thread number finds a unique block of work to do.
 
 The natural way to parallelize a loop in OpenMP
 is to use the
-\indexpragma{for} pragma
+\indexomppragma{for} pragma
 where OpenMP does the above chopping of the loop
 for you:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel
 #pragma omp for
 for (int i=0; i<N; i++) {
@@ -60,9 +60,9 @@ for (int i=0; i<N; i++) {
 
 This fragment combines two OpenMP idioms:
 \begin{enumerate}
-\item First the \indexpragma{parallel} directive
+\item First the \indexomppragma{parallel} directive
   creates a \indexterm{team} of threads; after which
-\item The \indexpragma{for} directive is a
+\item The \indexomppragma{for} directive is a
   \indextermbus{worksharing}{construct}:
   it divides the available work over the available threads.
 \end{enumerate}
@@ -79,8 +79,8 @@ for the threads yourself, but you can also tell OpenMP to assign the loop
 iterations according to different schedules (section~\ref{sec:schedule}).
 
 \begin{fortrannote}{OMP do pragma}
-  The \indexpragma{for} pragma only exists in~C;
-  there is a correspondingly named \indexpragma{do} pragma in Fortran.
+  The \indexomppragma{for} pragma only exists in~C;
+  there is a correspondingly named \indexomppragma{do} pragma in Fortran.
 \begin{lstlisting}
 $!omp parallel
 $!omp do
@@ -92,21 +92,29 @@ $!omp end parallel
 \end{lstlisting}
 \end{fortrannote}
 
+\begin{fortrannote}{Missing sentinel for loops}
+  With the \indexomppragma{for} directive,
+  and other loop directives such as \indexomppragma{simd},
+  It is clear what block of code they pertain to.
+  Therefore, the \lstinline[language=omp]{end} sentinel can be omitted:
+  \fverbatimsnippet{pi4reductf}
+\end{fortrannote}
+
 \Level 1 {About parallelism and worksharing}
 
-It is important to realize that the \indexpragma{parallel}
+It is important to realize that the \indexomppragma{parallel}
 directive does not immediately distribute any work:
 all threads start out executing the same code.
 As an illustration, 
 figure~\ref{fig:omp-par-do} shows the execution on four threads of
-code that has instructions between the \indexpragma{parallel}
-and \indexpragma{for} directives:
+code that has instructions between the \indexomppragma{parallel}
+and \indexomppragma{for} directives:
 
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel
 {
   code1();
-#pragma omp for
+  #pragma omp for
   for (int i=1; i<=4*N; i++) {
     code2();
   }
@@ -142,18 +150,18 @@ As an illustration:
 
 It is also possible to have a combined
 \n{omp parallel for} or \n{omp parallel do} directive.
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel for
   for (int i=0; .....
 \end{lstlisting}
 
 \begin{cppnote}{Custom iterators}
   OpenMP can parallelize any range-based loop with a random-access iterator.
-  \cxxverbatimsnippet{classwithiter}
+  \ompverbatimsnippet{classwithiter}
   The following methods are needed for the contained \lstinline{iter} class:
-  \cxxverbatimsnippet{omprandaccess}
+  \ompverbatimsnippet{omprandaccess}
   And then a range-based loop is allowed:
-  \cxxverbatimsnippet{ompcustompar}
+  \ompverbatimsnippet{ompcustompar}
 \end{cppnote}
 
 \Level 1 {Loops are static}
@@ -174,7 +182,7 @@ able to determine in advance how many iterations there will be.
   and no changes to it
   inside the loop are allowed.
   The following loop is not parallelizable in OpenMP:
-    \begin{lstlisting}
+    \begin{lstlisting}[language=omp]
       for (int i=0; i<N; ) {
         // something
         if (something)
@@ -195,7 +203,7 @@ able to determine in advance how many iterations there will be.
 
 OpenMP parallelism is not magic. You can not take a sequential loop,
 even when it satisfies the restrictions above,
-put an \lstinline{omp parallel for} on it,
+put an \lstinline[language=omp]{omp parallel for} on it,
 and hope you get the same result, only faster.
 The speed issue is something we will go into later;
 for now let's consider the issue of whether the parallel
@@ -204,7 +212,7 @@ code computes the right result to begin with.
 The trivial case of a loop that is executed correctly in parallel,
 is one where iteration~\lstinline{i} writes in location~\lstinline{i}
 of some array:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 for (int i=low; i<hi; i++)
    x[i] = // expression
 \end{lstlisting}
@@ -216,7 +224,7 @@ or at best~\lstinline{x[i]}.
 
 Leaving considerations of the right-hand-side expression aside,
 we can more generally say that a loop is parallelizable if in
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 for (int i=low; i<hi; i++)
    x[ f(i) ] = // expression
 \end{lstlisting}
@@ -226,7 +234,7 @@ the function \lstinline{f} satisfies:
 \begin{exercise}
   \label{sl:omp:loop-over-2}
   Consider the code
-\begin{lstlisting}
+  \begin{lstlisting}[language=omp]
 for (int i=0; i<n; i++)
   x[i/2] += f(i)
 \end{lstlisting}
@@ -358,14 +366,14 @@ For reference, the commandlines executed were:
 \begin{cppnote}{Range syntax}
   Parallel loops in C++ can use range-based syntax as of \ompstandard{5.0}:
   %
-  \cxxverbatimsnippet{omprangeloop}
+  \ompverbatimsnippet{omprangeloop}
   %
   Tests show exactly the same speedup as the C~code.
 \end{cppnote}
 
 \begin{cppnote}{C++20 ranges header}
   The \cppstandard{20} \indextermtt{ranges} library is supported:
-  \cxxverbatimsnippet{omprangelib}
+  \ompverbatimsnippet{omprangelib}
 \end{cppnote}
 
 \begin{cppnote}{C++20 ranges speedup}
@@ -374,7 +382,7 @@ For reference, the commandlines executed were:
 
 \begin{cppnote}{Ranges and indices}
   Use \lstinline{iota_view} to obtain indices:
-  \cxxverbatimsnippet{ompiotaview}
+  \ompverbatimsnippet{ompiotaview}
   Note that this uses \cppstandard{23} suffix for
   \lstinline{unsigned size_t}. For older versions:
 \begin{lstlisting}
@@ -388,7 +396,7 @@ iota_view( static_cast<size_t>(0),data.size() )
 Usually you will have many more iterations in a loop than there are threads.
 Thus, there are several ways you can assign your loop iterations to the threads.
 OpenMP lets you specify this with the \indexompshow{schedule} clause.
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp for schedule(....)
 \end{lstlisting}
 
@@ -425,7 +433,7 @@ is a perfect load balancing.
 The default static schedule is to assign one consecutive block of
 iterations to each thread. If you want different sized blocks you can
 define a \indexclauseoption{schedule}{chunk} size:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp for schedule(static[,chunk])
 \end{lstlisting}
 (where the square brackets indicate an optional argument).
@@ -446,7 +454,7 @@ only a few chunks, versus the load balancing effect of having smaller chunks.
 In dynamic scheduling OpenMP will put blocks of iterations
 (the default chunk size is~1) in a task queue, and the threads take one of these
 tasks whenever they are finished with the previous.
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp for schedule(static[,chunk])
 \end{lstlisting}
 While this schedule may give good load balancing if the iterations
@@ -468,7 +476,7 @@ leave it to the runtime library by specifying
 
 \begin{exercise}
   Write a simple prime number tester and a loop that counts primes:
-  \cxxverbatimsnippet{primecountloop}
+  \ompverbatimsnippet{primecountloop}
   Do you expect a dynamic schedule to be better than a static one?
   Finish the program and test with different schedules.
 \end{exercise}
@@ -486,27 +494,27 @@ leave it to the runtime library by specifying
   predictable amount of time.
 
 \begin{enumerate}
-\item Use the \lstinline{omp parallel for} construct to parallelize the loop.
+\item Use the \lstinline[language=omp]{omp parallel for} construct to parallelize the loop.
   As in the previous lab, you may at first see an incorrect result.
   Use the \indexompshow{reduction} clause to fix this.
 \item Your code should now see a decent speedup, but possible not for all cores.
   It is possible to get completely linear speedup by adjusting the schedule.
 
-  Start by using \indexompshow{schedule}\lstinline{(static,n)}.
+  Start by using \indexompshow{schedule}\lstinline[language=omp]{(static,n)}.
   Experiment with values for~$n$.
   When can you get a better speedup? Explain this.
-\item Since this code is somewhat dynamic, try \indexompshow{schedule}\lstinline{(dynamic)}.
+\item Since this code is somewhat dynamic, try \indexompshow{schedule}\lstinline[language=omp]{(dynamic)}.
   This will actually give a fairly bad result. Why?  Use
   \indexompshow{schedule}\n{(dynamic,$n$)} instead, and experiment with values
   for~$n$.
-\item Finally, use \indexompshow{schedule}\lstinline{(guided)}, where OpenMP uses a
+\item Finally, use \indexompshow{schedule}\lstinline[language=omp]{(guided)}, where OpenMP uses a
   heuristic.  What results does that give?
 \end{enumerate}
 \end{exercise}
 
 \begin{exercise}
   Program the \indexterm{LU factorization} algorithm without pivoting.
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 for k=1,n:
   A[k,k] = 1./A[k,k]
   for i=k+1,n:
@@ -527,18 +535,18 @@ for k=1,n:
 
 The schedule can be declared explicitly, set at runtime
 through the \indexompshow{OMP_SCHEDULE} environment variable, or left up to the runtime system
-by specifying \lstinline{auto}. Especially in the last two cases  you may want to enquire
+by specifying \lstinline[language=omp]{auto}. Especially in the last two cases  you may want to enquire
 what schedule is currently being used with
 \indexompshow{omp_get_schedule} (since \ompstandard{5.1}):
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 int omp_get_schedule(omp_sched_t * kind, int * modifier );
 \end{lstlisting}
 
 Its mirror call is \indexompshow{omp_set_schedule}, which sets the
-value that is used when schedule value \lstinline{runtime} is used. It is in
+value that is used when schedule value \lstinline[language=omp]{runtime} is used. It is in
 effect equivalent to setting the environment variable
 \indexompshow{OMP_SCHEDULE}.
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 void omp_set_schedule (omp_sched_t kind, int modifier);
 \end{lstlisting}
 
@@ -574,6 +582,17 @@ Here are the various schedules you can set with the
     \indexompshow{omp_sched_runtime}
 \end{description}
 
+Some modifiers can be applied to the schedule:
+\begin{itemize}
+\item \indexompshow{monotonic} and \indexompshow{nonmonotonic}
+  dictate whether each thread executes its iterations in order or arbitrarily;
+\item \indexompshow{simd} rounds the chunk up to a multiple of the \indextermbus{simd}{width}:
+\begin{lstlisting}[language=omp]
+schedule( simd:static,7 )
+\end{lstlisting}
+will give a chunk size of~8, most likely.
+\end{itemize}
+
 \Level 0 {Timing experiments}
 
 \Level 1 {Indexing schemes}
@@ -581,14 +600,14 @@ Here are the various schedules you can set with the
 For two-dimensional loops there are several possible ways of handling the indexing.
 \begin{enumerate}
 \item We can use a nested loop, and translate \lstinline{i,j} indices to a linear index;
-\cxxverbatimsnippet{collapse2}
-\item same, but with a \lstinline{collapse(2)} directive;
-\cxxverbatimsnippet{collapse3}
+\ompverbatimsnippet{collapse2}
+\item same, but with a \lstinline[language=omp]{collapse(2)} directive;
+\ompverbatimsnippet{collapse3}
 \item with \cppstandard{32} \lstinline{mdspan} we can use true 2D indexing;
-\cxxverbatimsnippet{collapse5}
+\ompverbatimsnippet{collapse5}
 \item finally, to deal with \acp{PDE} with a boundary condition, we
   use a nested loop that only traverses the interior of the array.
-\cxxverbatimsnippet{collapse4}
+\ompverbatimsnippet{collapse4}
 \end{enumerate}
 We report the results in figure~\ref{fig:omp-collapse}.
 These results were run on the \indextermbus{TACC}{Frontera} cluster,
@@ -671,7 +690,7 @@ with 56-core dual-socket \indextermbus{Intel}{Cascade Lake} processors.
 \end{figure}
 
 We conclude that all schemes perform approximately equally well.
-Surprisingly the \lstinline{collapse(2)} degrades performance.
+Surprisingly the \lstinline[language=omp]{collapse(2)} degrades performance.
 The gaps in the indexing from the `inner' scheme don't seem to matter.
 The \lstinline{mdspan} indexing performs slightly worse than the best scheme.
 
@@ -691,16 +710,16 @@ As an example, let's consider prime number marking:
 create an array where \lstinline{p[i]} is one
 if \lstinline{i} is prime, zero otherwise.
 
-\cxxverbatimsnippet{markprimeomp}
-\cxxverbatimsnippet{markprimecpp}
+\ompverbatimsnippet{markprimeomp}
+\ompverbatimsnippet{markprimecpp}
 
 %% \lstinputlisting{examples/tbb/cxx/primepolicy-scaling-ls6.runout}
 \begin{figure}[t]
   %\lstinputlisting{examples/tbb/cxx/primepolicy-scaling-ls6.runout}
   \pgfplotsset{table/col sep=comma}
   \begin{multicols}{2}
+    \tikzsetnextfilename{omp-primepolicy}
     \begin{tikzpicture}
-      \tikzsetnextfilename{omp-primepolicy}
       \begin{semilogyaxis}[
           title=Comparison of loop scheduling schemes,
           ylabel=msec, xlabel=cores,
@@ -713,8 +732,8 @@ if \lstinline{i} is prime, zero otherwise.
       \end{semilogyaxis}
     \end{tikzpicture}
     \columnbreak
+    \tikzsetnextfilename{omp-reducepolicy}
     \begin{tikzpicture}
-      \tikzsetnextfilename{omp-reducepolicy}
       \begin{semilogyaxis}[
           title=Comparison of loop scheduling schemes,
           ylabel=msec, xlabel=cores,
@@ -758,15 +777,15 @@ parallel loops, it is possible to increase the amount of work by
 parallelizing all levels of loops instead of just the outer one.
 
 Example: in
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 for ( int i=0; i<N; i++ )
   for ( int j=0; j<N; j++ )
     A[i][j] = B[i][j] + C[i][j] 
 \end{lstlisting}
-all $N^2$ iterations are independent, but a regular \lstinline{omp for}
+all $N^2$ iterations are independent, but a regular \lstinline[language=omp]{omp for}
 directive will only parallelize one level. The \indexclause{collapse}
 clause will parallelize more than one level:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp for collapse(2)
 for ( int i=0; i<N; i++ )
   for ( int j=0; j<N; j++ )
@@ -776,7 +795,7 @@ It is only possible to collapse perfectly nested loops, that is, the
 loop body of the outer loop can consist only of the inner loop; there
 can be no statements before or after the inner loop in the loop body
 of the outer loop. That is, the two loops in
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 for ( int i=0; i<N; i++ ) {
   y[i] = 0.;
   for ( int j=0; j<N; j++)
@@ -787,7 +806,7 @@ can not be collapsed.
 
 \begin{exercise}
   You could rewrite the above code as
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 for (int i=0; i<N; i++)
   y[i] = 0.;
 for (int i=0; i<N; i++) {
@@ -801,7 +820,7 @@ on the nested loop?
 
 \begin{exercise}
   Consider this code for matrix transposition:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 void transposer(int n, int m, double *dst, const double *src) {
    int blocksize;
    for (int i = 0; i < n; i += blocksize) {
@@ -825,7 +844,7 @@ levels can you collapse?
 \label{sec:omp-row-col-major}
 
 Consider arrays 
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
   float Amat[N][N];
   float xvec[N],yvec[N];  
 \end{lstlisting}
@@ -859,7 +878,7 @@ is faster. Can you find reasons for this?
 
 Iterations in a parallel loop that are executed in parallel do not
 execute in lockstep. That means that in
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel for
 for ( ... i ... ) {
   ... f(i) ...
@@ -869,22 +888,22 @@ for ( ... i ... ) {
 it is not true that all function evaluations happen more or less at
 the same time, followed by all print statements. The print statements
 can really happen in any order. The \indexclause{ordered} clause
-coupled with the \indexpragma{ordered} directive can
+coupled with the \indexomppragma{ordered} directive can
 force execution in the right order:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel for ordered
 for ( ... i ... ) {
   ... f(i) ...
-#pragma omp ordered
+  #pragma omp ordered
   printf("something with %d\n",i);
 }
 \end{lstlisting}
 Example code structure:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel for shared(y) ordered
 for ( ... i ... ) {
   int x = f(i)
-#pragma omp ordered
+  #pragma omp ordered
   y[i] += f(x)
   z[i] = g(y[i])
 }
@@ -907,10 +926,10 @@ can be cancelled with a
 \indexclause{nowait}\index[omp]{barrier!cancelled by nowait} clause.
 This has the effect that threads that are finished can continue
 with the next code in the parallel region:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel
 {
-#pragma omp for nowait
+  #pragma omp for nowait
   for (int i=0; i<N; i++) {
     ...
   }
@@ -922,11 +941,11 @@ In the following example, threads that are finished with the first loop
 can start on the second. Note that this requires both loops to have
 the same schedule. We specify the static schedule here to have an
 identical scheduling of iterations over threads:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel
 {
   x = local_computation()
-#pragma omp for schedule(static) nowait
+  #pragma omp for schedule(static) nowait
   for (int i=0; i<N; i++) { 
     x[i] = ... 
   }
@@ -942,13 +961,13 @@ identical scheduling of iterations over threads:
 OpenMP can only handle `for' loops: \indexterm{while loops} can not
 be parallelized. So you have to find a way around that. While loops
 are for instance used to search through data:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 while ( a[i]!=0 && i<imax ) {
  i++; }
 // now i is the first index for which a[i] is zero.
 \end{lstlisting}
 We replace the while loop by a for loop that examines all locations:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 result = -1;
 #pragma omp parallel for
 for (int i=0; i<imax; i++) {
@@ -962,8 +981,8 @@ You can fix the race condition by making the condition into a critical section;
 section~\ref{sec:critical}. In this particular example, with a very small amount
 of work per iteration, that is likely to be inefficient 
 in this case (why?).
-A~more efficient solution uses the \indexpragma{lastprivate} pragma:
-\begin{lstlisting}
+A~more efficient solution uses the \indexomppragma{lastprivate} pragma:
+\begin{lstlisting}[language=omp]
 result = -1;
 #pragma omp parallel for lastprivate(result)
 for (int i=0; i<imax; i++) {
@@ -976,10 +995,10 @@ contains the \emph{last} location where \n{a[i]} is zero.
 \Level 0 {Review questions}
 
 \begin{exercise}
-  The following loop can be parallelized with a \lstinline+parallel for+.
-  Is it correct to add the directive \lstinline+collapse(2)+?
+  The following loop can be parallelized with a \lstinline[language=omp]+parallel for+.
+  Is it correct to add the directive \lstinline[language=omp]+collapse(2)+?
 
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 for (int i=0; i<N; i++) {
   y[i] = 0.;
   for (int j=0; j<N; j++)
@@ -991,7 +1010,7 @@ for (int i=0; i<N; i++) {
 \begin{exercise}
   Same question for the nested loop here:
 
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 for (int i=0; i<N; i++)
 y[i] = 0.;
 for (int i=0; i<N; i++) {
@@ -1003,7 +1022,7 @@ for (int i=0; i<N; i++) {
 
 \begin{exercise}
   In this triple loop:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 for (int i=0; i<n; i++)
   for (int j=0; j<n; j++)
     for (int k=0; k<kmax; k++)

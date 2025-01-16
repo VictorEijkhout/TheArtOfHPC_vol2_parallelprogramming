@@ -16,7 +16,7 @@
 
 A \indexterm{histogram} is a way of counting a large number of objects
 into a small number of bins:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 for ( i /* lots of cases */ )
   bin[ property(i) ]++;
 \end{lstlisting}
@@ -86,7 +86,7 @@ With $n$ particles, each particle~$i$ feels a force
 Let's start with a couple of building blocks.
 \cverbatimsnippet{ompmolaux}
 Force accumulation:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 void add_force( struct force *f,struct force g ) {
   f->x += g.x; f->y += g.y; f->f += g.f;
 }
@@ -199,13 +199,13 @@ Next we try to parallelize the outer loop.
 \cverbatimsnippet{ompmolipar}
 To deal with the conflicting \lstinline{jp} writes,
 we make the writes atomic:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 void sub_force( struct force *f,struct force g ) {
-#pragma omp atomic
+  #pragma omp atomic
   f->x -= g.x;
-#pragma omp atomic
+  #pragma omp atomic
   f->y -= g.y;
-#pragma omp atomic
+  #pragma omp atomic
   f->f += g.f;
 }
 \end{lstlisting}
@@ -414,13 +414,13 @@ idiom for the main program:
 \cxxverbatimsnippet{queensmain}
 
 We create a task for each column, and since they are in a loop
-we use \indexpragma{taskgroup} rather than \indexpragma{taskwait}.
-\begin{lstlisting}
+we use \indexomppragma{taskgroup} rather than \indexomppragma{taskwait}.
+\begin{lstlisting}[language=omp]
 #pragma omp taskgroup
   for (int col=0; col<N; col++) {
     placement next = current;
     next.at(iqueen) = col;
-#pragma omp task firstprivate(next)
+    #pragma omp task firstprivate(next)
     if (feasible(next)) {
     // stuff
     } // end if(feasible)
@@ -429,7 +429,7 @@ we use \indexpragma{taskgroup} rather than \indexpragma{taskwait}.
 
 However, the sequential program had \lstinline{return} and \lstinline{break}
 statements in the loop, which is not allowed in workshare constructs
-such as \indexpragma{taskgroup}.
+such as \indexomppragma{taskgroup}.
 Therefore we introduce a return variable, declared as shared:
 %
 \cxxverbatimsnippet{queensbreadth}
@@ -499,7 +499,7 @@ Figure~\ref{fig:omp-dfs} shows this for $N=12$
 with the Intel compiler (version 2019) in the left panel,
 and the GNU compiler (version~9.1) in the middle.
 In both cases,  the blue bars give the result for the code
-with only the \indexpragma{taskgroup} directive,
+with only the \indexomppragma{taskgroup} directive,
 with time plotted as function of core count.
 
 We see that, for the Intel compiler, running time indeed
@@ -514,7 +514,7 @@ We also see that the GCC compiler is really bad at OpenMP tasks:
 the running time actually increases with the number of threads.
 
 Fortunately, with \ompstandard{4} we can break out of the loop
-with a \indexpragma{cancel} of the task group:
+with a \indexomppragma{cancel} of the task group:
 %
 \cxxverbatimsnippet{queenscancel}
 
@@ -548,7 +548,7 @@ OMP_CANCELLATION=true
 With that, we get very good performance,
 as  figure~\ref{fig:omp-dfs-cancel} shows,
 which lists sequential time, and
-multicore running time on the code with \indexpragma{cancel} directives.
+multicore running time on the code with \indexomppragma{cancel} directives.
 Running time is now approximately the same as the sequential time.
 Some questions are still left:
 \begin{itemize}
@@ -665,7 +665,7 @@ the lack of ordering of inserted elements.
 
 The key to the solution is to let each thread have a local array,
 and then to concatenate these:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel 
 {
   vector<int> local;
@@ -724,7 +724,7 @@ Let's do a \indexterm{producer-consumer} model\footnote{This example
 implemented with sections, where one section, the producer, sets a
 flag when data is available, and the other, the consumer, waits until
 the flag is set.
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel sections
 {
   // the producer
@@ -746,7 +746,7 @@ in the producing section, and that is never changed in the consuming section, so
 it may optimize these statements, to the point of optimizing them away.
 
 The producer then needs to do:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 ... do some producing work ...
 #pragma omp flush
 #pragma atomic write
@@ -754,7 +754,7 @@ The producer then needs to do:
 #pragma omp flush(flag)
 \end{lstlisting}
 and the consumer does:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp flush(flag)
 while (flag==0) {
   #pragma omp flush(flag)
@@ -764,13 +764,13 @@ while (flag==0) {
 This code strictly speaking has a \indexterm{race condition} on the \n{flag} variable.
 
 The solution is to make this an \indexterm{atomic operation} and
-use an \indexpragma{atomic} pragma here: the producer has
-\begin{lstlisting}
+use an \indexomppragma{atomic} pragma here: the producer has
+\begin{lstlisting}[language=omp]
 #pragma atomic write
   flag = 1;
 \end{lstlisting}
 and the consumer:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 while (1) {
   #pragma omp flush(flag)
   #pragma omp atomic read

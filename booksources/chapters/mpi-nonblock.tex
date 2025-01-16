@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% mpi-nonblock.tex : blocking sends
 %%%%
@@ -132,7 +132,7 @@ can free it:
   The various wait calls are methods of the \indexmplshow{irequest}
   class.
   %
-  \cxxverbatimsnippet[examples/mpi/mpl/isendandirecv.cxx]{irecvexamplempl}
+  \mplverbatimsnippet[examples/mpi/mpl/isendandirecv.cxx]{irecvexamplempl}
   %
   You can not default-construct the request variable:
 \begin{lstlisting}
@@ -271,7 +271,7 @@ reference, and not an array of statuses!
   which acts like a vector of requests,
   meaning that you can \lstinline+push+ onto it.
 
-  \cxxverbatimsnippet[examples/mpi/mpl/irecvsource.cxx]{mpirequestpush}
+  \mplverbatimsnippet[examples/mpi/mpl/irecvsource.cxx]{mpirequestpush}
 
   You can not declare a pool of a fixed size and assign elements.
   (Why not? Can you find a way around it?)
@@ -297,13 +297,13 @@ reference, and not an array of statuses!
   \end{itemize}
 
   %
-  \cxxverbatimsnippet[examples/mpi/mpl/irecvsource.cxx]{waitforanympl}
+  \mplverbatimsnippet[examples/mpi/mpl/irecvsource.cxx]{waitforanympl}
 
 \end{mplnote}
 
 \begin{mplnote}{Request handling}
   \label{mpl:req_handle}
-  \cxxverbatimsnippet{waitforanympl}
+  \mplverbatimsnippet{waitforanympl}
 \end{mplnote}
 
 \Level 2 {Polling with MPI Wait any}

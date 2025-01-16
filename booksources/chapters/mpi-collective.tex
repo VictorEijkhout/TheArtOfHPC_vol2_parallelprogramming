@@ -35,7 +35,7 @@ has \indextermdef{collectives}.
 
 There are various cases, illustrated in figure~\ref{fig:collectives},
 \begin{figure}[ht]
-  \includegraphics[scale=.6]{collectives}
+  \includegraphics[scale=.5]{collectives}
   \caption{The four most common collective structures}
   \label{fig:collectives}
 \end{figure}
@@ -54,11 +54,12 @@ which you can (sort of) motivate by considering some classroom activities:
   processes.
 \end{itemize}
 
-This story is a little different from what happens with MPI
-processes, because these are more symmetric; the process doing the
+This story, while illustrative, is an imperfect analogy to hat happens with MPI
+processes, because these are more symmetric.
+There is no `main' or `master' process: the process doing the
 reducing and broadcasting is no different from the others.
-Any process can function as the \indexterm{root process} in such a
-collective.
+Any process can function as the \indexterm{root process} in a
+collective operation
 %%packtsnippet end
 
 \begin{exercise}

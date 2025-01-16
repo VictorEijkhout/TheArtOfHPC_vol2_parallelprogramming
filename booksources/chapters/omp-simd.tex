@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-9
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% omp-simd.tex : SIMD instruction processing
 %%%%
@@ -13,7 +13,7 @@
 
 You can declare a loop to be executable with
 \indextermbus{vector}{instructions} with
-\indexpragmadef{simd}.
+\indexomppragmadef{simd}.
 
 \begin{remark}
   Depending on your compiler, it may be necessary to give an extra option
@@ -24,7 +24,7 @@ You can declare a loop to be executable with
   \end{itemize}
 \end{remark}
 
-The \indexpragma{simd} pragma has the following clauses:
+The \indexomppragma{simd} pragma has the following clauses:
 \begin{itemize}
 \item \indexclause{safelen($n$)}: limits the number of iterations in a
   SIMD chunk. Presumably useful if you combine \n{parallel for simd}.
@@ -33,10 +33,20 @@ The \indexpragma{simd} pragma has the following clauses:
 \item \indexclause{aligned}: specifies alignment of variables.
 \end{itemize}
 
+\Level 0 {SIMD loops}
+
+Adding a \lstinline[language=omp]{simd} directive to a loop schedule:
+\begin{lstlisting}[language=omp]
+#pragma omp parallel for schedule(simd:static)
+\end{lstlisting}
+causes the chunk size to be increased to a multiple of the vector width.
+
+\Level 0 {SIMD function calls}
+
 If your SIMD loop includes a function call, you can declare that the
 function can be turned into vector instructions with
 %
-\indexpragma{declare simd}
+\indexomppragma{declare simd}
 
 If a loop is both multi-threadable and vectorizable, you can combine
 directives as \n{pragma omp parallel for simd}.
@@ -154,7 +164,7 @@ vmovaps   %xmm1, %xmm0                                  #25.26 c77
 ret                                                     #25.26 c79
 \end{verbatim}
 
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp declare simd uniform(op1) linear(k) notinbranch
   double SqrtMul(double *op1, double op2, int k) {
     return (sqrt(op1[k]) * sqrt(op2));

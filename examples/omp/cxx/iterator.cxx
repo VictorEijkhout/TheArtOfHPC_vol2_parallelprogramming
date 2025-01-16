@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%% "Parallel Computing"
-   %%%% by Victor Eijkhout, copyright 2022-2023
+   %%%% by Victor Eijkhout, copyright 2022-2025
    %%%%
    %%%% iterator.cxx : iterating on custom iterator
    %%%%
@@ -61,7 +61,7 @@ public:
   T& operator*(); 
   bool operator==( const NewVector::iter &other ) const;
   bool operator!=( const NewVector::iter &other ) const;
-  // needed to OpenMP
+  // needed for OpenMP
   int operator-
       ( const NewVector::iter& other ) const;
   NewVector<T>::iter& operator+=( int add );
@@ -81,19 +81,35 @@ int main() {
     return s; }();
   //codesnippet end
 
-  //codesnippet ompcustompar
-  NewVector<float> v(s);
-  //codesnippet end
-  for ( int i=0; i<s; i++ )
-    v.at(i) = i+.5;
+  {
+    //codesnippet ompcustomseq
+    NewVector<float> v(s);
+    //codesnippet end
+    for ( int i=0; i<s; i++ )
+      v.at(i) = i+.5;
 
-  //codesnippet ompcustompar
-  #pragma omp parallel for
-  for ( auto e : v )
-    cout << e << " ";
-  //codesnippet end
-  cout << '\n';
+    //codesnippet ompcustomseq
+    for ( auto e : v )
+      cout << e << " ";
+    //codesnippet end
+    cout << '\n';
+  }
 
+    {
+    //codesnippet ompcustompar
+    NewVector<float> v(s);
+    //codesnippet end
+    for ( int i=0; i<s; i++ )
+      v.at(i) = i+.5;
+
+    //codesnippet ompcustompar
+    #pragma omp parallel for
+    for ( auto e : v )
+      cout << e << " ";
+    //codesnippet end
+    cout << '\n';
+  }
+  
   return 0;
 }
 

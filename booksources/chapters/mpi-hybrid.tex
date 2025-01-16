@@ -52,7 +52,7 @@ Here the \n{required} and \n{provided} parameters can take the following
   threads, but only the main thread will make MPI calls.
 
     The main thread is usually the one selected by the
-    \indexpragma{master} directive, but technically it is the only that
+    \indexomppragma{master} directive, but technically it is the only that
     executes \indexmpishow{MPI_Init_thread}. If you call this routine in
     a parallel region, the main thread may be different from the master.
 \item\indexmpidef{MPI_THREAD_SERIALIZED}: The program may use multiple

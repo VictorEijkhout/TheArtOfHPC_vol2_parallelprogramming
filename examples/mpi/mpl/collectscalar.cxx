@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%% "Parallel Computing"
-   %%%% by Victor Eijkhout, copyright 2020
+   %%%% by Victor Eijkhout, copyright 2020-2024
    %%%%
    %%%% collectscalar.cxx : collective routines on scalars in MPL
    %%%%
@@ -71,18 +71,18 @@ int main() {
 
   // calculate global sum and pass result to all
   {
-    //codesnippet mplallreduce
     float
-      xrank = static_cast<float>( comm_world.rank() ),
-      xreduce;
+      proc_data = static_cast<float>( comm_world.rank() ),
+      reduce_data;
+    //codesnippet mplallreduce
     // separate recv buffer
-    comm_world.allreduce(mpl::plus<float>(), xrank,xreduce);
+    comm_world.allreduce(mpl::plus<float>(), proc_data,reduce_data);
     // in place
-    comm_world.allreduce(mpl::plus<float>(), xrank);
+    comm_world.allreduce(mpl::plus<float>(), proc_data);
     //codesnippet end
     if ( comm_world.rank()==comm_world.size()-1 )
-      std::cout << "Allreduce got: separate=" << xreduce
-                << ", inplace=" << xrank << std::endl;
+      std::cout << "Allreduce got: separate=" << reduce_data
+                << ", inplace=" << proc_data << std::endl;
   }
 
   // calculate global sum and pass result to root
@@ -90,15 +90,15 @@ int main() {
     //codesnippet mplrootreduce
     int root = 1;
     float
-      xrank = static_cast<float>( comm_world.rank() ),
-      xreduce;
+      proc_data = static_cast<float>( comm_world.rank() ),
+      reduce_data;
     // separate receive buffer
-    comm_world.reduce(mpl::plus<float>(), root, xrank,xreduce);
+    comm_world.reduce(mpl::plus<float>(), root, proc_data,reduce_data);
     // in place
-    comm_world.reduce(mpl::plus<float>(), root, xrank);
+    comm_world.reduce(mpl::plus<float>(), root, proc_data);
     if ( comm_world.rank()==root )
-      std::cout << "Allreduce got: separate=" << xreduce
-		<< ", inplace=" << xrank << std::endl;
+      std::cout << "Allreduce got: separate=" << reduce_data
+		<< ", inplace=" << proc_data << std::endl;
     //codesnippet end
   }
 

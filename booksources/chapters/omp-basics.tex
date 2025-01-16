@@ -247,7 +247,7 @@ additional specifications can be done through library calls.
 In C/C++ the \indextermdef{pragma} mechanism is used: annotations for
 the benefit of the compiler that are otherwise not part of the
 language. This looks like:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp somedirective clause(value,othervalue)
   statement;
 
@@ -283,9 +283,13 @@ The sentinel in Fortran looks like a comment:
   statements
 !$omp end directive
 \end{lstlisting}
+(For fixed-form sources, \verb+c$omp+ and \verb+*$omp+
+are also acceptable.)
+
 The difference with the C~directive is that
-Fortran does not have code blocks, so there is an explicit
-\indextermsub{end-of}{directive} line.
+Fortran (pre-\fstandard{2018}) does not have code blocks,
+such as are induced by curly braces in~C,
+so there is often an explicit \indextermsub{end-of}{directive} line.
 
 If you break a directive over more than one line, all but the last line
 need to have a continuation character, and each line needs to have the sentinel:
@@ -304,13 +308,13 @@ In
 \Level 1 {Parallel regions}
 
 The simplest way to create parallelism in OpenMP is to use
-the \indexpragma{parallel} pragma.
-A~block preceded by the \indexpragma{parallel} pragma
+the \indexomppragma{parallel} pragma.
+A~block preceded by the \indexomppragma{parallel} pragma
 is called a \emph{parallel region}; it
 is executed by a newly created team of threads. 
 This is an instance of the \indexac{SPMD} model:
 all threads execute (redundantly) the same segment of code.
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel
 {
   // this is executed by a team of threads
@@ -445,10 +449,10 @@ each thread in the team gets its own instance of the enclosed variable.
 \begin{block}{Thread-local variables}
   \label{sl:omp:thread-local}
   \begin{multicols}{2}
-  \begin{lstlisting}
+\begin{lstlisting}[language=omp]
 {
   int x;
-#pragma omp parallel
+  #pragma omp parallel
   {
     double x;
     // do something with x
@@ -527,9 +531,9 @@ for variables and functions mentioned in this section).
   specified.
 \item A limit on the number of threads can also be set as a
   \indexompclause{num_threads} clause on a parallel region:
-  \begin{lstlisting}
-    #pragma omp parallel num_threads(ndata)
-  \end{lstlisting}
+\begin{lstlisting}[language=omp]
+#pragma omp parallel num_threads(ndata)
+\end{lstlisting}
 \end{itemize}
 
 To ask how much parallelism is actually used in your parallel region,

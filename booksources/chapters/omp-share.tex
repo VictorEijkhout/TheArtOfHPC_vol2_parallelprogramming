@@ -44,16 +44,16 @@ The work sharing constructs are:
 
 A parallel loop is an example of independent work units that are numbered.
 If you have a pre-determined number of independent work units, 
-the \indexpragma{sections} is more appropriate. In a \lstinline{sections} construct
-can be any number of \indexpragma{section} constructs. These need to be
+the \indexomppragma{sections} is more appropriate. In a \lstinline[language=omp]{sections} construct
+can be any number of \indexomppragma{section} constructs. These need to be
 independent, and they can be execute by any available thread in the current team,
 including having multiple sections done by the same thread.
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp sections
 {
-#pragma omp section
+  #pragma omp section
   // one calculation
-#pragma omp section
+  #pragma omp section
   // another calculation
 }
 \end{lstlisting}
@@ -61,14 +61,14 @@ including having multiple sections done by the same thread.
 This construct can be used to divide large blocks of independent work.
 Suppose that in the following line, both \n{f(x)} and \n{g(x)}
 are big calculations:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
   y = f(x) + g(x) + h(x)
 \end{lstlisting}
 You could then write
 \cverbatimsnippet{ompsections1}
 Instead of using two temporaries, you could also use a critical
 section; see section~\ref{sec:critical}.  However, the best solution
-is have a \lstinline{reduction} clause on the \lstinline{parallel sections} directive.
+is have a \lstinline[language=omp]{reduction} clause on the \lstinline[language=omp]{parallel sections} directive.
 You could then write
 \cverbatimsnippet{ompsections2}
 
@@ -79,28 +79,28 @@ OpenMP has two mechanisms for letting a code section be executed by only
 a single thread.
 (Note: that is different from critical section which are executed by a single
 thread \textsl{at a time}.)
-The \indexpragma{single} directive is to be used for sections
+The \indexomppragma{single} directive is to be used for sections
 that are part of the control flow, since it has an implicit concluding barrier.
-The \indexpragma{master} and \indexpragma{masked} directives are similar,
+The \indexomppragma{master} and \indexomppragma{masked} directives are similar,
 but assign the execution to the primary thread, and have no concluding barrier.
 
 \Level 1 {Single}
 
-The \indexpragmadef{single} pragma
+The \indexomppragmadef{single} pragma
 limits the execution of a block to a single thread. 
 This can for instance be used to print tracing information
 or doing \emph{I/O}\index{I/O!in OpenMP} operations.
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel
 {
-#pragma omp single
+  #pragma omp single
   printf("We are starting this section!\n");
   // parallel stuff
 }
 \end{lstlisting}
-Another use of \lstinline{single} is to perform initializations
+Another use of \lstinline[language=omp]{single} is to perform initializations
 in a parallel region:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 int a;
 #pragma omp parallel
 {
@@ -126,21 +126,21 @@ local memory (see section~\ref{sec:omp:flush}).
 
 \Level 1 {Masked/master}
 
-The \indexpragmadef{masked} and \indexpragmadef{master} directives
+The \indexomppragmadef{masked} and \indexomppragmadef{master} directives
 also enforces execution on a single thread,
 specifically the primary thread of the team.
 This is not a work sharing construct, and therefore
 does not have the synchronization through the implicit barrier.
 
 \begin{remark}
-  The \indexpragma{masked} directive is new in \ompstandard{5.1}.
-  The \indexpragma{master} directive is deprecated
+  The \indexomppragma{masked} directive is new in \ompstandard{5.1}.
+  The \indexomppragma{master} directive is deprecated
   as of \ompstandard{5.2}.
 \end{remark}
 
 \begin{exercise}
   Modify the above code to read:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 int a;
 #pragma omp parallel
 {
@@ -153,16 +153,16 @@ int a;
   This code is no longer correct. Explain.
 \end{exercise}
 
-The \indexpragma{masked} directive has a \indexclause{filter} clause,
+The \indexomppragma{masked} directive has a \indexclause{filter} clause,
 that can be used to select other threads than the primary:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp masked filter(2) // thread #2
 \end{lstlisting}
 
 \Level 1 {More}
 
-Above we motivated the \lstinline{single} directive as a way of initializing
-shared variables. It is also possible to use \lstinline{single} to initialize
+Above we motivated the \lstinline[language=omp]{single} directive as a way of initializing
+shared variables. It is also possible to use \lstinline[language=omp]{single} to initialize
 private variables. In that case you add the \indexclausedef{copyprivate}
 clause. This is a good solution if setting the variable takes~I/O.
 
@@ -175,13 +175,13 @@ clause. This is a good solution if setting the variable takes~I/O.
 \Level 0 {Fortran array syntax parallelization}
 \label{sec:fortran-workshare}
 
-The \lstinline{parallel do} directive is used to parallelize loops,
+The \lstinline[language=omp]{parallel do} directive is used to parallelize loops,
 and this applies to both C and Fortran. However, Fortran also
 has implied loops in its \emph{array syntax}\index{Fortran!array syntax}.
-To parallelize array syntax you can use the \indexpragma{workshare}
+To parallelize array syntax you can use the \indexomppragma{workshare}
 directive.
 
-The \indexpragma{workshare} directive exists only in Fortran.
+The \indexomppragma{workshare} directive exists only in Fortran.
 It can be used to parallelize
 the implied loops in \emph{array syntax}\index{Fortran!array syntax},
 as well as  \emph{forall}\index{Fortran!forall loops} loops.

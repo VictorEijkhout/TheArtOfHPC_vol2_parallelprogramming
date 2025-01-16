@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% mpi-running.tex : about running MPI programs
 %%%%
@@ -90,6 +90,12 @@ from mpi4py import MPI
 mpicxx -o mpiprog -I${MPL_LOCATION}/include mympiprog.cpp
 \end{lstlisting}
 where \lstinline[language=bash]{MPL_LOCATION} is system-dependent.
+
+In CMake, MPL can be found:
+\begin{lstlisting}
+find_package( mpl )
+// this defines the target: mpl::mpl
+\end{lstlisting}
 \end{mplnote}
 
 \Level 1 {Initialization / finalization}

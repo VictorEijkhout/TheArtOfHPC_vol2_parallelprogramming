@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2024
 %%%%
 %%%% mpi-ptp.tex : about point-to-point communication
 %%%%
@@ -118,7 +118,7 @@ with freely accessible members:
   The \lstinline+mpl::status_t+ object is created by the receive
   (or wait) call:
   %
-  \cxxverbatimsnippet[examples/mpi/mpl/vector.cxx]{mplstatuscreate}
+  \mplverbatimsnippet[examples/mpi/mpl/vector.cxx]{mplstatuscreate}
 \end{mplnote}
 
 \Level 1 {Source}
@@ -193,7 +193,7 @@ There are not many cases where this is needed.
   \ac{MPL} differs from other \acp{API} in its treatment of tags:
   a~tag is not directly an integer, but an object of class \indexmplshow{tag_t}.
   %
-  \cxxverbatimsnippet{mplsendrecv} % in an exercise
+  \mplverbatimsnippet{mplsendrecv} % in an exercise
   %
   The \indexmplshow{tag_t} class has a couple of methods such as
   \lstinline+mpl::+\indexmplshow{tag_t::any}\lstinline+()+
@@ -211,7 +211,7 @@ There are not many cases where this is needed.
  	tag_t (int t);
   \end{lstlisting}
   Example:
-  \cxxverbatimsnippet{mplinttag}
+  \mplverbatimsnippet{mplinttag}
 \end{mplnote}
 
 \Level 1 {Error}
@@ -263,7 +263,7 @@ Remarks.
   The \lstinline+get_count+ function is a method of the status object.
   The argument type is handled through templating:
   %
-  \cxxverbatimsnippet[examples/mpi/mpl/recvstatus.cxx]{mplrecvcount}
+  \mplverbatimsnippet[examples/mpi/mpl/recvstatus.cxx]{mplrecvcount}
 \end{mplnote}
 
 \Level 1 {Example: receiving from any source}
@@ -407,7 +407,6 @@ give a one-line explanation.
 \end{review}
 
 \lstset{
-  style=reviewcode,
   language=C,
 }
 
@@ -474,7 +473,7 @@ for (int p=0; p<nprocs; p++)
     \pagebreak
     Fortran codes:
     
-    \lstset{style=reviewcode,language=Fortran}
+    \lstset{language=Fortran}
 
   \lstset{language=Fortran,basicstyle=\footnotesize\ttfamily}
   %% \lstinputlisting{qblock1f}

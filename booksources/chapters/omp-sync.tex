@@ -42,7 +42,7 @@ A \indexompdef{barrier} defines a point in the code where all active threads wil
 until all threads have arrived at that point. With this, you can guarantee that
 certain calculations are finished. For instance, in this code snippet, computation 
 of~\n{y} can not proceed until another thread has computed its value of~\n{x}.
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel 
 {
   int mytid = omp_get_thread_num();
@@ -50,13 +50,13 @@ of~\n{y} can not proceed until another thread has computed its value of~\n{x}.
   y[mytid] = x[mytid]+x[mytid+1];
 }
 \end{lstlisting}
-This can be guaranteed with a \indexpragma{barrier} pragma:
-\begin{lstlisting}
+This can be guaranteed with a \indexomppragma{barrier} pragma:
+\begin{lstlisting}[language=omp]
 #pragma omp parallel 
 {
   int mytid = omp_get_thread_num();
   x[mytid] = some_calculation();
-#pragma omp barrier
+  #pragma omp barrier
   y[mytid] = x[mytid]+x[mytid+1];
 }
 \end{lstlisting}
@@ -68,13 +68,13 @@ Apart from the barrier directive, which inserts an explicit barrier,
 OpenMP has \emph{implicit barriers}\index[omp]{omp!barrier!implicit} after
 a work sharing construct; see section~\ref{sec:omp-single}.
 Thus the following code is well defined:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel 
 {
-#pragma omp for
+  #pragma omp for
   for (int mytid=0; mytid<number_of_threads; mytid++)
     x[mytid] = some_calculation();
-#pragma omp for
+  #pragma omp for
   for (int mytid=0; mytid<number_of_threads-1; mytid++)
     y[mytid] = x[mytid]+x[mytid+1];
 }
@@ -92,13 +92,13 @@ This barrier behavior can be canceled with the \indexclause{nowait}
 clause.
 
 You will often see the idiom
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel
 {
-#pragma omp for nowait
+  #pragma omp for nowait
   for (i=0; i<N; i++)
     a[i] = // some expression
-#pragma omp for
+  #pragma omp for
   for (i=0; i<N; i++)
     b[i] = ...... a[i] ......
 \end{lstlisting}
@@ -114,7 +114,7 @@ make larger parallel regions and thereby cutting down
 on thread creation cost:
 \begin{multicols}{2}
 Multiple parallel regions:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel
 // some workshare
 
@@ -123,7 +123,7 @@ Multiple parallel regions:
 \end{lstlisting}
 \columnbreak
 Merged into one:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel
 {
   // some workshare
@@ -135,7 +135,7 @@ Merged into one:
 For example, although \indextermtt{while} loops are strictly parallelizable,
 you can enclose the loop in a parallel region and use barriers
 to synchronize:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel
 {
   while ( /* something * ) {
@@ -182,25 +182,25 @@ can safely be read after it.
 \label{sec:critical}
 \index{atomic operation!OpenMP|(}
 
-There are two pragmas for critical sections: \indexpragma{critical} and \indexpragma{atomic}.
+There are two pragmas for critical sections: \indexomppragma{critical} and \indexomppragma{atomic}.
 Both denote \emph{atomic operations}
 in a technical sense.
 The first one is general and can contain an arbitrary sequence of instructions;
 the second one is more limited but has performance advantages.
 
-Beginning programmers are often tempted to use \indexpragma{critical}
+Beginning programmers are often tempted to use \indexomppragma{critical}
 for updates in a loop:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel
 {
   int mytid = omp_get_thread_num();
   double tmp = some_function(mytid);
   // This Works, but Not Best Solution:
-#pragma omp critical
+  #pragma omp critical
   sum += tmp;
 }
 \end{lstlisting}
-but this should really be done with a \indexpragma{reduction} clause,
+but this should really be done with a \indexomppragma{reduction} clause,
 which will be far more efficient.
 
 \begin{figure}[ht]
@@ -217,7 +217,7 @@ A good use of critical sections is doing file writes or database updates.
 
 \begin{exercise}
   Consider  a loop where each iteration updates a variable.
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel for shared(result)
   for ( i ) {
       result += some_function_of(i);
@@ -248,7 +248,7 @@ Furthermore, if your code has multiple critical sections, they are all mutually 
 if a thread is in one critical section, the other ones are all blocked.
 
 The problem with \n{critical} sections being mutually exclusive can be mitigated by naming them:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp critical (optional_name_in_parens)
 \end{lstlisting}
 
@@ -264,30 +264,30 @@ While the \indexclause{critical} construct can enclose arbitrary blocks of code,
 the \indexompclause{atomic} clause has one of a limited number of forms,
 for which hardware support is likely.
 Those consist of assigning to a variable:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 x++;
 // or:
 x += y;
 \end{lstlisting}
 possibly combination with reading that variable:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 v = x; x++;
 \end{lstlisting}
 
 There are various further refinements on the atomic specification:
 \begin{enumerate}
-\item \lstinline{omp atomic write} is followed by  a single assignment statement
+\item \lstinline[language=omp]{omp atomic write} is followed by  a single assignment statement
   to a shared variable.
-\item \lstinline{omp atomic read} is followed by  a single assignment statement
+\item \lstinline[language=omp]{omp atomic read} is followed by  a single assignment statement
   from a shared variable.
-\item \lstinline{omp atomic} is equivalent to \lstinline{omp atomic update};
+\item \lstinline[language=omp]{omp atomic} is equivalent to \lstinline[language=omp]{omp atomic update};
   it accomodates statements such as 
-  \begin{lstlisting}
+  \begin{lstlisting}[language=omp]
     x++; x += 1.5;
   \end{lstlisting}
-\item \lstinline{omp atomic capture} can accommodate a single statement
-  similar to \lstinline{omp atomic update},
-  or a block that essentially combines a \lstinline{read} and \lstinline{update} form.
+\item \lstinline[language=omp]{omp atomic capture} can accommodate a single statement
+  similar to \lstinline[language=omp]{omp atomic update},
+  or a block that essentially combines a \lstinline[language=omp]{read} and \lstinline[language=omp]{update} form.
 \end{enumerate}
 
 \index{atomic operation!OpenMP|)}
@@ -304,17 +304,17 @@ With a lock you make sure that some data elements can only be touched by one pro
 \Level 1 {Routines}
 
 Create/destroy:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 void omp_init_lock(omp_lock_t *lock);
 void omp_destroy_lock(omp_lock_t *lock);
 \end{lstlisting}
 Set and release:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 void omp_set_lock(omp_lock_t *lock);
 void omp_unset_lock(omp_lock_t *lock);
 \end{lstlisting}
 Since the set call is blocking, there is also 
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 int omp_test_lock();
 \end{lstlisting}
 which returns true if the lock was successfully set;
@@ -331,7 +331,7 @@ Use:
 \cverbatimsnippet{lockupdate}
 \end{multicols}
 
-Lock operations implicitly have a \indexpragma{flush};
+Lock operations implicitly have a \indexomppragma{flush};
 see section \ref{sec:omp:flush}.
 
 \begin{exercise}
@@ -342,7 +342,7 @@ see section \ref{sec:omp:flush}.
   update~B; the other process sets array~B and then uses it to
   update~A.
   Argue that this code can deadlock. How could you fix this?
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 #pragma omp parallel shared(a, b, nthreads, locka, lockb)
   #pragma omp sections nowait
     {
@@ -419,7 +419,7 @@ thread before being unlocked.
 \Level 0 {Relaxed memory model}
 \label{sec:omp:flush}
 
-\indexpragma{flush}
+\indexomppragma{flush}
 
 \begin{itemize}
 \item There is an implicit flush of all variables at the start and end 
@@ -441,7 +441,7 @@ The \emph{Fibonacci sequence} is recursively defined as
 \]
 We start by sketching the basic single-threaded solution.
 The naive code looks like:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 int main() {
   value = new int[nmax+1];
   value[0] = 1;
@@ -460,7 +460,7 @@ int fib(int n) {
 \end{lstlisting}
 However, this is inefficient, since most intermediate values will be computed
 more than once. We solve this by keeping track of which results are known:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
   ...
   done = new int[nmax+1];
   for (i=0; i<=nmax; i++)
@@ -483,11 +483,11 @@ we parallelize the recursion by using tasks (section~\ref{sec:omp:task}:
 int fib(int n) {
   int i, j;
   if (n>=2) {
-#pragma omp task shared(i) firstprivate(n)
+  #pragma omp task shared(i) firstprivate(n)
     i=fib(n-1);
-#pragma omp task shared(j) firstprivate(n)
+  #pragma omp task shared(j) firstprivate(n)
     j=fib(n-2);
-#pragma omp taskwait
+  #pragma omp taskwait
     value[n] = i+j;
   }
   return value[n];
@@ -498,15 +498,15 @@ it recomputes many of the intermediate values.
 
 A naive addition of the \n{done} array leads to data races, and probably an
 incorrect solution:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 int fib(int n) {
   int i, j, result;
   if (!done[n]) {
-#pragma omp task shared(i) firstprivate(n)
+  #pragma omp task shared(i) firstprivate(n)
     i=fib(n-1);
-#pragma omp task shared(i) firstprivate(n)
+  #pragma omp task shared(i) firstprivate(n)
     j=fib(n-2);
-#pragma omp taskwait
+  #pragma omp taskwait
     value[n] = i+j;
     done[n] = 1;
   }
@@ -520,17 +520,17 @@ is true, but \n{value[n-1]} does not have the right value yet.
 One solution to this problem is to use a lock, and make sure that,
 for a given index~\n{n}, the values \n{done[n]} and \n{value[n]}
 are never touched by more than one thread at a time:
-\begin{lstlisting}
+\begin{lstlisting}[language=omp]
 int fib(int n)
 {
   int i, j;
   omp_set_lock( &(dolock[n]) );
   if (!done[n]) {
-#pragma omp task shared(i) firstprivate(n)
+  #pragma omp task shared(i) firstprivate(n)
     i = fib(n-1);
-#pragma omp task shared(j) firstprivate(n)
+  #pragma omp task shared(j) firstprivate(n)
     j = fib(n-2);
-#pragma omp taskwait
+  #pragma omp taskwait
     value[n] = i+j;
     done[n] = 1;
   }
