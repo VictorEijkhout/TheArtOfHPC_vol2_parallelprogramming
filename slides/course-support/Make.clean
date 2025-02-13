@@ -4,14 +4,14 @@
 ####
 #### This makefile is part of the source of 
 #### "Parallel Computing for Science and Engineering"
-#### by Victor Eijkhout, copyright 2013-2020
+#### by Victor Eijkhout, copyright 2013-2025
 ####
 #### Make include file for clean rules
 ####
 ################################################################
 ################################################################
 
-.PHONY: clean local_clean total_clean recursive_clean
+.PHONY: clean local_clean total_clean 
 info ::
 	@echo "make clean, total_clean"
 clean :: local_clean
@@ -22,8 +22,9 @@ local_clean ::
 	    dcvserver.out \
 	    ${APPS}
 INDENT =
-MAKEFILESDIR = ../makefiles
-recursive_clean  : local_clean
+MAKEFILESDIR = ../../makefiles
+include ${MAKEFILESDIR}/Make.clean
+clean  ::
 	@for d in * ; do \
 	  if [ -d $${d} ] ; then \
 	    echo "${INDENT}cleaning in $${d}" \
@@ -32,7 +33,7 @@ recursive_clean  : local_clean
 	       && if [ -f Makefile ] ; then \
 	             make --no-print-directory INDENT=".. ${INDENT}" \
 	                 MAKEFILESDIR="../${MAKEFILESDIR}" \
-	                 recursive_clean ; \
+	                 clean ; \
 	          else \
 	             make --no-print-directory INDENT=".. ${INDENT}" \
 	                 -f ../${MAKEFILESDIR}/Make.clean \

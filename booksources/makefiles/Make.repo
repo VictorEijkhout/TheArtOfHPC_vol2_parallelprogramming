@@ -4,7 +4,7 @@
 ####
 #### This makefile is part of the source of 
 #### "Parallel Computing for Science and Engineering"
-#### by Victor Eijkhout, copyright 2013-2023
+#### by Victor Eijkhout, copyright 2013-2025
 ####
 #### Make include file for upload locations
 ####
@@ -20,9 +20,10 @@ taccrepo:
 	     && if [ ! -d "$$dir" ] ; then \
 	            echo "Directory <<$$dir>> does not exist" ; \
 	        else \
-	            echo "copying <<${FILE}.pdf>> to public pdfs dir <<$$dir>>" \
-	            && cp ${FILE}.pdf "$$dir"/ \
-	            && ( cd "$$dir" && git add "${FILE}.pdf" ) \
+	            file="${FILE}" && file="$${file%%.pdf}.pdf" \
+	            && echo "copying <<$${file}>> to public pdfs dir <<$$dir>>" \
+	            && cp "$${file}" "$$dir"/ \
+	            && ( cd "$$dir" && git add "$${file}" ) \
 	        ; fi \
 	    ; fi
 dropbox:
@@ -31,8 +32,9 @@ dropbox:
 	     && if [ ! -d "$$dir" ] ; then \
 	            echo "Directory <<$$dir>> does not exist" ; \
 	        else \
-	            echo "copying <<${FILE}.pdf>> to dropbox <<$$dir>>" \
-	            && cp ${FILE}.pdf "$$dir"/ \
+	            file="${FILE}" && file="$${file%%.pdf}.pdf" \
+	            && echo "copying <<$${file}>> to dropbox dir <<$$dir>>" \
+	            && cp "$${file}" "$$dir"/ \
 	        ; fi \
 	    ; fi
 studentrepo :
@@ -41,7 +43,8 @@ studentrepo :
 	     && if [ ! -d "$$dir" ] ; then \
 	            echo "Directory <<$$dir>> does not exist" ; \
 	        else \
-	            echo "copying <<${FILE}.pdf>> to student repo <<$$dir>>" \
-	             && cp ${FILE}.pdf "$$dir"/ \
+	            file="${FILE}" && file="$${file%%.pdf}.pdf" \
+	            && echo "copying <<$${file}>> to student repo <<$$dir>>" \
+	            && cp "$${file}" "$$dir"/ \
 	        ; fi \
 	    ; fi

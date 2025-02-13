@@ -4,19 +4,18 @@
 ####
 #### This makefile is part of the source of 
 #### "Parallel Computing for Science and Engineering"
-#### by Victor Eijkhout, copyright 2013-2024
+#### by Victor Eijkhout, copyright 2013-2025
 ####
 #### Make include file for clean rules
 ####
 ################################################################
 ################################################################
 
-.PHONY: clean codeclean texclean local_clean localclean total_clean recursive_clean
+.PHONY: clean codeclean texclean local_clean localclean total_clean 
 info ::
 	@echo
 	@echo "================ Cleaning:"
 	@echo "make clean, total_clean"
-clean :: local_clean
 codeclean :
 	@/bin/rm -rf \
 	    *.a *.o *.o.tmp *~ *.gch *.inst.c *.pp.F90 *.mod *.optrpt events.* *.mod a.out *.pyc \
@@ -37,9 +36,7 @@ localclean local_clean :: codeclean texclean
 INDENT =
 MAKEFILESDIR = makefiles
 MAKETRACESTRING = 
-info ::
-	@echo "make recursive_clean"
-recursive_clean  : localclean
+clean :: localclean
 	@for d in * ; do \
 	  if [ -d $${d} -a "$$d" != "build" ] ; then \
 	    echo "${MAKETRACESTRING} cleaning in $${d}" \
@@ -48,7 +45,7 @@ recursive_clean  : localclean
 	       && if [ -f Makefile ] ; then \
 	             make --no-print-directory INDENT=".. ${INDENT}" \
 	                 MAKEFILESDIR="../${MAKEFILESDIR}" \
-	                 recursive_clean ; \
+	                 clean ; \
 	          else \
 	             make --no-print-directory INDENT=".. ${INDENT}" \
 	                 -f ../${MAKEFILESDIR}/Make.clean \
