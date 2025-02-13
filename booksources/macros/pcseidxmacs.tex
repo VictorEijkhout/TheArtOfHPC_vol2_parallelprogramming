@@ -186,10 +186,11 @@
 %%
 %% Write `indexedroutine' to index #1 with #2 font
 %%
-\def\RoutineIndexFont#1#2{% 
+\newcommand\RoutineIndexFont[2]{% 
   \def\ifont{#2}\def\bfont{textbf}%
   \edef\tmp{%
-    \noexpand\lstinline[language=#1]+\indexedroutine+%
+    %%\noexpand\lstinline[language=#1]+\indexedroutine+%
+    \noexpand\lstinline+\indexedroutine+%
     \ifx\ifont\bfont\noexpand\label{def:\indexedroutine}\fi%
     \noexpand\index[#1]{%
       \indexedroutine@{\catcode95=12 \noexpand\texttt{\indexedroutine}}|#2}%

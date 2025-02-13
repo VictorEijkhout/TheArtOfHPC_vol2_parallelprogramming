@@ -21,9 +21,10 @@
 \newcommand\fverbatimsnippet  [2][]{\lverbatimsnippet{#1}{#2}{Fortran}}
 \newcommand\pverbatimsnippet  [2][]{\lverbatimsnippet{#1}{#2}{Python}}
 %% languages extensions
-\newcommand\kksverbatimsnippet[2][]{\lverbatimsnippet{#1}{#2}{mpl}}
+\newcommand\kksverbatimsnippet[2][]{\lverbatimsnippet{#1}{#2}{kokkos}}
 \newcommand\mplverbatimsnippet[2][]{\lverbatimsnippet{#1}{#2}{mpl}}
 \newcommand\ompverbatimsnippet[2][]{\lverbatimsnippet{#1}{#2}{omp}}
+\newcommand\rngverbatimsnippet[2][]{\lverbatimsnippet{#1}{#2}{range}}
 \newcommand\sclverbatimsnippet[2][]{\lverbatimsnippet{#1}{#2}{sycl}}
 % #1 file name #2 snippet #3 language
 \newif\ifTopLevelCodeSnippet
@@ -345,7 +346,7 @@
       \lstset{language=C,xleftmargin=\unitindent}
     \end{minipage}%
     \hfil
-    \begin{minipage}[t]{\snippetlistfraction\hsize}
+    \begin{minipage}[t]{\snippetanswfraction\hsize}
       { #2 }
     \end{minipage}
   }

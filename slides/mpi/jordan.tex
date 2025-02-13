@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% jordan.tex : animation of Gauss-Jordan elimination
 %%%%
@@ -29,12 +29,17 @@
   \hbox to 0in {\hss \includegraphics[scale=.1]{tacclogonew}}%
   \hbox to 0in {\hss \arabic{page}\hskip 1in}}
 
+\usepackage{comment}
+\input slides.inex
 \input commonmacs
+
 %% \usepackage{array}
-\newcolumntype{L}{>{\hbox to 40pt \bgroup$}{l}<{$\hss\egroup}}
-\newcolumntype{T}{>{\hbox to 90pt \bgroup}{c}<{\hss\egroup}}
 %% \newcolumntype{L}{>{\hbox to 40pt \bgroup$}{l}<{$\hss\egroup}}
 %% \newcolumntype{T}{>{\hbox to 90pt \bgroup}{c}<{\hss\egroup}}
+%% \newcolumntype{L}{>{\hbox to 40pt \bgroup$}{l}<{$\hss\egroup}}
+%% \newcolumntype{T}{>{\hbox to 90pt \bgroup}{c}<{\hss\egroup}}
+
+\input pcsecommonmacs
 
 \begin{document}
 \parskip=10pt plus 5pt minus 3pt

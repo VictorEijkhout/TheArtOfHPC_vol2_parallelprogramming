@@ -1,0 +1,7 @@
+template<typename T>
+class strided_vector_layout : public mpl::layout<T>
+
+strided_vector_layout(int count, int blocklength, int stride);
+strided_vector_layout(int count, int blocklength, int stride, const layout<T> &l);
+
+

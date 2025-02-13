@@ -1,0 +1,225 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `The Art of HPC, vol 1: The Science of Computing'
+%%%% by Victor Eijkhout, copyright 2012-2025
+%%%%
+%%%% commonbookmacs : macros for all books
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\newif\ifInBook \InBooktrue
+\let\textbookref\ref
+
+% slide blurb to exclude in book
+\excludecomment{tldr}
+\excludecomment{322}
+\excludecomment{slideonly}
+\newcommand\slidenewline{}\let\slidebreak\slidenewline
+
+%%%%%%%%%%%%%%%%
+%%%% environments
+%%%%%%%%%%%%%%%%
+
+\newtheorem{remark}{Remark}
+\expandafter\ifx\csname definition\endcsname\relax
+    \newtheorem{definition}{Definition}
+\fi
+\expandafter\ifx\csname theorem\endcsname\relax
+    \newtheorem{theorem}{Theorem}
+\fi
+\expandafter\ifx\csname lemma\endcsname\relax
+    \newtheorem{lemma}{Lemma}
+\fi
+\expandafter\ifx\csname proof\endcsname\relax
+ \newenvironment{proof}{\begin{quotation}\small\sl\noindent Proof.\ \ignorespaces}
+     {\end{quotation}}
+\fi
+
+%%%%%%%%%%%%%%%%%%%%
+%%%% Chapters
+%%%%%%%%%%%%%%%%%%%%
+
+\newwrite\nx
+\newwrite\chapterlist
+\newif\ifListSources \ListSourcesfalse
+\openout\chapterlist=chapternames.tex
+\newcommand\CHAPTER[2]{
+  \Level 0 {#1}\label{ch:#2}
+  \def\chapshortname{#2}
+
+  % start scooping up example codes used in this chapter
+  \addchaptersource{header}%kludge because we have a bug for zero sources
+
+  % input the chapter
+  \SetBaseLevel 1 \input chapters/#2
+  \SetBaseLevel 0 
+
+  % include the sources used in this chapter
+  \ifListSources\listchaptersources\chapshortname\fi
+
+  % add chapter to list of chapters
+  \write\chapterlist{\chapshortname}
+  \openout\nx=exercises/\chapshortname-nx.tex
+  \write\nx{\arabic{excounter}}
+  \closeout\nx
+
+  \SetBaseLevel 0
+}
+\newcommand\TUTORIAL[2]{
+  \Level 0 {#1}\label{tut:#2}
+  \def\chapshortname{#2}
+
+  % start scooping up example codes used in this chapter
+  \addchaptersource{header}%kludge because we have a bug for zero sources
+
+  % input the chapter
+  \SetBaseLevel 1 \input \TutorialsSubDir/#2
+  \SetBaseLevel 0 
+
+  % include the sources used in this chapter
+  \ifListSources\listchaptersources\chapshortname\fi
+
+  % add chapter to list of chapters
+  \write\chapterlist{\chapshortname}
+  \openout\nx=exercises/\chapshortname-nx.tex
+  \write\nx{\arabic{excounter}}
+  \closeout\nx
+
+  \SetBaseLevel 0
+}
+
+\newif\ifprojects
+\newif\ifListSources \ListSourcesfalse
+\newcommand\PROJECT[2]{
+  \Level 0 {#1}\label{proj:#2}
+  \def\chapshortname{#2}
+
+  % start scooping up example codes used in this chapter
+  \addchaptersource{header}%kludge because we have a bug for zero sources
+
+  % input the chapter
+  \SetBaseLevel 1 \input projects/#2
+  \SetBaseLevel 0 
+
+  % include the sources used in this chapter
+  \ifListSources\listchaptersources\chapshortname\fi
+
+  % add chapter to list of chapters
+  \write\chapterlist{\chapshortname}
+  \openout\nx=exercises/\chapshortname-nx.tex
+  \write\nx{\arabic{excounter}}
+  \closeout\nx
+
+  \SetBaseLevel 0
+}
+
+\newcommand\APPENDIX[2]{
+  \vfill\pagebreak \Level 0 {#1}\label{app:#2}
+  \def\chapshortname{#2}
+  {\SetBaseLevel 1 %% {\index{#2|(textbf}}
+   \setcounter{excounter}0
+   \input appendices/#2 %%{\index{#2|)}}
+   \write\chapterlist{\chapshortname}
+   \openout\nx=exercises/\chapshortname-nx.tex
+   \write\nx{\arabic{excounter}}
+   \closeout\nx
+   \SetBaseLevel 0
+  }
+}
+
+
+%%%%
+%%%% Verbatim source handling
+%%%%
+
+% each chapter has a list of sources
+\newcommand\addchaptersource[1]{
+  \ifinlistcs{#1}{\chapshortname:sourcelist}
+             {}
+             {\message{adding source #1}
+               %\globaldefs=1
+               \listcsadd{\chapshortname:sourcelist}{#1}
+               %\globaldefs=0
+             }
+}
+\newcounter{source}
+\newcommand\listchaptersources[1]{
+  \setcounter{source}{0}
+  \renewcommand*\do[1]{\message{counting <<##1>>}\stepcounter{source}}%
+  \dolistcsloop{#1:sourcelist}
+  \expandafter\ifnum\value{source}>0
+    \immediate\message{Sources: \arabic{source}}
+    \Level 0 {Sources used in this chapter}
+    \renewcommand*\do[1]{\ListOneSource{##1}}
+    \dolistcsloop{#1:sourcelist}
+  \fi
+}
+\newcommand\ListOneSource[1]{
+  \immediate\message{sourcing <<#1>>}
+  \Level 1 {Listing of code #1}
+  \label{lst:#1}
+  %% \ListStrippedSource{#1}
+  \LinkRepoSource{#1}
+  \par
+}
+
+\def\LSR{\LSR}
+\def\ChapterSourceHeader#1\LSR{
+  \def\test{#1\LSR}
+  \ifx\test\LSR
+  \else
+    \Level 0 {Sources used in this chapter}
+  \fi
+}
+\def\ListSourcesRecursively#1{
+  \def\test{#1}
+  \ifx\test\LSR
+  \else
+    % list the file
+      \IfFileExists{../code/#1.\ISPcodeext}
+                   {\Level 1 {Listing of code/#1}\label{lst:#1}
+                     {\footnotesize
+                       \lstinputlisting{../code/#1.\ISPcodeext}} % verbatiminput
+                   }
+                   {}
+    \par
+    % continue
+    \expandafter\ListSourcesRecursively
+  \fi
+}
+
+%%%%
+%%%% Outlining
+%%%%
+\usepackage{outliner}
+\OutlineLevelStart0{\chapter{#1}}
+\OutlineLevelStart1{\section{#1}}
+\OutlineLevelCont1{\section{#1}}
+\OutlineLevelStart2{\subsection{#1}}
+\OutlineLevelStart3{\subsubsection{#1}}
+\setcounter{secnumdepth}{4}
+\OutlineLevelStart4{\paragraph{\bf #1}}
+
+\newcommand\heading[1]{\paragraph*{\textbf{#1}}}
+
+%%%%
+%%%% Notes
+%%%%
+\newenvironment{specialnote}[1]
+               {\par
+                 %%\begin{raggedright}
+                 %%\begingroup\raggedright
+                 %%\advance\leftskip by \unitindent
+                 \noindent \hbox{\kern-\unitindent \textsl{#1.}}\kern1em\ignorespaces
+               }
+               {\par
+                 %%\end{raggedright}
+                 %%\endgroup
+               }
+\newenvironment{taccnote}
+  {\begin{specialnote}{TACC note}}
+  {\end{specialnote}}

@@ -33,10 +33,11 @@
 \newcounter{sectionframe}
 \OutlineLevelStart 0{\refstepcounter{sectionframe}
   \frame{\part{#1}\Large\bf #1}}
-\OutlineLevelStart 1{\frame{\section*{#1}\large\bf #1}}
-\OutlineLevelStart 2{\frame{\subsection*{#1}\large #1}}
+\OutlineLevelStart 1{\frame{\section{#1}\Large\bf #1}}
+\OutlineLevelStart 2{\frame{\subsection{#1}\large\bf #1}}
+\OutlineLevelStart 3{\frame{\subsubsection*{#1}\large\bf #1}}
+\setcounter{tocdepth}{3}
 
-%% \setcounter{tocdepth}{3}
 %% \OutlineLevelStart 0 {
 %%     \section{#1}
 %%     \addcontentsline{toc}{section}{#1}
@@ -139,9 +140,12 @@
 \def\mpiRoutineRef#1{\RoutineRefStyle\verbatiminput{#1}}
 \def\RoutineRefStyle{\scriptsize}
 \newcommand\standardversion{}
-\newcommand\mpiparmtextsize{1.3in}
 \def\protoslide#{\bgroup \catcode`\_=12
   \afterassignment\protoslideinclude \def\protoname}
+%
+% Proto with only C/F
+%
+\begin{nompl}
 \def\protoslideinclude{%
   \begin{frame}[containsverbatim]\frametitle{\texttt\protoname}
       % mpi standard macros
@@ -161,6 +165,42 @@
         %\expandafter\mpiRoutineRef\expandafter{\protoname}
   \end{frame}\egroup
 }
+\end{nompl}
+%
+% Proto with C/F/CXX
+\begin{mpl}
+\def\protoslideinclude{%
+  \begin{frame}[containsverbatim]\frametitle{\texttt\protoname}
+      % mpi standard macros
+      \def\MPI/{MPI}\def\mpi/{MPI}\def\RMA/{RMA}
+      \def\mpifunc##1{\texttt{##1}}
+      \let\mpiarg\mpifunc \let\mpicode\mpifunc
+      \let\const\mpifunc  \let\constskip\mpifunc
+    \tiny
+    \edef\tmp{\lowercase{\def\noexpand\standardroutine{\protoname}}}\tmp
+    \IfFileExists
+        {standard/\standardroutine\standardversion.tex}
+        {\input{standard/\standardroutine\standardversion}}
+        {% if no standard file, then maybe handwritten file
+          \IfFileExists
+              {mpireference/\protoname.tex}
+              {\verbatiminput{mpireference/\protoname}}{}}
+        %\expandafter\mpiRoutineRef\expandafter{\protoname}
+    \ListingFileInsert{mplreference}{\standardroutine}
+    %% \IfFileExists
+    %%     {mplreference/\standardroutine.tex}
+    %%     {\lstinputlisting{mplreference/\standardroutine}}
+    %%     {Missing MPL proto: \standardroutine}
+  \end{frame}\egroup
+}
+\end{mpl}
+\newcommand\ListingFileInsert[2]{
+    \IfFileExists
+        {#1/#2.tex}
+        {\lstinputlisting{#1/#2}}
+        {Missing proto: #2 for #1}
+}
+
 %%
 %% MPL protos
 %%
@@ -264,11 +304,6 @@
 \let\indexpetscshow\indexmpishow
 \let\indexomppragma\indexmpishow
 \let\indexc\lstinline
-
-\newenvironment
-    {mplimpl}
-    {\begin{quotation}\textsl{Implementation note:}\ }
-    {\end{quotation}}
 
 \newcommand\petscroutineslide[1]{
   \begin{frame}[containsverbatim]{#1}

@@ -1,0 +1,56 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the lecture slides for
+%%%% `Parallel Computing'
+%%%% by Victor Eijkhout, copyright 2012-2025
+%%%%
+%%%% Cluster-slides.tex : logistics about clusters
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{numberedframe}{Cluster setup}
+  \small
+  Typical cluster:
+  \begin{itemize}
+  \item Login nodes, where you ssh into; usually shared with 100 (or
+    so) other people. You don't run your parallel program there!
+  \item Compute nodes: where your job is run. They are often exclusive
+    to you: no other users getting in the way of your program.
+  \end{itemize}
+  Hostfile: the description of where your job runs. Usually generated
+  by a \indexterm{job scheduler}.
+\end{numberedframe}
+
+\begin{numberedframe}{Interactive run}
+  \begin{itemize}
+  \item Do not run your programs on a login node.
+  \item Acquire compute nodes with \indextermtt{idev} \\
+    (other systems: \indextermtt{qsub}\n{ -I})
+  \item Caveat: only small short jobs; nodes may not be available.
+  \end{itemize}
+  \includegraphics[scale=.15]{job_idev}
+\end{numberedframe}
+
+\begin{numberedframe}{Batch run}
+  \begin{itemize}
+  \item Submit batch job with \indextermtt{sbatch} or \indextermtt{qsub}
+  \item Your job will be executed~\ldots Real Soon Now.
+  \item See userguide for details about queues, sizes, runtimes,~\ldots
+  \end{itemize}
+  \includegraphics[scale=.15]{job_sbatch}
+\end{numberedframe}
+
+\begin{exerciseframe}
+  \begin{itemize}
+  \item Connect to your favorite cluster
+  \item Start an interactive session with \n{idev};\\
+    what is the hostname? how many users are logged in?
+  \item Run: \n{ibrun hostname}\\
+    also \n{ibrun -n 3 hostname}
+  \item Create a job script that will run on 2 nodes;\\
+    again let it run the \n{hostname} command.
+  \end{itemize}
+\end{exerciseframe}

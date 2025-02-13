@@ -277,6 +277,13 @@ reference, and not an array of statuses!
   (Why not? Can you find a way around it?)
 \end{mplnote}
 
+\begin{mplnote}{Request pool status}
+  Commands such as \lstinline{waitall} are methods on the pool;
+  they don't return statuses;
+  statuses are found by indexing:
+  \mplverbatimsnippet{waitforallmpl}
+\end{mplnote}
+
 \begin{mplnote}{Wait any}
   \label{mpl:wait_any}
   The \indexmpishow{irequest_pool} class has methods

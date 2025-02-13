@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the lecture slides for
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% SPMD-slides.tex : slides about MPI's SPMD mode
 %%%%
@@ -26,21 +26,13 @@
   \end{itemize}
 \end{numberedframe}
 
-\Level 2 {The MPI worldview: SPMD}
-
-\begin{numberedframe}{Computers when MPI was designed}
-  \includegraphics[scale=.1]{mpi-node1.png}
-
-  One processor and one  process per node;\\
-  all communication goes through the network.
-
-  $\Rightarrow$ process model, no data sharing.
-\end{numberedframe}
+\Level 2 {Practicalities}
 
 \begin{tacc}
 \begin{numberedframe}{Lab setup}
   \begin{itemize}
-  \item Clone the repository
+  \item Clone the repository\\
+    \url{https://github.com/VictorEijkhout/TheArtOfHPC_vol2_parallelprogramming}
   \item Directory: \n{exercises-mpi-c} or \n{cxx} or \n{f} or \n{f08}
     or \n{p} or \n{mpl}
   \item Open a terminal window on a TACC cluster.
@@ -66,67 +58,6 @@ ibrun python3 yourprogram.py
 \end{verbatim}
 \end{numberedframe}
 \end{python}
-
-\begin{exerciseframe}[hello]
-  \input ex:hello1
-
-  \begin{enumerate}
-  \item In the directories \n{exercises-mpi-xxx} do 
-    \n{make hello} to compile;
-  \item do \n{ibrun hello} to execute.
-  \end{enumerate}
-\end{exerciseframe}
-
-\begin{numberedframe}{In a picture}
-  \moveleft .3in \hbox\bgroup
-  \includegraphics[scale=.32]{hello-parallel}
-  \egroup
-\end{numberedframe}
-
-\begin{numberedframe}{SPMD}
-  The basic model of MPI is\\
-  `Single Program Multiple Data':\\
-  each process is an instance of the same program.
-
-  Symmetry: There is no `master process', all processes are equal,
-  start and end
-  at the same time.
-
-  Communication calls do not see the cluster structure:\\
-  data sending/receiving is the same for all neighbors.
-\end{numberedframe}
-
-\Level 2 {Practicalities}
-
-\begin{numberedframe}{Pure MPI}
-  \includegraphics[scale=.1]{mpi-node2.png}
-
-  A node has multiple sockets, each with multiple cores.\\
-  Pure MPI puts a process on each core: pretend shared memory doesn't exist.
-\end{numberedframe}
-
-\begin{numberedframe}{Quad socket node}
-  \includegraphics[scale=.8]{ranger-node-small}
-\end{numberedframe}
-
-\begin{numberedframe}{Hybrid programming}
-  \includegraphics[scale=.1]{mpi-node3.png}
-
-  Hybrid programming puts a process per node or per socket;\\
-  further parallelism comes from threading.\\
-  Not in this course\ldots
-\end{numberedframe}
-
-\begin{numberedframe}{Terminology}
-  `Processor' is ambiguous: is that a chip or one independent
-  instruction processing unit?
-  \begin{itemize}
-  \item Socket: the processor chip
-  \item Processor: we don't use that word
-  \item Core: one instruction-stream processing unit
-  \item Process: preferred terminology in talking about MPI.
-  \end{itemize}  
-\end{numberedframe}
 
 \begin{numberedframe}{Compiling}
   MPI compilers are usually called \indextermtt{mpicc},
@@ -161,6 +92,76 @@ mpirun -np 4 hostfile ... yourprogram arguments
 \end{verbatim}
 \end{numberedframe}
 
+\begin{exerciseframe}[hello]
+  \input ex:hello1
+
+  \begin{enumerate}
+  \item In the directories \n{exercises-mpi-xxx} do 
+    \n{make hello} to compile;
+  \item do \n{ibrun hello} to execute.
+  \end{enumerate}
+\end{exerciseframe}
+
+\begin{numberedframe}{In a picture}
+  \moveleft .3in \hbox\bgroup
+  \includegraphics[scale=.32]{hello-parallel}
+  \egroup
+\end{numberedframe}
+
+\Level 2 {The MPI worldview: SPMD}
+
+\begin{numberedframe}{SPMD}
+  The basic model of MPI is\\
+  `Single Program Multiple Data':\\
+  each process is an instance of the same program.
+
+  Symmetry: There is no `master process', all processes are equal,
+  start and end
+  at the same time.
+
+  Communication calls do not see the cluster structure:\\
+  data sending/receiving is the same for all neighbors.
+\end{numberedframe}
+
+\begin{numberedframe}{Computers when MPI was designed}
+  \includegraphics[scale=.1]{mpi-node1.png}
+
+  One processor and one  process per node;\\
+  all communication goes through the network.
+
+  $\Rightarrow$ process model, no data sharing.
+\end{numberedframe}
+
+\begin{numberedframe}{Pure MPI}
+  \includegraphics[scale=.1]{mpi-node2.png}
+
+  A node has multiple sockets, each with multiple cores.\\
+  Pure MPI puts a process on each core: pretend shared memory doesn't exist.
+\end{numberedframe}
+
+\begin{numberedframe}{Quad socket node}
+  \includegraphics[scale=.8]{ranger-node-small}
+\end{numberedframe}
+
+\begin{numberedframe}{Hybrid programming}
+  \includegraphics[scale=.1]{mpi-node3.png}
+
+  Hybrid programming puts a process per node or per socket;\\
+  further parallelism comes from threading.\\
+  Not in this course\ldots
+\end{numberedframe}
+
+\begin{numberedframe}{Terminology}
+  `Processor' is ambiguous: is that a chip or one independent
+  instruction processing unit?
+  \begin{itemize}
+  \item Socket: the processor chip
+  \item Processor: we don't use that word
+  \item Core: one instruction-stream processing unit
+  \item Process: preferred terminology in talking about MPI.
+  \end{itemize}  
+\end{numberedframe}
+
 \begin{numberedframe}{Do I need a supercomputer?}
   \begin{itemize}
   \item With \n{mpiexec} and such, you start a bunch of processes that
@@ -181,38 +182,6 @@ mpirun -np 4 hostfile ... yourprogram arguments
     Windows: I'll have to get back to you on that
   \item \ldots~or download and compile from source \n{mpich.org}
   \end{itemize}
-\end{numberedframe}
-
-\begin{numberedframe}{Cluster setup}
-  \small
-  Typical cluster:
-  \begin{itemize}
-  \item Login nodes, where you ssh into; usually shared with 100 (or
-    so) other people. You don't run your parallel program there!
-  \item Compute nodes: where your job is run. They are often exclusive
-    to you: no other users getting in the way of your program.
-  \end{itemize}
-  Hostfile: the description of where your job runs. Usually generated
-  by a \indexterm{job scheduler}.
-\end{numberedframe}
-
-\begin{numberedframe}{Interactive run}
-  \begin{itemize}
-  \item Do not run your programs on a login node.
-  \item Acquire compute nodes with \indextermtt{idev} \\
-    (other systems: \indextermtt{qsub}\n{ -I})
-  \item Caveat: only small short jobs; nodes may not be available.
-  \end{itemize}
-  \includegraphics[scale=.15]{job_idev}
-\end{numberedframe}
-
-\begin{numberedframe}{Batch run}
-  \begin{itemize}
-  \item Submit batch job with \indextermtt{sbatch} or \indextermtt{qsub}
-  \item Your job will be executed~\ldots Real Soon Now.
-  \item See userguide for details about queues, sizes, runtimes,~\ldots
-  \end{itemize}
-  \includegraphics[scale=.15]{job_sbatch}
 \end{numberedframe}
 
 \Level 2 {We start learning MPI!}
@@ -306,6 +275,8 @@ This defines all routines and constants.
     Very modern OO,  Header-only\\
     Not a full MPI implementation: (I/O and one-sided mostly missing)
   \end{itemize}
+\end{numberedframe}
+\begin{numberedframe}{Use of MPL}
     In your program:
     \begin{lstlisting}
       #include <mpl/mpl.hpp>
@@ -370,7 +341,6 @@ at TACC: \texttt{module load python3}
   \item For now only the `world' communicator
   \item Each process has a unique `rank' wrt the communicator.
   \end{itemize}
-
 \lstset{language=C}
 \begin{lstlisting}
 int MPI_Comm_size( MPI_Comm comm, int *nprocs )
@@ -382,17 +352,43 @@ This is a logical view of parallelism: mapping to physical
 processors/cores is invisible here.
 \end{numberedframe}
 
+\begin{numberedframe}{World communicator}
+  \label{sl:mpi-comm-world}
+  For now, the communicator will be \indexmpishow{MPI_COMM_WORLD}.
+
+  C:
+  \lstset{language=C}
+\begin{lstlisting}
+MPI_Comm comm = MPI_COMM_WORLD;
+\end{lstlisting}
+
+  F:
+  \lstset{language=Fortran}
+\begin{lstlisting}
+Type(MPI_Comm) :: comm = MPI_COMM_WORLD
+\end{lstlisting}
+
+  P:
+  \lstset{language=Python}
+\begin{lstlisting}
+from mpi4py import MPI
+comm = MPI.COMM_WORLD
+\end{lstlisting}
+
+  MPL:
+  \lstset{language=C++}
+\begin{lstlisting}
+    const mpl::communicator &comm_world =
+        mpl::environment::comm_world();
+\end{lstlisting}
+\end{numberedframe}
+
+\protoslide{MPI_Comm_size}
+\protoslide{MPI_Comm_rank}
+
 \begin{exerciseframe}[commrank]
   \input ex:hello3
 \end{exerciseframe}
-
-%% \protoslide{MPI_Comm_size}
-%% \protoslide{MPI_Comm_rank}
-
-%% \begin{mpl}
-%%   \mplprotoslide{size}
-%%   \mplprotoslide{rank}
-%% \end{mpl}
 
 \begin{numberedframe}{About routine signatures: C/C++}
   \label{sec:protos}
@@ -528,37 +524,6 @@ MPI_Init(0,0);
   There's not a lot you can do with an error code:\\
   very hard to recover from errors in parallel.\\
   By default code bombs with (hopefully informative) message.
-\end{numberedframe}
-
-\begin{numberedframe}{Communicators}
-  \label{sl:mpi-comm-world}
-  For now, the communicator will be \indexmpishow{MPI_COMM_WORLD}.
-
-  C:
-  \lstset{language=C}
-\begin{lstlisting}
-MPI_Comm comm = MPI_COMM_WORLD;
-\end{lstlisting}
-
-  F:
-  \lstset{language=Fortran}
-\begin{lstlisting}
-Type(MPI_Comm) :: comm = MPI_COMM_WORLD
-\end{lstlisting}
-
-  P:
-  \lstset{language=Python}
-\begin{lstlisting}
-from mpi4py import MPI
-comm = MPI.COMM_WORLD
-\end{lstlisting}
-
-  MPL:
-  \lstset{language=C++}
-\begin{lstlisting}
-    const mpl::communicator &comm_world =
-        mpl::environment::comm_world();
-\end{lstlisting}
 \end{numberedframe}
 
 \begin{numberedframe}{Have you been paying attention?}

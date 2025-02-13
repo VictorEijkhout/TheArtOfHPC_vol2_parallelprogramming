@@ -3,7 +3,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: Science of Computing & vol 4: HPC Carpentry
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% indexing macros
 %%%% (this also gets included in vol5)
@@ -35,6 +35,8 @@
     \lstset{language=cpp}\idxset{cpp}\def\idxprefix{std::}\indextermttgroup}
 \def\indexcrng{\bgroup
     \lstset{language=cpp}\idxset{cpp}\def\idxprefix{ranges::}\indextermttgroup}
+\def\indexcrngv{\bgroup
+    \lstset{language=cpp}\idxset{cpp}\def\idxprefix{ranges::views::}\indextermttgroup}
 \def\indexcdefstd{\bgroup
     \lstset{language=cpp}\idxset{cpp}\def\idxprefix{std::}\indextermttbgroup}
 \def\indexf   {\bgroup \idxset{f90}\indextermttgroup}
@@ -164,7 +166,7 @@
 \newcommand{\indextermsubdef}[2]{\emph{#1 #2}\index{#2!#1|textbf}}
 \newcommand{\indextermsubp}[2]{\emph{#1 #2s}\index{#2!#1}}
 \newcommand{\indextermbus}[2]{\emph{#1 #2}\index{#1!#2}}
-\let\indextermbusp\indextermbus
+\newcommand{\indextermbusp}[2]{\emph{#1 #2s}\index{#1!#2}}
 \newcommand{\indextermbusdef}[2]{\emph{#1 #2}\index{#1!#2|textbf}}
 \newcommand{\indextermstart}[1]{\emph{#1}\index{#1|(}}
 \newcommand{\indextermend}[1]{\index{#1|)}}

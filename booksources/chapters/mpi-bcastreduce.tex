@@ -302,7 +302,15 @@ part of a buffer specification.
 \begin{mplnote}{Array buffers}
   \label{mpl:vec-arr}
   You can pass a C-style array as buffer, requiring a layout:
-  \mplverbatimsnippet[examples/mpi/mpl/collectarray.cxx]{mplallreducearray}
+  %% \mplverbatimsnippet[examples/mpi/mpl/collectarray.cxx]{mplallreducearray}
+\begin{lstlisting}
+// vector of 50 floats
+vector<float> ar(50);
+auto root = 0;
+auto data = ar.data(); // or &(ar[0]) or &ar.front()
+auto layout = mpl::contiguous_layout<float>(50)
+comm_world::bcast( root,data,layout );
+\end{lstlisting}
 \end{mplnote}
 
 \begin{mplnote}{Iterator buffers}

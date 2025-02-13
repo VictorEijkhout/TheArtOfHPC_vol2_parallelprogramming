@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -81,19 +81,18 @@
     quiet_NaN,signalling_NaN,has_quiet_NaN,
     % container functions
     emplace,push_back,pop,size,ssize,capacity,back,front,
-    begin,end,rbegin,rend,at,insert,erase,
+    begin,end,rbegin,rend,at,insert,erase,next,prev,advance,
     get,data,extent,find,empty,union,
     has_value,value,value_or,find_if,get_if,and_then,
     rotr,exchange,
-    make_pair,make_tuple,first,second,
+    make_pair,make_tuple,
     high_resolution_clock,steady_clock,system_clock,utc_clock,
     now,count,seconds,milliseconds,
     % range, view, algorithm
-    drop,reverse,zip,
     for_each,all_of,any_of,none_of,
-    accumulate,reduce,transform,index,visit,
+    accumulate,reduce,enumerate,transform,index,visit,adjacent,
     transform_reduce,transform_inclusive_scan,transform_exclusive_scan,
-    partial_sum,inclusive_scan,exclusive_scan,
+    partial_sum,inclusive_scan,exclusive_scan,min_element,sort,
     cartesian_product,iota,iota_view,
     plus,minus,multiplies,divides,modulus,logical_and,logical_or,negate,
     max_element,
@@ -107,7 +106,7 @@
   classoffset=3,
   morekeywords={
     iostream,sstream,cstdio,functional,memory,limits,
-    algorithm,numeric,ranges,execution,
+    algorithm,numeric,ranges,execution,iterator,
     chrono,random,rand,srand,
     cstdint,cmath,bit,stdfloat,
     TEST_CASE,SECTION,REQUIRE,REQUIRE_NOTHROW,REQUIRE_THROWS,INFO,
@@ -184,7 +183,7 @@
   }
 }
 
-\lstdefinelanguage{mpi}[]{C}{
+\lstdefinelanguage{mpi}[]{cpp}{
 }
 
 \lstdefinelanguage{mpl}[]{cpp}{
@@ -206,6 +205,20 @@
 }
 
 \lstdefinelanguage{petsc}[]{cpp}{
+}
+
+\lstdefinelanguage{range}[]{cpp}{
+  classoffset=2,
+  morekeywords={
+    drop,filter,reverse,take,to,zip,
+  },
+}
+
+\lstdefinelanguage{tuple}[]{cpp}{
+  classoffset=2,
+  morekeywords={
+    first,second,
+  },
 }
 
 \lstdefinelanguage{sycl}[]{cpp}{

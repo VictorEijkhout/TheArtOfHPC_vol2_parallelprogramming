@@ -1,0 +1,281 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Introduction to High-Performance Scientific Computing'
+%%%% by Victor Eijkhout, copyright 2012-2023
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+%% slide/book switches
+%%
+\newif\ifInBook\InBooktrue
+\excludecomment{fullsources}
+\let\slidebreak\relax
+
+%%%%
+%%%% Page layout
+%%%%
+
+\usepackage{geometry}
+\addtolength{\textwidth}{.5in}
+\addtolength{\textheight}{.5in}
+\addtolength{\evensidemargin}{-.5in}
+\renewcommand\topfraction{.95}
+\renewcommand\floatpagefraction{.75}
+\emergencystretch=1.5in
+
+\usepackage{fancyhdr}
+\pagestyle{fancy}\fancyhead{}\fancyfoot{}
+% remove uppercase from fancy defs
+\makeatletter
+\def\chaptermark#1{\markboth {{\ifnum \c@secnumdepth>\m@ne
+ \thechapter. \ \fi #1}}{}}
+\def\sectionmark#1{\markright{{\ifnum \c@secnumdepth >\z@
+ \thesection. \ \fi #1}}}
+\makeatother
+% now the fancy specs
+%\fancyhead[LE]{\thepage \hskip.5\unitindent/\hskip.5\unitindent \leftmark}
+%\fancyhead[RO]{\rightmark \hskip.5\unitindent/\hskip.5\unitindent \thepage}
+\fancyhead[LE]{\leftmark}
+\fancyfoot[LE]{\thepage}
+\fancyhead[RO]{\rightmark}
+\fancyfoot[RO]{\thepage}
+\fancyfoot[RE]{\footnotesize\sl Parallel Computing -- r\revision}
+\begin{lulu}
+\fancyfoot[RE]{\footnotesize\sl Parallel Computing}
+\end{lulu}
+\fancyfoot[LO]{\footnotesize\sl Victor Eijkhout}
+\setlength{\headheight}{14pt}
+\addtolength{\topmargin}{-1.6pt}
+
+%% graphics stuff
+\usepackage{graphicx}
+\usepackage{wrapfig}
+% plotting with tikz
+\usepackage{pgfplots}  
+\usepgfplotslibrary{external}
+\tikzexternalize
+\tikzsetexternalprefix{plots/}
+\pgfplotsset{width=5in,compat=1.7}  
+
+% fancy text stuff
+\usepackage{fontspec}
+\setmainfont[
+  Extension=.otf,
+  UprightFont={*-Regular},
+  BoldFont={*-Bold},
+  ItalicFont={*-Italic},
+  BoldItalicFont={*-BoldItalic}
+]{LibertinusSerif}
+\usepackage{unicode-math}
+\setmathfont{LibertinusMath-Regular.otf}
+
+%% %%%%
+%% %%%% Outlining
+%% %%%%
+%% \OutlineLevelStart0{\chapter{#1}}
+%% \OutlineLevelStart1{\section{#1}}
+%% \OutlineLevelCont1{\section{#1}}
+%% \OutlineLevelStart2{\subsection{#1}}
+%% \OutlineLevelStart3{\subsubsection{#1}}
+%% \setcounter{secnumdepth}{4}
+%% \OutlineLevelStart4{\paragraph{\textit{#1}}}
+
+%%%%
+%%%% stuff
+%%%%
+%% \newcommand\furtherreading{\Level 0 {Further Reading}\label{sec:furtherreading-\chapshortname}}
+%% \newcommand\heading[1]{\paragraph*{\textbf{#1}}}
+
+{\catcode`\^^I=13 \globaldefs=1
+ \newcommand\listing[2]{\begingroup\small\par\vspace{1ex}
+  \catcode`\^^I=13 \def^^I{\leavevmode\hspace{40pt}}
+  \noindent\fbox{#1}
+  \verbatiminput{#2}\endgroup}
+ \newcommand\codelisting[1]{\begingroup\small\par\vspace{1ex}
+  \catcode`\^^I=13 \def^^I{\leavevmode\hspace{40pt}}
+  \noindent\fbox{#1}
+  \verbatiminput{#1}\endgroup}
+}
+
+%% %%
+%% %% refer to sections in the HPC book
+%% %%
+%% \usepackage{xr-hyper}
+%% \externaldocument[HPSC-]{scicompbook}
+%% \newcommand\HPSCref[1]{HPC book, section-\ref{HPSC-#1}}
+%% \externaldocument[CARP-]{scicomptutorials}
+%% \newcommand\CARPref[1]{Tutorials book, section-\ref{CARP-#1}}
+%% \externaldocument[ISP-]{ispbook}
+%% \newcommand\ISPref[1]{Programming book, section-\ref{ISP-#1}}
+
+%%
+%% hyperref
+%%
+\begin{notlulu}
+  \usepackage[xetex,colorlinks,pagebackref=true]{hyperref}
+  \hypersetup{bookmarksopen=true}
+  \renewcommand*{\backref}[1]{}
+  \renewcommand*{\backrefalt}[4]{[{\tiny%
+      \ifcase #1 Not cited.%
+      \or Cited on page~#2.%
+      \else Cited on pages #2.%
+      \fi%
+  }]}
+  \usepackage[all]{hypcap}
+\end{notlulu}
+\begin{lulu}
+  \usepackage{url}
+\end{lulu}
+
+\usepackage{etoolbox}
+
+\let\exref\ref
+
+\newcommand\skeleton[1]{\par
+    (There is a skeleton for this exercise under the name \texttt{#1}.)}
+
+\def\SourceRepoRoot{https://github.com/VictorEijkhout/TheArtOfHPC_vol2_parallelprogramming/tree/main}
+\newcommand\LinkRepoSource[1]{
+  \expandafter\url\expandafter{\SourceRepoRoot /#1}
+}
+
+%% \newenvironment{raggedlist}{\begingroup\rightskip=0pt plus 2in}{\par\endgroup}
+\newenvironment{question}{\begin{quotation}\textbf{Question.\ }}{\end{quotation}}
+\newenvironment
+    {example}
+    {\par\begin{raggedright}
+      \advance\leftskip by \unitindent
+      \noindent \hbox{\kern-\unitindent \textsl{Example.}}\kern1em\ignorespaces
+    }
+    {\par\end{raggedright}}
+
+%% list of python notes and such
+\usepackage{tocloft}
+
+\newcommand\deflanguagenote[4]{
+  %% #1 : note name
+  %% #2 : list id
+  %% #3 : listing language
+  %% #4 : header
+  \argcomment
+    {#1}
+    {\par\advance\leftskip by \unitindent
+      \refstepcounter{#1}
+      {\lccode32=45 \lccode47=45
+       \edef\tmp{\lowercase{\gdef\noexpand\commentarg{\CommentArg}}}\tmp}
+      \def\CommentCutFile{snippets/#1-\commentarg.cut}
+      \noindent \hbox
+                {\kern-\unitindent \textsl{#4 note \arabic{#1}:\ \CommentArg.}}\ %
+      \addcontentsline{#2}{#1}{\protect\numberline{\csname the#1\endcsname}\CommentArg}
+      %\index[fortran]{\CommentArg}%
+      \lstset{language=#3}%
+    }
+    {\par\advance\leftskip by -\unitindent
+      \lstset{language=C}
+      \relax}
+}
+
+\begin{comment}
+\argcomment
+    {mplnote}
+    {\par\advance\leftskip by \unitindent
+      \refstepcounter{mplnote}
+
+      {\lccode32=45 \lccode47=45
+        \edef\tmp{\lowercase{\gdef\noexpand\commentarg{\CommentArg}}}\tmp}
+      \def\CommentCutFile{snippets/mplnote-\commentarg.cut}
+
+      %\index[mpl]{\CommentArg}%
+      \noindent \hbox{\kern-\unitindent \textsl{MPL note \arabic{mplnote}.}}\ %
+      \addcontentsline{lompl}{mplnote}{\protect\numberline{\themplnote}\CommentArg}
+      \lstset{language=C++}%
+    }
+    {\par \noindent\textsl{End of MPL note}\par
+      \advance\leftskip by -\unitindent
+      \lstset{language=C}
+      \relax}
+\end{comment}
+
+%% \newenvironment{cppnote}
+%%   {\begin{specialnote}{C++ note}}
+%%   {\end{specialnote}}
+%% \newenvironment{fortrannote}
+%%   {\begin{specialnote}{Fortran note}}
+%%   {\end{specialnote}}
+%% \newenvironment{pythonnote}[1]
+%%   {\begin{specialnote}{Python note: #1}}
+%%   {\end{specialnote}}
+%% \newenvironment{mplnote}
+%%   {\begin{specialnote}{MPL note}}
+%%   {\end{specialnote}}
+%% \newenvironment{mpifournote}
+%%   {\begin{specialnote}{MPI-4 note}}
+%%   {\end{specialnote}}
+
+\newcommand\listftnnote{List of Fortran notes}
+\newlistof{fortrannote}{loftn}\listftnnote
+\renewcommand\cftloftntitlefont{\slshape}
+\deflanguagenote{fortrannote}{loftn}{Fortran}{Fortran}
+
+\newcommand\listcppnote{List of C++ notes}
+\newlistof{cppnote}{locpp}\listcppnote
+\renewcommand\cftlocpptitlefont{\slshape}
+\deflanguagenote{cppnote}{locpp}{C++}{C++}
+
+\newcommand\listpynote{List of Python notes}
+\newlistof{pythonnote}{lopy}\listpynote
+\renewcommand\cftlopytitlefont{\slshape}
+\deflanguagenote{pythonnote}{lopy}{Python}{Python}
+
+%\newcounter{mplnote}
+\newcommand\listmplnote{List of Mpl notes}
+\newlistof{mplnote}{lompl}\listmplnote
+\renewcommand\cftlompltitlefont{\slshape}
+\deflanguagenote{mplnote}{lompl}{C++}{MPL}
+
+\newenvironment{intelnote}
+    {\begin{specialnote}{Intel note}}
+    {\end{specialnote}
+}
+
+\newenvironment{dpcppnote}
+    {\begin{specialnote}{Intel DPC++ extension}}
+    {\end{specialnote}
+}
+
+\newcommand\listmpifournote{List of MPI-4 notes}
+\newlistof{mpifournote}{lomfour}\listmpifournote
+\renewcommand\cftlomfourtitlefont{\slshape}
+\argcomment
+    {mpifournote}
+    {\refstepcounter{mpifournote}
+      \begingroup\def\ProcessCutFile{}\par}
+    {\par \smallskip \hrule
+      \hbox{\textsl{The following material is for the recently released MPI-4 standard and may not be supported yet.}}
+      \nobreak
+      \addcontentsline{lomfour}{mpifournote}{\protect\numberline{\thempifournote}\CommentArg}
+      \input{\CommentCutFile}
+      \par
+      \hbox{\textsl{End of MPI-4 material}}
+      \hrule
+      \endgroup
+    }
+
+%% \newenvironment{highermath}
+%%     {\bigskip\begin{quotation}\noindent\emph{MMM}}
+%%     {\end{quotation}\bigskip\noindent\ignorespaces}
+
+
+\newcommand\chaptertitle{\csname\chaptername title\endcsname}
+\newcommand\chaptershorttitle{\csname\chaptername shorttitle\endcsname}
+

@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the lecture slides for
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% Performance-slides.tex: MPI Performance issues
 %%%%
@@ -15,7 +15,7 @@
   We briefly touch on peripheral issues issues to MPI.
 \end{numberedframe}
 
-\sectionframe{CMake}
+\Level 2 {CMake}
 
 \begin{numberedframe}{cmake}
   \label{sl:mpi-cmake}.
@@ -46,7 +46,7 @@
 \end{numberedframe}
 \end{fortran}
 
-\sectionframe{Errors}
+\Level 2 {Errors}
 
 \begin{numberedframe}{Built-in handlers}
   \label{sl:errhandler}
@@ -97,7 +97,7 @@ MPI_Add_error_string(nonzero_code,"Attempting to send zero buffer");
 \end{lstlisting}
 \end{numberedframe}
 
-\sectionframe{Performance measurement}
+\Level 2 {Performance measurement}
 
 \begin{numberedframe}{Timers}
   MPI has a \indexterm{wall clock} timer: \indexmpishow{MPI_Wtime}
@@ -145,7 +145,7 @@ if (mytid==0) printf("Time synchronized? %d->%d\n",flag,*v);
   \includegraphics[scale=.7]{graphics/pmpi}
 \end{numberedframe}
 
-\sectionframe{Programming for performance}
+\Level 2 {Programming for performance}
 
 \begin{numberedframe}{Eager limit}
   \begin{itemize}

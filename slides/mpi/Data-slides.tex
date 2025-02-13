@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the lecture slides for
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% Data-slides.tex : slides about data types
 %%%%
@@ -22,8 +22,6 @@
   \item F90 types
   \end{itemize}
 \end{numberedframe}
-
-\sectionframe{Discussion}
 
 \begin{numberedframe}{Motivation: datatypes in MPI}
   All examples so far: 
@@ -47,8 +45,6 @@
   \item Packed data: not really a datatype.
   \end{itemize}
 \end{numberedframe}
-
-\sectionframe{Datatypes}
 
 \begin{numberedframe}{Elementary datatypes}
   \begin{tabular}{|l|l|}
@@ -96,6 +92,14 @@ The \lstinline{oldtype} can be elementary or derived.\\
 Recursively constructed types.
 \end{numberedframe}
 
+\begin{mpl}
+\begin{numberedframe}{MPL layouts}
+  MPL derived types are derived classes from \lstinline{mpl::layout}.\\
+  The commit call is done in the constructor.\\
+  The free call is done in the destructor.
+\end{numberedframe}
+\end{mpl}
+
 \begin{numberedframe}{Contiguous type}
 \lstset{language=C}
 \begin{lstlisting}
@@ -104,7 +108,7 @@ int MPI_Type_contiguous(
 \end{lstlisting}
   \includegraphics[scale=.06]{data-contiguous.png}
 
-This one is indistinguishable from just sending \lstinline{count} instances
+This one is indistinguishable from sending \lstinline{count} instances
 of the \lstinline{old_type}.
 \end{numberedframe}
 
@@ -128,6 +132,16 @@ int MPI_Type_vector(
 
 Used to pick a regular subset of elements from an array.
 \end{numberedframe}
+
+\begin{mpl}
+\begin{numberedframe}{MPL strided vector layout}
+
+  %%\catcode`_=12
+  \ListingFileInsert{mplreference}{MPI_Type_vector}
+
+  \mplverbatimsnippet{vectormpl}
+\end{numberedframe}
+\end{mpl}
 
 \begin{numberedframe}{Different send and receive types}
   Send and receive type can differ. Example:\\
@@ -185,7 +199,7 @@ int MPI_Type_create_struct(
 This gets very tedious\ldots
 \end{numberedframe}
 
-\sectionframe{Subarray type}
+\Level 2 {Subarray type}
 
 \begin{numberedframe}{Submatrix storage}
   \includegraphics[scale=.11]{denselda}
@@ -242,7 +256,7 @@ CALL MPI_Type_create_f90_real( 15 , 300 , realtype , error )
 \end{numberedframe}
 \end{fortran}
 
-\sectionframe{Extent and resizing}
+\Level 2 {Extent and resizing}
 
 \begin{numberedframe}{Extent}
   Extent: `size' of a type,\\
@@ -294,6 +308,8 @@ Receive 6 elements: 0 2 4 6 8 10
 \end{verbatim}
 \end{numberedframe}
 
+\protoslide{MPI_Type_create_resized}
+
 \begin{numberedframe}{Extent resizing: shrinking}
   Elements are placed at distance equal to extent:
 
@@ -329,22 +345,33 @@ Receive 6 elements: 0 2 4 6 8 10
   Fill in the missing bits of the skeleton code.  
 \end{exerciseframe}
 
-\sectionframe{Packed data}
+\Level 2 {Packed data}
 
 \begin{numberedframe}{Packing into buffer}
-\lstset{language=C}
-\begin{lstlisting}
-int MPI_Pack(
-  void *inbuf, int incount, MPI_Datatype datatype,
-  void *outbuf, int outcount, int *position,
-  MPI_Comm comm);
+  \begin{itemize}
+  \item
+    Construct a buffer with \lstinline{MPI_Pack}
+  \item Send with \lstinline{MPI_Send} and such
+  \item Receive
+  \item Unpack buffer elements with \lstinline{MPI_Unpack}
+  \end{itemize}
 
-int MPI_Unpack(
-  void *inbuf, int insize, int *position,
-  void *outbuf, int outcount, MPI_Datatype datatype,
-  MPI_Comm comm);
-\end{lstlisting}
+%%   \lstset{language=C}
+%% \begin{lstlisting}
+%% int MPI_Pack(
+%%   void *inbuf, int incount, MPI_Datatype datatype,
+%%   void *outbuf, int outcount, int *position,
+%%   MPI_Comm comm);
+
+%% int MPI_Unpack(
+%%   void *inbuf, int insize, int *position,
+%%   void *outbuf, int outcount, MPI_Datatype datatype,
+%%   MPI_Comm comm);
+%% \end{lstlisting}
 \end{numberedframe}
+
+\protoslide{MPI_Pack}
+\protoslide{MPI_Unpack}
 
 \begin{numberedframe}{Example}
 \small

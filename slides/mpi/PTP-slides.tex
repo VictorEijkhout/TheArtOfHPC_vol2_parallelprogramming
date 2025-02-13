@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the lecture slides for
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% PTP-slides.tex: slides about point-to-point communication
 %%%%
@@ -27,7 +27,7 @@
   \end{itemize}
 \end{numberedframe}
 
-\sectionframe{Point-to-point communication}
+\Level 2 {Point-to-point communication}
 
 \begin{numberedframe}{MPI point-to-point mechanism}
   \begin{itemize}
@@ -75,10 +75,6 @@ if ( /* I am process A */ ) {
 
 \protoslide{MPI_Send}
 \protoslide{MPI_Recv}
-\begin{mpl}
-  \mplprotoslide{MPI_Send}
-  \mplprotoslide{MPI_Recv}
-\end{mpl}
 
 \begin{numberedframe}{Status object}
  Use \indexmpishow{MPI_STATUS_IGNORE} unless~\ldots
@@ -102,7 +98,7 @@ MPI_Get_count(status,MPI_FLOAT,&c);
 
 %% \protoslide{MPI_Wtime}
 
-\sectionframe{Distributed data}
+\Level 2 {Distributed data}
 
 \begin{numberedframe}{Distributed data}
   Distributed array: each process stores disjoint local part
@@ -151,7 +147,7 @@ Result:
 \[ \lfloor N/p\rfloor \leq f(i+1)-f(i)\leq \lceil N/p\rceil \]
 \end{numberedframe}
 
-\sectionframe{Local information exchange}
+\Level 2 {Local information exchange}
 
 \begin{numberedframe}{Motivation}
   Partial differential equations:
@@ -229,7 +225,7 @@ This leads to communication:
 so we need a point-to-point mechanism.
 \end{numberedframe}
 
-\sectionframe{Blocking communication}
+\Level 2 {Blocking communication}
 
 \begin{numberedframe}{Blocking send/recv}
 \indexmpishow{MPI_Send} and \indexmpishow{MPI_Recv} are \emph{blocking} operations:
@@ -297,11 +293,22 @@ Definition of `small message' controlled by environment variables:\\
   Food for thought: what happens if you flip the send and receive call?
 \end{numberedframe}
 
-\begin{optexerciseframe}
+\begin{exerciseframe}[rightsend]
   \input{ex:linear-sequential}
-\end{optexerciseframe}
+\end{exerciseframe}
 
-\sectionframe{Pairwise exchange}
+\begin{numberedframe}{Synchronous send}
+  Synchronous send: 
+  \begin{itemize}
+  \item sender and receiver synchronize
+  \item No `eager' sends
+  \item $\Rightarrow$ enforced always blocking behavior
+  \end{itemize}
+\end{numberedframe}
+
+\protoslide{MPI_Ssend}
+
+\Level 2 {Pairwise exchange}
 
 \begin{numberedframe}{Operating on distributed data}
 Take another look: \[ y_i=x_{i-1}+x_i+x_{i+1}\colon i=1,\ldots,N-1 \]
@@ -340,9 +347,6 @@ Take another look: \[ y_i=x_{i-1}+x_i+x_{i+1}\colon i=1,\ldots,N-1 \]
 \end{numberedframe}
 
 \protoslide{MPI_Sendrecv}
-\begin{mpl}
-  \mplprotoslide{MPI_Sendrecv}
-\end{mpl}
 
 \begin{numberedframe}{SPMD picture}
   What does process $p$ do?
@@ -368,10 +372,9 @@ sendrecv(from=predecessor,to=successor);
 \end{lstlisting}
 (Receive from \indexmpishow{MPI_PROC_NULL} succeeds without altering
 the receive buffer.)
-\end{numberedframe}
-
-\begin{numberedframe}{Proc null}
+\begin{mpl}
   \input{mplnote-null-processor.cut}
+\end{mpl}
 \end{numberedframe}
 
 \begin{numberedframe}{A point of programming style}
@@ -438,7 +441,7 @@ chance of deadlock by missing a case
   \input{ex:bucket-block}
 \end{exerciseframe}
 
-\sectionframe {Irregular exchanges: non-blocking communication}
+\Level 2  {Irregular exchanges: non-blocking communication}
 
 \begin{numberedframe}{Sending with irregular connections}
   Graph operations:
@@ -446,7 +449,7 @@ chance of deadlock by missing a case
   \includegraphics[scale=.1]{graphsend.png}
 \end{numberedframe}
 
-\sectionframe{Communicating other than in pairs}
+\Level 2 {Communicating other than in pairs}
   
 \begin{numberedframe}{PDE, 2D case}
     A difference stencil applied to a two-dimensional square
@@ -514,19 +517,10 @@ MPI_Wait( ... );
 \end{lstlisting}
 \end{numberedframe}
 
-\begin{numberedframe}{Syntax}
-  \small
-  Very much like blocking \indexmpishow{MPI_Send}/\indexmpishow{MPI_Recv}:
-\lstset{language=C}
-\begin{lstlisting}
-int MPI_Isend(void *buf,
-  int count, MPI_Datatype datatype, int dest, int tag,
-  MPI_Comm comm, MPI_Request *request)
-int MPI_Irecv(void *buf,
-  int count, MPI_Datatype datatype, int source, int tag,
-  MPI_Comm comm, MPI_Request *request)  
-\end{lstlisting}
+\protoslide{MPI_Isend}
+\protoslide{MPI_Irecv}
 
+\begin{numberedframe}{Request waiting}
 Basic wait:
 \begin{lstlisting}
 MPI_Wait( MPI_Request*, MPI_Status* );
@@ -542,6 +536,22 @@ int MPI_Waitall(int count, MPI_Request array_of_requests[],
 \item also \indexmpishow{MPI_Wait}, \indexmpishow{MPI_Waitany}, \indexmpishow{MPI_Waitsome}
 \end{itemize}
 \end{numberedframe}
+
+\begin{mpl}
+\begin{numberedframe}{MPL request object}
+    \input{mplnote-requests-from-nonblocking-calls.cut}
+\end{numberedframe}
+\begin{numberedframe}{Request pools}
+  Instead of an array of requests,
+  use an \indexmpldef{irequest_pool} object,
+  which acts like a vector of requests,
+  meaning that you can \lstinline+push+ onto it.
+
+  \mplverbatimsnippet[examples/mpi/mpl/irecvsource.cxx]{mpirequestpush}
+
+  \input{mplnote-request-pool-status.cut}
+\end{numberedframe}
+\end{mpl}
 
 \begin{exerciseframe}[isendirecv]
   \input ex:3ptnonblock

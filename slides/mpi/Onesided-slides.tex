@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the lecture slides for
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2021
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% Onesided-slides.tex : slides about one-sided communication
 %%%%
@@ -27,7 +27,7 @@
   \end{itemize}
 \end{numberedframe}
 
-\sectionframe{Basic mechanisms}
+\Level 2 {Basic mechanisms}
 
 \begin{numberedframe}{Motivation}
   With two-sided messaging, you can not just put data
@@ -140,7 +140,7 @@ target knows that data has been put.
 \protoslide{MPI_Get}
 \protoslide{MPI_Accumulate}
 
-\sectionframe{Ordering and synchronization}
+\Level 2 {Ordering and synchronization}
 
 \begin{numberedframe}{Fence synchronization}
   Already mentioned active target synchronization:\\
@@ -181,7 +181,7 @@ target knows that data has been put.
   More fine-grained than fences.
 \end{numberedframe}
 
-\sectionframe{Passive target synchronization}
+\Level 2 {Passive target synchronization}
 
 \begin{numberedframe}{Passive target synchronization}
   Lock a window on the target:
