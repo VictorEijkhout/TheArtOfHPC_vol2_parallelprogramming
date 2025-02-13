@@ -4,7 +4,7 @@
  **** `Parallel programming for Science and Engineering'
  **** by Victor Eijkhout, eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-2022
+ **** copyright Victor Eijkhout 2012-2025
  ****
  **** MPI Exercise for Isend/Irecv, sending an array
  ****
@@ -30,7 +30,13 @@ int main(int argc,char **argv) {
   MPI_Comm_rank(comm,&procno);
 
 #define N 100
-  vector<double> indata(N,1.), outdata(N);
+  int mylocal = N;
+  vector<double> indata(mylocal),outdata(mylocal);
+  int myfirst=0;
+  MPI_Exscan( &mylocal,&myfirst,1,MPI_INT,MPI_SUM,comm);
+  for (int i=0; i<mylocal; i++)
+    indata[i] = myfirst+i;
+
   double
     leftdata=0.,rightdata=0.;
   int sendto,recvfrom;
@@ -62,34 +68,28 @@ int main(int argc,char **argv) {
    * Do the averaging operation
    * Note that leftdata==rightdata==0 if not explicitly received.
    */
-  for (int i=0; i<N; i++)
+  for (int i=0; i<mylocal; i++)
     if (i==0)
       outdata[i] = leftdata + indata[i] + indata[i+1];
-    else if (i==N-1)
+    else if (i==mylocal-1)
       outdata[i] = indata[i-1] + indata[i] + rightdata;
     else
       outdata[i] = indata[i-1] + indata[i] + indata[i+1];
   
   /*
-   * Correctness check:
-   * `error' will be:
-   * - the lowest process number where an error occured, or
-   * - `nprocs' if no error.
-   */
-  /*
    * Check correctness of the result:
-   * value should be 2 at the end points, 3 everywhere else
+   * value should be 3 times the invalue, except at the end points
    */
-  vector<double> answer(N);
-  for (int i=0; i<N; i++) {
-    if ( (procno==0 && i==0) || (procno==nprocs-1 && i==N-1) ) {
-      answer[i] = 2.;
-    } else {
-      answer[i] = 3.;
-    }
+  vector<double> answer(mylocal);
+  for (int i=0; i<mylocal; i++) {
+    answer[i] = 3*(myfirst+i)
+      - ( procno==0 && i==0 ) * (-1) // fictitious leftleft elements
+      - ( procno==nprocs-1 && i==mylocal-1) * (myfirst+mylocal) // rightright
+      ;
+    //printf("%e ",answer[i]);
   }
-  int error_test = array_error(answer,outdata);
-  print_final_result(error_test,comm);
+  double error_test = array_error(answer,outdata);
+  print_final_result( error_test>nprocs*1.e-14,comm);
 
   MPI_Finalize();
   return 0;

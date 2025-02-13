@@ -2,7 +2,7 @@
 ################################################################
 ####
 #### This makefile is part of `Parallel Programming in MPI and OpenMP'
-#### by Victor Eijkhout, copyright 2013-2023
+#### by Victor Eijkhout, copyright 2013-2025
 #### eijkhout@tacc.utexas.edu
 ####
 #### Makefile for MPI course exercises in C++ through MPL
@@ -24,7 +24,7 @@ EXERCISES = hello \
     pingpong pingpongbuffer sendrecv sendrecvarray jordan \
     isendirecv isendirecvarray setdiff \
     bucketblock bucketpipenonblock scangather \
-    stridesend cubegather procgrid procgridnonblock transposeblock \
+    stridesend stridescatter cubegather procgrid procgridnonblock transposeblock \
     rightsend rightgraph \
     ibarrierupdate
 SOURCES = $(patsubst %,%.c,${EXERCISES})

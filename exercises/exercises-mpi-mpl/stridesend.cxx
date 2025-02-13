@@ -39,11 +39,7 @@ int main(int argc,char **argv) {
      * Create big data array to be sent
      */
     int ndata = localsize*nprocs;
-    int *data = (int*) malloc(ndata*sizeof(int));
-    if (!data) {
-      proctext << "Out of memory" << endl; 
-      cerr << proctext.str(); proctext.clear();
-      comm_world.abort(0); }
+    vector<int> data(ndata);
     for (int i=0; i<ndata; i++)
       data[i] = i;
 

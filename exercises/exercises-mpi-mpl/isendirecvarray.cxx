@@ -4,7 +4,7 @@
  **** `Parallel programming for Science and Engineering'
  **** by Victor Eijkhout, eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2021-2023
+ **** copyright Victor Eijkhout 2021-2025
  ****
  **** MPI Exercise for Isend/Irecv using MPL
  ****
@@ -29,7 +29,12 @@ int main() {
   stringstream proctext;
 
 #define N 100
-  vector<double> indata(N,1.), outdata(N);
+  /* const */ int mylocal = N,myfirst{0};
+  comm_world.exscan(mpl::plus<int>(),mylocal,myfirst);
+  vector<double> indata(mylocal,1.), outdata(mylocal);
+  for (int i=0; i<mylocal; i++)
+    indata[i] = myfirst+i;
+  
   double leftdata=0.,rightdata=0.;
   int sendto,recvfrom;
   mpl::irequest_pool requests;
@@ -48,7 +53,7 @@ int main() {
    * Start isend and store the request
    */
 /**** your code here ****/
-		comm_world.isend(indata[0],sendto)
+		comm_world.isend(indata[mylocal-1],sendto)
 /**** your code here ****/
 		comm_world.irecv(leftdata,recvfrom)
 /**** your code here ****/
@@ -63,7 +68,7 @@ int main() {
    * Start isend and store the request
    */
 /**** your code here ****/
-		comm_world.isend(indata[N-1],sendto)
+		comm_world.isend(indata[0],sendto)
 /**** your code here ****/
 		comm_world.irecv(rightdata,recvfrom)
 /**** your code here ****/
@@ -77,25 +82,25 @@ int main() {
    * Do the averaging operation
    * Note that leftdata==rightdata==0 if not explicitly received.
    */
-  for (int i=0; i<N; i++)
+  for (int i=0; i<mylocal; i++)
     if (i==0)
       outdata[i] = leftdata + indata[i] + indata[i+1];
-    else if (i==N-1)
+    else if (i==mylocal-1)
       outdata[i] = indata[i-1] + indata[i] + rightdata;
     else
       outdata[i] = indata[i-1] + indata[i] + indata[i+1];
   
   /*
    * Check correctness of the result:
-   * value should be 2 at the end points, 3 everywhere else
+   * value should be 3 times the invalue, except at the end points
    */
   vector<double> answer(N);
-  for (int i=0; i<N; i++) {
-    if ( (procno==0 && i==0) || (procno==nprocs-1 && i==N-1) ) {
-      answer[i] = 2.;
-    } else {
-      answer[i] = 3.;
-    }
+  for (int i=0; i<mylocal; i++) {
+    answer[i] = 3*(myfirst+i)
+      - ( procno==0 && i==0 ) * (-1) // fictitious leftleft elements
+      - ( procno==nprocs-1 && i==mylocal-1) * (myfirst+mylocal) // rightright
+      ;
+    //printf("%e ",answer[i]);
   }
   double error_test = array_error(answer,outdata);
   print_final_result(error_test>1.e-5,comm_world);

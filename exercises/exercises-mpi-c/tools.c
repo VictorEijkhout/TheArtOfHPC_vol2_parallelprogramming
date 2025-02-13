@@ -4,7 +4,7 @@
  **** `Parallel programming for Science and Engineering'
  **** by Victor Eijkhout, eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-2024
+ **** copyright Victor Eijkhout 2012-2025
  ****
  **** tools.c : support routines for the MPI exercises
  ****
@@ -28,7 +28,7 @@ double array_error(double ref_array[],double value_array[],int array_size) {
     if (min_value<0 || val<min_value) min_value = val;
     if (max_value<0 || val>max_value) max_value = val;
     double
-      rel = (ref - val)/ref,
+      rel = ref==0. ? val : (ref - val)/ref,
       e = fabs(rel);
     if (e>error) error = e;
   }
@@ -68,8 +68,10 @@ void print_final_result( int cond,MPI_Comm comm ) {
   MPI_Comm_size(comm,&nprocs);
   MPI_Comm_rank(comm,&procno);
   int error=nprocs, error_proc=-1;
-  if (cond) 
+  if (cond) {
+    printf("Error occurred on %d\n",procno);
     error = procno;
+  }
   MPI_Allreduce(&error,&error_proc,1,MPI_INT,MPI_MIN,comm);
   error_process_print(error_proc,comm);
 };
