@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the lecture slides for
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% ParLoop-slides.tex : slides about OpenMP's fork-join model
 %%%%
@@ -42,7 +42,7 @@ Discuss.
 \end{numberedframe}
 
 \begin{numberedframe}{Loops are easy}
-C: directive followed by statement or block:
+\indexompshow{for} directive before a loop:
 \begin{lstlisting}
 #pragma omp parallel
 {
@@ -51,8 +51,14 @@ C: directive followed by statement or block:
     ... something with i ...
 }
 \end{lstlisting}
+\begin{itemize}
+\item OpenMP does the partitioning of the iteration space
+\item blocks by default but other `schedules' possible
+\item even dynamic load balancing.
+\end{itemize}
 \end{numberedframe}
 
+\begin{fortran}
 \begin{numberedframe}{Loops in Fortran}
 Fortran: optional matching end directive
 \begin{lstlisting}
@@ -64,6 +70,7 @@ Fortran: optional matching end directive
 !$omp end parallel
 \end{lstlisting}
 \end{numberedframe}
+\end{fortran}
 
 \begin{numberedframe}{Workshare constructs}
   Here's the two-step parallelization in OpenMP:
@@ -84,6 +91,18 @@ Parallel and workshare together
     ... something with i ...
 \end{lstlisting}
 \end{numberedframe}
+
+\begin{cxx}
+\begin{numberedframe}{Range syntax}
+  \input{cppnote-range-syntax.cut}
+\end{numberedframe}  
+\begin{numberedframe}{Ranges library}
+  \input{cppnote-c++20-ranges-header.cut}
+\end{numberedframe}
+\begin{numberedframe}{Index ranges}
+  \input{cppnote-ranges-and-indices.cut}
+\end{numberedframe}  
+\end{cxx}
 
 \begin{numberedframe}{Stuff inside a parallel region}
 \begin{multicols}{2}  

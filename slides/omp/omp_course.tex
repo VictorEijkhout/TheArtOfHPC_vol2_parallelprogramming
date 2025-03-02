@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% omp_course.tex : master file for an OpenMP course
 %%%%
@@ -13,15 +13,20 @@
 
 \documentclass[10pt]{beamer}
 
+\usepackage{comment}
+\input lang
 \input courseformat
 \usepackage{pdfpages}
 
-\newcounter{chapter} % how is this handled in ISP?
-\input blockmacs
+\newenvironment{frameblock}[1]
+               {\begin{quote}}
+               {\end{quote}}
+
+%%\newcounter{chapter} % how is this handled in ISP?
+%%\input blockmacs
 
 \def\qrcode{qrvol2}
 \begin{document}
-\input lang
 
 \author[Eijkhout]{Victor Eijkhout}
 \date[2024]{2024 COE 379L / CSE 392}
