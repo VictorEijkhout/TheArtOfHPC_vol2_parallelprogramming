@@ -1,6 +1,6 @@
 // vectorsum.c
-for ( int iloop=0; iloop<500; ++iloop ) {
-  for ( int i=0; i<vectorsize; ++i )
-	outvec[i] += invec[i]*factor;
-  factor /= 1.1;
+for ( int iloop=0; iloop<nloops; ++iloop ) {
+  for ( int i=0; i<vectorsize; ++i ) {
+    outvec[i] += invec[i]*loopcoeff[iloop];
+  }
 }

@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%% "Parallel Computing"
-   %%%% by Victor Eijkhout, copyright 2013-2024
+   %%%% by Victor Eijkhout, copyright 2013-2025
    %%%%
    %%%% vectorsum.c : parallel loops
    %%%%
