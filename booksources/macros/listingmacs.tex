@@ -18,13 +18,18 @@
 %% https://latexcolor.com/
 \definecolor{grullo}{rgb}{0.66, 0.6, 0.53}
 \definecolor{airforceblue}{rgb}{0.36, 0.54, 0.66}
+\definecolor{amber}{rgb}{1.0, 0.75, 0.0}
 \definecolor{indianred}{rgb}{0.8, 0.36, 0.36}
 \definecolor{indianyellow}{rgb}{0.89, 0.66, 0.34}
 \definecolor{jade}{rgb}{0.0, 0.66, 0.42}
 \definecolor{lavender(floral)}{rgb}{0.71, 0.49, 0.86}
 
 \newcommand\lstcpp{cpp}
-\lstdefinelanguage{cpp}[]{C++}{
+\lstdefinelanguage{cpp}{
+   morecomment=[l]\#,
+   morecomment=[l]//,
+   morecomment=[s]{/*}{*/},
+   morestring=[b]",
 %%\lstdefinelanguage{cpp}{
   %keywordsprefix=\#, %% this causes the whole line to be formatted. other solution?
   %%  comment=[l]//,
@@ -47,7 +52,7 @@
     std,md,mdx,rng,views,namespace,
     main,return,using,abort,exit,
     for,if,else,while,switch,case,and,or,
-    new,free,malloc,delete,
+    new,free,malloc,delete,sizeof,
     alignas,alignof,aligned_alloc,aligned_storage,
     true,false,
     % class stuff
@@ -73,12 +78,12 @@
     % exceptions
     bad_cast,bad_alloc,bad_exception,bad_variant_access,bad_optional_access,
     % I/O
-    cout,cin,endl,format,print,println,assert,static_assert,to_string,
+    cout,cin,endl,format,formatter,print,println,assert,static_assert,to_string,
     % numerics
     max,min,denorm_min,epsilon,lowest,sqrt,pow,to_ulong,conj,exp,abs,fabs,norm,polar,
     add_sat,
     cmp_equal,cmp_not_equal,cmp_greater,isnan,isinf,isfinite,isnormal,numeric_limits,
-    quiet_NaN,signalling_NaN,has_quiet_NaN,
+    quiet_NaN,has_quiet_NaN,signaling_NaN
     % container functions
     emplace,push_back,pop,size,ssize,capacity,back,front,
     begin,end,rbegin,rend,at,insert,erase,next,prev,advance,
@@ -98,7 +103,7 @@
     max_element,
     seq,par,par_unseq,unseq,
     % more
-    source_location,current,to_underlying,as_const,
+    source_location,current,to_underlying,as_const,layout_right,
     forward_iterator_tag,input_range,input_iterator,sentinel_for,
   },
   keywordstyle=\bfseries\color{jade},
@@ -139,6 +144,19 @@
   morekeywords={
     dec,fixed,hex,left,right,scientific,setbase,setfill,setprecision,setw,
     boolalpha,
+  },
+}
+
+\lstdefinelanguage{cuda}[]{cpp}{
+  classoffset=2,
+  morekeywords={
+    __global__,__device__,__host__,
+    cudaMalloc,cudaMalloHost,cudaMallocManaged,
+    cudaMemcpy,cudaMemset,cudaFree,
+    cudaDeviceSynchronize,cudaGetErrorString,
+    cudaMemcpyHostToDevice,cudaMemcpyDeviceToHost,cudaMemcpyDeviceToDevice,
+    threadIdx,blockIdx,gridDim,blockDim,cudaSuccess,
+    cudaError_t,
   },
 }
 

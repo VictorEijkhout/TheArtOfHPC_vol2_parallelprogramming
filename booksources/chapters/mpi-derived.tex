@@ -318,10 +318,6 @@ MPI_Send( &(mat[0][1]), 1,MPI_column, ... );
 You can make this marginally more efficient (and harder to read)
 by replacing the index expression by \n{mat+1}.
 
-\begin{mplnote}
-  \mplverbatimsnippet{vectormpl}
-\end{mplnote}
-
 \begin{exercise}
   Suppose you have a matrix of size $4N\times 4N$, and you want to
   send the elements \n{A[4*i][4*j]} with $i,j=0,\ldots,N-1$. How would

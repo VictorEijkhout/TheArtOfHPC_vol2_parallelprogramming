@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% mpi-ptp.tex : about point-to-point communication
 %%%%
@@ -82,13 +82,15 @@ with freely accessible members:
   where they operate on \indexmpishow{MPI_Fint}, \indexmpishow{MPI_F08_status} arguments.)
 \end{fortrannote}
 
-\begin{mpifournote}
+\begin{mpifournote}{Status access}
   The \lstinline{SOURCE,TAG,ERROR} fields can also be accessed,
   both to get and to set,
-  with routines such as
-  \indexmpishow{MPI_Status_get_source},
-  \indexmpishow{MPI_Status_set_source},
-  et cetera.
+  with routines 
+  \begin{itemize}
+    \item \indexmpishow{MPI_Status_get_source}, \indexmpishow{MPI_Status_set_source};
+    \item \indexmpishow{MPI_Status_get_tag}, \indexmpishow{MPI_Status_set_tag};
+    \item \indexmpishow{MPI_Status_get_error}, \indexmpishow{MPI_Status_set_error};
+  \end{itemize}
 \end{mpifournote}
 
 \begin{pythonnote}{Status object}

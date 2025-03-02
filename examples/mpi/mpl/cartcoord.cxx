@@ -145,8 +145,8 @@ int main(int argc,char **argv) {
       mpl::shift_ranks shifted = cart_comm.shift
 	( /* dim: */ 1,/* up: */ 1 );
       pred = shifted.source; succ = shifted.destination;
-      print("non-periodic: src={}, tgt={}\n",pred,succ);
       //codesnippet end
+      print("non-periodic: src={}, tgt={}\n",pred,succ);
 
       mpl::shift_ranks pshifted = period_comm.shift(1,1);
       pred = pshifted.source; succ = pshifted.destination;

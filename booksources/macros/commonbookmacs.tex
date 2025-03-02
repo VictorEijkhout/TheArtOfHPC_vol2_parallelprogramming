@@ -24,7 +24,10 @@
 %%%% environments
 %%%%%%%%%%%%%%%%
 
-\newtheorem{remark}{Remark}
+%%\newtheorem{remark}{Remark}
+\newenvironment
+    {remark}
+    {\textbf{Remark}~\slshape\ignorespaces}{}
 \expandafter\ifx\csname definition\endcsname\relax
     \newtheorem{definition}{Definition}
 \fi

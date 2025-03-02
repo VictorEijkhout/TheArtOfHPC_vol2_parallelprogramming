@@ -1,0 +1,6 @@
+template<typename color_type, typename key_type = int>
+mpl::communicator(
+    mpl::communicator::split_tag split,
+    const mpl::communicator &other,
+    color_type color,
+    key_type key = 0);
