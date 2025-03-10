@@ -233,35 +233,6 @@ for ( i=... ) {
   \end{itemize}
 \end{numberedframe}
 
-\begin{numberedframe}{Barriers}
-  \begin{itemize}
-  \item Barrier: synchronize all threads
-  \item explicit: \lstinline{omp barrier}
-  \item implicit: end of a workshare construct such as \lstinline{for}
-  \item remove implicit barriers: \lstinline{nowait} clause
-  \end{itemize}
-\end{numberedframe}
-
-\begin{numberedframe}{Nowait}
-\begin{lstlisting}
-#pragma omp parallel
-{
-  #pragma omp for nowait
-  for ( int i=0; i<N; ++i )
-    x[i] = // something
-  #pragma omp for
-  for ( int i=0; i<N; ++i )
-    y[i] = ... x[i] ...
-}
-\end{lstlisting}
-Needed:
-  \begin{itemize}
-  \item In the same parallel region (why?)
-  \item Same number of iterations
-  \item Same schedule
-  \end{itemize}
-\end{numberedframe}
-
 \Level 1 {Loop data}
 
 \begin{numberedframe}{Private vs shared}
@@ -354,6 +325,10 @@ Results can be indeterminate:
   \end{itemize}
 \end{numberedframe}
 
+\begin{numberedframe}{How OMP reducts}
+  \includegraphics[scale=.1]{omp-reduct}  
+\end{numberedframe}
+
 \begin{exerciseframe}[pi]
   \footnotesize
   \input ex:omp-pi
@@ -395,12 +370,48 @@ Results can be indeterminate:
   \cverbatimsnippet{creductdynamic}
 \end{numberedframe}
 
+\begin{cxx}
+\begin{numberedframe}{Reductions on C++ vectors}
+  \input{cppnote-reductions-on-vectors.cut}
+\end{numberedframe}
+\end{cxx}
+
 \begin{numberedframe}{Reduction on arrays, warning}
   Each thread gets a copy of the array on the stack\\
   $\Rightarrow$~possible stack overflow\\
   set \indexompshow{OMP_STACKSIZE}\\
   also see \indextermtt{ulimit} on the Unix level.
 \end{numberedframe}
+
+\begin{numberedframe}{User-defined reductions}
+  \begin{lstlisting}[language=omp]
+    #pragma omp declare reduction 
+    ( identifier : typelist : combiner )
+    [initializer(initializer-expression)]
+  \end{lstlisting}
+  where:
+  \begin{description}
+  \item[\texttt{combiner}] is an expression that updates the internal
+    variable \indexompshow{omp_out} as function of itself and \indexompshow{omp_in}.
+  \item[\texttt{initializer}] sets \indexompshow{omp_priv} to the
+    identity of the reduction;\\
+    Often: \lstinline{initializer(omp_priv=omp_orig)} to use the initial value.
+  \end{description}
+\end{numberedframe}
+\begin{numberedframe}{User-defined reductions, example}
+  \cverbatimsnippet{omprwzsig}
+  \cverbatimsnippet{omprwz}
+\end{numberedframe}
+
+\begin{exerciseframe}
+  \input{ex:omp-reduct-coord}
+\end{exerciseframe}
+
+\begin{numberedframe}{sample output for prev exercise}
+  \lstinputlisting[language=bash]{reductcoord.runout}
+\end{numberedframe}
+
+\endinput
 
 \Level 1 {Exercises}
 

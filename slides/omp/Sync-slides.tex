@@ -50,6 +50,26 @@ First loop is completely finished before second.
   \end{itemize}
 \end{numberedframe}
 
+\begin{numberedframe}{Nowait}
+\begin{lstlisting}
+#pragma omp parallel
+{
+  #pragma omp for nowait
+  for ( int i=0; i<N; ++i )
+    x[i] = // something
+  #pragma omp for
+  for ( int i=0; i<N; ++i )
+    y[i] = ... x[i] ...
+}
+\end{lstlisting}
+Needed:
+  \begin{itemize}
+  \item In the same parallel region (why?)
+  \item Same number of iterations
+  \item Same schedule
+  \end{itemize}
+\end{numberedframe}
+
 \begin{numberedframe}{Critical sections}
 \begin{itemize}
   \item Critical section: One update at a time.

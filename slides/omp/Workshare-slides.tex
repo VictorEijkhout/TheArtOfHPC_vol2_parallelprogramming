@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the lecture slides for
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% Workshare-slides.tex : slides about OpenMP workshare constructs
 %%%%
@@ -18,8 +18,7 @@
   \item Already seen: \indextermtt{for}, \indextermtt{do}
   \item Similar: \indextermtt{sections}
   \item Not obvious: \indextermtt{single}
-  \item Fortran only: \indextermtt{workshare} (works with array notation, but
-    compiler support seems mediocre)
+  \item Fortran only: \indextermtt{workshare} works with array notation
   \item Story in itself: \indextermtt{task}
   \end{itemize}
 \end{numberedframe}
@@ -96,6 +95,7 @@ int a;
   \input {ex:omp-single-mpi}
 \end{exerciseframe}
 
+\begin{fortran}
 \begin{numberedframe}{Fortran: workshare}
   \fverbatimsnippet{fworkshare}
   \begin{itemize}
@@ -105,6 +105,7 @@ int a;
   \item Same speedup as on loopso
   \end{itemize}
 \end{numberedframe}
+\end{fortran}
 
 \endinput
 
