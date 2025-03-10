@@ -23,15 +23,19 @@
 %% needed for the carpentry book
 %%
 \usepackage{xr-hyper}
-% only in tutorials \externaldocument[HPSC-]{scicompbook}
-\newcommand\HPSCref[2][section]{HPC book, #1~\ref{HPSC-#2}}
-% only in book \externaldocument[CARP-]{scicomptutorials}
-\newcommand\CARPref[2][section]{%
-        \textsl{Tutorials book, #1~\ref{CARP-#2}}}
+
+\externaldocument[HPSC-]{scicompbook}
+\newcommand\HPSCref[2][section]{%
+  \textsl{HPC book, #1~\ref{HPSC-#2}}}
+
 \externaldocument[PCSE-]{parcompbook}
-\newcommand\PCSEref[2][section]{%
-        \textsl{Parallel Programming book, #1~\ref{PCSE-#2}}}
+\newcommand\CARPref[2][section]{%
+  \textsl{Tutorials book, #1~\ref{CARP-#2}}}
+
 \externaldocument[ISP-]{ispbook}
+\newcommand\PCSEref[2][section]{%
+  \textsl{Parallel Programming book, #1~\ref{PCSE-#2}}}
+
 \newcommand\ISPref[2][section]{%
         \textsl{Introduction to Scientific Programming book, #1~\ref{ISP-#2}}}
 

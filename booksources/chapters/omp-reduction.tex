@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% omp-reduction.tex : reduction loops
 %%%%
@@ -186,7 +186,7 @@ double result = 0;
     f(x_i) \qquad \hbox{where $x_i=i\Delta x$ and $\Delta x=1/N$} \]
   \end{itemize}
   Write a program for this, and parallelize it using OpenMP parallel
-  for directives.
+  for directives. Measure attained speedup.
   \begin{enumerate}
   \item Put a \indexompshow{parallel} directive around your loop. Does it still
     compute the right result? Does the time go down with the number of
@@ -200,10 +200,6 @@ double result = 0;
     \indexompshow{reduction}\n{(+:quarterpi)} to the \indexompshow{for} directive.
     Now it should be correct and efficient.
   \end{enumerate}
-  Use different numbers of cores and compute the
-  speedup you attain over the sequential computation. Is there a
-  performance difference between the OpenMP code with 1~thread and the
-  sequential code?
 \end{exercise}
 
 \begin{remark}
@@ -384,11 +380,27 @@ where:
   \item[\texttt{initializer}] sets \indexompshow{omp_priv} to the
     identity of the reduction; this
     can be an expression or a brace initializer.
+    Often: \lstinline{initializer(omp_priv=omp_orig)} to use the initial value.
 \end{description}
 
 \begin{fortrannote}{Reduction declaration}
   The declaration statement has to be in the declaration section of your subprogram.
 \end{fortrannote}
+
+\begin{exercise}
+  \label{ex:omp-reduct-coord}
+  Write a custom reduction that finds the coordinate $(x,y)$
+  with maximal norm $\sqrt{x^2+y^2}$.
+  Test on an array of randomly generated coordinates. Decide on how to store this:
+\begin{lstlisting}
+double coords[N][2];
+double coords[2*N];
+struct coord { double x,double y };
+double *coords = (double*) malloc(2*N*sizeof(double));
+\end{lstlisting}
+In C++ consider writing a \lstinline{Coordinate} class
+and overloading an operator on it.
+\end{exercise}
 
 \Level 2 {Explicit expressions}
 

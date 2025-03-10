@@ -3,9 +3,9 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%% "Parallel Computing"
-   %%%% by Victor Eijkhout, copyright 2013-2022
+   %%%% by Victor Eijkhout, copyright 2013-2025
    %%%%
-   %%%% ureduct.c : user-defined reduction
+   %%%% reductpositive.c : user-defined reduction
    %%%%
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -16,34 +16,8 @@
 #include <string.h>
 #include <omp.h>
 
-//codesnippet omprwz
-int reduce_without_zero(int r,int n) {
-  // r is the already reduced value, n is the new value
-  int m;
-  if (r<0){ // initializer
-    if (n!=0)
-      m = n;
-    else
-      m = r;
-  } else if (n<0) { // initializer
-    if (r!=0)
-      m = r;
-    else
-      m = n;
-  } else if (n==0) { // new value is zero: keep r
-    m = r;
-  } else if (n<r) { // new value is less but not zero: use n
-    m = n;
-  } else { // new value is more: use r
-    m = r;
-  };
-  //codesnippet end
-#ifdef DEBUG
-  printf("combine %d %d : %d\n",r,n,m);
-#endif
-  //codesnippet omprwz
-  return m;
-}
+//codesnippet omprwzsig
+int reduce_without_zero(int r,int n);
 //codesnippet end
 
 int main(int argc,char **argv) {
@@ -82,3 +56,34 @@ int main(int argc,char **argv) {
   
   return 0;
 }
+
+//codesnippet omprwzfun
+int reduce_without_zero(int r,int n) {
+  // r is the already reduced value, n is the new value
+  int m;
+  if (r<0){ // initializer
+    if (n!=0)
+      m = n;
+    else
+      m = r;
+  } else if (n<0) { // initializer
+    if (r!=0)
+      m = r;
+    else
+      m = n;
+  } else if (n==0) { // new value is zero: keep r
+    m = r;
+  } else if (n<r) { // new value is less but not zero: use n
+    m = n;
+  } else { // new value is more: use r
+    m = r;
+  };
+  //codesnippet end
+#ifdef DEBUG
+  printf("combine %d %d : %d\n",r,n,m);
+#endif
+  //codesnippet omprwzfun
+  return m;
+}
+//codesnippet end
+

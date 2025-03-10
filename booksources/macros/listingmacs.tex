@@ -150,11 +150,12 @@
 \lstdefinelanguage{cuda}[]{cpp}{
   classoffset=2,
   morekeywords={
-    __global__,__device__,__host__,
+    __global__,__device__,__host__,__shared__,
     cudaMalloc,cudaMalloHost,cudaMallocManaged,
     cudaMemcpy,cudaMemset,cudaFree,
     cudaDeviceSynchronize,cudaGetErrorString,
     cudaMemcpyHostToDevice,cudaMemcpyDeviceToHost,cudaMemcpyDeviceToDevice,
+    __syncthreads,
     threadIdx,blockIdx,gridDim,blockDim,cudaSuccess,
     cudaError_t,
   },

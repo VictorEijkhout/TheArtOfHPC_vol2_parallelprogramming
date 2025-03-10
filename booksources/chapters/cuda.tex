@@ -59,6 +59,16 @@ While the number of blocks can be large, the number of threads is limited.
 The $x,y$ sides of the block cannot exceed~$1024$, and the $z$~side
 can not exceed~$64$; the total size of the block is limited to~$1024$.
 
+\Level 0 {Architecture}
+
+You have seen the basic design of a grid of blocks,
+where each block is a set of threads.
+The blocks are distributed among the \acp{SM},
+but even a single block can have more threads than
+the \ac{SM} has cores, so
+there is a further division in \indextermp{warp}.
+A~warp is typically 32 threads.
+
 \Level 1 {Thread indexing}
 
 We need a way of identifying which CUDA thread executes a kernel.
@@ -112,3 +122,121 @@ but accessed from the device.
 The actual mechanism that moves data back and forth
 is based on \indexterm{paging}.
 \cudaverbatimsnippet{cumanagedalloc}
+
+\Level 1 {Shared memory}
+
+\begin{figure}[ht]
+  \includegraphics{nvidia-gpu-memory}  
+  \caption{GPU memory structure}
+  \label{fig:gpu-memory}
+\end{figure}
+
+The way we have coded so far, data is streamed from the
+main memory of the \ac{GPU}.
+For higher performance it is necessary to use the
+\emph{shared memory}\index{memory!shared (GPU)}
+of the threads in a block.
+See figure~\ref{fig:gpu-memory}.
+
+Shared memory is declared by adding the keyword
+\indexcudashow{__shared__} to a regular array declaration:
+\begin{lstlisting}
+__shared__ float tmp[BLOCKSIZE];
+\end{lstlisting}
+
+\Level 0 {Querying}
+
+Use \indexcudashow{cudaGetDeviceCount} to report how many \acp{GPU} are attached:
+\cudaverbatimsnippet{cudevcount}
+Possible errors: \indexcudashow{cudaErrorNoDevice} if there are no devices,
+and \indexcudashow{cudaErrorInsufficientDriver} if the driver is too old.
+
+Use \indexcudashow{cudaGetDeviceProperties}
+to return a \indexcudashow{cudaDeviceProp} object:
+\cudaverbatimsnippet{cudevprop}
+Here are some of the properties:
+\cudaverbatimsnippet{cudevprops}
+
+\Level 0 {Synchronization}
+
+\begin{itemize}
+\item Threads in a warp are synchronized.
+\item Threads in a thread block can be synchronized
+  with the \indexcudadef{__syncthreads} function.
+\item Thread blocks can not be synchronized.
+\item Host and device can be synchronized
+  with \indexcudashow{cudaDeviceSynchronize}.
+\end{itemize}
+
+\Level 1 {Reduction}
+
+Fully data parallel operations are relatively easy
+as we saw above.
+When we start doing reductions we run into the fact that
+thread blocks can not be synchronized.
+That means that we call a \ac{CUDA} kernel to reduce
+within each threadblock:
+\cudaverbatimsnippet{cureductkernelproto}
+but follow this up with a summation in the host code:
+\cudaverbatimsnippet{cureductoutside}
+
+\Level 1 {Implementation 1}
+
+In the first implementation we let threads
+at distances~$2,4,8,\ldots$ sum values
+from offsets~$1,2,4,\ldots$:
+\cudaverbatimsnippet{cureductkernel1}
+
+The problem here is \indextermbus{warp}{divergence}:
+different threads in a warp follow a different control path
+through the conditional.
+
+\Level 1 {Implementation 2}
+
+We try to keep all threads in a warp active.
+Instead of using threads at increasing strides
+we use a contiguous block of threads.
+\cudaverbatimsnippet{cureductkernel2}
+
+
+\Level 0 {Performance}
+
+The term \indextermbus{warp}{divergence} describes the situation
+that the threads in a warp do not execute the same instruction.
+\begin{lstlisting}
+if ( threadIdx.x%2=0 )
+  // do something
+else
+  // do something else
+\end{lstlisting}
+Since threads in a warp are tighly synchronized
+this has a performance penalty.
+
+\Level 1 {Profiling}
+
+\indextermtt{ncu}
+\url{https://docs.nvidia.com/nsight-compute/NsightComputeCli/index.html}
+
+\begin{remark}
+  Legacy: \indextermtt{nvprof}.
+\begin{lstlisting}[language=bash]
+nvprof --metrics branch_efficiency your_program
+\end{lstlisting}
+\end{remark}
+
+\Level 0 {Other}
+\Level 1 {Dynamic parallelism}
+
+\ac{CUDA} routines can recursively call other
+\ac{CUDA} routines.
+The recursive call has a grid specification
+as on the host.
+\begin{lstlisting}
+__global__
+cuda_fn() {
+  if (threadIdx.x%2==0)
+    cuda_fn<<<1,blockDim.x/2>>>();
+}
+\end{lstlisting}
+
+Compile flag: \lstinline[language=bash]{-rdc=true}.
