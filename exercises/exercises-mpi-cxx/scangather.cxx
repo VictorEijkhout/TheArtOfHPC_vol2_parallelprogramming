@@ -4,7 +4,7 @@
  **** `Parallel programming for Science and Engineering'
  **** by Victor Eijkhout, eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-2021
+ **** copyright Victor Eijkhout 2012-2025
  ****
  **** MPI Exercise for the use of Scan/Exscan
  ****
@@ -12,6 +12,7 @@
 
 #include <iostream>
 #include <iomanip>
+#include <random>
 #include <sstream>
 #include <vector>
 #include <cmath>
@@ -33,14 +34,16 @@ int main(int argc,char **argv) {
   stringstream proctext;
 
   // first set a unique random seed
-  srand((int)(procno*(double)RAND_MAX/nprocs));
+  std::random_device rd;  // Used to get a random seed
+  std::mt19937 gen(rd() + procno);  // Mersenne Twister generator
+  std::uniform_int_distribution<> dis(0, nprocs-1);
 
   /*
    * How many elements do I have locally?
    * Allocate space.
    */
   int
-    my_number_of_elements = rand() % nprocs,
+    my_number_of_elements = dis(gen),
     my_first_index=0;
   /*
    * Exercise:

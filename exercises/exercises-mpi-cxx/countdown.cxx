@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%% "Parallel Computing for Science and Engineering"
-   %%%% by Victor Eijkhout, copyright 2013-9
+   %%%% by Victor Eijkhout, copyright 2013-2025
    %%%%
    %%%% MPI exercise for implementing shared memory through one-sided
    %%%%
@@ -13,6 +13,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <random>
 using namespace std;
 #include <mpi.h>
 
@@ -33,7 +34,9 @@ int main(int argc,char **argv) {
   }
 
   // first set a unique random seed
-  srand((int)(procno*(double)RAND_MAX/nprocs));
+  std::random_device rd;  // Used to get a random seed
+  std::mt19937 gen(rd() + procno);  // Mersenne Twister generator
+  std::uniform_real_distribution<double> dist(0.0, 1.0);  // Distribution in range [0,1)
 
   {
     int counter_process = nprocs-1;
@@ -66,7 +69,7 @@ int main(int argc,char **argv) {
        * Some dynamic condition to determine whether we 
        * update the global counter
        */
-      float randomfraction = (rand() / (double)RAND_MAX);
+      float randomfraction = dist(gen);
       int i_must_update = randomfraction<.5/nprocs;
       MPI_Win_fence(0,the_window);
       if (i_must_update) {

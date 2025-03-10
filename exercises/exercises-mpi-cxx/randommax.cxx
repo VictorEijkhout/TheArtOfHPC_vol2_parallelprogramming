@@ -4,7 +4,7 @@
  **** `Parallel programming for Science and Engineering'
  **** by Victor Eijkhout, eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-2023
+ **** copyright Victor Eijkhout 2012-2025
  ****
  **** MPI Exercise
  ****
@@ -14,6 +14,7 @@
 #include <iomanip>
 #include <sstream>
 #include <cmath>
+#include <random>
 using namespace std;
 #include <mpi.h>
 
@@ -27,10 +28,13 @@ int main() {
   MPI_Comm_size(comm,&nprocs);
   MPI_Comm_rank(comm,&procno);
   
-  // Initialize the random number generator
-  srand(procno*(double)RAND_MAX/nprocs);
+  // Create a random number generator seeded by the process number
+  std::random_device rd;  // Used to get a random seed
+  std::mt19937 gen(rd() + procno);  // Mersenne Twister generator
+  std::uniform_real_distribution<float> dist(0.0f, 1.0f);  // Distribution in range [0,1)
+  
   // Compute a normalized random number
-  float myrandom = (rand() / (double)RAND_MAX), globalrandom;
+  float myrandom = dist(gen), globalrandom;
   {
     stringstream proctext;
     proctext << "Process " << setw(3) << procno << " has random value " << myrandom << endl;

@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%%   "Parallel Computing for Science and Engineering"
-   %%%% by Victor Eijkhout, copyright 2013-7
+   %%%% by Victor Eijkhout, copyright 2013-2025
    %%%%
    %%%% jordancol.c : Gauss-Jordan with matrix distributed by columns
    %%%%
@@ -16,6 +16,7 @@
 #include <sstream>
 #include <cmath>
 #include <mpi.h>
+#include <random>
 using namespace std;
 
 int main(int argc,char **argv) {
@@ -46,14 +47,16 @@ int main(int argc,char **argv) {
    * and we'll not need to pivot
    */
   // first set a unique random seed
-  srand((int)(procno*(double)RAND_MAX/nprocs));
+  std::random_device rd;  // Used to get a random seed
+  std::mt19937 gen(rd() + procno);  // Mersenne Twister generator
+  std::uniform_real_distribution<double> dist(0.0, 1.0);  // Distribution in range [0,1)
   
   /*
    * Fill the matrix with random data
    * and increase the diagonal for numerical stability
    */
   for (int row=0; row<N; row++) {
-    matrix[row] = rand()/(double)RAND_MAX;
+    matrix[row] = dist(gen);
     if (row==procno)
       matrix[row] += .5;
   }

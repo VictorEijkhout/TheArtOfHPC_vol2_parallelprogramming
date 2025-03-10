@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%%   "Parallel Computing for Science and Engineering"
-   %%%% by Victor Eijkhout, copyright 2013-9
+   %%%% by Victor Eijkhout, copyright 2013-2025
    %%%%
    %%%% onesidedbuild.c : put random data everywhere
    %%%%
@@ -13,6 +13,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <random>
 using namespace std;
 #include <mpi.h>
 
@@ -29,7 +30,9 @@ int main(int argc,char **argv) {
   MPI_Comm_set_errhandler(comm,MPI_ERRORS_RETURN);
 
   // Initialize the random number generator
-  srand((int)(procno*nprocs));
+  std::random_device rd;  // Used to get a random seed
+  std::mt19937 gen(rd() + procno);  // Mersenne Twister generator
+  std::uniform_real_distribution<float> dist(0.0, 1.0);  // Distribution in range [0,1)
 
   // Create the table in fake shared memory
   MPI_Win the_window;
@@ -47,7 +50,7 @@ int main(int argc,char **argv) {
 #define NUMBERS 2
   int targets[NUMBERS];
   for (int inum=0; inum<NUMBERS; inum++) {
-    float randomfraction = (rand() / (double)RAND_MAX);
+    float randomfraction = dist(gen);
     int other_process = (int) ( nprocs * randomfraction );
     targets[inum] = other_process;
 

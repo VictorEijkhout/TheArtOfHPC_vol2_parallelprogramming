@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%%   "Parallel Computing for Science and Engineering"
-   %%%% by Victor Eijkhout, copyright 2018-2020
+   %%%% by Victor Eijkhout, copyright 2018-2025
    %%%%
    %%%% ibarrierupdate.c : illustrating MPI_Ibarrier in MPL
    %%%%
@@ -27,13 +27,16 @@ int main(int argc,char **argv) {
   procno = comm_world.rank();
 
   // first set a unique random seed
-  srand((int)(procno*(double)RAND_MAX/nprocs));
+  std::random_device rd;  // Used to get a random seed
+  std::mt19937 gen(rd() + procno);  // Mersenne Twister generator
+  std::uniform_real_distribution<float> dist(0.0, 1.0);  // Distribution in range [0,1)
+  srand((int)(procno*dist(gen)));
 
   /*
    * How many processes are we going to send to?
    */
   int n_destinations;
-  n_destinations = nprocs * (float)rand() / (double)RAND_MAX;
+  n_destinations = nprocs * dist(gen);
   /*
    * Pick random processes to send to, and post an Isend
    */
@@ -42,7 +45,7 @@ int main(int argc,char **argv) {
   //  MPI_Request send_requests[n_destinations];
   for (int idestination=0; idestination<n_destinations; idestination++) {
     int destination;
-    destination = nprocs * (float)rand() / (double)RAND_MAX;
+    destination = nprocs * dist(gen);
     {
       stringstream proctext;
       proctext << "[" << procno << "] send to " << destination << endl;

@@ -4,7 +4,7 @@
  **** `Parallel programming for Science and Engineering'
  **** by Victor Eijkhout, eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-2021
+ **** copyright Victor Eijkhout 2012-2025
  ****
  **** MPI Exercise to illustrate pipelining
  ****
@@ -13,7 +13,7 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
-
+#include <random>
 #include <string>
 #include <vector>
 #include "mpi.h"
@@ -28,7 +28,7 @@ using namespace std;
  * Compare local data `mydata' against incoming `otherdata'
  * Set local data to negative if it occurs in the incoming
  */
-void setdiff( vector<int> mydata,vector<int> otherdata ) {
+void setdiff( vector<int>& mydata,vector<int> otherdata ) {
   auto n = mydata.size();
   for ( int i_my=0; i_my<n; i_my++) {
     int my = mydata[i_my];
@@ -83,7 +83,9 @@ int main(int argc,char **argv) {
   MPI_Comm_rank(comm,&procno);
 
   // Initialize the random number generator
-  srand(procno);
+  std::random_device rd;  // Used to get a random seed
+  std::mt19937 gen(rd() + procno);  // Mersenne Twister generator
+  std::uniform_int_distribution<> dis(0, 2*N*nprocs);
 
   // Set `sendto' and `recvfrom'
   int sendto   = ( procno+1 ) % nprocs;
@@ -94,9 +96,9 @@ int main(int argc,char **argv) {
    */
   vector<int> mydata(N), filter(N),result(N);
   for (int i=0; i<N; i++) {
-    mydata[i] = rand() % (2*N*nprocs);
+    mydata[i] = dis(gen);
     result[i] = mydata[i];
-    filter[i] = rand() % (2*N*nprocs);
+    filter[i] = dis(gen);
   }
 
   print_distarray(mydata,comm,"Starting : ",0);

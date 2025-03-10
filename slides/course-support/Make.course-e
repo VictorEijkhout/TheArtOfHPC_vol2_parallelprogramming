@@ -39,7 +39,7 @@ courses ::
 languages :
 	@if [ -z "${LANGUAGES}" ] ; then \
 	  languages=c ; else languages="${LANGUAGES}" ; fi \
-	 && for l in $${languages} ; do \
+	 && for l in $$( echo $${languages} | tr ',' ' ' ) ; do \
 	        make --no-print-directory course_prep LANGUAGE=$${l} COURSE=${COURSE} \
 	         && make course COURSE=${COURSE}_$${l} LANGUAGE=$${l} \
 	         && rm -f ${COURSE}_$${l}_course.tex \

@@ -190,8 +190,8 @@ else ifeq "${MODE}" "petsc"
 else ifeq "${MODE}" "cuda"
     C_COMPILER   = nvcc
     CXX_COMPILER = nvcc
-    F_COMPILER   = /bin/false
-    F08_COMPILER   = /bin/false
+    F_COMPILER   = nvfortran
+    F08_COMPILER   = nvfortran
 
     F_HOST_COMPILER   = no_such_f_compiler
     F08_HOST_COMPILER   = no_such_f_compiler
@@ -200,6 +200,9 @@ else ifeq "${MODE}" "cuda"
       CXX_HOST_COMPILER = icpc 
 	  notHOST_FLAGS = -diag-disable=10441
     else ifeq "${TACC_FAMILY_COMPILER}" "gcc"
+	C_HOST_COMPILER = gcc
+	CXX_HOST_COMPILER = g++
+    else
 	C_HOST_COMPILER = gcc
 	CXX_HOST_COMPILER = g++
     endif
@@ -347,23 +350,21 @@ modules :
 ##
 %.o : %.cu
 	@if [ "${LANGUAGE}" = "CXX" ] ; then \
-	    compiler=${CXX_COMPILER} && hostcompiler=${CXX_HOST_COMPILER} \
-	    ; else \
-	    compiler=${C_COMPILER} && hostcompiler=${C_HOST_COMPILER} \
+	    compiler=${CXX_COMPILER} \
+	 ; else \
+	    compiler=${C_COMPILER} ; fi \
+	 && cmdline=$${compiler} \
+	 && if [ ! -z ${CCBIN} ] ; then \
+	      echo "Setting ccbin to <<${CCBIN}>>" \
+	       && echo export NVCC_PREPEND_FLAGS="-ccbin ${CCBIN}" >/dev/null \
+	       && cmdline="$${cmdline} --compiler-bindir ${CCBIN}" \
 	    ; fi \
-	 && if [ -z "${HOST_FLAGS}" ] ; then \
-	      cmdline="$${compiler} -ccbin $${hostcompiler}" \
-	      ; \
-	    else \
-	      cmdline="$${compiler} -ccbin \"$${hostcompiler} ${HOST_FLAGS}\"" \
-	      ; \
-	    fi \
-	 && cmdline="$${compiler}" \
-	 && cmdline="$$cmdline ${EXTRA_INCLUDES} ${CFLAGS} -c $<" \
+	 && if [ ! -z "${CPPSTANDARD}" ] ; then \
+	      backendflags="--compiler-options -std=c++${CPPSTANDARD}" ; fi \
+	 && cmdline="$${cmdline} ${EXTRA_INCLUDES} ${CFLAGS} $${backendflags} -c $<" \
 	 && if [ "${ECHO}" = "1" ] ; then \
 	        echo "Compiling: $$cmdline" \
 	         && echo "with $${compiler}=$$( which $${compiler} )" \
-	         && echo " and $${hostcompiler}=$$( which $${hostcompiler} )" \
 	    ; fi \
 	 && eval $$cmdline
 
