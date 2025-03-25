@@ -26,6 +26,7 @@ taccrepo:
 	            && ( cd "$$dir" && git add "$${file}" ) \
 	        ; fi \
 	    ; fi
+DROPBOX = ${HOME}/Dropbox
 dropbox:
 	@if [ -d "${DROPBOX}" ] ; then \
 	    dir=${DROPBOX}/${TARGETDIR} \

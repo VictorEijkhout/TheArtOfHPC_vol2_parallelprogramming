@@ -1,5 +1,4 @@
 // reductarray.cxx
 vector<int> data(nthreads,0);
 int *datadata = data.data();
-#pragma omp parallel for schedule(static,1) \
-  reduction(+:datadata[:nthreads])
+#pragma omp parallel for schedule(static,1) reduction(+:datadata[:nthreads])
