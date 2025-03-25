@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the lecture slides for
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% Tasks-slides.tex : slides about OpenMP workshare constructs
 %%%%
@@ -62,8 +62,11 @@ while (!end_of_list(p)) {
 void f() {
   do_something();
   #pragma omp task
-  do_task();
-  do_some_more();
+    do_task1();
+  #pragma omp task
+    do_task2();
+  #pragma omp taskwait
+  do_something_more();
 }
 ...
 #pragma omp parallel
@@ -192,6 +195,27 @@ long fib(int n) {
 #pragma omp parallel
 #pragma omp single
   printf("Fib(50)=%ld",fib(50));
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Task cancelling}
+\begin{lstlisting}[language=omp]
+!$omp cancel construct [if (expr)]
+\end{lstlisting}
+where construct is
+\lstinline[language=omp]{parallel},
+\lstinline[language=omp]{sections},
+\lstinline[language=omp]{do}
+or
+\lstinline[language=omp]{taskgroup}.
+\end{numberedframe}
+
+\begin{numberedframe}{More cancelling}
+  Need to set  \indexompdef{OMP_CANCELLATION} explicitly.
+
+  Set more cancellation points:
+\begin{lstlisting}[language=omp]
+#pragma omp cancellation point <construct>
 \end{lstlisting}
 \end{numberedframe}
 
