@@ -122,6 +122,7 @@
 }
 \usepackage{mdframed,xcolor}
 
+\newif\ifSIAMbook \SIAMbookfalse
 \newcommand{\answerwithoutput}[4][cpp]{
   \message{Code snippet <#1> in directory <#2> from program <#3>}
   % go into vertical mode
@@ -145,7 +146,10 @@
       \begin{mdframed}[backgroundcolor=yellow!80!white!20]
         \codesize
         \hbox{}% force top alignment?
-        \ifInBook { \raggedright \textbf{Output:\\ \relax [#3] #4:}\par }
+        \ifInBook
+          \ifSIAMbook { \raggedright \textbf{Output:}\par }
+          \else { \raggedright \textbf{Output:\\ \relax [#3] #4:}\par }
+          \fi
         \else     { \raggedright \textbf{Output:}\par }
         \fi
         %% locate relative to TEXINPUTS
@@ -272,6 +276,10 @@
   \message{cxxsnippetwithoutput <<#1>> <<#2>> <<#3>> <<#4>>}
   \answerwithoutput[cpp]{#2}{#3}{#4}
 }
+\newcommand\cudasnippetwithoutput[4][]{
+  \message{cudasnippetwithoutput <<#1>> <<#2>> <<#3>> <<#4>>}
+  \answerwithoutput[cuda]{#2}{#3}{#4}
+}
 \newcommand\mplsnippetwithoutput[4][]{
   \message{mplsnippetwithoutput <<#1>> <<#2>> <<#3>> <<#4>>}
   \answerwithoutput[mpl]{#2}{#3}{#4}
@@ -299,7 +307,8 @@
   \par
   \begin{minipage}[t]{.9\hsize}{%
       \footnotesize \raggedright \textbf{Output\\\relax [#1] #2:}\par }
-      \getRunOut{#1}{#2}
+    \lstset{language=shell}
+    \getRunOut{#1}{#2}
   \end{minipage}
 }
 
@@ -359,7 +368,7 @@
 
 \newcommand\makewithoutput[3]{
   \begingroup
-  \lstset{language=Bash}
+  \lstset{language=shell}
   \def\tutsnippetsdir{#2}
   \tutorialwithoutput{#1}{#2}{#3}
   \endgroup

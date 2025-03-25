@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%% "Parallel Computing"
-   %%%% by Victor Eijkhout, copyright 2013-2022
+   %%%% by Victor Eijkhout, copyright 2013-2025
    %%%%
    %%%% reductarray.c : reduction on array
    %%%%
@@ -27,8 +27,7 @@ int main(int argc,char **argv) {
   {
     int data[nthreads];
     memset(data,0,nthreads*sizeof(int));
-#pragma omp parallel for schedule(static,1) \
-      reduction(+:data[:nthreads])
+#pragma omp parallel for schedule(static,1) reduction(+:data[:nthreads])
     for (int it=0; it<nthreads; it++) {
       for (int i=0; i<nthreads; i++)
 	data[i]++;
@@ -43,8 +42,7 @@ int main(int argc,char **argv) {
   {
     int *data = (int*) malloc(nthreads*sizeof(int));
     memset(data,0,nthreads*sizeof(int));
-#pragma omp parallel for schedule(static,1) \
-      reduction(+:data[:nthreads])
+#pragma omp parallel for schedule(static,1) reduction(+:data[:nthreads])
     for (int it=0; it<nthreads; it++) {
       for (int i=0; i<nthreads; i++)
 	data[i]++;
@@ -61,8 +59,7 @@ int main(int argc,char **argv) {
     //codesnippet cxxreductvector
     vector<int> data(nthreads,0);
     int *datadata = data.data();
-#pragma omp parallel for schedule(static,1) \
-      reduction(+:datadata[:nthreads])
+#pragma omp parallel for schedule(static,1) reduction(+:datadata[:nthreads])
     //codesnippet end
     for (int it=0; it<nthreads; it++) {
       for (int i=0; i<nthreads; i++)

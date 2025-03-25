@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% omp-affinity.tex : thread affinity
 %%%%
@@ -294,16 +294,16 @@ and what we think of as `addresses' really are
 \indextermsub{virtual}{address}es,
 mapped to \indextermsub{physical}{address}es
 through a \indextermbus{page}{table}.
-
-This means that data in your program can be anywhere in physical memory.
+These data pagaes can be anywhere in physical memory.
 In particular, on a \indextermsub{dual}{socket} node,
 the memory can be mapped to either of the sockets.
 
 The next thing to know is that
 memory allocated with \indextermtt{malloc}~/ \indexc{new}
 and like routines
-is not immediately mapped; that only happens when data is
-written to it. In light of this, consider the following OpenMP code:
+is not immediately mapped;
+pages are only mapped when data is written to them.
+Now consider the following OpenMP code:
 \begin{lstlisting}[language=omp]
 double *x = (double*) malloc(N*sizeof(double));
 
@@ -315,8 +315,11 @@ for (i=0; i<N; i++)
   .... something with x[i] ...
 \end{lstlisting}
 Since the initialization loop is not parallel it is executed by the
-main thread, making all the memory associated with the socket of
+main thread, making all the memory mapped to the socket of
 that thread.
+This is called \indextermdef{first-touch}:
+the thread that first touches a data page determines where
+that page will be mapped.
 Subsequent access by the other socket will then access
 data from memory not attached to that socket,
 which induces a considerable delay, and performance degradation.
@@ -352,7 +355,7 @@ On the \indextermbus{TACC}{Frontera} machine, with dual 28-core
 \indextermbus{Intel}{Cascade Lake} processors,
 we use the following settings:
 
-\begin{lstlisting}[language=bash]
+\begin{lstlisting}[language=shell]
 export OMP_PLACES=cores
 export OMP_PROC_BIND=close
 # no parallel initialization
@@ -377,7 +380,7 @@ for algorithms with higher arithmetic intensity.
 
 \Level 1 {Solution in C++}
 
-The problem with realizing first-touch in \emph{C++}%
+The problem with first-touch in \emph{C++}%
 \index{C++!first-touch|see{first-touch, in C++}}%
 \index{first-touch!in C++}
 is that \lstinline+std::vector+ fills its allocation with default values.

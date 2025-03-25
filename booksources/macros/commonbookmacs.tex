@@ -97,6 +97,7 @@
 
 \newif\ifprojects
 \newif\ifListSources \ListSourcesfalse
+\newcommand\projectsdirs{projects}
 \newcommand\PROJECT[2]{
   \Level 0 {#1}\label{proj:#2}
   \def\chapshortname{#2}
@@ -105,7 +106,7 @@
   \addchaptersource{header}%kludge because we have a bug for zero sources
 
   % input the chapter
-  \SetBaseLevel 1 \input projects/#2
+  \SetBaseLevel 1 \input \projectsdirs/#2
   \SetBaseLevel 0 
 
   % include the sources used in this chapter
@@ -212,17 +213,27 @@
 %%%%
 %%%% Notes
 %%%%
-\newenvironment{specialnote}[1]
-               {\par
+\newcommand\noteheader[1]{\noindent \hbox{\kern-\unitindent \textsl{#1.}}\kern1em\ignorespaces}
+\newenvironment{specialnote}[1]%% THIS IS BROKEN
+               {\begingroup
                  %%\begin{raggedright}
                  %%\begingroup\raggedright
                  %%\advance\leftskip by \unitindent
                  \noindent \hbox{\kern-\unitindent \textsl{#1.}}\kern1em\ignorespaces
                }
-               {\par
+               {\endgroup
                  %%\end{raggedright}
                  %%\endgroup
                }
+\newenvironment{advanced}
+               {\noteheader{Advanced note}}{}
+\newenvironment{cnote}[1]
+               {\noteheader{C difference: #1}}{}
+\newenvironment{fortrannote}[1]
+               {\noteheader{Fortran note: #1}}{}
+\newenvironment{f77note}[1]
+               {\noteheader{F77 note: #1}}{}
+\newenvironment{pythonnote}[1]
+               {\noteheader{Python note: #1}}{}
 \newenvironment{taccnote}
-  {\begin{specialnote}{TACC note}}
-  {\end{specialnote}}
+               {\noteheader{TACC note}}{}

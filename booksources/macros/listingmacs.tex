@@ -16,6 +16,8 @@
 \usepackage{listings,xcolor}
 
 %% https://latexcolor.com/
+\definecolor{amethyst}{rgb}{0.6, 0.4, 0.8}
+\definecolor{arsenic}{rgb}{0.23, 0.27, 0.29}
 \definecolor{grullo}{rgb}{0.66, 0.6, 0.53}
 \definecolor{airforceblue}{rgb}{0.36, 0.54, 0.66}
 \definecolor{amber}{rgb}{1.0, 0.75, 0.0}
@@ -33,11 +35,11 @@
 %%\lstdefinelanguage{cpp}{
   %keywordsprefix=\#, %% this causes the whole line to be formatted. other solution?
   %%  comment=[l]//,
-  commentstyle=\rmfamily\color{gray},
+  commentstyle=\rmfamily\color{arsenic},
   %% Datatypes
   classoffset=0,
   morekeywords={
-    int,short,long,unsigned,const,constexpr,consteval,mutable,auto,size_t,
+    int,short,long,unsigned,const,constexpr,consteval,auto,size_t,
     int64_t,int32_t,uint64_t,uint32_t,
     int8_t,uint8_t,int16_t,uint16_t,
     float16_t,float32_t,float64_t,float128_t,bfloat16_t,
@@ -49,7 +51,7 @@
   classoffset=1,
   morekeywords={
     % C keywords
-    std,md,mdx,rng,views,namespace,
+    std,md,mdx,rng,views,namespace,mutable,friend,
     main,return,using,abort,exit,
     for,if,else,while,switch,case,and,or,
     new,free,malloc,delete,sizeof,
@@ -57,7 +59,7 @@
     true,false,
     % class stuff
     template,typename,concept,module,export,this,
-    class,struct,private,public,protected,inline,operator,enum,
+    class,struct,private,public,protected,extern,inline,operator,enum,
     virtual,override,import,module,except,noexcept,
     % unions and such
     optional,variant,any,expected,unexpected,bitset,
@@ -67,9 +69,11 @@
     try,catch,throw,
   },
   keywordstyle=\bfseries\color{airforceblue}, %%{grullo},
-  %% STL functions
+  %% Functions
   classoffset=2,
   morekeywords={
+    % C stuff
+    malloc,calloc,strlen,printf,scanf,sprintf,sscanf,
     % classes
     monostate,nullopt,strong_ordering,partial_ordering,
     default_random_engine,random_device,
@@ -85,7 +89,7 @@
     cmp_equal,cmp_not_equal,cmp_greater,isnan,isinf,isfinite,isnormal,numeric_limits,
     quiet_NaN,has_quiet_NaN,signaling_NaN
     % container functions
-    emplace,push_back,pop,size,ssize,capacity,back,front,
+    emplace,push_back,pop,size,ssize,capacity,back,front,last,
     begin,end,rbegin,rend,at,insert,erase,next,prev,advance,
     get,data,extent,find,empty,union,
     has_value,value,value_or,find_if,get_if,and_then,
@@ -103,14 +107,14 @@
     max_element,
     seq,par,par_unseq,unseq,
     % more
-    source_location,current,to_underlying,as_const,layout_right,
+    source_location,current,to_underlying,as_const,layout_right,layout_left,
     forward_iterator_tag,input_range,input_iterator,sentinel_for,
   },
   keywordstyle=\bfseries\color{jade},
   %% Headers
   classoffset=3,
   morekeywords={
-    iostream,sstream,cstdio,functional,memory,limits,
+    iostream,sstream,cstdlib,cstdio,functional,memory,limits,climits,
     algorithm,numeric,ranges,execution,iterator,
     chrono,random,rand,srand,
     cstdint,cmath,bit,stdfloat,
@@ -125,7 +129,7 @@
     pair,tuple,function,range,map,set,bitset,
     exception,time_point,stacktrace,
   },
-  keywordstyle=\bfseries\color{lavender(floral)},
+  keywordstyle=\bfseries\color{amethyst},
   %% OpenMP commands
   classoffset=5,
   morekeywords={
@@ -135,7 +139,7 @@
   classoffset=6,
   morekeywords={
   },
-  keywordstyle=\bfseries\color{green!70!red!30},
+  keywordstyle=\bfseries\color{lavender(floral)},
 }
 \newcommand\lstcstd[1]{\lstinline{std::#1}}
 
@@ -148,16 +152,37 @@
 }
 
 \lstdefinelanguage{cuda}[]{cpp}{
+  %% keywords
+  classoffset=1,
+  morekeywords={
+    cudaSuccess,cudaErrorMemoryAllocation,cudaErrorNoDevice,cudaErrorInsufficientDriver,
+    threadIdx,blockIdx,gridDim,blockDim,
+    name,
+    % copy directions
+    cudaMemcpyHostToDevice,cudaMemcpyDeviceToHost,cudaMemcpyDeviceToDevice,
+    % allocation types
+    cudaHostAllocDefault,cudaHostAllocPortable,cudaHostAllocWriteCombined,cudaHostAllocMapped,
+    % device properties:
+    asyncEngineCount,unifiedAddressing,major,minor,canMapHostMemory,
+    multiProcessorCount,clockRate,totalGlobalMem,sharedMemPerBlock,
+    maxThreadsPerBlock,maxThreadsDim,
+  },
+  %% functions
   classoffset=2,
   morekeywords={
     __global__,__device__,__host__,__shared__,
-    cudaMalloc,cudaMalloHost,cudaMallocManaged,
-    cudaMemcpy,cudaMemset,cudaFree,
-    cudaDeviceSynchronize,cudaGetErrorString,
-    cudaMemcpyHostToDevice,cudaMemcpyDeviceToHost,cudaMemcpyDeviceToDevice,
+    cudaGetDeviceCount,cudaGetDeviceProperties,
+    cudaMalloc,cudaHostAlloc,cudaMallocHost,cudaMallocManaged,
+    cudaMemcpy,cudaMemset,cudaFree,cudaFreeHost,cudaMemcpyAsync,
+    cudaHostGetDevicePointer,cudaDeviceSynchronize,cudaGetErrorString,
     __syncthreads,
-    threadIdx,blockIdx,gridDim,blockDim,cudaSuccess,
-    cudaError_t,
+    cudaEventCreate,cudaEventRecord,cudaEventSynchronize,cudaEventElapsedTime,
+    cudaStreamCreate,cudaStreamDestroy,
+  },
+  %% data types
+  classoffset=0,
+  morekeywords={
+    cudaDeviceProp,dim3,cudaEvent_t,cudaStream_t,cudaError_t,
   },
 }
 
@@ -194,11 +219,11 @@
     % namespaces
     Kokkos,
     % classes
-    MemSpace,View,MDRangePolicy,Rank,
+    View,MDRangePolicy,Rank,HostMirror,
     % values
     HostSpace,CudaSpace,HIPSpace,LayoutRight,
     % functions
-    parallel_for,parallel_reduce,
+    parallel_for,parallel_reduce,create_mirror_view,deep_copy,
   }
 }
 
@@ -294,7 +319,6 @@
     PRIVATE,PUBLIC,REQUIRED,SHARED,STATIC,TARGETS,TRUE,VERSION,
     FILES_MATCHING, PATTERN,STREQUAL,NOT,DEFINED,LESS,IN,ITEMS,LISTS,RANGE,
     LIBRARY_OUTPUT_PATH,GIT_REPOSITORY,
-    PROJECT_SOURCE_DIR,PROJECT_NAME,PROJECT_VERSION,
     },
   keywordstyle=\bfseries\color{green!50!brown},
   classoffset=2,
@@ -305,19 +329,36 @@
     CMAKE_EXE_LINKER_FLAGS,,CMAKE_LINKER_FLAGS,
     CMAKE_INSTALL_PREFIX,CMAKE_PREFIX_PATH,CMAKE_MODULE_PATH,CMAKE_SYSTEM_NAME,
     CMAKE_CURRENT_BINARY_DIR,CMAKE_CURRENT_SOURCE_DIR,CMAKE_SOURCE_DIR,
+    PROJECT_SOURCE_DIR,PROJECT_NAME,PROJECT_VERSION,
     CMAKE_INSTALL_RPATH,CMAKE_INSTALL_RPATH_USE_LINK_PATH,
     CMAKE_POSITION_INDEPENDENT_CODE,
     },
   keywordstyle=\color{ballblue},
 }
 
-\lstdefinelanguage{zsh}[]{bash}{
+\lstdefinelanguage{shell}{
+   morecomment=[l]\#,
+   morestring=[b]",
+  classoffset=0,
+  morekeywords={
+    if,then,else,fi,for,while,do,done,
+    cd,ar,nm,ld,pwd,grep,
+  },
+  keywordstyle=\bfseries\color{indianred},
+  classoffset=1,
+  morekeywords={
+    gcc,g++,icc,icx,icpc,icpx,gfortran,ifort,ifx,
+  },
+  keywordstyle=\bfseries\color{airforceblue},
+}
+
+\lstdefinelanguage{zsh}[]{shell}{
   morekeywords={
     make,cmake,mkdir,
   },
 }
 
-\lstdefinelanguage{git}[]{bash}{
+\lstdefinelanguage{git}[]{shell}{
   morekeywords={
     git,add,branch,checkout,clone,commit,diff,
     init,log,pull,push,remote,revert,status,
@@ -355,6 +396,8 @@
   columns=fullflexible,
   keepspaces=true,
 }
+\newcommand\snippetstyle{booksnippetcode}
+\lstset{style=\snippetstyle}
 
 \lstdefinestyle{slidesnippetcode}{
   numbers=left,numberstyle=\tiny,numbersep=3pt,
