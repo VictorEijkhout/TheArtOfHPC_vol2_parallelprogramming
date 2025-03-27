@@ -1,3 +1,8 @@
 myqueue.submit( [&] ( sycl::handler &h ) {
-    auto deviceAccessorA =
-      bufferA.get_access<sycl::access::mode::read_write>(h);
+  sycl::accessor  deviceAccessorA(bufferA,h,sycl::read_write);
+    h.parallel_for<class uniqueID> 
+      ( mySize,
+        [=](sycl::id<1> index) {
+        deviceAccessorA[index] *= 2; }
+        );
+  }
