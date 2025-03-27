@@ -16,7 +16,12 @@ using namespace std;
 
 int main(int argc,char **argv) {
 
-/**** your code here ****/
+  MPI_Init(0,0);
+  MPI_Comm comm = MPI_COMM_WORLD;
+  int nprocs;
+  MPI_Comm_size( comm, &nprocs );
+  std::cout << "size=" << nprocs << '\n';
+  MPI_Finalize();
   
   return 0;
 }

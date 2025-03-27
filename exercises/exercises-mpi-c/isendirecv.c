@@ -38,12 +38,16 @@ int main(int argc,char **argv) {
 
   // get data from the left: who are you communicating with?
 /**** your code here ****/
-  MPI_Isend(&mydata,1,MPI_DOUBLE, sendto,0, comm,
-/**** your code here ****/
+  int req_no=0;
+  if (procno>0) {
+    MPI_Irecv(&leftdata,1,MPI_DOUBLE, recvfrom,0, comm,
+	      &(requests[req_no++])
 	    );
-  MPI_Irecv(&leftdata,1,MPI_DOUBLE, recvfrom,0, comm,
-/**** your code here ****/
-	    );
+  }
+  if () {
+    MPI_Isend(&mydata,1,MPI_DOUBLE, sendto,0, comm,
+	      &(requests[req_no++])
+	      );
 
   // get data from the right: who are you communicating with?
 /**** your code here ****/
@@ -57,7 +61,7 @@ int main(int argc,char **argv) {
   //
   // Now make sure all Isend/Irecv operations are completed
   //
-/**** your code here ****/
+  MPI_Wait( req_no, ... )
   
   /*
    * Correctness check:

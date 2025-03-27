@@ -26,6 +26,8 @@ EXERCISES = hello \
     bucketblock bucketpipenonblock scangather \
     stridesend stridescatter cubegather procgrid procgridnonblock transposeblock \
     rightsend rightgraph \
+    stridesend cubegather procgrid procgridnonblock transposeblock \
+    rightsend bigrightsend rightgraph \
     ibarrierupdate
 SOURCES = $(patsubst %,%.c,${EXERCISES})
 OBJS = $(patsubst %,%.o,${EXERCISES})
