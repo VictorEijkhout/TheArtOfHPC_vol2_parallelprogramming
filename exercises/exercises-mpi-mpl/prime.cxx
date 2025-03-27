@@ -29,13 +29,10 @@ int main() {
   // -- If a processors finds a factor, print it to the screen.
 
   // 1. Set loop bounds
-  nprocs = comm_world.size(); procno = ;
-  int chunk_size = maxfactor/nprocs;
-  int lower_bound procno*chunk_size ,upper_bound;
+/**** your code here ****/
   // 2. Fill in loop header
   for ( int myfactor=
-	  procno; myfactor<max_factor; myfactor+=nprocs
-	  // lower_bound; myfactor<upper_bound; myfactor++
+/**** your code here ****/
        ) {
     if (bignum%myfactor==0) {
       proctext << "Processor " << procno << " found factor " << myfactor << endl;

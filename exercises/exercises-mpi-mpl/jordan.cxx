@@ -78,12 +78,7 @@ int main(int argc,char **argv) {
      * Exercise:
      * make sure that everyone knows the scaling factors
      */
-    int root = pivot_column;
-    auto data = scalings.data();
-    // double *data = &scalings[0];
-    auto layout = mpl::contiguous_layout<double>(N);
-    comm_world.bcast( root, data, layout );
-    // MPI_bcast( buff,count,dtype, root, comm );
+/**** your code here ****/
     /*
      * Now update the matrix.
      * Answer for yourself: why is there no loop over the columns?

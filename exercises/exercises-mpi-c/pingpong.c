@@ -24,13 +24,13 @@ int main(int argc,char **argv) {
   MPI_Comm_size(comm,&nprocs);
   MPI_Comm_rank(comm,&procno);
 
-#define NEXPERIMENTS 100000
+#define NEXPERIMENTS 10000
 
   // Exercise:
   // -- set source and target processors two ways:
   //    close together and far apart
   // -- run the experiment both ways.
-  int processA=1,processB=50;
+  int processA,processB;
 /**** your code here ****/
   double t, send[10000],recv[10000]; send[0] = 1.1;
   if (procno==processA) {
@@ -38,11 +38,11 @@ int main(int argc,char **argv) {
     for (int n=0; n<NEXPERIMENTS; n++) {
       MPI_Send(send,1,MPI_DOUBLE,
 	       // fill in dest and tag
-	       processB,0,
+/**** your code here ****/
 	       comm);
       MPI_Recv(recv,1,MPI_DOUBLE,
 	       // fill in source and tag
-	       processB,0,
+/**** your code here ****/
 	       comm,MPI_STATUS_IGNORE);
     }
     t = MPI_Wtime()-t; t /= NEXPERIMENTS;
@@ -54,11 +54,11 @@ int main(int argc,char **argv) {
     for (int n=0; n<NEXPERIMENTS; n++) {
       MPI_Recv(recv,1,MPI_DOUBLE,
 	       // fill in source and tag
-	       processA,0,
+/**** your code here ****/
 	       comm,MPI_STATUS_IGNORE);
       MPI_Send(recv,1,MPI_DOUBLE,
 	       // fill in dest and tag
-	       processA,0,
+/**** your code here ****/
 	       comm);
     }
   }

@@ -44,8 +44,8 @@ int main() {
   /*  
    * Start isend and store the request
    */
-  requests.push_back
-    ( comm_world.isend(mydata,sendto) );
+/**** your code here ****/
+		comm_world.isend(mydata,sendto)
 /**** your code here ****/
 		comm_world.irecv(leftdata,recvfrom)
 /**** your code here ****/
@@ -68,7 +68,7 @@ int main() {
   /*
    * Now make sure all Isend/Irecv operations are completed
    */
-		  requests.waitall();
+/**** your code here ****/
   
   // check correctness
   mydata = mydata+leftdata+rightdata;
