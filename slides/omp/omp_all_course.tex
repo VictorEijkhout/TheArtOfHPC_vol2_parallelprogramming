@@ -1,0 +1,92 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming in MPI and OpenMP'
+%%%% by Victor Eijkhout, copyright 2012-2025
+%%%%
+%%%% omp_course.tex : master file for an OpenMP course
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[10pt]{beamer}
+
+\usepackage{comment}
+\input lang
+\input courseformat
+\usepackage{pdfpages}
+
+\newenvironment{frameblock}[1]
+               {\begin{quote}}
+               {\end{quote}}
+
+%%\newcounter{chapter} % how is this handled in ISP?
+%%\input blockmacs
+
+\def\qrcode{qrvol2}
+\begin{document}
+
+\author[Eijkhout]{Victor Eijkhout}
+\date[2024]{2024 COE 379L / CSE 392}
+%% \normalsize last formatted \today}
+\title[OMP]{OpenMP Course}
+\maketitle
+
+\begin{frame}{Justification}
+  OpenMP is a flexible tool for incrementally parallelizing a shared
+  memory-based code.
+  This course introduces the main concepts
+  through lecturing and exercises.
+\end{frame}
+
+\Level 0 {The Fork-Join model}
+\input Forkjoin-slides
+
+\Level 0 {Loop parallelism}
+\input ParLoop-slides
+
+\Level 0 {Workshare constructs}
+\input Workshare-slides
+
+\Level 0 {Thread data}
+\input OmpData-slides
+
+\Level 0 {Synchronization}
+\input Sync-slides
+
+\Level 0 {Tasks}
+\input Tasks-slides
+
+\Level 0 {Affinity and other memory issues}
+\input Affinity-slides
+
+\Level 0 {Memory model}
+\input Memory-slides
+
+\Level 0 {Remaining topics}
+\input OmpOther-slides
+
+\end{document}
+
+\newenvironment
+    {theindex}
+    {\begin{itemize}\setlength\itemsep{0pt}\baselineskip=8pt}
+    {\end{itemize}}
+\let\indexspace\par
+\def\subitem{\par\indent}
+%
+\begin{frame}{Index}
+\small
+\begin{multicols}{2}
+\printindex  
+\end{multicols}
+\end{frame}
+
+\begin{frame}{Bibliography}
+  \bibliographystyle{plain}
+  \bibliography{vle}
+\end{frame}
+
+\end{document}

@@ -3,7 +3,7 @@
 ####
 #### This makefile is part of the source of 
 #### "Parallel Programming in MPI and OpenMP"
-#### by Victor Eijkhout, copyright 2013-2024
+#### by Victor Eijkhout, copyright 2013-2025
 ####
 #### Makefile for OpenMP course slides
 ####
@@ -12,7 +12,7 @@
 
 info::
 	@echo "================================================================"
-	@echo "makefile for MPI course slides"
+	@echo "makefile for OpenMP course slides"
 	@echo "================================================================"
 	@echo
 
@@ -23,6 +23,9 @@ INEX = tacc-full
 include ../course-support/Make.course
 include ../../booksources/makefiles/Make.tex
 include ../../booksources/makefiles/Make.texerror
+.PHONY: getfiles snippets
+getfiles snippets :
+	@cd ../.. && make $@
 
 include ../../booksources/makefiles/repos.inc
 
