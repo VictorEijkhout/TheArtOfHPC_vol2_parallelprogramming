@@ -24,9 +24,13 @@
 %%
 \usepackage{xr-hyper}
 
+\ifVolumeOne
+\newcommand\HPSCref[2][section]{#1~\ref{#2}}
+\else
 \externaldocument[HPSC-]{scicompbook}
 \newcommand\HPSCref[2][section]{%
   \textsl{HPC book, #1~\ref{HPSC-#2}}}
+\fi
 
 \externaldocument[PCSE-]{parcompbook}
 \newcommand\CARPref[2][section]{%

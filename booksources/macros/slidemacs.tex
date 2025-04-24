@@ -23,8 +23,48 @@
 \let\slidebreak=\\
 \newdimen\unitindent \unitindent=20pt
 
-\input listingmacs
+%% \input listingmacs
 \lstset{style=slidesnippetcode}
+
+%%%%
+%%%% Frames
+%%%%
+\newcounter{excounter}
+\newcounter{revcounter}
+\newenvironment
+    {reviewframe}
+    {\begin{frame}[containsverbatim]
+        \frametitle{Review \arabic{revcounter}}
+        \refstepcounter{revcounter}}
+    {\end{frame}}
+\newenvironment
+    {exerciseframe}[1][]
+    {\def\optfile{#1}
+      \ifx\optfile\empty\else\message{VLE EXERCISE #1}%\index[programming]{#1}
+      \fi
+      \begin{frame}[containsverbatim]
+        \ifx\optfile\empty
+        \frametitle{Exercise \arabic{excounter}}
+        \else
+        \frametitle{Exercise \arabic{excounter} (\tt{#1})}
+        \fi
+        \refstepcounter{excounter}
+        \addcontentsline
+            {exe}{section}
+            {\protect\numberline\hbox to 1in {\arabic{excounter}~{#1}\hfil}}
+    }
+    {\end{frame}}
+\newenvironment
+    {optexerciseframe}[1][]
+    {\begin{frame}[containsverbatim]
+        \def\optfile{#1}
+        \ifx\optfile\empty
+        \frametitle{Exercise (optional) \arabic{excounter}}
+        \else
+        \frametitle{Exercise (optional) \arabic{excounter} (\tt{#1})}
+        \fi
+        \refstepcounter{excounter}}
+    {\end{frame}}
 
 %%%%
 %%%% Outlining
@@ -62,17 +102,6 @@
 %%
 \newcommand\furtherreading{\Level 0 {Further Reading}\label{sec:furtherreading-\chapshortname}}
 \newcommand\heading[1]{\paragraph*{\textbf{#1}}}
-
-{\catcode`\^^I=13 \globaldefs=1
- \newcommand\listing[2]{\begingroup\small\par\vspace{1ex}
-  \catcode`\^^I=13 \def^^I{\leavevmode\hspace{40pt}}
-  \noindent\fbox{#1}
-  \verbatiminput{#2}\endgroup}
- \newcommand\codelisting[1]{\begingroup\small\par\vspace{1ex}
-  \catcode`\^^I=13 \def^^I{\leavevmode\hspace{40pt}}
-  \noindent\fbox{#1}
-  \verbatiminput{#1}\endgroup}
-}
 
 %%
 %% use beamer buttons for links to exercise slides

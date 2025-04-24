@@ -305,13 +305,13 @@ is not immediately mapped;
 pages are only mapped when data is written to them.
 Now consider the following OpenMP code:
 \begin{lstlisting}[language=omp]
-double *x = (double*) malloc(N*sizeof(double));
+double *x = new double[N];
 
-for (i=0; i<N; i++)
+for ( int i=0; i<N; ++i )
   x[i] = 0;
 
 #pragma omp parallel for
-for (i=0; i<N; i++)
+for ( int i=0; i<N; ++i )
   .... something with x[i] ...
 \end{lstlisting}
 Since the initialization loop is not parallel it is executed by the
@@ -375,7 +375,7 @@ This large difference will be mitigated
 for algorithms with higher arithmetic intensity.
 
 \begin{exercise}
-  How do the OpenMP dynamic schedules relate to this issue?
+  How does OpenMP dynamic scheduling relate to this issue?
 \end{exercise}
 
 \Level 1 {Solution in C++}

@@ -36,43 +36,6 @@
       \noexpand\par \endgroup}}\tmp
   \slackpollTFp}
 
-\newcounter{excounter}
-\newcounter{revcounter}
-\newenvironment
-    {reviewframe}
-    {\begin{frame}[containsverbatim]
-        \frametitle{Review \arabic{revcounter}}
-        \refstepcounter{revcounter}}
-    {\end{frame}}
-\newenvironment
-    {exerciseframe}[1][]
-    {\def\optfile{#1}
-      \ifx\optfile\empty\else\message{VLE EXERCISE #1}%\index[programming]{#1}
-      \fi
-      \begin{frame}[containsverbatim]
-        \ifx\optfile\empty
-        \frametitle{Exercise \arabic{excounter}}
-        \else
-        \frametitle{Exercise \arabic{excounter} (\tt{#1})}
-        \fi
-        \refstepcounter{excounter}
-        \addcontentsline
-            {exe}{section}
-            {\protect\numberline\hbox to 1in {\arabic{excounter}~{#1}\hfil}}
-    }
-    {\end{frame}}
-\newenvironment
-    {optexerciseframe}[1][]
-    {\begin{frame}[containsverbatim]
-        \def\optfile{#1}
-        \ifx\optfile\empty
-        \frametitle{Exercise (optional) \arabic{excounter}}
-        \else
-        \frametitle{Exercise (optional) \arabic{excounter} (\tt{#1})}
-        \fi
-        \refstepcounter{excounter}}
-    {\end{frame}}
-
 %%%%
 %%%% Indexing, mostly disabled
 %%%%

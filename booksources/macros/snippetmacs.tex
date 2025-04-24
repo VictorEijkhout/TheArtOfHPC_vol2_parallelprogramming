@@ -44,7 +44,7 @@
           \lstinputlisting[
             style=\snippetstyle,language=#3,
           ]{\codesnippetsdir/#2}
-          \aftergroup\noindent\aftergroup\ignorespaces
+          \aftergroup\ignorespaces %% \noindent\aftergroup
           \endgroup
         }
         {\par MISSING SNIPPET #2 in codesnippetsdir=\codesnippetsdir\par
@@ -74,7 +74,7 @@
 %% optional first argument is the language,
 %% `cxx' by default
 %%
-\newcommand\twosnippetswithcaptions[5][cxx]{
+\newcommand\twosnippetswithcaptions[5][cxx]{%% not cpp: the macro name is cxxverbatimsnippet
   \begingroup \multicolsep=0pt
   \begin{multicols}{2}
     \unitindent=.5\unitindent
@@ -291,6 +291,10 @@
 \newcommand\psnippetwithoutput[4][]{
   \message{fsnippetwithoutput <<#1>> <<#2>> <<#3>> <<#4>>}
   \answerwithoutput[Python]{#2}{#3}{#4}
+}
+\newcommand\rangesnippetwithoutput[4][]{
+  \message{rangesnippetwithoutput <<#1>> <<#2>> <<#3>> <<#4>>}
+  \answerwithoutput[range]{#2}{#3}{#4}
 }
 \newcommand{\snippetoutput}[2]{
   \message{In directory <#1> running program <#2>}

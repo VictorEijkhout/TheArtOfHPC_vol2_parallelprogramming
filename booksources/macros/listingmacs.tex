@@ -32,9 +32,6 @@
    morecomment=[l]//,
    morecomment=[s]{/*}{*/},
    morestring=[b]",
-%%\lstdefinelanguage{cpp}{
-  %keywordsprefix=\#, %% this causes the whole line to be formatted. other solution?
-  %%  comment=[l]//,
   commentstyle=\rmfamily\color{arsenic},
   %% Datatypes
   classoffset=0,
@@ -76,7 +73,7 @@
     malloc,calloc,strlen,printf,scanf,sprintf,sscanf,
     % classes
     monostate,nullopt,strong_ordering,partial_ordering,
-    default_random_engine,random_device,
+    default_random_engine,random_device,mt19937,
     uniform_real_distribution,uniform_int_distribution,poisson_distribution,
     shared_ptr,make_shared,unique_ptr,make_unique,nullptr,nullptr_t,
     % exceptions
@@ -104,7 +101,7 @@
     partial_sum,inclusive_scan,exclusive_scan,min_element,sort,
     cartesian_product,iota,iota_view,
     plus,minus,multiplies,divides,modulus,logical_and,logical_or,negate,
-    max_element,
+    max_element,format_to,
     seq,par,par_unseq,unseq,
     % more
     source_location,current,to_underlying,as_const,layout_right,layout_left,
@@ -127,7 +124,8 @@
     % containers
     array,vector,span,mdspan,submdspan,string,stringstream,
     pair,tuple,function,range,map,set,bitset,
-    exception,time_point,stacktrace,
+    exception,time_point,stacktrace,complex_literals,
+    format_parse_context,format_context,
   },
   keywordstyle=\bfseries\color{amethyst},
   %% OpenMP commands
@@ -211,6 +209,23 @@
     omp_in,omp_out,copyin,copyout,
     write,read,update,capture,
   },
+}
+
+\lstdefinelanguage{ompkwd}{
+  classoffset=0,
+  morekeywords={
+    omp,
+    somedirective,
+    parallel,for,do,loop,simd,
+    section,sections,declare,
+    single,master,atomic,critical,target,flush,threadprivate,
+    %%
+    someclause,
+    reduction,taskgroup,taskloop,task,taskwwait,schedule,mask,filter,
+    collapse,
+    end,cancel,
+  },
+  keywordstyle=\rmfamily\color{arsenic},
 }
 
 \lstdefinelanguage{kokkos}[]{cpp}{
@@ -420,4 +435,6 @@
 }
 \lstdefinelanguage{verbatim}{keywords=}
 
-\newcommand\pyinline[1]{\lstset{language=Python}\lstinline{#1}\lstset{language=C}}
+\newcommand\pyinline[1]{\begingroup
+  \lstset{language=Python}\lstinline{#1}\endgroup
+}

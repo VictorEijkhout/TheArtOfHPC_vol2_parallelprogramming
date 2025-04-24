@@ -34,7 +34,8 @@
 \def\indexcstd{\bgroup
     \lstset{language=cpp}\idxset{cpp}\def\idxprefix{std::}\indextermttgroup}
 \def\indexcrng{\bgroup
-    \lstset{language=cpp}\idxset{cpp}\def\idxprefix{ranges::}\indextermttgroup}
+    \lstset{language=range}\idxset{cpp}\def\idxprefix{ranges::}\indextermttgroup}
+\let\indexcrange\indexcrng
 \def\indexcrngv{\bgroup
     \lstset{language=cpp}\idxset{cpp}\def\idxprefix{ranges::views::}\indextermttgroup}
 \def\indexcdefstd{\bgroup

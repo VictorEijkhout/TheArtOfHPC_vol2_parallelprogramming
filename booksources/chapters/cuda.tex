@@ -339,7 +339,43 @@ Shared memory is declared by adding the keyword
 __shared__ float tmp[BLOCKSIZE];
 \end{lstlisting}
 
-Example five-point stencil.
+\Level 1 {Five-point stencil}
+
+We consider the five-point stencil operation
+\[ y_{ij} \leftarrow 4x_{ij} -x_{i-1,j} -x_{i+1,j} -x_{i,j-1} -x_{i,j+1} \]
+\begin{figure}[ht]
+  \includegraphics[scale=.4]{gpusmooth0}
+  \caption{Bordered domain for the 5-pt stencil}
+  \label{fig:cusmooth0}  
+\end{figure}
+For ease of coding (and to accomodate the MPI scenario with halo regions)
+we use a bordered domain; see figure~\ref{fig:cusmooth0}.
+We use inline functions to compute global positioning:
+\cudaverbatimsnippet{cusmoothglobal}
+
+Translation of thread number to global positioning:
+\cudaverbatimsnippet{cusmoothpos}
+
+The operation is now relatively easy programmed using global memory:
+\cudaverbatimsnippet{cu5ptglobal}
+
+However, since each element is read multiple times this is likely inefficient.
+\begin{figure}[ht]
+  \includegraphics[scale=.4]{gpusmooth1}
+  \caption{Bordered shared memory}
+  \label{fig:cusmooth1}
+\end{figure}
+Therefore we copy the global data to a `shared memory' block:
+\cudaverbatimsnippet{cusmoothshared}
+which is bordered, like the global data,
+as pictured in figure~\ref{fig:cusmooth1}.
+We start by copying data to it, one element per thread:
+\cudaverbatimsnippet{cusmoothsharedcopy1}
+The borders are a little harder. We let the threads on the edge
+copy the border data:
+\cudaverbatimsnippet{cusmoothsharedcopy2}
+Now the smoothing operation is:
+\cudaverbatimsnippet{cusmoothsmoothshared}
 
 \Level 0 {Querying}
 \label{sec:cu-properties}

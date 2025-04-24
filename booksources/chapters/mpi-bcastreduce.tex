@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% mpi-bcastreduce.tex : about broadcast & reduce collectives
 %%%%
@@ -118,10 +118,10 @@ Each of these needs some elucidation.
   \lstinline{logical_and}, \lstinline{logical_or}, \lstinline{logical_xor},
   \lstinline{bit_and}, \lstinline{bit_or}, \lstinline{bit_xor}.
 
-  \begin{mplimpl}
+\begin{mplimpl}
     The reduction operator has to be compatible with
     \lstinline+T(T,T)>+.
-  \end{mplimpl}
+\end{mplimpl}
 \end{mplnote}
 
 For more about operators, see section~\ref{sec:mpi-ops}.
@@ -541,8 +541,8 @@ void mpl::communicator::bcast
 void mpl::communicator::bcast
    ( int root_rank, T *data, const layout< T > &l ) const;
 \end{lstlisting}
-Note that the root argument comes first
-in a departure from the C~\ac{API}.
+(The root argument comes first
+in a departure from the C~\ac{API}.)
 \end{mplnote}
 
 %pyskipbegin

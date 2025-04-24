@@ -400,8 +400,8 @@ in a parallel region.
   The usual idiom 
 can not be made threadsafe because of the initialization:
 \begin{lstlisting}
-static random_device rd;
-static mt19937 rng(rd);    
+static std::random_device rd;
+static std::mt19937 rng(rd);    
 \end{lstlisting}
 
 However, the following works:
