@@ -5,7 +5,7 @@
 %%%% `Introduction to the PETSc library'
 %%%% by Victor Eijkhout, eijkhout@tacc.utexas.edu
 %%%%
-%%%% copyright Victor Eijkhout 2012-2022
+%%%% copyright Victor Eijkhout 2012-2025
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -388,7 +388,7 @@ PetscErrorCode mymatmult(Mat mat,Vec in,Vec out)
   PetscFunctionBegin;
   MatShellGetContext(mat,(void**)&mystruct);
   /* compute out from in, using mystruct */
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 \end{lstlisting}
 \end{numberedframe}

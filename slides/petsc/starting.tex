@@ -177,7 +177,10 @@ Use:
 PetscErrorCode ierr;
 MPI_Comm comm = MPI_COMM_WORLD;
 Vec v;
-ierr = VecCreate( comm,&vec ); CHKERRQ(ierr).
+// old style
+ierr = VecCreate( comm,&vec ); CHKERRQ(ierr);
+// new style
+PetscCall( VecCreate(comm,&x) );
 \end{lstlisting}
 (always good idea to catch that error code)
 \end{numberedframe}
@@ -262,7 +265,7 @@ Debugging support:
 \begin{lstlisting}
 PetscFunctionBeginUser;
 // all statements
-PetscFunctionReturn(0);
+PetscFunctionReturn(PETSC_SUCCESS);
 \end{lstlisting}
 leads to informative tracebacks.
 
