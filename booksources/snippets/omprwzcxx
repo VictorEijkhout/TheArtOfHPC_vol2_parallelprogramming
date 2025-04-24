@@ -1,4 +1,4 @@
-// reductpositive.cxx
+// reductpositive.cpp
 template<typename T>
 T reduce_without_zero(T r,T n) {
 // r is the already reduced value, n is the new value

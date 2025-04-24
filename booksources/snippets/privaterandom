@@ -1,10 +1,10 @@
-// privaterandom.cxx
-static random_device rd;
-static mt19937 rng;
+// privaterandom.cpp
+static std::random_device rd;
 #pragma omp threadprivate(rd)
+static std::mt19937 rng;
 #pragma omp threadprivate(rng)
 
 int main() {
 
 #pragma omp parallel
-  rng = mt19937(rd());
+  rng = std::mt19937(rd());

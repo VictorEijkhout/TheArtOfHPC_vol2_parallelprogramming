@@ -1,4 +1,4 @@
-// speedup.cxx
+// speedup.cpp
 #pragma omp parallel for
 for ( auto& v : values ) {
   for (int jp=0; jp<M; jp++) {

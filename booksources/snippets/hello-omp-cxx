@@ -1,4 +1,4 @@
-// hello.cxx
+// hello.cpp
 #pragma omp parallel
   {
     int t = omp_get_thread_num();

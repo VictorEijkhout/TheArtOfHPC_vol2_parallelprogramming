@@ -1,4 +1,4 @@
-// taskreduct.cxx
+// taskreduct.cpp
 #pragma omp taskgroup task_reduction(+:sum)
       for (int itask=1; itask<=bound; itask++) {
         auto addin = [&sum] (int contrib) { sum += contrib; };

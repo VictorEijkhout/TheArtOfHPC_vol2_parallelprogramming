@@ -1,4 +1,4 @@
-// link.cxx
+// link.cpp
 #pragma omp parallel shared(p)
   {
     int n;

@@ -1,4 +1,4 @@
-// lockobject.cxx
+// lockobject.cpp
 class atomic_int {
 private:
   omp_lock_t the_lock;

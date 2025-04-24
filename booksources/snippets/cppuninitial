@@ -1,4 +1,4 @@
-// heatalloc.cxx
+// heatalloc.cpp
 template<typename T>
 struct uninitialized {
   uninitialized() {};

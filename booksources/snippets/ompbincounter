@@ -1,4 +1,4 @@
-// charcount.cxx
+// charcount.cpp
 template<typename key>
 class bincounter : public map<key,int> {
 public:

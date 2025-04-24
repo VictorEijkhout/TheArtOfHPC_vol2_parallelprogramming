@@ -1,4 +1,4 @@
-// nested.cxx
+// nested.cpp
 class withnest {
 public:
   void f() {

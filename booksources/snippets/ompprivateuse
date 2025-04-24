@@ -1,4 +1,4 @@
-// privateno.cxx
+// privateno.cpp
 class foo { public: int x; };
 int main() {
   foo thing;

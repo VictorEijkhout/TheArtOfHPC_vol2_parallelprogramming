@@ -1,4 +1,4 @@
-// directive.cxx
+// directive.cpp
 int nthreads;
 [[omp::directive( parallel ) ]]
 [[omp::directive( master ) ]]

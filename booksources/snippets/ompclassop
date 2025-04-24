@@ -1,4 +1,4 @@
-// reductclass.cxx
+// reductclass.cpp
 class Thing {
 private:
   float x{0.f};

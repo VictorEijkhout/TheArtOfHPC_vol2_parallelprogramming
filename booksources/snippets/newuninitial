@@ -1,4 +1,4 @@
-// heatptr.cxx
+// heatptr.cpp
 unique_ptr<double[]> x( new double[N] );
 unique_ptr<double[]> y( new double[N] );
 

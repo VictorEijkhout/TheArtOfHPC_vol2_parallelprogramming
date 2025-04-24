@@ -28,11 +28,12 @@ course_prep ::
 	@echo && echo "Setting up for language <<${LANGUAGE}>>" && echo
 	@cp ${COURSE}_course.tex ${COURSE}_${LANGUAGE}_course.tex 
 	@cp ../course-support/lang_${LANGUAGE}.tex ../course-support/lang.tex
-courses ::
+	@make --no-print-directory getfiles
+courses :: course_prep
 	@if [ ! -z "${COURSES}" ] ; then \
 	    cp ../course-support/lang_all.tex lang.tex \
 	     && for c in ${COURSES} ; do \
-	            make --no-print-directory course COURSE=$$c \
+	            make --no-print-directory course COURSEPREP=0 COURSE=$$c \
 	        ; done \
 	    ; \
 	 fi
@@ -44,7 +45,7 @@ languages :
 	         && make course COURSE=${COURSE}_$${l} LANGUAGE=$${l} \
 	         && rm -f ${COURSE}_$${l}_course.tex \
 	    ; done 
-
+COURSEPREP = 1
 course ::
 	@if [ -z "${COURSE}" ] ; then \
 	    echo "Error: no COURSE variable defined" && exit 1 ; fi 
@@ -53,6 +54,8 @@ course ::
 	 ; else \
 	    cp ../course-support/lang_${LANGUAGE}.tex ./lang.tex \
 	 ; fi
+	@if [ "${COURSEPREP}" = "1" ] ; then \
+	  make --no-print-directory course_prep ; fi 
 	@make --no-print-directory pdf FILE=${COURSE}_course
 	@make --no-print-directory diagnostics FILE=${COURSE}_course
 	@cp ../course-support/lang_all.tex ./lang.tex

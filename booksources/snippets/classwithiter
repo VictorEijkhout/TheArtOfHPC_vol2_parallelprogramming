@@ -1,4 +1,4 @@
-// iterator.cxx
+// iterator.cpp
 template<typename T>
 class NewVector {
 protected:

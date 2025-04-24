@@ -1,4 +1,4 @@
-// vecdata.cxx
+// vecdata.cpp
 vector<float> values(100);
 
 #pragma omp parallel for 

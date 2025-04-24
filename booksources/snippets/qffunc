@@ -14,5 +14,5 @@ PetscErrorCode FormFunction( SNES solver,Vec x,Vec fx,void *ctx) {
   }
   PetscCall( VecRestoreArrayRead(x,&xv) );
   PetscCall( VecRestoreArray(fx,&fv) );
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

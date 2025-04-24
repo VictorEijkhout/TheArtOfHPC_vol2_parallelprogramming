@@ -1,4 +1,4 @@
-// range.cxx
+// range.cpp
 #pragma omp parallel for reduction(+:itcount)
 for ( auto e : data )
 	itcount += e;

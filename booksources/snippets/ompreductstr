@@ -1,4 +1,4 @@
-// reductstring.cxx
+// reductstring.cpp
 string result{""};
 #pragma omp parallel for reduction( +:result )
 for ( const auto& t : letters ) {
