@@ -34,8 +34,6 @@
   \end{itemize}
 \end{numberedframe}
 
-\Level 2 {Concepts}
-
 \begin{numberedframe}{Collectives}
   Gathering and spreading information:
   \begin{itemize}
@@ -59,7 +57,7 @@
   \input ex:collective-cases
 \end{exerciseframe}
 
-\section{All-reduce}
+\subsection{All-reduce}
 
 \begin{numberedframe}{Allreduce: reduce-to-all}
   Exercise 2 above contains a common case:\\
@@ -76,7 +74,10 @@
 \begin{numberedframe}{Motivation for allreduce}
   Example: normalizing a vector
   \[ y \leftarrow x/\|x\| \]
-  \includegraphics[scale=.05]{mpi-array}
+  \includegraphics[scale=.4]{mpi-array}
+\end{numberedframe}
+
+\begin{numberedframe}{Structure of allreduce}
   \begin{itemize}
   \item Vectors \lstinline{x,y} are distributed: every process has certain
     elements
@@ -139,25 +140,9 @@ How do we compute this?
 %% \mplprotoslide{MPI_Allreduce}
 %% \end{mpl}
 
-\begin{numberedframe}{Reduction operators}
-    Available: \lstinline{max}, \lstinline{min}, \lstinline{plus}, \lstinline{multiplies},
-  \lstinline{logical_and}, \lstinline{logical_or}, \lstinline{logical_xor},
-  \lstinline{bit_and}, \lstinline{bit_or}, \lstinline{bit_xor}.
-\end{numberedframe}
-\begin{cxx}
-\begin{numberedframe}{MPL operators}
-  Same names, prefixed by \lstinline{mpl::}  
-
-  \mplverbatimsnippet{mplallreduce}
-\end{numberedframe}
-\end{cxx}
-
 \begin{exerciseframe}[randommax]
+  %% this is {ex:randommaxscale}
   \input ex:randommaxscale
-\end{exerciseframe}
-
-\begin{exerciseframe}
-  \input ex:randommaxarray
 \end{exerciseframe}
 
 \Level 2 {Buffers}
@@ -189,12 +174,14 @@ MPI_Bcast( x, .... );
   \item write \lstinline{x} for array
   \end{itemize}
 \end{numberedframe}
-\begin{lstlisting}
-integer :: i
-integer,dimension(:) :: iar
-call MPI_Bcast( i, .... );
-call MPI_Bcast( iar, .... );
-\end{lstlisting}
+\begin{numberedframe}{Buffer arguments}
+  \begin{lstlisting}
+    integer :: i
+    integer,dimension(:) :: iar
+    call MPI_Bcast( i, .... );
+    call MPI_Bcast( iar, .... );
+  \end{lstlisting}
+\end{numberedframe}
 \end{fortran}
 
 \begin{cxx}
@@ -271,6 +258,10 @@ comm.Recv(result, ...)
 \end{numberedframe}
 \end{python}
 
+\begin{exerciseframe}
+  \input ex:randommaxarray
+\end{exerciseframe}
+
 \Level 2 {Collective basics}
 
 \begin{numberedframe}{Elementary datatypes}
@@ -315,33 +306,15 @@ A bunch more.
 \end{numberedframe}
 \end{python}
 
-\begin{numberedframe}{MPI operators}
-\begingroup \tt\catcode`\_=12\relax %pyskip
-\begin{tabular}{|l|l|}
-  \hline
-  \indexmpishow{MPI_Op}&description\\
-  \hline
-  \indexmpishow{MPI_MAX}&maximum\\
-  \indexmpishow{MPI_MIN}&minimum\\
-  \indexmpishow{MPI_SUM}&sum\\
-  \indexmpishow{MPI_PROD}&product\\
-  \indexmpishow{MPI_LAND}&logical and\\
-  \indexmpishow{MPI_BAND}&bitwise and\\
-  \indexmpishow{MPI_LOR}&logical or\\
-  \indexmpishow{MPI_BOR}&bitwise or\\
-  \indexmpishow{MPI_LXOR}&logical xor\\
-  \indexmpishow{MPI_BXOR}&bitwise xor\\
-  \indexmpishow{MPI_MAXLOC}&location of max\\
-  \indexmpishow{MPI_MINLOC}&location of min\\
-  \hline
-\end{tabular}
-\endgroup %pyskip
-
-A couple more.
+\begin{numberedframe}{Reduction operators}
+  \footnotesize
+  \input{mpi-opstable}
 \end{numberedframe}
 
+\begin{cxx}
 \begin{mpl}
   \addtocounter{slidecount}{-1}
+
 \begin{numberedframe}{MPL operators}
 Operators need to have type:
 \begin{lstlisting}
@@ -356,7 +329,16 @@ User-defined operator:
 comm_world.reduce(lcm<int>(), 0, v, result);
 \end{lstlisting}
 \end{numberedframe}
+
+\begin{numberedframe}{MPL operators}
+    Available: \lstinline{max}, \lstinline{min}, \lstinline{plus}, \lstinline{multiplies},
+  \lstinline{logical_and}, \lstinline{logical_or}, \lstinline{logical_xor},
+  \lstinline{bit_and}, \lstinline{bit_or}, \lstinline{bit_xor}.
+
+  \mplverbatimsnippet{mplallreduce}
+\end{numberedframe}
 \end{mpl}
+\end{cxx}
 
 \begin{comment}
 \begin{numberedframe}{Random numbers in C}

@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% mpi-opstable.tex : table of reduction oeprators
 %%%%
@@ -12,26 +12,28 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 {\catcode`\_=12 %pyskip
-  \begin{tabular}{lll}
+  \begin{tabular}{llll}
     \toprule
-    MPI type&meaning&applies to\\
+    MPI type&&meaning&applies to\\
     \midrule
-  \indexmpidef{MPI_MAX}&maximum&integer, floating point\\
-  \indexmpidef{MPI_MIN}&minimum&\\
-  \indexmpidef{MPI_SUM}&sum&integer, floating point, complex,
+    &MPI.Op\\
+    \midrule
+  \indexmpidef{MPI_MAX}    &MPI.MAX     &maximum&integer, floating point\\
+  \indexmpidef{MPI_MIN}    &MPI.MIN     &minimum&\\
+  \indexmpidef{MPI_SUM}    &MPI.SUM     &sum&integer, floating point, complex,
   multilanguage types\\
-  \indexmpishow{MPI_REPLACE}&overwrite&\\
-  \indexmpidef{MPI_NO_OP}&no change&\\
-  \indexmpidef{MPI_PROD}&product&\\
-  \indexmpidef{MPI_LAND}&logical and&C integer, logical\\
-  \indexmpidef{MPI_LOR}&logical or&\\
-  \indexmpidef{MPI_LXOR}&logical xor&\\
-  \indexmpidef{MPI_BAND}&bitwise and&integer, byte, multilanguage types\\
-  \indexmpidef{MPI_BOR}&bitwise or&\\
-  \indexmpidef{MPI_BXOR}&bitwise xor&\\
-  \indexmpidef{MPI_MAXLOC}&max value and
+  \indexmpidef{MPI_PROD}   &MPI.PROC    &product&\\
+  \indexmpidef{MPI_REPLACE}&MPI.REPLACE &overwrite&\\
+  \indexmpidef{MPI_NO_OP}  &MPI.OP_NULL &no change&\\
+  \indexmpidef{MPI_LAND}   &MPI.LAND    &logical and&C integer, logical\\
+  \indexmpidef{MPI_LOR}    &MPI.LOR     &logical or&\\
+  \indexmpidef{MPI_LXOR}   &MPI.LXOR    &logical xor&\\
+  \indexmpidef{MPI_BAND}   &MPI.BAND    &bitwise and&integer, byte, multilanguage types\\
+  \indexmpidef{MPI_BOR}    &MPI.BOR     &bitwise or&\\
+  \indexmpidef{MPI_BXOR}   &MPI.BXOR    &bitwise xor&\\
+  \indexmpidef{MPI_MAXLOC} &MPI.MAXLOC  &max value and
   location&\indexmpishow{MPI_DOUBLE_INT} and such\\
-  \indexmpidef{MPI_MINLOC}&min value and location&\\
+  \indexmpidef{MPI_MINLOC} &MPI.MINLOC  &min value and location&\\
   \bottomrule
 \end{tabular}
 } %pyskip

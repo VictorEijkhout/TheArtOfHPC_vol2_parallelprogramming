@@ -73,6 +73,15 @@ if ( /* I am process A */ ) {
 \end{lstlisting}
 \end{numberedframe}
 
+\begin{numberedframe}{Sample send and recv calls}
+\begin{lstlisting}
+double x[10],y[10];
+MPI_Send( x,10,MPI_DOUBLE, tgt,0,comm );
+MPI_Status status;
+MPI_Recv( y,10,MPI_DOUBLE, src,0,comm,&status );
+\end{lstlisting}
+\end{numberedframe}
+
 \protoslide{MPI_Send}
 \protoslide{MPI_Recv}
 
@@ -103,7 +112,7 @@ MPI_Get_count(status,MPI_FLOAT,&c);
 \begin{numberedframe}{Distributed data}
   Distributed array: each process stores disjoint local part
   
-  \includegraphics[scale=.09]{mpi-array.png}
+  \includegraphics[scale=.3]{mpi-array}
 
   Local numbering $0,\ldots,n_{\mathrm{local}}$;\\
   global numbering is `in your mind'.
@@ -234,8 +243,8 @@ so we need a point-to-point mechanism.
 \item A send can not complete until the receive executes.
 \end{itemize}
 \hbox{
-\includegraphics[scale=.07]{send-ideal}
-\includegraphics[scale=.07]{send-blocking}
+\includegraphics[scale=.06]{send-ideal}
+\includegraphics[scale=.06]{send-blocking}
 }
 Ideal vs actual send/recv behaviour.
 \end{numberedframe}

@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2023
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% mpi_course.tex : master file for an MPI course
 %%%%
@@ -13,25 +13,18 @@
 
 \documentclass[10pt]{beamer}
 
-\expandafter\ifx\csname ifCourseFormatLoaded\endcsname\relax
-  \input courseformat
-  \let\ifCourseFormatLoaded\iffalse %% make the else part skippable
-\else
-  \ifCourseFormatLoaded
-    \message{Using preloaded format}
-  \else
-    \input courseformat
-  \fi
-\fi
+\usepackage{comment}
+\input lang
+\input courseformat
   
 \def\qrcode{qrvol2}
 \begin{document}
-\input lang
 
 \author[Eijkhout]{Victor Eijkhout}
-\date[2023]{TACC Institute 2023}
+%%\date[2025]{2025 COE 379L / CSE 392}
+\date[2025]{2025 TACC APPI}
+%% \normalsize last formatted \today}
 \title[MPI]{MPI Course}
-
 \maketitle
 
 \begin{frame}[containsverbatim]{Materials}
@@ -47,27 +40,46 @@
 \end{frame}
 
 \begin{frame}{Table of Contents}
-  \def\contentsline####1####2####3{\item ####2\ ####3}
-  \IfFileExists{\jobname.toc}
-               {\begin{itemize}
-                   \tableofcontents
-               \end{itemize}
-               }{}
+  \begin{enumerate}
+  \item The SPMD Model~\hyperlink{sec:spmd}{\textsl{link}}
+  \item Collectives~\hyperlink{sec:collectives}{\textsl{link}}
+  \item Point-to-point~\hyperlink{sec:ptp}{\textsl{link}}
+  \item Derived datatypes~\hyperlink{sec:derived}{\textsl{link}}
+  \item Communicators~\hyperlink{sec:comm}{\textsl{link}}
+  \item MPI I/O~\hyperlink{sec:io}{\textsl{link}}
+  \item One-sided communication~\hyperlink{sec:1side}{\textsl{link}}
+  \item Big data~\hyperlink{sec:bigdata}{\textsl{link}}
+  \item Advanced collectives~\hyperlink{sec:coll2}{\textsl{link}}
+  \item Shared memory~\hyperlink{sec:shared}{\textsl{link}}
+  \item Process management~\hyperlink{sec:process}{\textsl{link}}
+  \item Process topologies~\hyperlink{sec:topo}{\textsl{link}}
+  \item Trace and performance~\hyperlink{sec:trace}{\textsl{link}}
+  \end{enumerate}
 \end{frame}
 
-\coursepart{Basics}
+\frame{\tableofcontents}
+%% \coursepart
+\Level 0 {Basics}
 
 \renewcommand\standardversion{3}
 
-\Level 0 {The SPMD model}
+\Level 1 {Supercomputer clusters}
+\input Cluster-slides
+
+%% \coursesection
+\Level 1 {The SPMD model}
+\label{sec:spmd}
 \input SPMD-slides
 
-%% \end{document}
-
-\Level 0 {Collectives}
+%% \coursesection
+\Level 1 {Collectives}
+\label{sec:collectives}
 \input Collective-slides
 
-\Level 0 {Point-to-point communication}
+%% \end{document}
+%% \coursesection
+\Level 1 {Point-to-point communication}
+\label{sec:ptp}
 \input PTP-slides
 
 \iffalse
@@ -91,7 +103,8 @@
 
 \renewcommand\standardversion{}
 
-\coursepart{Intermediate topics}
+%% \coursepart
+\Level 0 {Intermediate topics}
 
 \begin{frame}{Justification}
   MPI basic concepts suffice for many applications.  The Intermediate
@@ -99,44 +112,66 @@
   file I/O, and the basics of one-sided communication.
 \end{frame}
 
-\Level 0 {Derived Datatypes}
+%% \coursesection
+\Level 1 {Derived Datatypes}
+\label{sec:derived}
 \input Data-slides
 
-\Level 0 {Communicator manipulations}
+%% \coursesection
+\Level 1 {Communicator manipulations}
+\label{sec:comm}
 \input Subcomm-slides
 
-\Level 0 {MPI File I/O}
+%% \coursesection
+\Level 1 {MPI File I/O}
+\label{sec:io}
 \input MPIO-slides
 
-\Level 0 {One-sided communication}
+%% \coursesection
+\Level 1 {One-sided communication}
+\label{sec:1side}
 \input Onesided-slides 
 \input Atomic-slides
 
-\Level 0 {Big data communication}
+%% \coursesection
+\Level 1 {Big data communication}
+\label{sec:bigdata}
 \input Bigdata-slides
 
-\coursepart{Advanced (MPI-3/4) topics}
+%% \coursepart
+\Level 0 {Advanced (MPI-3/4) topics}
 
 \begin{frame}{Justification}
   Recent additions to the MPI standard allow your 
   code to deal with unusual scenarios or very large scale runs.
 \end{frame}
 
-\Level 0 {Advanced collectives}
+%% \coursesection
+\Level 1 {Advanced collectives}
+\label{sec:coll2}
 \input Highercollective-slides
 
-\Level 0 {Shared memory}
+%% \coursesection
+\Level 1 {Shared memory}
+\label{sec:shared}
 \input Sharedmemory-slides
 
-\Level 0 {Process management}
+%% \coursesection
+\Level 1 {Process management}
+\label{sec:process}
 \input Spawn-slides
 
-\Level 0 {Process topologies}
+%% \coursesection
+\Level 1 {Process topologies}
+\label{sec:topo}
 \input Graph-slides
 
-\coursepart{Other}
+%% \coursepart
+\Level 0 {Other}
 
-\Level 0 {Tracing, performance, and such}
+%% \coursesection
+\Level 1 {Tracing, performance, and such}
+\label{sec:trace}
 \input Performance-slides
 
 \end{document}

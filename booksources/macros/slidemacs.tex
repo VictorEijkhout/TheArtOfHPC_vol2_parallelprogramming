@@ -26,6 +26,10 @@
 %% \input listingmacs
 \lstset{style=slidesnippetcode}
 
+\newenvironment{theindex}{%
+  %% let's hope we're not actually including an index
+}{} 
+
 %%%%
 %%%% Frames
 %%%%
@@ -167,7 +171,8 @@
 %%%%
 \def\underscore{_}
 \def\mpiRoutineRef#1{\RoutineRefStyle\verbatiminput{#1}}
-\def\RoutineRefStyle{\scriptsize}
+%% \def\RoutineRefStyle{\scriptsize}
+
 \newcommand\standardversion{}
 \def\protoslide#{\bgroup \catcode`\_=12
   \afterassignment\protoslideinclude \def\protoname}
@@ -310,31 +315,31 @@
 %%%% index macros without index
 %%%%
 
-\newif\ifShowRoutine
-\def\indexmpishow#{\bgroup \InnocentChars
-  \ShowRoutinetrue
-  \afterassignment\mpitoindex\edef\indexedmpi}
-\def\mpitoindex{%\tracingmacros=2
-  \edef\tmp{%
-    \noexpand\ifShowRoutine
-        \noexpand\lstinline+\indexedmpi+\noexpand\nobreak
-    \noexpand\fi
-  }%
-  \tmp
-  \egroup\nobreak
-}
-\let\indexmpiref\indexmpishow
-\let\indexmpidef\indexmpishow
-\let\indexmpidepr\indexmpishow
-\let\indexmpldef\indexmpishow
-\let\indexmplref\indexmpishow
-\let\indexmplshow\indexmpishow
-\let\indexompshow\indexmpishow
-\let\indexcudashow\indexmpishow
-\let\indexpetscshow\indexmpishow
-\let\indexomppragma\indexmpishow
-\def\indextermbus#1#2{\emph{#1 #2}}
-\let\indexc\lstinline
+%% \newif\ifShowRoutine
+%% \def\indexmpishow#{\bgroup \InnocentChars
+%%   \ShowRoutinetrue
+%%   \afterassignment\mpitoindex\edef\indexedmpi}
+%% \def\mpitoindex{%\tracingmacros=2
+%%   \edef\tmp{%
+%%     \noexpand\ifShowRoutine
+%%         \noexpand\lstinline+\indexedmpi+\noexpand\nobreak
+%%     \noexpand\fi
+%%   }%
+%%   \tmp
+%%   \egroup\nobreak
+%% }
+%% \let\indexmpiref\indexmpishow
+%% \let\indexmpidef\indexmpishow
+%% \let\indexmpidepr\indexmpishow
+%% \let\indexmpldef\indexmpishow
+%% \let\indexmplref\indexmpishow
+%% \let\indexmplshow\indexmpishow
+%% \let\indexompshow\indexmpishow
+%% \let\indexcudashow\indexmpishow
+%% \let\indexpetscshow\indexmpishow
+%% \let\indexomppragma\indexmpishow
+%% \def\indextermbus#1#2{\emph{#1 #2}}
+%% \let\indexc\lstinline
 
 \newcommand\petscroutineslide[1]{
   \begin{frame}[containsverbatim]{#1}

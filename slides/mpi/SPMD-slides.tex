@@ -85,7 +85,8 @@ ibrun yourprog
 \end{verbatim}
   the number of processes is determined by SLURM.
 \end{tacc}
-General case of running code
+
+Outside TACC:
 \begin{verbatim}
 mpiexec -n 4 hostfile ... yourprogram arguments
 mpirun -np 4 hostfile ... yourprogram arguments
@@ -386,10 +387,6 @@ comm = MPI.COMM_WORLD
 \protoslide{MPI_Comm_size}
 \protoslide{MPI_Comm_rank}
 
-\begin{exerciseframe}[commrank]
-  \input ex:hello3
-\end{exerciseframe}
-
 \begin{numberedframe}{About routine signatures: C/C++}
   \label{sec:protos}
 Signature:
@@ -494,6 +491,10 @@ Note: most functions are methods of the \lstinline{MPI.Comm} class.\\
 \end{python}
 
 \begin{exerciseframe}[commrank]
+  \input ex:hello3
+\end{exerciseframe}
+
+\begin{exerciseframe}[commrank]
   \input ex:hello4
 \end{exerciseframe}
 
@@ -526,9 +527,11 @@ MPI_Init(0,0);
   By default code bombs with (hopefully informative) message.
 \end{numberedframe}
 
-\begin{numberedframe}{Have you been paying attention?}
-  \input{ex:mpi01rank}
-\end{numberedframe}
+%% \begin{numberedframe}{Have you been paying attention?}
+%%   \input{ex:mpi01rank}
+%% \end{numberedframe}
+
+\protoslide{MPI_Get_processor_name}
 
 \begin{exerciseframe}
   \input ex:procname
