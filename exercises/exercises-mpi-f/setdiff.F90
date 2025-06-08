@@ -64,9 +64,15 @@ Program Setdifference
   sendto = mod( procno+1,nprocs )
   recvfrom = mod( procno-1+nprocs,nprocs )
   do proc=1,nprocs
-!!!! your code here !!!!
+     !!solution
+     if (proc>1) &
+          call MPI_Recv( filter,N,MPI_INTEGER,recvfrom,0,comm,MPI_STATUS_IGNORE,ierr)
+     !!solved
      call setdiff( result,filter )
-!!!! your code here !!!!
+     !!solution
+     if (proc<nprocs) &
+          call MPI_Send( filter,N,MPI_INTEGER,sendto,0,comm,ierr)
+     !!solved
   end do
 
   !!

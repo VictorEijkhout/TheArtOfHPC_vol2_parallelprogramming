@@ -75,5 +75,34 @@ recvfrom = (procno-1+nprocs) % nprocs
 ##    by passing the filter around the ring in a bucket brigade
 ##
 for p in range(nprocs):
-#### your code here ####
-#### your code here ####
+    ##solution
+    if p>0:
+        comm.send( filter,recvfrom )
+    ##solve
+    setdiff( result,filter )
+    ##solution
+    if p<nprocs-1:
+        comm.send( filter,sendto )
+    ##solve
+
+#
+# print resulting data
+#
+print("Final data:")
+print_distarray( result,comm )
+
+##
+## Check correctness
+##
+
+error = np.zeros(1,dtype=np.intc)
+error[0] = nprocs
+errors = np.zeros(1,dtype=np.intc)
+comm.Allreduce(error,errors,MPI.MIN)
+if procno==0:
+    if errors[0]==nprocs:
+        print("Finished; all results correct");
+    else:
+      print("First error occurred on proc %d" % errors)
+if errors[0]<nprocs and procno==errors[0]:
+    print("result on %d: %s" % (procno,str(mydata)))

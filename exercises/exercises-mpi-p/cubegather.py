@@ -52,7 +52,10 @@ if procno==0:
                 ## Set up a subarray type describing there the data
                 ## from process (proci,procj,prock) goes in the cube
                 ##
-#### your code here ####
+                ##solution
+                starts   = np.array( [proci,procj,prock] )
+                insert_type = MPI.INT.Create_subarray( sizes,subsizes,starts )
+                ##solved
                 insert_type.Commit()
                 sender = ( proci*procs_per_side + procj )*procs_per_side + prock
                 comm.Recv( [cubedata,1,insert_type],sender )

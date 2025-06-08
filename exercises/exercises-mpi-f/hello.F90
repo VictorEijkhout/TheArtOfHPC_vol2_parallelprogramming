@@ -14,6 +14,8 @@
 Program Hello
   implicit none
 
-!!!! your code here !!!!
+  !!solution
+  print *,"Hello world!"
+  !!solved
   
 end Program Hello

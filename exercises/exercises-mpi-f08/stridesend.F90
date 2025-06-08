@@ -56,7 +56,11 @@ Program StrideSend
      ! Exercise: define a datatype for sending:
      ! - set the variables count,stride,blocklength
      ! - use MPI_Type_vector to create the strided type
-!!!! your code here !!!!
+     !!solution
+     count = localsize; stride = nprocs; blocklength = 1
+     call MPI_Type_vector(count,blocklength,stride,MPI_INTEGER,scattertype)
+     call MPI_Type_commit(scattertype)
+     !!solved
 
      !
      ! Loop over all processes you are sending to
@@ -67,13 +71,17 @@ Program StrideSend
         ! Exercise: you could also define the datatype here. Why or why not?
         ! - do a send to the other processor
         !
-!!!! your code here !!!!
+        !!solution
+        call MPI_Send( data(sendto),1,scattertype,sendto,0,comm)
+        !!solved
      end do
      !
      ! Exercise:
      ! - you need to free the datatype. here or inside the send loop?
      !
-!!!! your code here !!!!
+     !!solution
+     call MPI_Type_free(scattertype)
+     !!solved
   else
      !
      ! Create local array; note, again zero-based

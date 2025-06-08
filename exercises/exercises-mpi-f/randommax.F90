@@ -51,11 +51,17 @@ Program RandomMax
   !! -- check that the sum of scaled values is 1
   !!
   call MPI_Allreduce( &
-!!!! your code here !!!!
+       !!solution
+       my_random,sum_random,1,MPI_REAL, &
+       MPI_SUM, &
+       !!solved
        comm,ierr)
   scaled_random = my_random / sum_random
   call MPI_Allreduce( &
-!!!! your code here !!!!
+       !!solution
+       scaled_random,sum_scaled_random,1,MPI_REAL, &
+       MPI_SUM, &
+       !!solved
        comm,ierr)
 
   !!

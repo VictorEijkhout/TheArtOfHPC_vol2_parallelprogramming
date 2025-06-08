@@ -41,14 +41,23 @@ Program Isendirecv
   !!
 
   !! set processes to communicate with
-!!!! your code here !!!!
+  !!solution
+  sendto = procno+1
+  if (procno==nprocs-1) sendto = MPI_PROC_NULL
+  recvfrom = procno-1
+  if (procno==0) recvfrom = MPI_PROC_NULL
+  !!solved
 
   !! now do the Isend/Irecv calls
   call MPI_Isend(mydata, 1,MPI_REAL8, sendto,0, comm, &
-!!!! your code here !!!!
+       !!solution
+       requests(1),&
+       !!solved
        ierr)
   call MPI_Irecv(leftdata, 1,MPI_REAL8, recvfrom,0, comm, &
-!!!! your code here !!!!
+       !!solution
+       requests(2),&
+       !!solved
        ierr)
 
   !!
@@ -56,20 +65,31 @@ Program Isendirecv
   !!
 
   !! set processors to communicate with
-!!!! your code here !!!!
+  !!solution
+  sendto = procno-1
+  if (procno==0) sendto = MPI_PROC_NULL
+  recvfrom = procno+1
+  if (procno==nprocs-1) recvfrom = MPI_PROC_NULL
+  !!solved
 
   !! now do the Isend/Irecv calls
   call MPI_Isend(mydata, 1,MPI_REAL8, sendto,0, comm, &
-!!!! your code here !!!!
+       !!solution
+       requests(3),&
+       !!solved
        ierr)
   call MPI_Irecv(rightdata, 1,MPI_REAL8, recvfrom,0, comm, &
-!!!! your code here !!!!
+       !!solution
+       requests(4),&
+       !!solved
        ierr)
 
   !!
   !! Now make sure all Irecv/Irecv operations are completed
   !!
-!!!! your code here !!!!
+  !!solution
+  call MPI_Waitall(4,requests,MPI_STATUSES_IGNORE,ierr)
+  !!solved
 
   !!
   !! Check correctness

@@ -33,18 +33,25 @@ Program PingPong
   !! -- set source and target processors two ways:
   !!    close together and far apart
   !! -- run the experiment both ways.
-!!!! your code here !!!!
+  !!solution
+  processA = 0
+  processB = nprocs-1
+  !!solved
   if (procno==processA) then
      t = MPI_Wtime()
      do iexperiment=1,nexperiments
         senddata(1) = s
         call MPI_Send(senddata,1,MPI_DOUBLE_PRECISION, &
              !! fill in dest and tag
-!!!! your code here !!!!
+             !!solution
+             processB,0, &
+             !!solved
              comm)
         call MPI_Recv(recvdata,1,MPI_DOUBLE_PRECISION, &
              !! fill in source and tag
-!!!! your code here !!!!
+             !!solution
+             processB,0, &
+             !!solved
              comm,MPI_STATUS_IGNORE)
         s = s + recvdata(1)
      end do     
@@ -56,11 +63,15 @@ Program PingPong
      do iexperiment=1,nexperiments
         call MPI_Recv(recvdata,1,MPI_DOUBLE_PRECISION, &
              !! fill in source and tag
-!!!! your code here !!!!
+             !!solution
+             processA,0,&
+             !!solved
              comm,MPI_STATUS_IGNORE)
         call MPI_Send(recvdata,1,MPI_DOUBLE_PRECISION, &
              !! fill in dest and tag
-!!!! your code here !!!!
+             !!solution
+             processA,0, &
+             !!solved
              comm)
      end do     
   end if

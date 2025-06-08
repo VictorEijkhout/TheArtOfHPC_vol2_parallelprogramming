@@ -61,7 +61,9 @@ while True:
         ## Exercise:
         ## - subtract one from the global counter
         ## - do you use Get/Put or Accumulate:
-#### your code here ####
+        ##solution
+        win.Accumulate(minone,counter_process) # summing is default
+        ##solved
     is_zero = np.zeros(1,dtype=np.int)
     ##
     ## Exercise:
@@ -69,7 +71,11 @@ while True:
     ## - The problem is having your data synchronized.
     ##   Is the fence call at the top of the loop enough?
     ##
-#### your code here ####
+    ##solution
+    win.Fence()
+    win.Get( is_zero,counter_process )
+    win.Fence()
+    ##solved
     if procno==counter_process:
         print("Step: %d, counter at %d" % (step,window_data))
     if is_zero<=0:

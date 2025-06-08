@@ -39,7 +39,9 @@ for iw in range(nwords):
 filename = "blockwrite.dat"
 mpifile = MPI.File.Open \
           (comm,filename,
-#### your code here ####
+           ##solution
+           MPI.MODE_CREATE+MPI.MODE_WRONLY
+           ##solved
           )
 
 ##
@@ -52,7 +54,9 @@ if procno<nwriters:
     ##
     ## Set the right offset, in ints
     ##
-#### your code here ####
+    ##solution
+    offset = procno*nwords
+    ##solved
     ## convert to bytes by multiplying by the size of an int
     offset = offset * np.dtype('intc').itemsize
 

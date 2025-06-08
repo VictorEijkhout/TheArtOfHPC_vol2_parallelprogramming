@@ -56,7 +56,10 @@ Program Status
   !! -- set source and target processors two ways:
   !!    close together and far apart
   !! -- run the experiment both ways.
-!!!! your code here !!!!
+  !!solution
+  processA = 0
+  processB = nprocs-1
+  !!solved
   if (procno==processA) then
      call random_number(randomfraction)
      randomsize = randomfraction * buffersize
@@ -66,11 +69,15 @@ Program Status
      end do
      call MPI_Send(senddata,randomsize,MPI_DOUBLE_PRECISION, &
           !! fill in dest and tag
-!!!! your code here !!!!
+          !!solution
+          processB,0, &
+          !!solved
           comm)
      call MPI_Recv(recvdata,1,MPI_DOUBLE_PRECISION, &
           !! fill in source and tag
-!!!! your code here !!!!
+          !!solution
+          processB,0, &
+          !!solved
           comm,MPI_STATUS_IGNORE)
   else if (procno==processB) then
      call MPI_Recv(recvdata, &
@@ -79,7 +86,9 @@ Program Status
           !! - specify a large enough buffer
           !!   no matter how much is actually sent.
           !!
-!!!! your code here !!!!
+          !!solution
+          buffersize,MPI_DOUBLE_PRECISION, &
+          !!solved
           processA,0,comm,recv_status)
      call MPI_Send(recvdata,1,MPI_DOUBLE_PRECISION, &
           processA,0, comm)
@@ -88,7 +97,10 @@ Program Status
      !! - use MPI_SOURCE to print where the message came from
      !! - use MPI_Get_count to find out how many elements were received
      !!
-!!!! your code here !!!!
+     !!solution
+     print *,"Message came from",recv_status%MPI_SOURCE
+     call MPI_Get_count(recv_status,MPI_DOUBLE,randomsize)
+     !!solved
      print *,"Received elements:",randomsize
   end if
   

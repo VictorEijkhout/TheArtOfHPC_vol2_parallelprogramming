@@ -51,7 +51,15 @@ Program BucketBlock
   !!
 
   leftdata = 0
-!!!! your code here !!!!
+  !!solution
+  call MPI_Recv(leftdata,N,MPI_REAL8,recvfrom, &
+       0,comm,MPI_STATUS_IGNORE)
+  do i=1,N
+     myvalue(i) = (procno+1)*(procno+1) + leftdata(i)
+  end do
+  call MPI_Send(myvalue,N,MPI_REAL8,sendto, &
+       0,comm)
+  !!solved
 
   !!
   !! Check correctness

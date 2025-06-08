@@ -80,7 +80,12 @@ Program CountDown
         !!   do you use MPI_Put or MPI_Accumulate?
         !!
         !!print *,"Proc",procno,"does acc in step",step
-!!!! your code here !!!!
+	!!solution
+	call MPI_Accumulate( &
+          minus_one, 1,MPI_INT, & 
+          counter_process, displacement, 1,MPI_INT, &
+          MPI_SUM, the_window, ierr)
+        !!solved
       end if
       !!
       !! Exercise:
@@ -94,7 +99,14 @@ Program CountDown
       !!   Where are you going to have Win_fence calls?
       !!   Is the one at the start of the loop enough?
       !!
-!!!! your code here !!!!
+      !!solution
+      call MPI_Win_fence(0,the_window,ierr)
+      call MPI_Get( &
+           is_zero, 1,MPI_INT, &
+           counter_process, displacement, 1,MPI_INT, &
+           the_window,ierr)
+      call MPI_Win_fence(0,the_window,ierr)
+      !!solved
       if (procno==counter_process) then
          print *,"Step:",step,"counter at ",window_data
       end if

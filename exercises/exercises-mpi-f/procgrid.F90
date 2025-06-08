@@ -59,13 +59,17 @@ Program ProcGrid
   !! Make a `col_comm' communicator with all processes in this column
   !!
   call MPI_Comm_split(comm, &
-!!!! your code here !!!!
+       !!solution
+       col_no,0,col_comm, &
+       !!solved		 
        ierr)
   !!
   !! Make a `row_comm' communicator with all processes in this row
   !!
   call MPI_Comm_split(comm, &
-!!!! your code here !!!!
+       !!solution
+       row_no,0,row_comm, &
+       !!solved		 
        ierr)
 
   !!
@@ -73,14 +77,18 @@ Program ProcGrid
   !! by using MPI_Comm_rank
   !!
   call MPI_Comm_rank( &
-!!!! your code here !!!!
+       !!solution
+       row_comm,row_rank, &
+       !!solved
        ierr)
   !!
   !! also find `col_rank': the number I am in my column
   !! by using MPI_Comm_rank
   !!
   call MPI_Comm_rank( &
-!!!! your code here !!!!
+       !!solution
+       col_comm,col_rank, &
+       !!solved
        ierr)
 
   !  write(*,'("Process",i3," is (",i2,",",i2,")")') procno,col_rank,row_rank

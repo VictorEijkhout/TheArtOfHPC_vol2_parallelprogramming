@@ -39,7 +39,9 @@ my_number[0] = 1
 intsize = np.dtype('int').itemsize
 win = MPI.Win.Create(
     ## specify window data and displacement
-#### your code here ####
+    ##solution
+    window_data,intsize,
+    ##solved
     comm=comm)
 
 my_sum = 0
@@ -63,7 +65,9 @@ for iteration in range(20):
     win.Fence()
     if procno==0:
         win.Put(
-#### your code here ####
+            ##solution
+            my_number,other
+            ##solved
         )
     win.Fence()
     my_sum += window_data[0]

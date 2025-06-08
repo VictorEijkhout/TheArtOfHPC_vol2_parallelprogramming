@@ -74,7 +74,9 @@ contains
     !! Exercise:
     !! -- do the reduction step for a 1-norm
     !!
-!!!! your code here !!!!
+    !!solution
+    inoutvec_r = inoutvec_r + abs( invec_r )
+    !!solved
 
   end subroutine add_abs
 

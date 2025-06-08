@@ -38,7 +38,10 @@ Program SumSquares
   !! -- set your local values
   !!
   do i=1,nlocal
-!!!! your code here !!!!
+     !!solution
+     itmp = procno*nlocal + i
+     local_squares(i) = itmp*itmp
+     !!solved
   end do
 
   !!
@@ -48,11 +51,15 @@ Program SumSquares
   !!
   local_sum = 0.d0
   do i=1,nlocal
-!!!! your code here !!!!
+     !!solution
+     local_sum = local_sum + local_squares(i)
+     !!solved
   end do
   call MPI_Reduce(local_sum,global_sum,1,MPI_REAL8,&
        !! operator:
-!!!! your code here !!!!
+       !!solution
+       MPI_SUM, &
+       !!solved
        0,comm)
   if (procno==0) &
        print *,"Global sum=",global_sum," should be",&

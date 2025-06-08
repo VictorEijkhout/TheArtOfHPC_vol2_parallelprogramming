@@ -22,13 +22,20 @@ comm = MPI.COMM_WORLD
 ####   "Hello from processor 7 out of 12"
 ####
 
-#### your code here ####
+##solution
+nprocs = comm.Get_size()
+procno = comm.Get_rank()
+print("Hello from processor %d out of %d" % (procno,nprocs))
+##solved
 
 ####
 #### Exercise part 2:
 #### - print out the number of processes from process zero
 ####
 
-#### your code here ####
+##solution
+if procno==0:
+    print("Running with %d processes" % nprocs)
+##solved
 
 

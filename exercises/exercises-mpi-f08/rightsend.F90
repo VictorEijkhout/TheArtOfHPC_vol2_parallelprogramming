@@ -37,7 +37,12 @@ Program RightSend
   !! Exercise:
   !! set `sendto' and `recvfrom'
 
-!!!! your code here !!!!
+  !!solution
+  sendto = procno+1
+  if (procno==nprocs-1) sendto = MPI_PROC_NULL
+  recvfrom = procno-1
+  if (procno==0) recvfrom = MPI_PROC_NULL
+  !!solved
 
   !!
   !! Exercise 1:
@@ -46,7 +51,12 @@ Program RightSend
   !! use MPI_Sendrecv
   !!
 
-!!!! your code here !!!!
+  !!solution
+  call MPI_Recv(leftdata,1,MPI_REAL8,recvfrom, &
+       0,comm,MPI_STATUS_IGNORE)
+  call MPI_Send(mydata,1,MPI_REAL8,sendto, &
+       0,comm)
+  !!solved
 
   !!
   !! Check correctness

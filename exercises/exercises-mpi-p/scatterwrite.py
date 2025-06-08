@@ -45,14 +45,18 @@ mpifile = MPI.File.Open\
 ## -- note: offsets are in bytes
 ##
 scattertype = MPI.INT.Create_vector(
-#### your code here ####
+    ##solution
+    nwords,1,nprocs
+    ##solved
 )
 scattertype.Commit()
 
 sizeofint = np.dtype('intc').itemsize
 
 mpifile.Set_view(
-#### your code here ####
+    ##solution
+    procno*sizeofint,
+    ##solved
     scattertype)
 
 nwriters = nprocs

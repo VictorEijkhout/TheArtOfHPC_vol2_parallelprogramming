@@ -32,7 +32,9 @@ def one_norm(in_buf, inout_buf, datatype):
     ## -- write the correct reduction step
     ##    for computing a 1-norm
     ##
-#### your code here ####
+    ##solution
+    inout_array[:] = np.abs(in_array) + np.abs(inout_array)
+    ##solved
 
 comm = MPI.COMM_WORLD
 

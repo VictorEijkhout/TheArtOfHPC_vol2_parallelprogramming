@@ -28,7 +28,7 @@ course_prep ::
 	@echo && echo "Setting up for language <<${LANGUAGE}>>" && echo
 	@cp ${COURSE}_course.tex ${COURSE}_${LANGUAGE}_course.tex 
 	@cp ../course-support/lang_${LANGUAGE}.tex ../course-support/lang.tex
-	@make --no-print-directory getfiles
+	@cd ../.. && make --no-print-directory getfiles
 courses :: course_prep
 	@if [ ! -z "${COURSES}" ] ; then \
 	    cp ../course-support/lang_all.tex lang.tex \

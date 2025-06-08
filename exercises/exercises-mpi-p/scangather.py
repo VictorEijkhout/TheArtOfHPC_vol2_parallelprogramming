@@ -38,8 +38,9 @@ my_first_index[0] = 0
 ##    Which routine do you use here?
 ##
 
-#### your code here ####
-##answersnippet end
+##solution
+comm.Exscan(my_number_of_elements,my_first_index,MPI.SUM)
+##solved
 #comm.YourScan(my_number_of_elements,my_first_index,MPI.SUM)
 print( f"Proc {procno} has {my_number_of_elements[0]} elements, range [ {my_first_index[0]},{my_first_index[0]+my_number_of_elements[0]} )" )
 
@@ -50,12 +51,10 @@ print( f"Proc {procno} has {my_number_of_elements[0]} elements, range [ {my_firs
 
 total_number_of_elements = np.zeros(1,dtype=np.intc)
 my_elements = np.zeros(my_number_of_elements,dtype=np.intc)
-##answersnippet scangatherp2
 for i_element in range(my_number_of_elements[0]):
     my_elements[i_element] = my_first_index+i_element
 
 comm.Reduce( my_number_of_elements,total_number_of_elements,MPI.SUM,0)
-##answersnippet end
 if procno==0:
     print( f"Total number of elements: {total_number_of_elements}" )
 
@@ -64,14 +63,17 @@ if procno==0:
 ##
 ## how many elements from each process?
 size_buffer = np.zeros(nprocs,dtype=np.intc)
-##answersnippet scangatherp3
 comm.Gather(
-#### your code here ####
+  ##solution
+   my_number_of_elements,size_buffer,0
+  ##solved
    );
 ## where are they going to go in the big buffer?
 displ_buffer = np.zeros( nprocs,dtype=np.intc )
 comm.Gather(
-#### your code here ####
+   ##solution
+   my_first_index,displ_buffer,0
+   ##solved
    );
 ## now create the big buffer
 gather_buffer = np.zeros(total_number_of_elements,dtype=np.intc)
@@ -80,9 +82,10 @@ gather_buffer = np.zeros(total_number_of_elements,dtype=np.intc)
 ##  Use Gatherv to collect the small buffers into a big one
 ##
 comm.Gatherv(
-#### your code here ####
+   ##solution
+   my_elements,[gather_buffer,size_buffer],0
+   ##solved
    )
-##answersnippet end
 
 ## 
 ##  Print the gathered material

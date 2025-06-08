@@ -5,7 +5,7 @@
 #### Victor Eijkhout
 #### eijkhout@tacc.utexas.edu
 ####
-#### copyright Victor Eijkhout 2012-2024
+#### copyright Victor Eijkhout 2012-2025
 ####
 #### Make include file with general compile rules
 ####
@@ -507,7 +507,7 @@ extension ::
 	    ( C ) echo c ;; \
 	    ( CXX ) echo cxx ;; \
 	    ( F ) echo F90 ;; \
-	    ( P ) echo py ;; \
+	    ( p ) echo py ;; \
 	    ( * ) echo unknown ;; \
 	esac
 clean ::

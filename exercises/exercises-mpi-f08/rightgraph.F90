@@ -33,7 +33,9 @@ Program RightGraph
   !!
   integer nsources
   integer,dimension( &
-!!!! your code here !!!!
+       !!solution
+       1 &
+       !!solved
        ) :: sources,destinations,degrees,weights
 
   call MPI_Init()
@@ -49,7 +51,11 @@ Program RightGraph
   !! .. fill the arrays `sources', `degrees', `destinations'
   !! .. for the weights use 1 everywhere
   nsources = &
-!!!! your code here !!!!
+  !!solution
+       1 ; if (procno==nprocs-1) nsources = 0;
+  sources(1) = procno; destinations(1) = procno+1
+  degrees(1) = 1; weights(1) = 1;
+  !!solved
 
   call MPI_Dist_graph_create( comm, &
        nsources,     & ! number of sources declared here

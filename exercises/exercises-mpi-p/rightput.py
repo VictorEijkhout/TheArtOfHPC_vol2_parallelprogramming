@@ -44,14 +44,20 @@ leftdata[0] = -2
 ##
 ## part 1: compute the `other' process number
 ##
-#### your code here ####
+##solution
+if procno<nprocs-1:
+    other = procno+1
+else: other = MPI.PROC_NULL
+##solved
 
 ##
 ## part 2: put `mydata' in the `other' window
 ##
 win.Fence()
 win.Put(
-#### your code here ####
+    ##solution
+    mydata,other
+    ##solved
 )
 win.Fence()
 leftdata[0] = window_data[0]

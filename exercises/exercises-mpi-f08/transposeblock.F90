@@ -78,9 +78,7 @@ Program TransposeBlock
    * - resize the targetcolumn type to make its extent smaller
    */
   MPI_Type_create_resized( targetcolumn,0,
-			   //solution
-			   sizeof(int),
-			   //solved
+/**** your code here ****/
 			   &skinnycolumn );
   MPI_Type_commit( &skinnycolumn );
 
@@ -89,9 +87,7 @@ Program TransposeBlock
    * - make the `targetblock' type that packs a number of `skinnycolumn's together
    */
   MPI_Datatype targetblock;
-  //solution
-  MPI_Type_contiguous( blocksize_j,
-		       //solved
+/**** your code here ****/
 		       skinnycolumn, // old type
 		       &targetblock  // new type
 		       );

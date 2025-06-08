@@ -67,7 +67,21 @@ Program BucketPipe
      points_left = points_left - partition_sizes(ipart)
   end do
 
-!!!! your code here !!!!
+  !!solution
+  do ipart=1,PARTS
+     call MPI_Recv( &
+          leftdata(partition_starts(ipart)), &
+          partition_sizes(ipart),MPI_REAL8,recvfrom, &
+          0,comm,MPI_STATUS_IGNORE)
+     do ielement=partition_starts(ipart),partition_starts(ipart+1)-1
+        myvalue(ielement) = (procno+1)**2 + leftdata(ielement)
+     end do
+     call MPI_Send( &
+          myvalue(partition_starts(ipart)), &
+          partition_sizes(ipart),MPI_REAL8,sendto, &
+          0,comm)
+  end do
+  !!solved
 
   !!
   !! Check correctness

@@ -26,7 +26,10 @@ if procno==0 or procno==nprocs-1:
 
 ## Determine who will be communicating:
 ## set processA, processB
-#### your code here ####
+##solution
+processA = 0
+processB = nprocs-1
+##solved
 
 ##
 ## Do a range of test sizes
@@ -40,7 +43,10 @@ for s in [1,10,100,1000,10000,100000,1000000]:
         ##
         ## create send_data and recv_data numpy arrays
         ##
-#### your code here ####
+        ##solution
+        send_data = np.arange(s, dtype=np.float64)
+        recv_data = np.empty(s, dtype=np.float64)
+        ##solved
         ## initialize send data buffer
         for i in range(s):
             send_data[i] = i+1
@@ -50,10 +56,14 @@ for s in [1,10,100,1000,10000,100000,1000000]:
             ## Originating process:
             ## send the `ping' and receive the `pong'
             comm.Send([send_data,MPI.DOUBLE],dest=
-#### your code here ####
+                      ##solution
+                      processB
+                      ##solved
             )
             comm.Recv([recv_data,MPI.DOUBLE],source=
-#### your code here ####
+                      ##solution
+                      processB
+                      ##solved
             )
         elapsed = MPI.Wtime()-starttime
         ##
@@ -70,14 +80,20 @@ for s in [1,10,100,1000,10000,100000,1000000]:
         ##
         ## create thru_data array
         ##
-#### your code here ####
+        ##solution
+        thru_data = np.empty(s, dtype=np.float64)
+        ##solved
         for test in range(ntests):
             ##
             ## receive the `ping' and send `pong'
             ##
             comm.Recv([thru_data,MPI.DOUBLE],source=
-#### your code here ####
+                      ##solution
+                      processA
+                      ##solved
             )
             comm.Send([thru_data,MPI.DOUBLE],dest=
-#### your code here ####
+                      ##solution
+                      processA
+                      ##solved
             )

@@ -45,17 +45,23 @@ Program RightPut
   call MPI_Sizeof(window_data,window_elt_size,ierr)
   window_size = window_elt_size
   call MPI_Win_create( &
-!!!! your code here !!!!
+       !!solution
+       window_data,window_size,window_elt_size, & ! window size, unit size
+       !!solved
        MPI_INFO_NULL,comm,the_window,ierr)
 
   call MPI_Win_fence(0,the_window,ierr)
   displacement = 0
   call MPI_Put( &
        ! specify data to put:
-!!!! your code here !!!!
+       !!solution
+       mydata,1,MPI_REAL8, & ! data on origin
+       !!solved
        ! where are you putting it:
        ! (use an MPI_ADDRESS_KIND variable for displacement!)
-!!!! your code here !!!!
+       !!solution
+       sendto,displacement, 1,MPI_REAL8, &
+       !!solved
        the_window, ierr,ierr)
   call MPI_Win_fence(0,the_window,ierr)
   leftdata = window_data

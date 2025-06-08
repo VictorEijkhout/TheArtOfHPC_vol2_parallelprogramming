@@ -40,11 +40,15 @@ sum_random = np.zeros(1,dtype=np.float32)
 scaled_random = np.zeros(1,dtype=np.float32)
 sum_scaled_random = np.zeros(1,dtype=np.float32)
 comm.Allreduce(
-#### your code here ####
+    ##solution
+    myrandom,sum_random,op=MPI.SUM
+    ##solved
 )
 scaled_random = myrandom / sum_random
 comm.Allreduce(
-#### your code here ####
+    ##solution
+    scaled_random,sum_scaled_random,op=MPI.SUM
+    ##solved
 )
 
 ##

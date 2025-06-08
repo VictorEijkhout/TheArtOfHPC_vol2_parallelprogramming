@@ -41,7 +41,11 @@ else: recvfrom = MPI.PROC_NULL
 ## Exercise:
 ## -- do the MPI_Send and MPI_Recv calls
 
-#### your code here ####
+##solution
+comm.Recv( leftdata,recvfrom)
+mydata[:] = (procno+1)*(procno+1) + leftdata[:]
+comm.Send( mydata,  sendto)
+##solved
 
 ##
 ## Check correctness

@@ -48,7 +48,9 @@ if procno==sender:
     ## Important hint: the same type can be used for all sends
     ##
     vectortype = MPI.INT.Create_vector(
-#### your code here ####
+        ##solution
+        count,1,nprocs
+        ##solved
     )
     vectortype.Commit()
     for p in range(nprocs):
@@ -69,7 +71,9 @@ if procno==sender:
                 ## Fill in the buffer/count/datatype triple
                 ## Note: buffer needs to be an array !!!
                 ##
-#### your code here ####
+                ##solution
+                source[p:],1,vectortype,
+                ##solved
                 ],
             p
             )

@@ -17,6 +17,8 @@ Program Hello
   use mpi_f08
   implicit none
 
-!!!! your code here !!!!
+  !!solution
+  print *,"Hello world!"
+  !!solved
   
 end Program Hello

@@ -46,7 +46,9 @@ mpifile = MPI.File.Open\
 ##
 sizeofint = np.dtype('intc').itemsize
 mpifile.Set_view(
-#### your code here ####
+    ##solution
+    procno*nwords*sizeofint,
+    ##solved
     MPI.INT)
 
 nwriters = 2
