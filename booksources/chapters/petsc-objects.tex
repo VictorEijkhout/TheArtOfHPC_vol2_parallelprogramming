@@ -467,13 +467,15 @@ you would create a sequential vector, and
 into it.
 
 \begin{fortrannote}{F90 array access through pointer}
-  There are routines such as \indexpetscdef{VecGetArrayF90}
-  (with corresponding \indexpetscdef{VecRestoreArrayF90})
-  that
+  In Fortan, the routines \indexpetscdef{VecGetArrayF90}
+  and \indexpetscdef{VecRestoreArrayF90}
   return a (Fortran) pointer to a one-dimensional array.
   %
   \fverbatimsnippet[examples/petsc/f/vecset.F90]{vecinspect90}
   \fverbatimsnippet[examples/petsc/f08/vecarray.F90]{pfvecgetarray}
+
+  (In version 3.22 and older, these routines were named
+  \indexpetscdef{VecGetArrayF90} and such.)
 \end{fortrannote}
 
 \begin{pythonnote}{Vector access}

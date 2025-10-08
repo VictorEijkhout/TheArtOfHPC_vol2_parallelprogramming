@@ -40,7 +40,7 @@
     you an interactive session of 2~nodes, 10~cores, for the next
     2~hours.
   \item Type \n{make exercisename} to compile it
-  \item Run with \n{ibrun} or \n{mpiexec} (see above)
+  \item Run with \n{ibrun} or \n{mpiexec} 
   \end{itemize}
 \end{numberedframe}
 \end{tacc}
@@ -49,13 +49,14 @@
   \addtocounter{slidecount}{-1}
 \begin{numberedframe}{Python}
  Python: setup once per session
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 module load python3
-\end{verbatim}
+\end{lstlisting}
 No compilation needed. Run:
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 ibrun python3 yourprogram.py
-\end{verbatim}
+\end{lstlisting}
+(on a compute node!)
 \end{numberedframe}
 \end{python}
 
@@ -66,31 +67,33 @@ ibrun python3 yourprogram.py
   These are not separate compilers,
   but scripts around the regular C/Fortran compiler. You can use all
   the usual flags.
-\begin{verbatim}
+\begin{lstlisting}[language=bash,numbers=none]
 $ mpicc -show
-icc -I/intel/include/stuff -L/intel/lib/stuff -Wwarnings # et cetera
-\end{verbatim}
-\begin{full}
+icx -I/intel/include/stuff -L/intel/lib/stuff -Wwarnings # et cetera
+\end{lstlisting}
+(Python of course no compilation needed)
+
   (For CMake see slide~\ref{sl:mpi-cmake}.)
-\end{full}
 \end{numberedframe}
 
-\begin{numberedframe}{Running}
 \begin{tacc}
-  Running your program at TACC:
-\begin{verbatim}
+\begin{numberedframe}{Running (at TACC)}
+  In your batch job indicate node and core count
+\begin{lstlisting}[language=bash]
 #SBATCH -N 4
 #SBATCH -n 200
 ibrun yourprog
-\end{verbatim}
-  the number of processes is determined by SLURM.
+\end{lstlisting}
+No specification on \n{ibrun} needed!
+\end{numberedframe}
 \end{tacc}
 
-Outside TACC:
-\begin{verbatim}
+\begin{numberedframe}{Running (in general)}
+On non-TACC machines:
+\begin{lstlisting}[language=bash,numbers=none]
 mpiexec -n 4 hostfile ... yourprogram arguments
 mpirun -np 4 hostfile ... yourprogram arguments
-\end{verbatim}
+\end{lstlisting}
 \end{numberedframe}
 
 \begin{exerciseframe}[hello]
@@ -101,6 +104,15 @@ mpirun -np 4 hostfile ... yourprogram arguments
     \n{make hello} to compile;
   \item do \n{ibrun hello} to execute.
   \end{enumerate}
+
+\begin{python}
+  \begin{pythonnote}
+    For python no make, only:\\
+    \n{ibrun python3 hello.py}\\
+    to execute.
+  \end{pythonnote}
+\end{python}
+
 \end{exerciseframe}
 
 \begin{numberedframe}{In a picture}
@@ -145,7 +157,7 @@ mpirun -np 4 hostfile ... yourprogram arguments
 \end{numberedframe}
 
 \begin{numberedframe}{Hybrid programming}
-  \includegraphics[scale=.1]{mpi-node3.png}
+  \includegraphics[scale=.08]{mpi-node3.png}
 
   Hybrid programming puts a process per node or per socket;\\
   further parallelism comes from threading.\\
@@ -185,62 +197,7 @@ mpirun -np 4 hostfile ... yourprogram arguments
   \end{itemize}
 \end{numberedframe}
 
-\Level 2 {We start learning MPI!}
-
-\begin{numberedframe}{MPI Init / Finalize}
- These calls need to be around the MPI part of your code:
-\lstset{language=C}
-\begin{lstlisting}
-MPI_Init(&argc,&argv); // zeros allowed
-// your code
-MPI_Finalize();  
-\end{lstlisting}
-This is not a `parallel region'.\\
-Only internal library initialization:\\
-allocate buffers, discover network,~\ldots
-\end{numberedframe}
-
-\begin{mpl}
-  \addtocounter{slidecount}{-1}
-\begin{numberedframe}{MPL init/finalize}
-    No explicit init/finalize:
-    \begin{itemize}
-    \item init is done by the first command that needs it
-    \item finalize in some destructor.
-    \end{itemize}
-\end{numberedframe}
-\end{mpl}
-
-\begin{fortran}
-  \addtocounter{slidecount}{-1}
-\begin{numberedframe}{Init Finalize, Fortran}
-No possibility for commandline arguments:
-\lstset{language=Fortran}
-\begin{lstlisting}
-call MPI_Init()     ! F08 style
-! your code
-call MPI_Finalize()
-
-call MPI_Init(ierr) ! F90 style
-! your code
-call MPI_Finalize(ierr)
-\end{lstlisting}  
-\end{numberedframe}
-\end{fortran}
-
-\begin{python}
-  \addtocounter{slidecount}{-1}
-\begin{numberedframe}{Python init/finalize}
-    Done by the import~/ at end of the program.
-\begin{verbatim}
-from mpi4py import MPI
-\end{verbatim}
-\end{numberedframe}
-\end{python}
-
-\begin{exerciseframe}[hello]
-  \input ex:hello2
-\end{exerciseframe}
+\Level 1 {We start learning MPI!}
 
 \Level 2 {About library calls and bindings}
 
@@ -256,11 +213,33 @@ from mpi4py import MPI
 \begin{numberedframe}{MPI headers: C}
 \label{sl:mpi-header-c}
 You need an include file:
-\begin{verbatim}
+\begin{lstlisting}[language=bash]
 #include "mpi.h"
-\end{verbatim}
+\end{lstlisting}
 This defines all routines and constants.
 \end{numberedframe}
+
+\begin{fortran}
+  \addtocounter{slidecount}{-1}
+\begin{numberedframe}{MPI headers: Fortran}
+    \label{sl:mpi-header-f}
+    Fortran bindings are declared in the standard.
+    \begin{itemize}
+    \item Come in two flavors, Fortran90 vs Fortran2008\\
+      you will find many examples online in old style
+    \item We teach you modern style.
+    \end{itemize}
+    You need an include file:
+\begin{lstlisting}[language=bash]
+! Modern Fortran2008
+use mpi_f08
+! Legacy Fortran90
+use mpi       
+! Deprecated
+#include "mpif.h"
+\end{lstlisting}
+\end{numberedframe}
+\end{fortran}
 
 \begin{mpl}
   \addtocounter{slidecount}{-1}
@@ -279,38 +258,16 @@ This defines all routines and constants.
 \end{numberedframe}
 \begin{numberedframe}{Use of MPL}
     In your program:
-    \begin{lstlisting}
-      #include <mpl/mpl.hpp>
-  \end{lstlisting}
+\begin{lstlisting}[numbers=none]
+#include <mpl/mpl.hpp>
+\end{lstlisting}
     Compiling:
-\begin{verbatim}
-  mpicxx -o prog sources.cxx -I${TACC_MPL_INC}
-\end{verbatim}
+\begin{lstlisting}[language=bash,numbers=none]
+mpicxx -o prog sources.cxx -I${TACC_MPL_INC}
+\end{lstlisting}
 TACC: \texttt{module load mpl}
 \end{numberedframe}
 \end{mpl}
-
-\begin{fortran}
-  \addtocounter{slidecount}{-1}
-\begin{numberedframe}{MPI headers: Fortran}
-    \label{sl:mpi-header-f}
-    Fortran bindings are declared in the standard.
-    \begin{itemize}
-    \item Come in two flavors, Fortran90 vs Fortran2008\\
-      you will find many examples online in old style
-    \item We teach you modern style.
-    \end{itemize}
-    You need an include file:
-\begin{verbatim}
-! Modern Fortran2008
-use mpi_f08
-! Legacy Fortran90
-use mpi       
-! Deprecated
-#include "mpif.h"
-\end{verbatim}
-\end{numberedframe}
-\end{fortran}
 
 \begin{python}
   \addtocounter{slidecount}{-1}
@@ -325,13 +282,68 @@ use mpi
       `pythonic' vs efficient
     \end{itemize}
     You need an include file:
-\begin{verbatim}
+\begin{lstlisting}[language=bash,numbers=none]
 from mpi4py import MPI
-\end{verbatim}
+\end{lstlisting}
 You need a python with MPI support\\
 at TACC: \texttt{module load python3}
 \end{numberedframe}
 \end{python}
+
+\begin{numberedframe}{MPI Init / Finalize}
+ These calls need to be around the MPI part of your code:
+\lstset{language=C}
+\begin{lstlisting}[numbers=none]
+MPI_Init(&argc,&argv); // zeros allowed
+// your code
+MPI_Finalize();  
+\end{lstlisting}
+This is not a `parallel region'.\\
+Only internal library initialization:\\
+allocate buffers, discover network,~\ldots
+\end{numberedframe}
+
+\begin{fortran}
+  \addtocounter{slidecount}{-1}
+\begin{numberedframe}{Init Finalize, Fortran}
+No possibility for commandline arguments:
+\lstset{language=Fortran}
+\begin{lstlisting}[numbers=none]
+call MPI_Init()     ! F08 style
+! your code
+call MPI_Finalize()
+
+call MPI_Init(ierr) ! F90 style
+! your code
+call MPI_Finalize(ierr)
+\end{lstlisting}  
+\end{numberedframe}
+\end{fortran}
+
+\begin{python}
+  \addtocounter{slidecount}{-1}
+\begin{numberedframe}{Python init/finalize}
+    Done by the import~/ at end of the program.
+\begin{lstlisting}[language=bash,numbers=none]
+from mpi4py import MPI
+\end{lstlisting}
+\end{numberedframe}
+\end{python}
+
+\begin{mpl}
+  \addtocounter{slidecount}{-1}
+\begin{numberedframe}{MPL init/finalize}
+    No explicit init/finalize:
+    \begin{itemize}
+    \item init is done by the first command that needs it
+    \item finalize in some destructor.
+    \end{itemize}
+\end{numberedframe}
+\end{mpl}
+
+\begin{exerciseframe}[hello]
+  \input ex:hello2
+\end{exerciseframe}
 
 \Level 2 {Ranks}
 
@@ -343,7 +355,7 @@ at TACC: \texttt{module load python3}
   \item Each process has a unique `rank' wrt the communicator.
   \end{itemize}
 \lstset{language=C}
-\begin{lstlisting}
+\begin{lstlisting}[numbers=none]
 int MPI_Comm_size( MPI_Comm comm, int *nprocs )
 int MPI_Comm_rank( MPI_Comm comm, int *procno )
 \end{lstlisting}
@@ -359,17 +371,19 @@ processors/cores is invisible here.
 
   C:
   \lstset{language=C}
-\begin{lstlisting}
+\begin{lstlisting}[numbers=none]
 MPI_Comm comm = MPI_COMM_WORLD;
 \end{lstlisting}
 
-  F:
+  Fortran:
   \lstset{language=Fortran}
-\begin{lstlisting}
+\begin{lstlisting}[numbers=none]
 Type(MPI_Comm) :: comm = MPI_COMM_WORLD
+! legacy
+Integer :: comm = MPI_COMM_WORLD
 \end{lstlisting}
 
-  P:
+  Python:
   \lstset{language=Python}
 \begin{lstlisting}
 from mpi4py import MPI
@@ -384,14 +398,14 @@ comm = MPI.COMM_WORLD
 \end{lstlisting}
 \end{numberedframe}
 
-\protoslide{MPI_Comm_size}
-\protoslide{MPI_Comm_rank}
+\mpiproto{MPI_Comm_size}
+\mpiproto{MPI_Comm_rank}
 
 \begin{numberedframe}{About routine signatures: C/C++}
   \label{sec:protos}
 Signature:
 \lstset{language=C}
-\begin{lstlisting}
+\begin{lstlisting}[numbers=none]
 int MPI_Comm_size(MPI_Comm comm,int *nprocs)
 \end{lstlisting}
 Use:
@@ -403,25 +417,10 @@ int errorcode;
 errorcode = MPI_Comm_size( comm,&nprocs );
 \end{lstlisting}
 But forget about that error code most of the time:
-\begin{lstlisting}
+\begin{lstlisting}[numbers=none]
 MPI_Comm_size( comm,&nprocs );
 \end{lstlisting}
 \end{numberedframe}
-
-\begin{mpl}
-  \addtocounter{slidecount}{-1}
-\begin{numberedframe}{About routine signatures: MPL}
-  %% \input standardx/size
-  Signature:
-  \verbatiminput{mplreference/MPI_Comm_rank.tex}
-  Use
-\begin{lstlisting}
-const mpl::communicator &comm_world = mpl::environment::comm_world();
-int nprocs, procno;
-nprocs = comm_world.size();
-\end{lstlisting}
-\end{numberedframe}
-\end{mpl}
 
 \begin{fortran}
   \addtocounter{slidecount}{-1}
@@ -467,6 +466,21 @@ CALL MPI_Comm_size( comm, size, ierr ) ! F90 style
 \end{numberedframe}
 \end{fortran}
 
+\begin{mpl}
+  \addtocounter{slidecount}{-1}
+\begin{numberedframe}{About routine signatures: MPL}
+  %% \input standardx/size
+  Signature:
+  \verbatiminput{mplreference/MPI_Comm_size.tex}
+  Use
+\begin{lstlisting}
+const mpl::communicator &comm_world = mpl::environment::comm_world();
+int nprocs, procno;
+nprocs = comm_world.size();
+\end{lstlisting}
+\end{numberedframe}
+\end{mpl}
+
 \begin{python}
   \addtocounter{slidecount}{-1}
 \begin{numberedframe}{About routine signatures: Python}
@@ -503,8 +517,11 @@ Note: most functions are methods of the \lstinline{MPI.Comm} class.\\
 \end{numberedframe}
 
 \begin{numberedframe}{About errors}
-  MPI routines invoke an error handler (slide~\ref{sl:errhandler})\\
-  default action: abort
+  MPI routines invoke an error handler;
+\begin{full}
+    (slide~\ref{sl:errhandler})
+\end{full}
+  Default action: abort
   
   Every routine is defined as returning integer error code
   \begin{itemize}
@@ -531,7 +548,9 @@ MPI_Init(0,0);
 %%   \input{ex:mpi01rank}
 %% \end{numberedframe}
 
-\protoslide{MPI_Get_processor_name}
+\Level 2 {Processor name}
+
+\mpiproto{MPI_Get_processor_name}
 
 \begin{exerciseframe}
   \input ex:procname
@@ -580,12 +599,6 @@ MPI_Init(0,0);
 \end{numberedframe}
 \end{python}
 
-
-%% \protoslide{MPI_Get_processor_name}
-%% \begin{mpl}
-%%   \mplprotoslide{MPI_Get_processor_name}
-%% \end{mpl}
-
 \Level 2 {Your first useful parallel program}
 
 \begin{numberedframe}{Functional Parallelism}
@@ -608,7 +621,6 @@ MPI_Init(0,0);
 
 \begin{numberedframe}\frametitle{}
 \begin{lstlisting}
-  
 \end{lstlisting}
 \end{numberedframe}
 

@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2025
 %%%%
 %%%% omp-gpu.tex : GPU offloading
 %%%%
@@ -18,6 +18,37 @@ The memory of a processor and that of an attached \ac{GPU} are not
 \emph{coherent}\index{coherent memory|see{memory, coherence}}:
 there are separate memory spaces and writing data in one
 is not automatically reflected in the other.
+
+\Level 0 {Preliminaries}
+
+An offloading OpenMP code needs some extra steps.
+Compilation:
+\begin{lstlisting}
+nvcc -fopenmp -mp=gpu program.c
+\end{lstlisting}
+Running:
+\begin{lstlisting}
+OMP_TARGET_OFFLOAD=mandatory ./program
+\end{lstlisting}
+
+\begin{cppnote}{Device I/O}
+  You can not use \lstinline{iostream} I/O from the device.
+  Rely on good old \lstinline{printf}.
+\end{cppnote}
+
+\Level 0 {Devices}
+
+Test whether you are on device with the function \indexompshow{omp_is_initial_device}
+which return 1~for the host, the initial device, and 0~for the \ac{GPU},
+the attached device.
+
+The function \indexompshow{omp_get_num_devices} returns the count
+of attached devices.
+
+Here is a simple example using only the \indexompshow{target} clause:
+\cverbatimsnippet{ompdetectgpus}
+
+\Level 0 {Data}
 
 OpenMP transfers data (or maps it) when you enter an \indexompclause{target}
 construct.

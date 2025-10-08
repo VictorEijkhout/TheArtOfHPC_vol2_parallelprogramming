@@ -1,0 +1,152 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Programming for Science and Engeneering'
+%%%% by Victor Eijkhout, copyright 2012-2025
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%% pcseslidemacs.tex : goes after snippetmacs
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%
+%%%% Prototypes
+%%%%
+\def\underscore{_}
+\def\mpiRoutineRef#1{\RoutineRefStyle\verbatiminput{#1}}
+%% \def\RoutineRefStyle{\scriptsize}
+
+\newcommand\standardversion{}
+\def\mpiproto#{\begingroup \catcode`\_=12
+  \afterassignment\mpiprotoinclude \def\protoname}
+
+\newcommand\mpiprotoinclude{
+  \cfprotoslide
+  \endgroup
+}
+
+  %% \addtocounter{slidecount}{-1}
+  %% \mplprotoslide{MPI_Gatherv}
+
+\begin{python}
+% only python
+\renewcommand\mpiprotoinclude{
+  \cfprotoslide
+  \pyprotoslide
+  \endgroup
+}
+\end{python}
+\begin{mpl}
+% only mpl
+\renewcommand\mpiprotoinclude{
+  \cfprotoslide
+  \mplprotoslide
+  \endgroup
+}
+\begin{python}
+% both mpl & python
+\renewcommand\mpiprotoinclude{
+  \cfprotoslide
+  \mplprotoslide
+  \pyprotoslide
+  \endgroup
+}
+\end{python}
+\end{mpl}
+
+%
+% Proto with only C/F
+%
+\newcommand\cfprotoslide{
+  \begin{frame}[containsverbatim]\frametitle{\texttt\protoname}
+      % mpi standard macros
+      \def\MPI/{MPI}\def\mpi/{MPI}\def\RMA/{RMA}
+      \def\mpifunc##1{\texttt{##1}}
+      \let\mpiarg\mpifunc \let\mpicode\mpifunc
+      \let\const\mpifunc  \let\constskip\mpifunc
+    \tiny
+    \edef\tmp{\lowercase{\def\noexpand\standardroutine{\protoname}}}\tmp
+    \def\stdtmp{standard/\standardroutine\standardversion}
+    \IfFileExists
+        {\stdtmp.tex}
+        {\message{including standard: \stdtmp.tex}\input{\stdtmp}}
+        {% if no standard file, then maybe handwritten file
+          \message{Could not find: \stdtmp.tex}
+          \IfFileExists
+              {mpireference/\protoname.tex}
+              {\verbatiminput{mpireference/\protoname}}{}}
+        %\expandafter\mpiRoutineRef\expandafter{\protoname}
+  \end{frame}
+}
+
+%%
+%% MPL protos
+%%
+\newcommand\mplprotoslide{
+  \begin{frame}[containsverbatim]\frametitle{\texttt{MPL: \protoname}}
+      % doxy standard macros
+    \def\hyperlink##1##2{##2}
+    \def\href##1{}
+    \def\hypertarget##1{}
+    \let\+\relax
+    \tiny
+    \edef\tmp{\lowercase{\def\noexpand\standardroutine{\protoname}}}\tmp
+    \IfFileExists
+        {mplreference/\standardroutine.tex}
+        {\lstinputlisting{mplreference/\standardroutine}}
+        {Missing MPL proto: \standardroutine}
+  \end{frame}
+}
+    
+%%
+%% PY protos
+%%
+\newcommand\pyprotoslide{
+  \begin{frame}[containsverbatim]\frametitle{\texttt{Python: \protoname}}
+      % doxy standard macros
+    \def\hyperlink##1##2{##2}
+    \def\href##1{}
+    \def\hypertarget##1{}
+    \let\+\relax
+    \tiny
+    \edef\tmp{\lowercase{\def\noexpand\standardroutine{\protoname}}}\tmp
+    \def\stdtmp{standardp/\standardroutine}
+    \IfFileExists
+        {\stdtmp.tex}
+        {\lstinputlisting{\stdtmp}}
+        {Missing Python proto: \stdtmp}
+  \end{frame}
+}
+
+%%       % mpi standard macros
+%%       \def\MPI/{MPI}\def\mpi/{MPI}\def\RMA/{RMA}
+%%       \def\mpifunc##1{\texttt{##1}}
+%%       \let\mpiarg\mpifunc \let\mpicode\mpifunc
+%%       \let\const\mpifunc  \let\constskip\mpifunc
+%%     \tiny
+%%     \edef\tmp{\lowercase{\def\noexpand\standardroutine{\protoname}}}\tmp
+%%     \IfFileExists
+%%         {standardp/\standardroutine\standardversion.tex}
+%%         {\input{standard/\standardroutine\standardversion}}
+%%         {% if no standard file, then maybe handwritten file
+%%           \IfFileExists
+%%               {standardp/\protoname.tex}
+%%               {\verbatiminput{standardp/\protoname}}{}}
+%%         %\expandafter\mpiRoutineRef\expandafter{\protoname}
+%%   \end{frame}\egroup
+%% }
+%% \end{python}
+
+\newcommand\ListingFileInsert[2]{
+    \IfFileExists
+        {#1/#2.tex}
+        {\lstinputlisting{#1/#2}}
+        {Missing proto: #2 for #1}
+}
+

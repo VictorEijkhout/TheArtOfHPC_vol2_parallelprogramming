@@ -4,7 +4,7 @@
 !**** `Introduction to the PETSc library'
 !**** by Victor Eijkhout eijkhout@tacc.utexas.edu
 !****
-!**** copyright Victor Eijkhout 2012-2020
+!**** copyright Victor Eijkhout 2012-2025
 !****
 !**** vecset.F90 : petsc initialization
 !****
@@ -44,12 +44,12 @@ Program VecSetF90
   call VecAssemblyEnd(vector,ierr)
   call VecView(vector,PETSC_VIEWER_STDOUT_WORLD,ierr)
 
-  call VecGetArrayF90(vector,elements,ierr)
+  call VecGetArray(vector,elements,ierr)
   write (msg,10) myrank,elements(1)
 10 format("First element on process",i3,":",f7.4,"\n")
   call PetscSynchronizedPrintf(comm,msg,ierr)
   call PetscSynchronizedFlush(comm,PETSC_STDOUT,ierr)
-  call VecRestoreArrayF90(vector,elements,ierr)
+  call VecRestoreArray(vector,elements,ierr)
 
   call VecDestroy(vector,ierr)
   call PetscFinalize(ierr); CHKERRQ(ierr);

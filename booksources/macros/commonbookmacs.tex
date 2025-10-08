@@ -47,11 +47,15 @@
 %%%%%%%%%%%%%%%%%%%%
 
 \newwrite\nx
-\newwrite\chapterlist
+\ifFormatAsBook
+  \newwrite\chapterlist \openout\chapterlist=chapternames.tex
+  \newwrite\chapterdata \openout\chapterdata=chapterdata.tex
+\fi
+
 \newif\ifListSources \ListSourcesfalse
-\openout\chapterlist=chapternames.tex
 \newcommand\CHAPTER[2]{
   \Level 0 {#1}\label{ch:#2}
+  \def\chaptitle{#1}
   \def\chapshortname{#2}
 
   % start scooping up example codes used in this chapter
@@ -65,10 +69,13 @@
   \ifListSources\listchaptersources\chapshortname\fi
 
   % add chapter to list of chapters
-  \write\chapterlist{\chapshortname}
-  \openout\nx=exercises/\chapshortname-nx.tex
-  \write\nx{\arabic{excounter}}
-  \closeout\nx
+  \ifFormatAsBook
+    \write\chapterlist{\chapshortname}
+    \write\chapterdata{\chapshortname,\arabic{excounter},\chaptitle}
+    \openout\nx=exercises/\chapshortname-nx.tex
+    \write\nx{\arabic{excounter}}
+    \closeout\nx
+  \fi
 
   \SetBaseLevel 0
 }
@@ -200,20 +207,28 @@
 %%%% Outlining
 %%%%
 \usepackage{outliner}
-\OutlineLevelStart0{\chapter{#1}}
-\OutlineLevelStart1{\section{#1}}
-\OutlineLevelCont1{\section{#1}}
-\OutlineLevelStart2{\subsection{#1}}
-\OutlineLevelStart3{\subsubsection{#1}}
-\setcounter{secnumdepth}{4}
-\OutlineLevelStart4{\paragraph{\bf #1}}
+\ifFormatAsBook
+  \OutlineLevelStart0{\chapter{#1}}
+  \OutlineLevelStart1{\section{#1}}
+  \OutlineLevelCont1{\section{#1}}
+  \OutlineLevelStart2{\subsection{#1}}
+  \OutlineLevelStart3{\subsubsection{#1}}
+  \setcounter{secnumdepth}{4}
+  \OutlineLevelStart4{\paragraph{\bf #1}}
+\else
+  \OutlineLevelStart0{\section{#1}}
+  \OutlineLevelStart1{\subsection{#1}}
+  \OutlineLevelStart2{\subsubsection{#1}}
+  \OutlineLevelStart3{\paragraph{#1}}
+\fi
 
 \newcommand\heading[1]{\paragraph*{\textbf{#1}}}
 
 %%%%
 %%%% Notes
 %%%%
-\newcommand\noteheader[1]{\noindent \hbox{\kern-\unitindent \textsl{#1.}}\kern1em\ignorespaces}
+\newcommand\noteheader[1]{\noindent \hbox{%\kern-\unitindent
+    \textsl{#1.}}\kern1em\ignorespaces}
 \newenvironment{specialnote}[1]%% THIS IS BROKEN
                {\begingroup
                  %%\begin{raggedright}

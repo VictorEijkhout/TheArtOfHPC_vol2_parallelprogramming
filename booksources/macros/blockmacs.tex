@@ -30,8 +30,13 @@
     innerleftmargin=2pt,
     backgroundcolor=yellow!20!blue!20!white!60}
 
-\newcounter{framecounter}[chapter]
-\newcounter{blcounter}[chapter]
+\ifFormatAsBook
+  \newcounter{framecounter}[chapter]
+  \newcounter{blcounter}[chapter]
+\else
+  \newcounter{framecounter}
+  \newcounter{blcounter}
+\fi
 \makeatletter
 \renewcommand\theframecounter{\@arabic\c@chapter.\@arabic\c@framecounter}
 \renewcommand\theblcounter{\@arabic\c@chapter.\@arabic\c@blcounter}

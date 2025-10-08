@@ -49,7 +49,7 @@
   morekeywords={
     % C keywords
     std,md,mdx,rng,views,namespace,mutable,friend,
-    main,return,using,abort,exit,
+    main,return,using,abort,exit,continue,break,
     for,if,else,while,switch,case,and,or,
     new,free,malloc,delete,sizeof,
     alignas,alignof,aligned_alloc,aligned_storage,
@@ -75,7 +75,9 @@
     monostate,nullopt,strong_ordering,partial_ordering,
     default_random_engine,random_device,mt19937,
     uniform_real_distribution,uniform_int_distribution,poisson_distribution,
-    shared_ptr,make_shared,unique_ptr,make_unique,nullptr,nullptr_t,
+    shared_ptr,make_shared,unique_ptr,make_unique,
+    shared_from_this,enable_shared_from_this,
+    nullptr,nullptr_t,
     % exceptions
     bad_cast,bad_alloc,bad_exception,bad_variant_access,bad_optional_access,
     % I/O
@@ -238,8 +240,7 @@
     % values
     HostSpace,CudaSpace,HIPSpace,LayoutRight,
     % functions
-    parallel_for,parallel_reduce,parallel_scan,
-    create_mirror_view,deep_copy,
+    parallel_for,parallel_reduce,create_mirror_view,deep_copy,
   }
 }
 

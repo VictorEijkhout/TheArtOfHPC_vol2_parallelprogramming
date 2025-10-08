@@ -134,11 +134,7 @@ How do we compute this?
 \end{itemize}
 \end{numberedframe}
 
-\protoslide{MPI_Allreduce}
-%% \begin{mpl}
-%%   \addtocounter{slidecount}{-1}
-%% \mplprotoslide{MPI_Allreduce}
-%% \end{mpl}
+\mpiproto{MPI_Allreduce}
 
 \begin{exerciseframe}[randommax]
   %% this is {ex:randommaxscale}
@@ -174,13 +170,13 @@ MPI_Bcast( x, .... );
   \item write \lstinline{x} for array
   \end{itemize}
 \end{numberedframe}
-\begin{numberedframe}{Buffer arguments}
-  \begin{lstlisting}
-    integer :: i
-    integer,dimension(:) :: iar
-    call MPI_Bcast( i, .... );
-    call MPI_Bcast( iar, .... );
-  \end{lstlisting}
+\begin{numberedframe}{Buffer arguments in Fortran}
+\begin{lstlisting}
+integer :: i
+integer,dimension(:) :: iar
+call MPI_Bcast( i, .... );
+call MPI_Bcast( iar, .... );
+\end{lstlisting}
 \end{numberedframe}
 \end{fortran}
 
@@ -307,7 +303,7 @@ A bunch more.
 \end{python}
 
 \begin{numberedframe}{Reduction operators}
-  \footnotesize
+  \scriptsize
   \input{mpi-opstable}
 \end{numberedframe}
 
@@ -317,15 +313,15 @@ A bunch more.
 
 \begin{numberedframe}{MPL operators}
 Operators need to have type:
-\begin{lstlisting}
+\begin{lstlisting}[numbers=none]
 T(T&)
 \end{lstlisting}
 Elementary operators:
-\begin{lstlisting}
+\begin{lstlisting}[numbers=none]
 comm_world.allreduce(mpl::plus<float>(), rank2p2p1, p2layout);
 \end{lstlisting}
 User-defined operator:
-\begin{lstlisting}
+\begin{lstlisting}[numbers=none]
 comm_world.reduce(lcm<int>(), 0, v, result);
 \end{lstlisting}
 \end{numberedframe}
@@ -466,6 +462,7 @@ int MPI_Reduce
 
 \begin{fortran}
   \addtocounter{slidecount}{-1}
+  \scriptsize
 \begin{numberedframe}{In-place (Fortran)}
   \fverbatimsnippet{reduceinplace-f}
   or
@@ -505,7 +502,7 @@ int MPI_Bcast(
   \url{https://youtu.be/aQYuwatlWME}
 \end{numberedframe}
 
-\protoslide{MPI_Bcast}
+\mpiproto{MPI_Bcast}
 
 \begin{exerciseframe}[jordan]
   \small
@@ -547,12 +544,8 @@ Scan or `parallel prefix': reduction with partial results
 \]
 \end{numberedframe}
 
-\protoslide{MPI_Scan}
-\protoslide{MPI_Exscan}
-\begin{mpl}
-  \addtocounter{slidecount}{-1}
-  \mplprotoslide{MPI_Scan}
-\end{mpl}
+\mpiproto{MPI_Scan}
+\mpiproto{MPI_Exscan}
 
 %% \begin{numberedframe}{For the next exercise}
 %%   \label{fig:scanints}
@@ -567,16 +560,8 @@ Scan or `parallel prefix': reduction with partial results
 
 \Level 2 {Gather/Scatter, Barrier, and others}
 
-\protoslide{MPI_Gather}
-\begin{mpl}
-  \addtocounter{slidecount}{-1}
-  \mplprotoslide{MPI_Gather}
-\end{mpl}
-\protoslide{MPI_Scatter}
-\begin{mpl}
-  \addtocounter{slidecount}{-1}
-  \mplprotoslide{MPI_Scatter}
-\end{mpl}
+\mpiproto{MPI_Gather}
+\mpiproto{MPI_Scatter}
 
 \begin{numberedframe}{Gather/Scatter}
 \begin{itemize}
@@ -602,11 +587,7 @@ buffer; instead, it is the amount of data to/from each process.
   symmetrically parallel. 
 \end{numberedframe}
 
-\protoslide{MPI_Allgather}
-\begin{mpl}
-  \addtocounter{slidecount}{-1}
-  \mplprotoslide{MPI_Allgather}
-\end{mpl}
+\mpiproto{MPI_Allgather}
 
 \begin{numberedframe}{Allgather pictured}
   \includegraphics[scale=.4]{allgather}
@@ -619,11 +600,7 @@ buffer; instead, it is the amount of data to/from each process.
   \end{itemize}
 \end{numberedframe}
 
-\protoslide{MPI_Gatherv}
-\begin{mpl}
-  \addtocounter{slidecount}{-1}
-  \mplprotoslide{MPI_Gatherv}
-\end{mpl}
+\mpiproto{MPI_Gatherv}
 
 \begin{exerciseframe}[scangather]
   \input ex:scangather
@@ -755,7 +732,7 @@ INTEGER :: length, mpitype
 \end{numberedframe}
 \end{fortran}
 
-\protoslide{MPI_Op_create}
+\mpiproto{MPI_Op_create}
 
 \begin{numberedframe}{Example}
   Smallest nonzero:
