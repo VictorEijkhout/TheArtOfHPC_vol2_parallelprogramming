@@ -1,5 +1,5 @@
 // bigint.cxx
-size_t s = static_cast<size_t>(1)<<(s0-1);
+size_t s;
   vector<char> buffer(s);
   mpl::contiguous_layout<char> buffersize(s);
-	comm_world.send( buffer.data(),buffersize,processB );
+    comm_world.send( buffer.data(),buffersize,processB );

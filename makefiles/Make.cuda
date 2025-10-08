@@ -1,0 +1,52 @@
+# -*- makefile -*-
+################################################################
+################################################################
+####
+#### This make file is part of the source of 
+#### `Parallel Programing in Science and Engineering'
+#### by Victor Eijkhout, copyright 2013-2025
+####
+#### This is a makefile for the programming exercises using CUDA
+####
+################################################################
+################################################################
+
+info ::
+	@echo "make srun srunout APP=... RUN_OPTIONS=... : build and run on GPU"
+	@echo "    [ PROFILE= (nonzero for profiling) ]"
+ifeq "${TACC_SYSTEM}" "frontera"
+  QUEUE = rtx-dev
+else ifeq "${TACC_SYSTEM}" "ls6"
+  QUEUE = gpu-a100
+else ifeq "${TACC_SYSTEM}" "vista"
+  QUEUE = gh-dev
+endif
+.PHONY: srun srunout
+srunout : srun
+	@appout="${APP}.out" && runout="${APP}.runout" \
+	 && echo " .. copying to $${runout}" \
+	 && cat "$${appout}" \
+	    | awk '/srun/ {s=1} s==1 && !/srun:/ {p=1} p==1 {print}' \
+	    > "$${runout}" \
+	 && echo "----------------" \
+	 && cat "$${runout}" \
+	 && echo "----------------" \
+	 && if [ "${GITADD}" = "1" ] ; then \
+	      git add "$${runout}" \
+	    ; fi
+srun :
+	@if [ ! -z "${APP}" ] ; then \
+	  make --no-print-directory ${APP} ECHO=${ECHO} \
+	   && appout="${APP}.out" \
+	   && cmdline="${APP} ${RUN_OPTIONS}" \
+	   && if [ ! -z "${PROFILE}" ] ; then \
+	        cmdline="ncu $$cmdline" && appout="${APP}.prof_out" \
+	      ; fi \
+	   && if [ ! -z "${ECHO}" ] ; then \
+	        echo "cmdline=$$cmdline" ; fi \
+	   && srun -A A-ccsc -N 1 -n 1 -t 0:5:0 -p ${QUEUE} $${cmdline} \
+	      2>&1 | tee $${appout} \
+	   && echo && echo "See <<$$appout>> for output" && echo \
+	; else echo "Set variable APP [ RUN_OPTIONS=... ]" && exit 1 ; fi
+clean ::
+	@rm -f *.ncu-rep

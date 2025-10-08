@@ -84,22 +84,16 @@ CFLAGS   += ${OPTFLAGS}
 CXXFLAGS += ${OPTFLAGS}
 FFLAGS   += ${OPTFLAGS}
 
-## there are bugs in the qopenmp backend of Intel23
-# ifdef INTEL_OMP_FLAG
-#   OMPFLAGS_intel = ${INTEL_OMP_FLAG}
-# else ifeq "${INTEL23}" "23"
-# else
-#   OMPFLAGS_intel    = -qopenmp 
-# endif
 OMPFLAGS_intel    = -fopenmp 
 OMPFLAGS_oneapi   = -qopenmp 
 OMPFLAGS_gcc      = -ggdb -fopenmp
 OMPFLAGS_clang    = -fopenmp
 OMPFLAGS_cuda     = -mp=gpu
+OMPFLAGS_nvidia   = -fopenmp
 OMPFLAGS_nvhpc    = -fopenmp
 OMPFLAGS_xl       = -qsmp=omp -qoffload
-ifeq "${MODE}" "ompg"
-  OMPFLAGS := -fiopenmp -fopenmp-targets=spir64
+ifeq "${MODE}" "ompgpu"
+  OMPFLAGS := ${OMPFLAGS_${TACC_FAMILY_COMPILER}} -mp=gpu
 else
   OMPFLAGS := ${OMPFLAGS_${TACC_FAMILY_COMPILER}}
 endif
@@ -113,10 +107,11 @@ else ifeq "${MODE}" "omp"
   CFLAGS   += ${OMPFLAGS}
   CXXFLAGS += ${OMPFLAGS}
   FFLAGS   += ${OMPFLAGS}
-else ifeq "${MODE}" "ompg"
+else ifeq "${MODE}" "ompgpu"
   CFLAGS   += ${OMPFLAGS}
   CXXFLAGS += ${OMPFLAGS}
   FFLAGS   += ${OMPFLAGS}
+  LINK_FLAGS   += ${OMPFLAGS}
 else ifeq "${MODE}" "tbb"
   CFLAGS   += ${OMPFLAGS}
   CXXFLAGS += ${OMPFLAGS}
@@ -428,7 +423,7 @@ else ifeq "${MODE}" "hybrid"
   LINK_FLAGS += ${OMPFLAGS}
 else ifeq "${MODE}" "omp"
   LINK_FLAGS += ${OMPFLAGS}
-else ifeq "${MODE}" "ompg"
+else ifeq "${MODE}" "ompgpu"
   LINK_FLAGS += ${OMPFLAGS}
 else ifeq "${MODE}" "tbb"
   LINK_FLAGS += ${OMPFLAGS}

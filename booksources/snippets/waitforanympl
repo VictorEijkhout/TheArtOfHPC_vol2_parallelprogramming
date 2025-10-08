@@ -1,3 +1,3 @@
-  auto [success,index] = recv_requests.waitany();
-  if ( success==mpl::test_result::completed ) {
+auto [success,index] = recv_requests.waitany();
+if ( success==mpl::test_result::completed ) {
 	auto recv_status = recv_requests.get_status(index);
