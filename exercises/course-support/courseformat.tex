@@ -1,0 +1,66 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Computing'
+%%%% by Victor Eijkhout, copyright 2012-2025
+%%%%
+%%%% courseformat.tex : common preable for courses
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%
+%% beamer setup
+%%
+
+%\usepackage{beamerthemeHPC}
+\usepackage{beamerthemeTACC}
+
+\usepackage{morewrites,multicol}
+
+\usepackage{comment}
+\input slides.inex
+\input pcsecommonmacs
+
+\input acromacs
+\input commonmacs
+\input listingmacs
+\input slidemacs
+\input pcseslidemacs
+\input coursemacs
+\input snippetmacs
+\input standardmacs
+
+\usepackage{morewrites}
+\usepackage[original,nonewpage]{imakeidx}
+\makeindex % default index
+\input idxmacs
+\input alsoidxmacs
+\input pcseidxmacs
+
+\input doxymacs
+
+\includecomment{full}
+\excludecomment{condensed}
+\excludecomment{online}
+
+\includecomment{utonly}
+
+\includecomment{onesided}
+\includecomment{advanced}
+\excludecomment{solutions}
+
+%%
+%% slide parameters
+%%
+\renewcommand\snippetstyle{slidesnippetcode}
+\newcommand\codesnippetsdir{../../snippets}
+
+%%
+%% LaTeX customizations
+%%
+\setcounter{tocdepth}{2}
+\parskip=10pt plus 5pt minus 3pt
+
