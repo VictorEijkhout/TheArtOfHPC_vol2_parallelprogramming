@@ -56,12 +56,7 @@ Program StrideScatter
      count = localsize; stride = nprocs; blocklength = 1
      call MPI_Type_vector(count,blocklength,stride,MPI_INTEGER,scattertype)
      call MPI_Type_commit(scattertype)
-     !!solution
-     call MPI_Type_get_extent(scattertype,l,e)
-     e = c_sizeof(i)
-     call MPI_Type_create_resized(scattertype,l,e,interleavetype)
-     call MPI_Type_commit(interleavetype)
-     !!solved
+!! **** your code here **** !!
   end if
 
   call MPI_Scatter( data,1,interleavetype, & ! big send buffer

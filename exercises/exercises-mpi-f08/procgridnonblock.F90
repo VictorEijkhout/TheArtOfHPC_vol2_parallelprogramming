@@ -96,11 +96,7 @@ Program ProcGridNonBlock
   call MPI_Bcast( row_length,1,MPI_INTEGER,0,row_comm )
   call MPI_Bcast( col_length,1,MPI_INTEGER,0,col_comm )
 #endif
-  !!solution
-  call MPI_Ibcast( row_length,1,MPI_INTEGER,0,row_comm,requests(1) )
-  call MPI_Ibcast( col_length,1,MPI_INTEGER,0,col_comm,requests(2) )
-  call MPI_Waitall( 2,requests,MPI_STATUSES_IGNORE )
-  !!solved
+!! **** your code here **** !!
 
   
   if (procno==0) then

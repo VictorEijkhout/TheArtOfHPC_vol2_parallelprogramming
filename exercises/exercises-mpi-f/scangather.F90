@@ -63,9 +63,7 @@ Program ScanGather
   !! - determine the index of your first element.
   !!   Which routine do you use here?
   !!
-  !!solution
-  call MPI_Exscan &
-  !!solved
+!! **** your code here **** !!
     (my_number_of_elements,my_first_index, &
     1,MPI_INTEGER,MPI_SUM,comm,ierr)
   print '("Proc ",i3," has ",i3," elements, range [",i4,",",i4,")")', &
@@ -100,16 +98,12 @@ Program ScanGather
   end if
   call MPI_Gather &
        ( &
-       !!solution
-       my_number_of_elements,1,MPI_INTEGER,size_buffer,1,MPI_INT,0,comm &
-       !!solved
+!! **** your code here **** !!
        ,ierr)
   !! where are they going to go in the big buffer?
   call MPI_Gather &
        ( &
-       !!solution
-       my_first_index,1,MPI_INTEGER,displ_buffer,1,MPI_INT,0,comm &
-       !!solved
+!! **** your code here **** !!
        ,ierr)
   !! now create the big buffer
   if (procno==0) &
@@ -120,10 +114,7 @@ Program ScanGather
    !!
   call MPI_Gatherv &
        ( &
-       !!solution
-       my_elements,my_number_of_elements,MPI_INT, &
-       gather_buffer,size_buffer,displ_buffer,MPI_INT,0,comm &
-       !!solved
+!! **** your code here **** !!
        ,ierr)
 
   !!

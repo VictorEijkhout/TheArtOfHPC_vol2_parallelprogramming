@@ -59,9 +59,7 @@ for pivot_column in range(N):
     # Exercise:
     # make sure that everyone knows the scaling factors
     #
-    ##solution
-    comm.Bcast(scalings,root=pivot_column)
-    ##solved
+## **** your code here **** ##
 
     #
     # Now update the matrix.

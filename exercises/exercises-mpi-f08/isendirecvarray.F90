@@ -45,33 +45,16 @@ Program IsendIrecvArray
   !!
 
   !! specify processors:
-  !!solution
-  if (procno<nprocs-1) then
-     sendto = procno+1
-  else
-     sendto = MPI_PROC_NULL
-  end if
-  if (procno>0) then
-     recvfrom = procno-1
-  else
-     recvfrom = MPI_PROC_NULL
-  end if  
-  !!solved
+!! **** your code here **** !!
 
   !! now send to the right / receive from the left
   call MPI_Isend( &
-       !!solution
-       indata(N), &
-       !!solved
+!! **** your code here **** !!
        1,MPI_DOUBLE, sendto,0, comm, &
-       !!solution
-       requests(1) &
-       !!solved
+!! **** your code here **** !!
        )
   call MPI_Irecv(leftdata, 1,MPI_DOUBLE, recvfrom,0, comm, &
-       !!solution
-       requests(2) &
-       !!solved
+!! **** your code here **** !!
        )
 
   !!
@@ -79,40 +62,19 @@ Program IsendIrecvArray
   !!
 
   !! specify processors:
-  !!solution
-  if (procno>0) then
-     sendto = procno-1
-  else
-     sendto = MPI_PROC_NULL
-  end if
-  if (procno<nprocs-1) then
-     recvfrom = procno+1
-  else
-     recvfrom = MPI_PROC_NULL
-  end if
-
-  !! now send to the left / receive from the right
-  call MPI_Isend( &
-       !!solution
-       indata(1), &
-       !!solved
+!! **** your code here **** !!
+!! **** your code here **** !!
        1,MPI_DOUBLE, sendto,0, comm, &
-       !!solution
-       requests(3) &
-       !!solved
+!! **** your code here **** !!
        )
   call MPI_Irecv(rightdata, 1,MPI_DOUBLE, recvfrom,0, comm, &
-       !!solution
-       requests(4) &
-       !!solved
+!! **** your code here **** !!
        )
 
   !!
   !! Now make sure all Irecv/Irecv operations are completed
   !!
-  !!solution
-  call MPI_Waitall(4,requests,MPI_STATUSES_IGNORE)
-  !!solved
+!! **** your code here **** !!
 
   !!
   !! Do the actual averaging operation

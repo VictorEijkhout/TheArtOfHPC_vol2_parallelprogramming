@@ -43,9 +43,7 @@ Program RandomPut
   call MPI_Sizeof(window_data,window_elt_size,err)
   window_size = window_elt_size
   call MPI_Win_create( &
-       !!solution
-       window_data,window_size,window_elt_size, & ! window size, unit size
-       !!solved
+!! **** your code here **** !!
        MPI_INFO_NULL,comm,the_window,err)
 
   !!
@@ -75,14 +73,10 @@ Program RandomPut
         displacement = 0
         call MPI_Put( &
              ! specify data to put:
-             !!solution
-             my_number,1,MPI_INTEGER, & ! data on origin
-             !!solved
+!! **** your code here **** !!
              ! where are you putting it:
              ! (use an MPI_ADDRESS_KIND variable for displacement!)
-             !!solution
-             other,displacement, 1,MPI_INTEGER, &
-             !!solved
+!! **** your code here **** !!
              the_window, err)
      end if
      call MPI_Win_fence(0,the_window,err)

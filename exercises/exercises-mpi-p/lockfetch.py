@@ -57,10 +57,7 @@ if procno == supervisor:
         ##
         ## Exercise: read out the window's content using an atomic operation
         ##
-        ##solution
-        update  = np.zeros( 1,dtype=np.intc )
-        the_window.Fetch_and_op( update,readout,repo,op=MPI.NO_OP)
-        ##solved
+## **** your code here **** ##
         the_window.Unlock(repo)
         print("Supervisor readout: %d" % readout)
     print("Supervisor is done!");

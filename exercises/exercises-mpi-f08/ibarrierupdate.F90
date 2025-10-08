@@ -75,9 +75,7 @@ Program Isendirecv
      !!
      all_done_flag = .FALSE.
      call MPI_Test(final_barrier,all_done_flag,MPI_STATUS_IGNORE)
-     !!solution
-     if (all_done_flag) exit
-     !!solved
+!! **** your code here **** !!
 
      !!
      !! Exercise part 2:
@@ -86,16 +84,12 @@ Program Isendirecv
      !!
      message_flag = .FALSE.
      call MPI_Iprobe(MPI_ANY_SOURCE,MPI_ANY_TAG,comm,message_flag,recv_status)
-     !!solution
-     if (.not. message_flag) cycle
-     !!solved
+!! **** your code here **** !!
      !!
      !! part 2: the message can come from anywhere, so
      !!    you need to inspect the status to find the source and tag
      !!
-     !!solution
-     source = recv_status%MPI_SOURCE
-     !!solved
+!! **** your code here **** !!
      call MPI_Recv(receive_data,1,MPI_REAL8,&
           source,MPI_ANY_TAG,comm,MPI_STATUS_IGNORE)
      print '("[",i3,"] received from ",i3)',procno,source

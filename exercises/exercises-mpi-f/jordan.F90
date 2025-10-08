@@ -90,9 +90,7 @@ Program GaussJordan
      !! Exercise:
      !! - make sure everyone knows the scaling factors
      !!
-     !!solution
-     call MPI_Bcast(scalings,N,MPI_REAL8,pivot_column,comm,ierr)
-     !!solved
+!! **** your code here **** !!
      !!
      !! Now update the matrix
      !! Answer for yourself: why is there no loop over the columns?

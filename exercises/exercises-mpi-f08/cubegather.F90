@@ -68,11 +68,7 @@ Program CubeGather
               !! Setup a subarray type describing where the data from
               !! process (proci,procj,prock) goes in the cube
               !!
-              !!solution
-              sides(1) = procs_per_side; sides(2) = procs_per_side; sides(3) = procs_per_side
-              sub_sizes(1) = 1; sub_sizes(2) = 1; sub_sizes(3) = 1
-              startpoint(1) = proci; startpoint(2) = procj; startpoint(3) = prock
-              !!solved
+!! **** your code here **** !!
               call MPI_Type_create_subarray( 3,sides,sub_sizes,startpoint, &
                    MPI_ORDER_FORTRAN,MPI_INT, insert_type )
               call MPI_Type_commit(insert_type)
@@ -81,9 +77,7 @@ Program CubeGather
               !!
               sender = ( prock*procs_per_side + procj )*procs_per_side +proci
               call MPI_Recv( &
-                   !!solution
-                   cubedata,1,insert_type, &
-                   !!solved
+!! **** your code here **** !!
                    sender,0, comm,MPI_STATUS_IGNORE)
               call MPI_Type_free(insert_type)
            end do

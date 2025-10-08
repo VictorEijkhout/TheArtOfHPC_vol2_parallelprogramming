@@ -51,9 +51,7 @@ Program BlockWrite
   !!    if it doesn't exist yet, it needs to be created
   !!
   call MPI_File_open(comm,"blockwrite.dat",&
-       !!solution
-       MPI_MODE_CREATE + MPI_MODE_WRONLY,&
-       !!solved
+!! **** your code here **** !!
        MPI_INFO_NULL,&
        mpifile,ierr)
   
@@ -64,9 +62,7 @@ Program BlockWrite
   !!
   if (procno<nwriters) then
      offset = &
-          !!solution
-          procno*nwords*sizeofint
-          !!solved
+!! **** your code here **** !!
      call MPI_File_write_at( &
           mpifile,offset,output_data,nwords, &
           MPI_INT,MPI_STATUS_IGNORE,ierr)

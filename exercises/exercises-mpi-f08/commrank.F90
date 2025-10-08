@@ -28,21 +28,13 @@ Program CommRank
   !! -- Let each processor print out a message like
   !!    "Hello from processor 7 out of 12"
   !!    reporting its number and the total number.
-  !!solution
-  call MPI_Comm_size(comm,nprocs)
-  call MPI_Comm_rank(comm,procno)
-  print *,"Hello from process",procno,"out of",nprocs
-  !!solved
+!! **** your code here **** !!
   
   !! Exercise part 2:
   !! -- let only processs zero print out
   !!    "There are 16 processes"
   !!    reporting only the total number
-  !!solution
-  if (procno==0) then
-     print *,"There are",nprocs,"processes"
-  end if
-  !!solved
+!! **** your code here **** !!
   
   call MPI_Finalize()
   

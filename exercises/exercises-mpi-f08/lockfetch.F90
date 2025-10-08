@@ -75,11 +75,7 @@ Program LockFetch
         !! Exercise: read out the window's content using an atomic operation
         !!
         call MPI_Win_lock(MPI_LOCK_EXCLUSIVE,repo,assert,the_window)
-        !!solution
-        update=0
-        call MPI_Fetch_and_op(update, readout , &
-             MPI_INTEGER, repo,zero_disp, MPI_NO_OP, the_window)
-        !!solved
+!! **** your code here **** !!
         call MPI_Win_unlock(repo,the_window)
         print *,"Supervisor readout: ", readout
         if ( readout<=0 ) exit

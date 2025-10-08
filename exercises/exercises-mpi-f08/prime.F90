@@ -22,9 +22,7 @@ Program Prime
   integer :: bignum = 2000000111, maxfactor = 45200
   !! some more variables for this exercise
   integer :: myfactor, &
-  !!solution
-       mylow,myhi
-  !!solved
+!! **** your code here **** !!
   
   call MPI_Init()
 
@@ -34,18 +32,9 @@ Program Prime
   !! -- If a processors finds a factor, print it to the screen.
 
   !! insert loop header:
-  !!solution
-  call MPI_Comm_size(comm,nprocs)
-  call MPI_Comm_rank(comm,procno)
-  mylow = procno*(maxfactor/nprocs)
-  myhi = (procno+1)*(maxfactor/nprocs)
-  if (mylow<2) mylow = 3
-  if (MOD(mylow,2)==0) mylow = mylow+1
-  !!solved
+!! **** your code here **** !!
   do &
-       !!solution
-       myfactor=mylow,myhi,2
-     !!solved
+!! **** your code here **** !!
      if (MOD(bignum,myfactor)==0) &
           print *,"Processor",procno,"found factor",myfactor
   end do

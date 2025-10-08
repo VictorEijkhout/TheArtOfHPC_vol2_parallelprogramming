@@ -57,10 +57,7 @@ while True:
     ##
     all_done_flag = False
     all_done_flag = final_barrier.Test()
-    ##solution
-    if all_done_flag:
-        break
-    ##solved
+## **** your code here **** ##
 
     ##
     ## Exercise
@@ -70,18 +67,13 @@ while True:
     message_flag = False
     status=MPI.Status()
     message_flag = comm.Iprobe(source=MPI.ANY_SOURCE,tag=MPI.ANY_TAG,status=status)
-    ##solution
-    if not message_flag:
-        continue
-    ##solved
+## **** your code here **** ##
 
     ##
     ## part 2: the message can come from anywhere, so
     ##    you need to inspect the status to find the source and tag
     ##
-    ##solution
-    source = status.source
-    ##solved
+## **** your code here **** ##
     comm.Recv(receive_data,source,tag=MPI.ANY_TAG)
     print("[%d] received from %d" % (procno,source))
 

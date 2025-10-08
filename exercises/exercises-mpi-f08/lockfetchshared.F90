@@ -76,12 +76,7 @@ Program LockFetchShared
         !! Exercise: read out the window's content using an atomic operation
         !!
 
-        !!solution
-        update=0
-        call MPI_Fetch_and_op(update, readout , &
-             MPI_INTEGER, repo,zero_disp, MPI_NO_OP, the_window)
-        call MPI_Win_flush_local(repo,the_window)
-        !!solved
+!! **** your code here **** !!
         print *,"Supervisor readout: ", readout
         if ( readout<=0 ) exit
      end do

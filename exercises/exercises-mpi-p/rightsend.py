@@ -30,14 +30,7 @@ leftdata[0] = -2
 ## -- make sure the first and last processor are handled right
 ##
 
-##solution
-if procno<nprocs-1:
-    sendto = procno+1
-else: sendto = MPI.PROC_NULL
-if procno>0:
-    recvfrom = procno-1
-else: recvfrom = MPI.PROC_NULL
-##solved
+## **** your code here **** ##
 
 ## Exercise 2:
 ## -- now do the MPI_Send and MPI_Recv calls
@@ -45,10 +38,7 @@ else: recvfrom = MPI.PROC_NULL
 ## Exercise 3:
 ## -- use the MPI_Sendrecv call instead
 
-##solution
-comm.Recv( leftdata,recvfrom)
-comm.Send( mydata,  sendto)
-##solved
+## **** your code here **** ##
 
 ##
 ## Check correctness

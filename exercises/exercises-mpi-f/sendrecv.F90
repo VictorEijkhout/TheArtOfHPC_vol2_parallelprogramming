@@ -37,23 +37,13 @@ Program SendRecv
   !! first get left neighbor data
   !!hint: sendto =
   !!hint: recvfrom =
-  !!solution
-  sendto = procno+1
-  if (procno==nprocs-1) sendto = MPI_PROC_NULL
-  recvfrom = procno-1
-  if (procno==0) recvfrom = MPI_PROC_NULL
-  !!solved
+!! **** your code here **** !!
   call MPI_Sendrecv( mydata,1,MPI_REAL8, sendto,0, &
        leftdata,1,MPI_REAL8, recvfrom,0, &
        comm,MPI_STATUS_IGNORE, ierr)
 
   !! then get right neighbor data
-  !!solution
-  sendto = procno-1
-  if (procno==0) sendto = MPI_PROC_NULL
-  recvfrom = procno+1
-  if (procno==nprocs-1) recvfrom = MPI_PROC_NULL
-  !!solved
+!! **** your code here **** !!
   call MPI_Sendrecv( mydata,1,MPI_REAL8, sendto,0, &
        rightdata,1,MPI_REAL8, recvfrom,0, &
        comm,MPI_STATUS_IGNORE,ierr)

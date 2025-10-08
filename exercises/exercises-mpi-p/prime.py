@@ -28,27 +28,15 @@ maxfactor = 45200
 ####
 #### set the variables nprocs / procno
 ####
-##solution
-nprocs = comm.Get_size()
-procno = comm.Get_rank()
-##solved
+## **** your code here **** ##
 
 ####
 #### divide the work over processes
 ####
-##solution
-mylow = procno*(maxfactor//nprocs)
-myhigh = (procno+1)*(maxfactor//nprocs)
-if mylow<2:
-    mylow = 3
-if procno==nprocs-1:
-    myhigh  = maxfactor
-##solved
+## **** your code here **** ##
 
 for myfactor in range(
-        ##solution
-        mylow,myhigh
-        ##solved
+## **** your code here **** ##
         ):
     if bignum%myfactor==0:
         print("Processor %d found factor %d" % (procno,myfactor))

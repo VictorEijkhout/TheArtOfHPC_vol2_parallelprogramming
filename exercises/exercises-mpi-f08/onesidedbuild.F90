@@ -83,11 +83,7 @@ Program OnesidedBuild
      !! - add 1 to the stack pointer on the other process
      !! - which routine do you use? the window is locked so maybe put/get?
      !!
-     !!solution
-     call MPI_Fetch_and_op( increment_by_1,stack_pointer,MPI_INTEGER, &
-          other_process,pointer_loc,MPI_SUM,the_window)
-     call MPI_Win_unlock(other_process,the_window)
-     !!solved
+!! **** your code here **** !!
 
      !!
      !! Exercise: write the number
@@ -97,12 +93,7 @@ Program OnesidedBuild
      !!
      number_for_other = procno
      offset = stack_pointer+1
-     !!solution
-     call MPI_Win_lock(MPI_LOCK_EXCLUSIVE,other_process,0,the_window)
-     call MPI_Put( number_for_other,1,MPI_INTEGER, &
-          other_process,offset,1,MPI_INTEGER, &
-          the_window)
-     !!solved
+!! **** your code here **** !!
 
      !! Unlock the window so that other processes can access it
      call MPI_Win_unlock(other_process,the_window)

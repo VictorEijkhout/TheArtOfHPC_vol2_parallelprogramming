@@ -38,52 +38,28 @@ requests = [ None ] * 4
 ##
 
 ## first specify communication with left neighbor
-##solution
-sendto = procno+1
-if sendto==nprocs:
-    sendto = MPI.PROC_NULL
-recvfrom = procno-1
-if recvfrom<0:
-    recvfrom = MPI.PROC_NULL
-##solved
+## **** your code here **** ##
 requests[
-    ##solution
-    0
-    ##solved
+## **** your code here **** ##
     ] = comm.Isend(mydata,sendto)
 requests[
-    ##solution
-    1
-    ##solved
+## **** your code here **** ##
     ] = comm.Irecv(leftdata,recvfrom)
 
 ## then with right neighbor
-##solution
-sendto = procno-1
-if sendto<0:
-    sendto = MPI.PROC_NULL
-recvfrom = procno+1
-if recvfrom==nprocs:
-    recvfrom = MPI.PROC_NULL
-##solved
+## **** your code here **** ##
 requests[
-    ##solution
-    2
-    ##solved
+## **** your code here **** ##
     ] = comm.Isend(mydata,sendto)
 requests[
-    ##solution
-    3
-    ##solved
+## **** your code here **** ##
     ] = comm.Irecv(rightdata,recvfrom)
 
 ##
 ## Then make sure all Isend/Irecv operations are completed
 ##
 MPI.Request.Waitall(
-    ##solution
-    requests
-    ##solved
+## **** your code here **** ##
     )
 
 ####

@@ -62,18 +62,14 @@ Program SharedData
   !! and get the procno on the node
   !!
   call MPI_Comm_split_type(comm, &
-       !!solution
-       MPI_COMM_TYPE_SHARED, &
-       !!solved
+!! **** your code here **** !!
        procno, MPI_INFO_NULL, node_comm)
 
   !!
   !! Exercise:
   !! -- compute the rank on the node
   call MPI_Comm_rank( &
-       !!solution
-       node_comm, &
-       !!solved
+!! **** your code here **** !!
        onnode_procno)
 
   !!
@@ -82,9 +78,7 @@ Program SharedData
   !!    the procno in that communicator should be the node ID
   !!
   call MPI_Comm_split( &
-       !!solution
-       comm,onnode_procno, &
-       !!solved
+!! **** your code here **** !!
        procno,crosscomm)
   call MPI_Comm_rank(crosscomm,nodeid);
   write(0, '("[",i3,"] has node,onnode coordinate ",i3,",",i3)' ) &
@@ -118,9 +112,7 @@ Program SharedData
   end if
   call MPI_Win_allocate_shared( &
        window_size,displacement, MPI_INFO_NULL, &
-       !!solution
-       node_comm, &
-       !!solved
+!! **** your code here **** !!
        shared_data_ptr,node_window)
   call c_f_pointer(shared_data_ptr,shared_data_f_ptr)
 
