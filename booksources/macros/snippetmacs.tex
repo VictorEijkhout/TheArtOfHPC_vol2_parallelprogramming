@@ -180,8 +180,9 @@
 \newcommand\twocolumnwithtwosnippets[5]{
   \begingroup \multicolsep=0pt
   \begin{multicols}{2}[\vspace{-1ex}\noindent #1
-      \ifInBook %\vspace{-15pt}%
-      \else \vspace{-10pt}\fi]
+      %%\ifInBook %\vspace{-15pt}%
+      %%\else \vspace{-10pt}\fi
+    ]
     \noindent #2\cxxverbatimsnippet{#3}
     \vfill\columnbreak\relax
     \noindent #4\lstset{xleftmargin=0pt}\cxxverbatimsnippet{#5}

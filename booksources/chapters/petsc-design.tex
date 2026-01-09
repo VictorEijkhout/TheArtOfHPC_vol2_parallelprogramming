@@ -102,6 +102,34 @@ MatSetValue(i,j,v,mode)
 MatSetValues(ni,is,nj,js,v,mode)
 \end{lstlisting}
 
+\Level 1 {Callback and Context}
+
+Certain PETSc routines take a
+\indexterm{context} argument, for instance
+\begin{lstlisting}
+#include "petscmat.h" 
+extern PetscErrorCode mult(Mat, Vec, Vec);
+MatCreateShell(comm, m, n, M, N, ctx, &mat);
+MatShellSetOperation(mat, MATOP_MULT, (void(*)(void))mult);
+MatShellSetContext(mat,ctx);
+MatDestroy(mat);
+\end{lstlisting}
+
+Some routines have an explicit argument for destroying the context:
+\begin{lstlisting}
+#include "petscdmshell.h"  
+
+PetscErrorCode DMShellSetContext(DM dm, void *ctx);
+PetscErrorCode DMShellSetDestroyContext(DM dm, PetscCtxDestroyFn *f);
+\end{lstlisting}
+
+The destroy routines have
+\indexpetscdef{PetscCtxDestroyFn} as the prototype for all context destroy functions.
+It is
+\begin{lstlisting}[numbers=none]
+PetscErrorCode ()(void **)
+\end{lstlisting}
+
 \Level 1 {Language support}
 
 \Level 2 {C/C++}
@@ -140,7 +168,10 @@ type(tVec) x
 The output arguments of many query routines are optional in PETSc.
 While in C a generic \lstinline{NULL} can be passed,
 Fortran has type-specific nulls, such as
-\indexpetsctt{PETSC_NULL_INTEGER}, \indexpetsctt{PETSC_NULL_OBJECT}.
+\indexpetsctt{PETSC_NULL_INTEGER}, \indexpetsctt{PETSC_NULL_OBJECT}
+for scalars, or
+\indexpetsctt{PETSC_NULL_INTEGER_ARRAY}, \indexpetsctt{PETSC_NULL_SCALAR_ARRAY},
+ \indexpetsctt{PETSC_NULL_REAL_ARRAY} for array arguments.
 
 \Level 2 {Python}
 \label{sec:py-interface}
@@ -149,6 +180,16 @@ A \emph{python}\index{Python!PETSc interface} interface was written by
 \indextermsub{Lisandro}{Dalcin}.
 It can be added to to PETSc at installation time;
 section~\ref{sec:petsc-install}.
+
+As of version 3.24,
+a variable \indextermtt{PETSCPYTHONPATH} is added to the generated
+\lstinline{lib/petsc/conf/}\indexpetscshow{petscvariables} file
+so it is available to users through the makefile system.
+This variable is also added to \indexpetscshow{PETSc.pc}
+so that it can be accessed as
+\begin{lstlisting}
+pkg-config --variable=PETSCPYTHONPATH PETSc.pc
+\end{lstlisting}
 
 This book discusses the Python interface
 in short remarks in the appropriate sections.

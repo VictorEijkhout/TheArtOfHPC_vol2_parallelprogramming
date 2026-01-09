@@ -46,12 +46,7 @@
     {\def\optfile{#1}
       \ifx\optfile\empty\else\message{VLE EXERCISE #1}%\index[programming]{#1}
       \fi
-      \begin{frame}[containsverbatim]
-        \ifx\optfile\empty
-        \frametitle{Exercise \arabic{excounter}}
-        \else
-        \frametitle{Exercise \arabic{excounter} (\tt{#1})}
-        \fi
+      \begin{frame}[containsverbatim]{Exercise \arabic{excounter} \tt{#1}}
         \refstepcounter{excounter}
         \addcontentsline
             {exe}{section}

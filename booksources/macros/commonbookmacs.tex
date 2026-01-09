@@ -204,27 +204,6 @@
 }
 
 %%%%
-%%%% Outlining
-%%%%
-\usepackage{outliner}
-\ifFormatAsBook
-  \OutlineLevelStart0{\chapter{#1}}
-  \OutlineLevelStart1{\section{#1}}
-  \OutlineLevelCont1{\section{#1}}
-  \OutlineLevelStart2{\subsection{#1}}
-  \OutlineLevelStart3{\subsubsection{#1}}
-  \setcounter{secnumdepth}{4}
-  \OutlineLevelStart4{\paragraph{\bf #1}}
-\else
-  \OutlineLevelStart0{\section{#1}}
-  \OutlineLevelStart1{\subsection{#1}}
-  \OutlineLevelStart2{\subsubsection{#1}}
-  \OutlineLevelStart3{\paragraph{#1}}
-\fi
-
-\newcommand\heading[1]{\paragraph*{\textbf{#1}}}
-
-%%%%
 %%%% Notes
 %%%%
 \newcommand\noteheader[1]{\noindent \hbox{%\kern-\unitindent

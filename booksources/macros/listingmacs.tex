@@ -50,18 +50,19 @@
     % C keywords
     std,md,mdx,rng,views,namespace,mutable,friend,
     main,return,using,abort,exit,continue,break,
-    for,if,else,while,switch,case,and,or,
+    for,if,else,while,switch,case,and,or,not,
     new,free,malloc,delete,sizeof,
     alignas,alignof,aligned_alloc,aligned_storage,
     true,false,
     % class stuff
     template,typename,concept,module,export,this,
-    class,struct,private,public,protected,extern,inline,operator,enum,
+    class,struct,private,public,protected,extern,static,inline,operator,enum,
     virtual,override,import,module,except,noexcept,
     % unions and such
     optional,variant,any,expected,unexpected,bitset,
     % other
     any_cast,bit_cast,const_cast,dynamic_cast,reinterpret_cast,static_cast,
+    hours,minutes,seconds,milliseconds,microseconds,nanoseconds,
     decltype,
     try,catch,throw,
   },
@@ -73,11 +74,11 @@
     malloc,calloc,strlen,printf,scanf,sprintf,sscanf,
     % classes
     monostate,nullopt,strong_ordering,partial_ordering,
-    default_random_engine,random_device,mt19937,
+    default_random_engine,random_device,mt19937,knuth_b,shuffle,
     uniform_real_distribution,uniform_int_distribution,poisson_distribution,
     shared_ptr,make_shared,unique_ptr,make_unique,
     shared_from_this,enable_shared_from_this,
-    nullptr,nullptr_t,
+    nullptr,nullptr_t,move,
     % exceptions
     bad_cast,bad_alloc,bad_exception,bad_variant_access,bad_optional_access,
     % I/O
@@ -95,9 +96,10 @@
     rotr,exchange,
     make_pair,make_tuple,
     high_resolution_clock,steady_clock,system_clock,utc_clock,
-    now,count,seconds,milliseconds,
+    now,count,time_since_epoch,
     % range, view, algorithm
-    for_each,all_of,any_of,none_of,
+    for_each,all_of,any_of,none_of,filter,
+    drop,reverse,take,zip,
     accumulate,reduce,enumerate,transform,index,visit,adjacent,
     transform_reduce,transform_inclusive_scan,transform_exclusive_scan,
     partial_sum,inclusive_scan,exclusive_scan,min_element,sort,
@@ -125,7 +127,7 @@
   morekeywords={
     % containers
     array,vector,span,mdspan,submdspan,string,stringstream,
-    pair,tuple,function,range,map,set,bitset,
+    pair,tuple,function,range,map,unordered_map,set,bitset,
     exception,time_point,stacktrace,complex_literals,
     format_parse_context,format_context,
   },
@@ -187,7 +189,16 @@
 }
 
 \lstdefinelanguage{omp}[]{cpp}{
-  classoffset=5,
+  %% OMP Functions
+  classoffset=2,
+  morekeywords={
+    %%
+    omp_get_num_threads,omp_get_thread_num,omp_get_num_procs,
+    omp_init_lock,omp_destroy_lock,omp_set_lock,omp_unset_lock,omp_test_lock,
+    omp_set_schedule,omp_get_schedule,
+  },
+  %% OMP keywords should barely be marked
+  classoffset=7,
   morekeywords={
     omp,
     somedirective,
@@ -199,18 +210,15 @@
     reduction,taskgroup,taskloop,task,taskwwait,schedule,mask,filter,
     collapse,
     end,cancel,
-    %%
-    omp_get_num_threads,omp_get_thread_num,omp_get_num_procs,
-    omp_init_lock,omp_destroy_lock,omp_set_lock,omp_unset_lock,omp_test_lock,
-    omp_set_schedule,omp_get_schedule,
-  },
-  classoffset=6,
-  morekeywords={
+  %% },
+  %% classoffset=6,
+  %% morekeywords={
     static,guided,dynamic,runtime,auto,close,spread,ordered,
     shared,private,firstprivate,lastprivate,depend,final,
     omp_in,omp_out,copyin,copyout,
     write,read,update,capture,
   },
+  keywordstyle=\rmfamily\color{arsenic},
 }
 
 \lstdefinelanguage{ompkwd}{
@@ -333,7 +341,7 @@
     DIRECTORY,DESTINATION,FILES,GLOB,INTERFACE,MATCHES,PROPERTIES,
     NOTICE,VERBOSE,FATAL_ERROR,SEND_ERROR,WARNING,AUTHOR_WARNING,DEPRECATION,
     STATUS,VERBOSE,DEBUG,TRACE,
-    PRIVATE,PUBLIC,REQUIRED,SHARED,STATIC,TARGETS,TRUE,VERSION,
+    PRIVATE,PUBLIC,REQUIRED,QUIET,SHARED,STATIC,TARGETS,TRUE,VERSION,
     FILES_MATCHING, PATTERN,STREQUAL,NOT,DEFINED,LESS,IN,ITEMS,LISTS,RANGE,
     LIBRARY_OUTPUT_PATH,GIT_REPOSITORY,
     },
@@ -378,7 +386,8 @@
 \lstdefinelanguage{git}[]{shell}{
   morekeywords={
     git,add,branch,checkout,clone,commit,diff,
-    init,log,pull,push,remote,revert,status,
+    init,log,pull,push,remote,revert,status,touch,
+    stash,drop,pop,reset,
     HEAD,
     },
   keywordstyle=\bfseries\color{orange!40!blue},
