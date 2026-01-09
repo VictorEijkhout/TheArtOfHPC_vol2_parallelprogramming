@@ -1,9 +1,9 @@
 // commdupall.c
-ierr = MPI_Isend(&sdata,1,MPI_INT,right,1,comm,&(request[0])); CHK(ierr);
-function_start(comm,&ctx);
-ierr = MPI_Irecv(&rdata,1,MPI_INT,left,MPI_ANY_TAG,comm,&(request[1])); CHK(ierr);
-ierr = MPI_Waitall(2,request,status); CHK(ierr);
-function_end(comm,ctx);
+  ierr = MPI_Isend(&sdata,1,MPI_INT,right,1,comm,&(request[0])); CHK(ierr);
+  function_start(comm,&ctx);
+  ierr = MPI_Irecv(&rdata,1,MPI_INT,left,MPI_ANY_TAG,comm,&(request[1])); CHK(ierr);
+  ierr = MPI_Waitall(2,request,status); CHK(ierr);
+  function_end(comm,ctx);
 int function_start(MPI_Comm comm,void **ctx) {
 int procno,nprocs,left,right, sdata=6,rdata, ierr;
 MPI_Request *request;

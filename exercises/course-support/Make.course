@@ -16,24 +16,24 @@ LATEXENGINE =  xelatex -shell-escape
 # pdflatex
 
 info::
-	@echo "make course COURSE=... (in: ${COURSES}, default=${COURSE})"
-	@echo "make courses : all courses;"
+	@echo "make lecture LECTURE=... (in: ${LECTURES}, default=${LECTURE})"
+	@echo "make lectures : all lectures;"
 	@if [ ! -z "${LANGUAGES}" ] ; then \
-	    echo "make languages (using LANGUAGES=${LANGUAGES}) [ COURSE=... ]" \
+	    echo "make languages (using LANGUAGES=${LANGUAGES}) [ LECTURE=... ]" \
 	 ; fi
-.PHONY: course courses languages course_prep
+.PHONY: lecture lectures languages course_prep
 LANGUAGE = all
 LANGUAGES = c f p x
 course_prep ::
 	@echo && echo "Setting up for language <<${LANGUAGE}>>" && echo
-	@cp ${COURSE}_course.tex ${COURSE}_${LANGUAGE}_course.tex 
+	@cp ${LECTURE}_course.tex ${LECTURE}_${LANGUAGE}_course.tex 
 	@cp ../course-support/lang_${LANGUAGE}.tex ../course-support/lang.tex
 	@cd ../.. && make --no-print-directory getfiles
-courses :: course_prep
-	@if [ ! -z "${COURSES}" ] ; then \
+lectures :: course_prep
+	@if [ ! -z "${LECTURES}" ] ; then \
 	    cp ../course-support/lang_all.tex lang.tex \
-	     && for c in ${COURSES} ; do \
-	            make --no-print-directory course COURSEPREP=0 COURSE=$$c \
+	     && for c in ${LECTURES} ; do \
+	            make --no-print-directory lecture COURSEPREP=0 LECTURE=$$c \
 	        ; done \
 	    ; \
 	 fi
@@ -41,14 +41,14 @@ languages :
 	@if [ -z "${LANGUAGES}" ] ; then \
 	  languages=c ; else languages="${LANGUAGES}" ; fi \
 	 && for l in $$( echo $${languages} | tr ',' ' ' ) ; do \
-	        make --no-print-directory course_prep LANGUAGE=$${l} COURSE=${COURSE} \
-	         && make course COURSE=${COURSE}_$${l} LANGUAGE=$${l} \
-	         && rm -f ${COURSE}_$${l}_course.tex \
+	        make --no-print-directory course_prep LANGUAGE=$${l} LECTURE=${LECTURE} \
+	         && make lecture LECTURE=${LECTURE}_$${l} LANGUAGE=$${l} \
+	         && rm -f ${LECTURE}_$${l}_course.tex \
 	    ; done 
 COURSEPREP = 1
-course ::
-	@if [ -z "${COURSE}" ] ; then \
-	    echo "Error: no COURSE variable defined" && exit 1 ; fi 
+lecture ::
+	@if [ -z "${LECTURE}" ] ; then \
+	    echo "Error: no LECTURE variable defined" && exit 1 ; fi 
 	@if [ -z "${LANGUAGE}" ] ; then \
 	    cp ../course-support/lang_all.tex ./lang.tex \
 	 ; else \
@@ -56,23 +56,23 @@ course ::
 	 ; fi
 	@if [ "${COURSEPREP}" = "1" ] ; then \
 	  make --no-print-directory course_prep ; fi 
-	@make --no-print-directory pdf FILE=${COURSE}_course
-	@make --no-print-directory diagnostics FILE=${COURSE}_course
+	@make --no-print-directory pdf FILE=${LECTURE}_course
+	@make --no-print-directory diagnostics FILE=${LECTURE}_course
 	@cp ../course-support/lang_all.tex ./lang.tex
 no_acro_rule :
-	@acro=`cat ${COURSE}_course.log | grep "Acronym.*not defined" | wc -l` \
+	@acro=`cat ${LECTURE}_course.log | grep "Acronym.*not defined" | wc -l` \
 	 && if [ $$acro -gt 0 ] ; then \
 	      echo "Resolving $$acro undefined acronyms" \
-	      && make --no-print-directory pdf FILE=${COURSE}_course \
+	      && make --no-print-directory pdf FILE=${LECTURE}_course \
 	    ; fi
 
 .PHONY: beamerfiles onepass pdf onepassformat 
 info ::
-	@echo "make pdf onepass COURSE=... / FILE=..."
+	@echo "make pdf onepass LECTURE=... / FILE=..."
 TEXROOTDIR = ../..
 pdf :: beamerfiles
 	@echo && echo "First pass..." && echo \
-	 && export file=$$( make --no-print-directory filename COURSE="${COURSE}" FILE="${FILE}" ) \
+	 && export file=$$( make --no-print-directory filename LECTURE="${LECTURE}" FILE="${FILE}" ) \
 	 && make --no-print-directory onepassformat FORMAT="${FORMAT}" FILE=$${file} \
 	 && if [ -z "${BIB}" ] ; then \
 	        bib=0 ; else bib=1 ; fi \
@@ -105,7 +105,7 @@ listextra :
 	@echo ${EXTRAFILES}
 extrafiles :
 	@for f in `make --no-print-directory listextra` ; do \
-	    make --no-print-directory onepass COURSE= FILE=$${f%%.pdf} \
+	    make --no-print-directory onepass LECTURE= FILE=$${f%%.pdf} \
 	    ; done
 
 info ::

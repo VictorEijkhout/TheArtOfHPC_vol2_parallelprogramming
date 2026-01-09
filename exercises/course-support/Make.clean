@@ -50,7 +50,7 @@ clean :: localclean
 	          else \
 	             echo "${INDENT} local cleaning in $${d}" \
 	              && make --no-print-directory INDENT=" .. ${INDENT}" \
-	                 -f ../../${MAKEFILESDIR}/Make.clean \
+	                 -f ../${MAKEFILESDIR}/Make.clean \
 	                 local_clean \
                      ; \
 	          fi \

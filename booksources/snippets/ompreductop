@@ -1,7 +1,6 @@
 vector< Thing >
   things(500,Thing(1.f) );
-Thing result(0.f);
-#pragma omp parallel for \
-    reduction( +:result )
+Thing res(0.f);
+#pragma omp parallel for reduction( +:res )
 for ( const auto& t : things )
-  result = result + t;
+  res = res + t;

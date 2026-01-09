@@ -1,10 +1,11 @@
 // charcount.cpp
 template<typename key>
-class bincounter : public map<key,int> {
+class histogram : public map<key,int> {
 public:
-// merge this with other map
+// merge other histogram into this
   void operator+=
-      ( const bincounter<key>& other ) {
+// some compilers want operator+
+      ( const histogram<key>& other ) {
     for ( auto [k,v] : other )
       if ( map<key,int>::contains(k) )
 	this->at(k) += v;
