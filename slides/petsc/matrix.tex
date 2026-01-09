@@ -30,6 +30,8 @@ MatSeqAIJSetPreallocation /* more about this later*/
 Local or global size can be \lstinline{PETSC_DECIDE} (as in the vector case)
 \end{numberedframe}
 
+\begin{longstory}
+
 \begin{numberedframe}{If you already have a CRS matrix}
 \begin{lstlisting}
 PetscErrorCode  MatCreateSeqAIJWithArrays
@@ -271,6 +273,8 @@ Data argument optional:
 
 \end{details}
 
+\end{longstory}
+
 \begin{numberedframe}{Matrix operations}
 Main operations are matrix-vector:
 \begin{lstlisting}
@@ -288,6 +292,8 @@ MatScale
 MatDiagonalScale
 \end{lstlisting}
 \end{numberedframe}
+
+\begin{longstory}
 
 \begin{numberedframe}{Some matrix-matrix operations}
 \begin{lstlisting}
@@ -497,3 +503,5 @@ Data is copied in the 2nd case.
 \end{numberedframe}
 
 \end{shortversion}
+
+\end{longstory}

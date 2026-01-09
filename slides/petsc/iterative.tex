@@ -25,6 +25,7 @@ solution:
 \end{itemize}
 \end{numberedframe}
 
+\begin{longstory}
 \begin{numberedframe}{Topics}
   \begin{itemize}
   \item All linear solvers in PETSc are iterative, even the direct ones
@@ -34,8 +35,8 @@ solution:
   \item Custom monitors and convergence tests
   \end{itemize}
 \end{numberedframe}
+\end{longstory}
 
-%\subsectionframe{KSP: Krylov Space objects}
 
 \begin{numberedframe}{Iterative solver basics}
   \begin{itemize}
@@ -54,6 +55,8 @@ KSPSolve(solver,rhs,sol);
 \end{lstlisting}
 Optional: \lstinline{KSPSetUp(solver)}
 \end{numberedframe}
+
+\begin{longstory}
 
 \begin{numberedframe}{Solver settings}
   Change default settings by program calls\\
@@ -260,6 +263,7 @@ PCASMSetOverlap(PC pc,int overlap);
 \end{lstlisting}
 \end{numberedframe}
 
+\end{longstory}
 
 \begin{exerciseframe}[ksp]
   File \n{ksp.c}~/ \n{ksp.F90} contains the solution of a (possibly
@@ -300,6 +304,8 @@ PCASMSetOverlap(PC pc,int overlap);
   The code uses a preconditioner \lstinline{PCNONE}. What happens if you run it
   with option \n{-pc_type jacobi}?
 \end{exerciseframe}
+
+\begin{longstory}
 
 \begin{numberedframe}{Monitors and convergence tests}
 \begin{lstlisting}
@@ -544,6 +550,8 @@ If installed, other parallel preconditioner are available:
 \end{numberedframe}
 
 \end{higher}
+
+\end{longstory}
 
 \endinput
 

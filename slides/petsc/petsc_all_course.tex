@@ -14,6 +14,8 @@
 \usepackage{comment}
 \input lang
 \input courseformat
+\excludecomment{longstory}
+\excludecomment{standalone}
   
 \newenvironment{frameblock}[1]
                {\begin{quote}}
@@ -65,17 +67,21 @@
 \input spmd
 \end{standalone}
 
-\input starting
+\begin{longstory}
+  \input starting
+\end{longstory}
+
 \input vector
 \input matrix
 \input iterative
-\input grid
-\input is
 
-\input nonlinear
-\input higher
-
-\input profiling
+\begin{longstory}
+  \input grid
+  \input is
+  \input nonlinear
+  \input higher
+  \input profiling
+\end{longstory}
 
 \end{document}
 

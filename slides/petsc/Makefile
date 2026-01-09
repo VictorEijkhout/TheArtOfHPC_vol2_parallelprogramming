@@ -16,8 +16,8 @@ info::
 	@echo "================================================================"
 	@echo
 
-COURSE = petsc
-COURSES = petsc
+LECTURE = petsc
+LECTURES = petsc
 FILE = petsc_course
 FILES = petsc_course petsc-handout
 
@@ -35,12 +35,7 @@ include ../../booksources/makefiles/repos.inc
 getfiles snippets :
 	@cd ../.. && make $@
 
-info ::
-	@echo "make makefmt"
-.PHONY: makefmt
-makefmt :
-	TEXINPUTS=../..//:${TEXINPUTS} pdftex --ini "&latex" /opt/local/share/texmf-texlive/tex/latex/mylatex/mylatex.ltx preamble.tex
-	mv mylatex.fmt mpicourse.fmt
-
-
+##
+## Cleaning
+##
 include ../../booksources/makefiles/Make.clean

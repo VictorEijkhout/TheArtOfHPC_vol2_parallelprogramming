@@ -14,7 +14,6 @@
 
 %\subsection{Basic stuff}
 
-\begin{details}
 \begin{numberedframe}{Create calls}
 \small
 Everything in PETSc is an object, with create and destroy calls:
@@ -28,6 +27,9 @@ VecDestroy(&V);
 \end{lstlisting}
 \end{numberedframe}
 
+\begin{longstory}
+
+\begin{details}
 \lstset{language=Fortran}
 \begin{fortran}
 \begin{numberedframe}{Create calls, Fortran}
@@ -68,6 +70,8 @@ VecDuplicate(Vec v,Vec *w);
 \end{python}
 \lstset{language=C}
 
+\end{longstory}
+
 \begin{numberedframe}{Parallel layout up to PETSc}
 \begin{lstlisting}
 VecSetSizes(Vec v, int m, int M);
@@ -86,6 +90,8 @@ Global size can be specified as \lstinline{PETSC_DECIDE}.
 
 \includegraphics[scale=.08]{veccreate1}
 \end{numberedframe}
+
+\begin{longstory}
 
 \lstset{language=Python}
 \begin{python}
@@ -121,6 +127,8 @@ PetscSplitOwnership(MPI_Comm comm,PetscInt *n,PetscInt *N);
 \end{numberedframe}
 \end{details}
 
+\end{longstory}
+
 \begin{numberedframe}{Setting values}
 \small
 Set vector to constant value:
@@ -143,6 +151,8 @@ The other insertmode is \indexpetscshow{ADD_VALUES}.
 \end{numberedframe}
 
 \lstset{language=C}
+
+\begin{longstory}
 
 \begin{numberedframe}{Setting values by block}
 Set individual elements (global indexing!):
@@ -177,6 +187,8 @@ some of the implementation is visible here
 to the user
 \end{numberedframe}
 
+\end{longstory}
+
 \begin{numberedframe}{Basic operations}
 \small
 \begin{lstlisting}
@@ -199,6 +211,8 @@ VecReciprocal(Vec x);
 VecShift(Vec x,PetscScalar s);
 \end{lstlisting}
 \end{numberedframe}
+
+\begin{longstory}
 
 \begin{exerciseframe}[vec]
   Create a vector where the values are a single sine wave.
@@ -304,3 +318,4 @@ More seperate F90 versions for `Get' routines\\
 \end{details}
 \lstset{language=C}
 
+\end{longstory}
