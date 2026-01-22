@@ -4,7 +4,7 @@
 ####
 #### This makefile is part of the source of 
 #### "Parallel Computing for Science and Engineering"
-#### by Victor Eijkhout, copyright 2013-2025
+#### by Victor Eijkhout, copyright 2013-2026
 ####
 #### Make include file for clean rules
 ####
@@ -29,16 +29,13 @@ texclean :
 	@/bin/rm -rf \
 	    *.{aux,auxlock,blg,idx,ilg,ind,log,mod,mw,nav,out,snm,svn,toc,vrb,wrt} *.cut texput.*
 localclean local_clean :: codeclean texclean
-	@/bin/rm -rf \
-	    ddt.o[0-9]* jobtest.o* tautrace_* __pycache__ \
-	    dcvserver.out \
-	    ${APPS}
+
 INDENT =
 MAKEFILESDIR = makefiles
 MAKETRACESTRING = 
 clean :: localclean
 	@for d in * ; do \
-	  if [ -d "$${d}" -a "$$d" != "build" ] ; then \
+	  if [ -d "$${d}" ] ; then \
 	    echo "${INDENT} cleaning in $${d}" \
 	    && ( \
 	       cd $${d} \

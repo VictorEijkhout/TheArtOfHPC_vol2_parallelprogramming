@@ -489,8 +489,8 @@ listapps :
 	@echo ${APPS} ${EXERCISES}
 	@x=$$( make --no-print-directory extension ) \
 	 && for app in ${APPS} ${EXERCISES} ; do \
-	      if [ $$( ls $${app}.$${x} 2>/dev/null | wc -l ) -eq 0 ] ; then \
-	        echo "Warning: missing source for <<$${ap}.$${x}>>" \
+	      if [ ! -z "$${app}" -a $$( ls $${app}.$${x} 2>/dev/null | wc -l ) -eq 0 ] ; then \
+	        echo "Warning: missing source for <<$${app}.$${x}>>" \
 	      ; fi \
 	    ; done
 
@@ -505,5 +505,3 @@ extension ::
 	    ( p ) echo py ;; \
 	    ( * ) echo unknown ;; \
 	esac
-clean ::
-	@rm -f compile.log run.log

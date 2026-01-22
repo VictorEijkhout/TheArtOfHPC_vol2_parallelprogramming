@@ -4,7 +4,7 @@
 ####
 #### This makefile is part of the source of 
 #### "Parallel Computing for Science and Engineering"
-#### by Victor Eijkhout, copyright 2013-2025
+#### by Victor Eijkhout, copyright 2013-2026
 ####
 #### Make include file for upload locations
 ####
@@ -42,10 +42,12 @@ studentrepo :
 	@if [ -d "${STUDENTREPO}" ] ; then \
 	    dir="${STUDENTREPO}/${TARGETDIR}" \
 	     && if [ ! -d "$$dir" ] ; then \
-	            echo "Directory <<$$dir>> does not exist" ; \
-	        else \
+	            echo "Directory <<$$dir>> does not exist" \
+	        ; else \
 	            file="${FILE}" && file="$${file%%.pdf}.pdf" \
 	            && echo "copying <<$${file}>> to student repo <<$$dir>>" \
 	            && cp "$${file}" "$$dir"/ \
 	        ; fi \
-	    ; fi
+	 ; else \
+	    echo " .. no student repo presently" \
+	 ; fi

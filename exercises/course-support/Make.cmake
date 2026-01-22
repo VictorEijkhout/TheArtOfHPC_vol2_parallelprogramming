@@ -4,7 +4,7 @@
 #### This makefile is part of the course
 #### Introduction to Scientific Programming in C++ and Fortran
 #### by Victor Eijkhout (eijkhout@tacc.utexas.edu)
-#### copyright 2017-2023 Victor Eijkhout
+#### copyright 2017-2026 Victor Eijkhout
 ####
 #### Make.cmake : experimental cmake stuff
 ####
@@ -69,6 +69,3 @@ cmake_apps :
 	  ; done \
 	 ) 2>&1 | tee cmake.log \
 	 && echo "See cmake.log"
-
-localclean ::
-	@rm -rf build exe CMake*

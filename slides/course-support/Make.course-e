@@ -2,7 +2,7 @@
 ################################################################
 ####
 #### This makefile is part of `Parallel Programming in MPI and OpenMP'
-#### by Victor Eijkhout, copyright 2013-2025
+#### by Victor Eijkhout, copyright 2013-2026
 #### eijkhout@tacc.utexas.edu
 ####
 #### include Makefile for course slides MPI/OpenMP/hybrid
@@ -21,34 +21,26 @@ info::
 	@if [ ! -z "${LANGUAGES}" ] ; then \
 	    echo "make languages (using LANGUAGES=${LANGUAGES}) [ LECTURE=... ]" \
 	 ; fi
-.PHONY: lecture lectures languages course_prep
-LANGUAGE = all
+.PHONY: lecture languages course course_prep
+LANGUAGE = coe379
 LANGUAGES = c f p x
 course_prep ::
 	@echo && echo "Setting up for language <<${LANGUAGE}>>" && echo
-	@cp ${LECTURE}_course.tex ${LECTURE}_${LANGUAGE}_course.tex 
+	@cp ${COURSE}_course.tex ${COURSE}_${LANGUAGE}_course.tex 
 	@cp ../course-support/lang_${LANGUAGE}.tex ../course-support/lang.tex
 	@cd ../.. && make --no-print-directory getfiles
-lectures :: course_prep
-	@if [ ! -z "${LECTURES}" ] ; then \
-	    cp ../course-support/lang_all.tex lang.tex \
-	     && for c in ${LECTURES} ; do \
-	            make --no-print-directory lecture COURSEPREP=0 LECTURE=$$c \
-	        ; done \
-	    ; \
-	 fi
 languages :
 	@if [ -z "${LANGUAGES}" ] ; then \
 	  languages=c ; else languages="${LANGUAGES}" ; fi \
 	 && for l in $$( echo $${languages} | tr ',' ' ' ) ; do \
-	        make --no-print-directory course_prep LANGUAGE=$${l} LECTURE=${LECTURE} \
-	         && make lecture LECTURE=${LECTURE}_$${l} LANGUAGE=$${l} \
-	         && rm -f ${LECTURE}_$${l}_course.tex \
+	        make --no-print-directory course_prep LANGUAGE=$${l} COURSE=${COURSE} \
+	         && make course COURSE=${COURSE}_$${l} LANGUAGE=$${l} \
+	         && rm -f ${COURSE}_$${l}_course.tex \
 	    ; done 
 COURSEPREP = 1
-lecture ::
-	@if [ -z "${LECTURE}" ] ; then \
-	    echo "Error: no LECTURE variable defined" && exit 1 ; fi 
+course ::
+	@if [ -z "${COURSE}" ] ; then \
+	    echo "Error: no COURSE variable defined" && exit 1 ; fi 
 	@if [ -z "${LANGUAGE}" ] ; then \
 	    cp ../course-support/lang_all.tex ./lang.tex \
 	 ; else \
@@ -56,8 +48,21 @@ lecture ::
 	 ; fi
 	@if [ "${COURSEPREP}" = "1" ] ; then \
 	  make --no-print-directory course_prep ; fi 
-	@make --no-print-directory pdf FILE=${LECTURE}_course
-	@make --no-print-directory diagnostics FILE=${LECTURE}_course
+	@make --no-print-directory pdf FILE=${COURSE}_course
+	@make --no-print-directory diagnostics FILE=${COURSE}_course
+	@cp ../course-support/lang_all.tex ./lang.tex
+lecture ::
+	@if [ -z "${LECTURE}" ] ; then \
+	    echo "Error: no LECTURE variable defined" && exit 1 \
+	 ; else echo "Formatting LECTURE=${LECTURE}" \
+	 ; fi 
+	@if [ -z "${LANGUAGE}" ] ; then \
+	    cp ../course-support/lang_all.tex ./lang.tex \
+	 ; else \
+	    cp ../course-support/lang_${LANGUAGE}.tex ./lang.tex \
+	 ; fi
+	@make --no-print-directory pdf FILE=${LECTURE}
+	@make --no-print-directory diagnostics FILE=${LECTURE}
 	@cp ../course-support/lang_all.tex ./lang.tex
 no_acro_rule :
 	@acro=`cat ${LECTURE}_course.log | grep "Acronym.*not defined" | wc -l` \
@@ -71,24 +76,25 @@ info ::
 	@echo "make pdf onepass LECTURE=... / FILE=..."
 TEXROOTDIR = ../..
 pdf :: beamerfiles
+	@if [ -z "${FILE}" ] ; then \
+	    echo "Please set FILE variable" && exit 1 ; fi
 	@echo && echo "First pass..." && echo \
-	 && export file=$$( make --no-print-directory filename LECTURE="${LECTURE}" FILE="${FILE}" ) \
-	 && make --no-print-directory onepassformat FORMAT="${FORMAT}" FILE=$${file} \
+	 && make --no-print-directory onepassformat FORMAT="${FORMAT}" FILE=${FILE} \
 	 && if [ -z "${BIB}" ] ; then \
 	        bib=0 ; else bib=1 ; fi \
 	 && if [ $${bib} -eq 1 ] ; then \
-	        ( bibtex          $${file} || echo true ) \
+	        ( bibtex          ${FILE} || echo true ) \
 	    ; fi \
 	 && if [ -z "${INDEX}" ] ; then \
 	        index=0 ; else index=1 ; fi \
 	 && if [ $${index} -eq 1 ] ; then \
-	        ( makeindex       $${file} || echo true ) \
+	        ( makeindex       ${FILE} || echo true ) \
 	    ; fi \
 	 && if [ $$( cat ${FILE}.log | grep "Rerun to get cross-references right" | wc -l ) -eq 0 ] ; then \
 	    ref=0; else ref=1 ; fi \
 	 && if [ $${index} -eq 1 -o $${bib} -eq 1 -o $${ref} -eq 1 ] ; then \
 	        echo && echo "Second  pass..." && echo \
-	         && make --no-print-directory onepassformat FORMAT="${FORMAT}" FILE=$${file} \
+	         && make --no-print-directory onepassformat FORMAT="${FORMAT}" FILE=${FILE} \
 	    ; fi
 beamerfiles :
 	@\

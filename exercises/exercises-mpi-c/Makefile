@@ -2,7 +2,7 @@
 ################################################################
 ####
 #### This makefile is part of `Parallel Programming in MPI and OpenMP'
-#### by Victor Eijkhout, copyright 2013-2024
+#### by Victor Eijkhout, copyright 2013-2026
 #### eijkhout@tacc.utexas.edu
 ####
 #### Makefile for MPI course exercises in C
@@ -25,7 +25,7 @@ EXERCISES = hello \
     isendirecv isendirecvarray isendirecvcart \
     setdiff setdiffprobe bucketblock bucketpipenonblock \
     stridesend stridescatter cubegather procgrid procgridnonblock \
-    randomput countdown onesidedbuild lockall lockfetch lockfetchshared \
+    randomput countdown onesidedbuild lockfetch lockfetchshared \
     blockwrite blockadvance blockseek blockall viewwrite scatterwrite \
     jordan rightsend rightput rightgraph \
     ibarrierupdate shareddata
@@ -60,5 +60,5 @@ NP = 4
 
 include ../course-support/Make.clean
 # simgrid and regression junk
-clean ::
-	@/bin/rm -f *.err *.dat *.out[0-9]*
+# clean ::
+# 	@/bin/rm -f *.err *.dat *.out[0-9]*

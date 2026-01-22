@@ -1,5 +1,5 @@
 cmake_minimum_required( VERSION 3.12 )
-project( ${PROJECT_NAME} VERSION 1.0 )
+project( ${PROJECTNAME} VERSION 1.0 )
 
 enable_language(Fortran)
 
@@ -11,15 +11,15 @@ else()
   message( FATAL_ERROR "No f08 module for this MPI" )
 endif()
 
-add_executable( ${PROJECT_NAME} ${PROJECT_NAME}.F90 )
+add_executable( ${PROJECTNAME} ${PROJECTNAME}.F90 )
 target_include_directories(
-	${PROJECT_NAME} PUBLIC
+	${PROJECTNAME} PUBLIC
 	${MPI_Fortran_INCLUDE_DIRS} ${CMAKE_CURRENT_SOURCE_DIR} )
 target_link_directories(
-	${PROJECT_NAME} PUBLIC
+	${PROJECTNAME} PUBLIC
 	${MPI_LIBRARY_DIRS} )
 target_link_libraries(
-	${PROJECT_NAME} PUBLIC 
+	${PROJECTNAME} PUBLIC 
 	${MPI_Fortran_LIBRARIES} )
 
-install( TARGETS ${PROJECT_NAME} DESTINATION . )
+install( TARGETS ${PROJECTNAME} DESTINATION . )
