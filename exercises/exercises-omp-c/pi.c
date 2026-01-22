@@ -36,6 +36,7 @@ int main() {
   // 3 : put a `critical' directive in front of the update. same questions.
   // 4 : remove the critical and use a clause `reduction(+:quarterpi)'
 /**** your code here ****/
+#pragma omp parallel 
   for (int i=0; i<N; i++) {
     double x = i*h;
     quarterpi += h * sqrt(1-x*x);
@@ -45,7 +46,7 @@ int main() {
   t = omp_get_wtime()-t;
 #pragma omp parallel
   if (omp_get_thread_num()==0)
-    printf("Pi=%8.4f in time on %2d threads: %7.5f\n",
+    printf("Pi=%12.8f in time on %2d threads: %7.5f\n",
 	   4*quarterpi,omp_get_num_threads(),t);
   
   return 0;
