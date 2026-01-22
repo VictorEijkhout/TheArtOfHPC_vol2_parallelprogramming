@@ -16,13 +16,13 @@
 
 //codesnippet cuhellodef
 __global__ void hello_cuda() {
-  printf("hello world!\n");
+  printf("hello world (%d,%d)!\n",blockIdx.x,threadIdx.x);
 }
 //codesnippet end
 
 int main() {
   //codesnippet cuhellouse
-  hello_cuda<<<1,1>>>();
+  hello_cuda<<<2,8>>>();
   cudaDeviceSynchronize();
   //codesnippet end
 

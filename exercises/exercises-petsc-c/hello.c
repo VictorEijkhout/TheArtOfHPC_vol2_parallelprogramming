@@ -26,13 +26,13 @@ int main(int Argc,char **Args)
    * -- use PetscPrintf to print only from process zero
    *    make sure to remove the original printf!
    */
-  printf(
-	 "Hello, I'm processor %d and %d processors have just initialized\n",
-	 procno,nprocs
-	 );
+  /* printf( */
+  /* 	 "Hello, I'm processor %d and %d processors have just initialized\n", */
+  /* 	 procno,nprocs */
+  /* 	 ); */
   PetscCall( PetscPrintf
     (
-/**** your code here ****/
+     comm,""
      ) );
 
   /*

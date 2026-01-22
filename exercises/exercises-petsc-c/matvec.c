@@ -107,11 +107,14 @@ int main(int argc,char **argv)
     PetscInt rowsize;
     PetscCall( MatGetLocalSize
       (A,
-/**** your code here ****/
+       &rowsize,NULL
        ) );
+    PetscInt globalsize;
+    MatGetSize(A,&globalsize,NULL);
     PetscCall( VecSetSizes
       (x,
-/**** your code here ****/
+       PETSC_DECIDE,globalsize
+       //rowsize,PETSC_DETERMINE
        ) );
   }
 
@@ -134,7 +137,7 @@ int main(int argc,char **argv)
    */
   PetscCall( MatMult
     (
-/**** your code here ****/
+     A,x,y
      ) );
 
   /*
@@ -148,7 +151,7 @@ int main(int argc,char **argv)
     PetscCall( PetscPrintf(comm,"Global norm test succeeds on all %d processes\n",nprocs) ); 
   }
 
-  //#if 0
+  #if 0
   /*
    * Second, more funky test
    */
@@ -195,7 +198,7 @@ int main(int argc,char **argv)
 /**** your code here ****/
     PetscCall( VecDestroy(&localvec) ); 
   }
-  //#endif
+  #endif
 
   /*
      Free work space.  All PETSc objects should be destroyed when they

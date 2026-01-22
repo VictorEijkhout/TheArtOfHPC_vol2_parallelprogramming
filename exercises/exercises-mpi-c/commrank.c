@@ -27,12 +27,19 @@ int main(int argc,char **argv) {
   //    reporting its number and the total number.
   int nprocs, procno;
 /**** your code here ****/
+  MPI_Comm_size(comm,&nprocs);
+  MPI_Comm_rank(comm,&procno);
+  /* printf( "Hello from proc %d out of %d\n", */
+  /* 	  procno,nprocs ); */
 
   // Exercise part 2:
   // -- let only processs zero print out
   //    "There are 16 processes"
   //    reporting only the total number
 /**** your code here ****/
+  if (procno==nprocs-1) 
+    printf( "Hello, there are %d processes\n",
+	    nprocs );
   
   MPI_Finalize();
   return 0;
