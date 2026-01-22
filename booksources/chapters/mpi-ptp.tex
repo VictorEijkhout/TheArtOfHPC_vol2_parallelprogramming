@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2025
+%%%% by Victor Eijkhout, copyright 2012-2026
 %%%%
 %%%% mpi-ptp.tex : about point-to-point communication
 %%%%
@@ -54,17 +54,21 @@ the \emph{status}\index{status!of received message} of the message:
 To do this, the receive call has a \indexmpidef{MPI_Status} parameter.
 The \indexmpishow{MPI_Status} object
 is a structure (in~C a \lstinline{struct}, in~F90 an array, in~F2008 a derived type)
-with freely accessible members:
+with members that can be access in two ways.
 \begin{itemize}
-\item \indexmpishow{MPI_SOURCE} gives the source ofthe message;
+\item The function \indexmpishow{MPI_Status_get_source} (\mpistandard{4})
+  returns the \indexmpishow{MPI_SOURCE} member that  gives the source of.the message;
   see section~\ref{sec:mpi-source}.
-\item \indexmpishow{MPI_TAG} gives the tag with which the message was received;
+\item The function  \indexmpishow{MPI_Status_get_tag} (\mpistandard{4})
+  return the \indexmpishow{MPI_TAG} member that
+  gives the tag with which the message was received;
   see section~\ref{sec:mpi-tag}.
-\item \indexmpishow{MPI_ERROR} gives the error status of the receive call;
+\item The function \indexmpishow{MPI_ERROR} (\mpistandard{4})
+  returns the  \indexmpishow{MPI_Status_get_error} member
+  that gives the error status of the receive call;
   see section~\ref{sec:mpi-status-error}.
-\item The number of items in the message can be deduced from the status object,
-  not as a structure member,
-  but through a function call to \indexmpishow{MPI_Get_count};  
+\item The function \indexmpishow{MPI_Get_count}
+  returns the number of items in the message;
   see section~\ref{sec:mpi-status-count}.
 \end{itemize}
 
@@ -81,17 +85,6 @@ with freely accessible members:
   (Remarkably, these routines are even available in~C,
   where they operate on \indexmpishow{MPI_Fint}, \indexmpishow{MPI_F08_status} arguments.)
 \end{fortrannote}
-
-\begin{mpifournote}{Status access}
-  The \lstinline{SOURCE,TAG,ERROR} fields can also be accessed,
-  both to get and to set,
-  with routines 
-  \begin{itemize}
-    \item \indexmpishow{MPI_Status_get_source}, \indexmpishow{MPI_Status_set_source};
-    \item \indexmpishow{MPI_Status_get_tag}, \indexmpishow{MPI_Status_set_tag};
-    \item \indexmpishow{MPI_Status_get_error}, \indexmpishow{MPI_Status_set_error};
-  \end{itemize}
-\end{mpifournote}
 
 \begin{pythonnote}{Status object}
   The status object is explicitly created before being passed
@@ -163,8 +156,10 @@ Likewise the source:
 \begin{lstlisting}
 mpl::tag_t t = recv_status.tag();
 \end{lstlisting}
-
 \end{mplnote}
+
+For symmetry, there is a function \indexmpishow{MPI_Status_set_source}
+to set the source recorded in a status object.
 
 \Level 1 {Tag}
 \label{sec:mpi-tag}
@@ -216,6 +211,9 @@ There are not many cases where this is needed.
   \mplverbatimsnippet{mplinttag}
 \end{mplnote}
 
+For symmetry there is a function \indexmpishow{MPI_Status_set_tag}
+to set the tag as recorded in a status object.
+
 \Level 1 {Error}
 \label{sec:mpi-status-error}
 
@@ -230,6 +228,8 @@ during the receive operation can be found as the
 \indexmpidef{MPI_ERROR}
 member of the status structure.
 
+For symmetry there is a function \indexmpishow{MPI_Status_set_error}.
+to set the error as recorded in a status object.
 
 \Level 1 {Count}
 \label{sec:mpi-status-count}
@@ -301,7 +301,7 @@ and the manager process accepts messages from any source.
 
 \cverbatimsnippet[examples/mpi/c/anysource.c]{anysource}
 
-In chapter~\ref{prj:mandelbrot} you can do programming project with
+In chapter~\ref{proj:mandelbrot} you can do programming project with
 this model.
 
 \index{message!status|)}

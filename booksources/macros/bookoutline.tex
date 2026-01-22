@@ -1,0 +1,59 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `The Art of HPC, vol 1: The Science of Computing'
+%%%% by Victor Eijkhout, copyright 2012-2023
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%% bookoutline : outline macros specifically for the book version
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%
+%%%% Outlining
+%%%%
+\usepackage{outliner}
+\ifFormatAsBook
+  \OutlineLevelStart0{\chapter{#1}}
+  \OutlineLevelStart1{\section{#1}}
+  \OutlineLevelCont1{\section{#1}}
+  \OutlineLevelStart2{\subsection{#1}}
+  \OutlineLevelStart3{\subsubsection{#1}}
+  \setcounter{secnumdepth}{4}
+  \OutlineLevelStart4{\paragraph{\bf #1}}
+\else
+  \OutlineLevelStart0{\section{#1}}
+  \OutlineLevelStart1{\subsection{#1}}
+  \OutlineLevelStart2{\subsubsection{#1}}
+  \OutlineLevelStart3{\paragraph{#1}}
+\fi
+
+\newcommand\heading[1]{\paragraph*{\textbf{#1}}}
+
+\endinput
+
+\usepackage{outliner}
+\OutlineLevelStart0{\chapter{#1}
+  \maillink{arabic{chapter} "#1"}{#1}{chapter}
+}
+\OutlineLevelStart1{\section{#1}
+\maillink{\arabic{chapter}.\arabic{section}}{#1}{section}
+}
+\OutlineLevelCont1{\section{#1}
+\maillink{\arabic{chapter}.\arabic{section}}{#1}{section}
+}
+\OutlineLevelStart2{\subsection{#1}
+  \maillink
+    {\arabic{chapter}.\arabic{section}.\arabic{subsection}}{#1}{subsection}
+}
+\OutlineLevelStart3{\subsubsection{#1}}
+\setcounter{secnumdepth}{4}
+\OutlineLevelStart4{\paragraph{\bf #1}}
+
+\newcommand\heading[1]{\paragraph*{\textbf{#1}}}

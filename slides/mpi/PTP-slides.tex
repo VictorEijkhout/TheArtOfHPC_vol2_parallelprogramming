@@ -82,8 +82,8 @@ MPI_Recv( y,10,MPI_DOUBLE, src,0,comm,&status );
 \end{lstlisting}
 \end{numberedframe}
 
-\mpiproto{MPI_Send}
-\mpiproto{MPI_Recv}
+\mpiprotocombined{MPI_Send}
+\mpiprotocombined{MPI_Recv}
 
 \begin{numberedframe}{Status object}
  Use \indexmpishow{MPI_STATUS_IGNORE} unless~\ldots
@@ -105,7 +105,7 @@ MPI_Get_count(status,MPI_FLOAT,&c);
   \input ex:pingpong
 \end{exerciseframe}
 
-\mpiproto{MPI_Wtime}
+\mpiprotocombined{MPI_Wtime}
 
 \Level 2 {Distributed data}
 
@@ -315,7 +315,7 @@ Definition of `small message' controlled by environment variables:\\
   \end{itemize}
 \end{numberedframe}
 
-\mpiproto{MPI_Ssend}
+\mpiprotocombined{MPI_Ssend}
 
 \Level 2 {Pairwise exchange}
 

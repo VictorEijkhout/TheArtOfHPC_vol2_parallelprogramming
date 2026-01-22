@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the lecture slides for
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2025
+%%%% by Victor Eijkhout, copyright 2012-2026
 %%%%
 %%%% Cluster-slides.tex : logistics about clusters
 %%%%
@@ -20,26 +20,62 @@
   \item Compute nodes: where your job is run. They are often exclusive
     to you: no other users getting in the way of your program.
   \end{itemize}
-  Hostfile: the description of where your job runs. Usually generated
-  by a \indexterm{job scheduler}.
+\end{numberedframe}
+
+\begin{numberedframe}{Login nodes}
+  Shared between many users\\
+  (how many right now?)\\
+  You are allowed to do:
+  \begin{itemize}
+  \item Compilation
+  \item Post-processing
+  \item Run very short programs (but not MPI)
+  \item Submit jobs for batch execution (\indextermtt{sbatch})
+  \item Connect for interactive job (\indextermtt{idev})
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Batch run}
+  \begin{itemize}
+  \item Submit batch job with \indextermtt{sbatch} \\
+    (on other clusters: \indextermtt{qsub})
+  \item Your job will be executed~\ldots Real Soon Now.
+  \item See userguide for details about queues, sizes, runtimes,~\ldots
+  \end{itemize}
+  \includegraphics[scale=.15]{job_sbatch}
 \end{numberedframe}
 
 \begin{numberedframe}{Interactive run}
   \begin{itemize}
   \item Do not run your programs on a login node.
   \item Acquire compute nodes with \indextermtt{idev}
-  \item Caveat: only small short jobs; nodes may not be available.
+  \item Caveat: only small short jobs; nodes may not be available.\\
+    During training there will be a `reservation':\\
+    carefully look at messages from \lstinline{idev}
   \end{itemize}
   \includegraphics[scale=.15]{job_idev}
 \end{numberedframe}
 
-\begin{numberedframe}{Batch run}
+\begin{numberedframe}{{\tt idev} command}
+\begin{lstlisting}
+idev -t hh:mm:ss -N nodes -n cores -p queue
+\end{lstlisting}
   \begin{itemize}
-  \item Submit batch job with \indextermtt{sbatch} or \indextermtt{qsub}
-  \item Your job will be executed~\ldots Real Soon Now.
-  \item See userguide for details about queues, sizes, runtimes,~\ldots
+  \item \lstinline{-t}: time
+  \item \lstinline{-N}: number of nodes
+  \item \lstinline{-n}: total number of cores
+  \item \lstinline{-p}: partition~/ queue
   \end{itemize}
-  \includegraphics[scale=.15]{job_sbatch}
+\end{numberedframe}
+
+\begin{numberedframe}{Batch job}
+\begin{lstlisting}
+sbatch batchfile.slurm
+\end{lstlisting}
+  \begin{itemize}
+  \item \lstinline{sbatch}: submit
+  \item \lstinline{squeue}: job status
+  \end{itemize}
 \end{numberedframe}
 
 \begin{exerciseframe}
@@ -52,6 +88,52 @@
     also \n{ibrun -n 3 hostname}
   \item Same, but \n{idev} on two nodes.
   \item Create a job script that will run on 10 nodes;\\
-    again let it run the \n{hostname} command.
+    again let it run the \n{hostname} command.\\
+    Submit with \lstinline{sbatch}
   \end{itemize}
 \end{exerciseframe}
+
+\Level 1 {Course practicalities}
+
+\begin{numberedframe}{Languages}
+  You can program in:
+  \begin{itemize}
+  \item C: use \lstinline{mpicc} as compiler
+  \item C++: use \lstinline{mpicxx} as compiler\\
+    with MPL library: additionally \lstinline{module load mpl}
+  \item Fortran: use \lstinline{mpif90} as compiler
+  \item Python: \lstinline{module load python} or \lstinline{python3}
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Lab setup}
+  \begin{itemize}
+  \item Clone the repository\\
+    \url{https://github.com/VictorEijkhout/TheArtOfHPC_vol2_parallelprogramming}
+  \item Directory: \n{exercises-mpi-c} or \n{cxx} or \n{f} or \n{f08}
+    or \n{p} or \n{mpl}
+  \item Open a terminal window on a TACC cluster.
+  \item Type \n{idev -N 2 -n 10 -t 2:0:0 } which gives
+    you an interactive session of 2~nodes, 10~cores, for the next
+    2~hours.
+  \item Type \n{make exercisename} to compile it
+  \item Run with \n{ibrun} or \n{mpiexec} 
+  \end{itemize}
+\end{numberedframe}
+
+\endinput
+
+\begin{numberedframe}{}
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{}
+  \begin{itemize}
+  \item 
+  \end{itemize}
+\end{numberedframe}
+
+  Hostfile: the description of where your job runs. Usually generated
+  by a \indexterm{job scheduler}.

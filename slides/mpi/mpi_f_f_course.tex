@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2025
+%%%% by Victor Eijkhout, copyright 2012-2026
 %%%%
 %%%% mpi_course.tex : master file for an MPI course
 %%%%
@@ -13,8 +13,6 @@
 
 \documentclass[10pt]{beamer}
 
-\usepackage{comment}
-\input lang
 \input courseformat
   
 \def\qrcode{qrvol2}
@@ -64,23 +62,23 @@
 \renewcommand\standardversion{3}
 
 \Level 1 {Supercomputer clusters}
-\input Cluster-slides
+\input cluster-slides
 
 %% \coursesection
 \Level 1 {The SPMD model}
 \label{sec:spmd}
-\input SPMD-slides
+\input spmd-slides
 
 %% \coursesection
 \Level 1 {Collectives}
 \label{sec:collectives}
-\input Collective-slides
+\input collective-slides
 
 %% \end{document}
 %% \coursesection
 \Level 1 {Point-to-point communication}
 \label{sec:ptp}
-\input PTP-slides
+\input ptp-slides
 
 \iffalse
 \begin{exerciseframe}[serialsend]

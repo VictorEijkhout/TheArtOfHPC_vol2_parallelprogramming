@@ -3,7 +3,7 @@
 ####
 #### This makefile is part of the source of 
 #### "Parallel Programming in MPI and OpenMP"
-#### by Victor Eijkhout, copyright 2013-2025
+#### by Victor Eijkhout, copyright 2013-2026
 ####
 #### Makefile for MPI course slides
 ####
@@ -16,16 +16,15 @@ info::
 	@echo "================================================================"
 	@echo
 
-info ::
-	@echo "make makefmt"
-.PHONY: makefmt
-makefmt :
-	TEXINPUTS=../..//:${TEXINPUTS} pdftex --ini "&latex" /opt/local/share/texmf-texlive/tex/latex/mylatex/mylatex.ltx preamble.tex
-	mv mylatex.fmt mpicourse.fmt
-
 COURSE = mpi
 COURSES  = mpi mpl mpiadvanced mpibasics mpiintermediate \
     test
+LECTURE =  cluster
+LECTURES = cluster spmd collective ptp
+LONGNAME_cluster    = 01 Supercomputer Clusters
+LONGNAME_spmd       = 02 SPMD model
+LONGNAME_collective = 03 Collective operations
+LONGNAME_ptp        = 04 Point-to-point
 EXTRATEXINPUTS =
 
 include ../course-support/Make.course

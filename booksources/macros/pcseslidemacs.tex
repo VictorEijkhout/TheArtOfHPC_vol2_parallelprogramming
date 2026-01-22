@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming for Science and Engeneering'
-%%%% by Victor Eijkhout, copyright 2012-2025
+%%%% by Victor Eijkhout, copyright 2012-2026
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -23,13 +23,25 @@
 %% \def\RoutineRefStyle{\scriptsize}
 
 \newcommand\standardversion{}
+%%
+%% macro for prototype slides in all the enabled languages
+%%
 \def\mpiproto#{\begingroup \catcode`\_=12
   \afterassignment\mpiprotoinclude \def\protoname}
+%%
+%% macro for a single prototype slide with all the enabled languages
+%%
+\def\mpiprotocombined#{\begingroup \catcode`\_=12
+  \afterassignment\mpiprotoincludecombined \def\protoname}
 
+%%%%
+%%%% Complicated implementation of the above
+%%%%
 \newcommand\mpiprotoinclude{
   \cfprotoslide
   \endgroup
 }
+\let\mpiprotoincludecombined=\mpiprotoinclude
 
   %% \addtocounter{slidecount}{-1}
   %% \mplprotoslide{MPI_Gatherv}
@@ -41,14 +53,21 @@
   \pyprotoslide
   \endgroup
 }
+\let\mpiprotoincludecombined=\mpiprotoinclude
 \end{python}
+
 \begin{mpl}
-% only mpl
+% only add mpl
 \renewcommand\mpiprotoinclude{
   \cfprotoslide
   \mplprotoslide
   \endgroup
 }
+\renewcommand\mpiprotoincludecombined{
+  \cflprotoslide
+  \endgroup
+}
+
 \begin{python}
 % both mpl & python
 \renewcommand\mpiprotoinclude{
@@ -82,6 +101,40 @@
               {mpireference/\protoname.tex}
               {\verbatiminput{mpireference/\protoname}}{}}
         %\expandafter\mpiRoutineRef\expandafter{\protoname}
+  \end{frame}
+}
+
+\newcommand\cflprotoslide{
+  \begin{frame}[containsverbatim]\frametitle{\texttt\protoname}
+      % mpi standard macros
+      \def\MPI/{MPI}\def\mpi/{MPI}\def\RMA/{RMA}
+      \def\mpifunc##1{\texttt{##1}}
+      \let\mpiarg\mpifunc \let\mpicode\mpifunc
+      \let\const\mpifunc  \let\constskip\mpifunc
+    \tiny
+    \edef\tmp{\lowercase{\def\noexpand\standardroutine{\protoname}}}\tmp
+    \def\stdtmp{standard/\standardroutine\standardversion}
+    \IfFileExists
+        {\stdtmp.tex}
+        {\message{including standard: \stdtmp.tex}\input{\stdtmp}}
+        {% if no standard file, then maybe handwritten file
+          \message{Could not find: \stdtmp.tex}
+          \IfFileExists
+              {mpireference/\protoname.tex}
+              {\verbatiminput{mpireference/\protoname}}{}}
+        %\expandafter\mpiRoutineRef\expandafter{\protoname}
+
+    \def\hyperlink##1##2{##2}
+    \def\href##1{}
+    \def\hypertarget##1{}
+    \let\+\relax
+    \tiny
+    \edef\tmp{\lowercase{\def\noexpand\standardroutine{\protoname}}}\tmp
+    \IfFileExists
+        {mplreference/\standardroutine.tex}
+        {\lstinputlisting{mplreference/\standardroutine}}
+        {Missing MPL proto: \standardroutine}
+
   \end{frame}
 }
 
@@ -123,25 +176,6 @@
         {Missing Python proto: \stdtmp}
   \end{frame}
 }
-
-%%       % mpi standard macros
-%%       \def\MPI/{MPI}\def\mpi/{MPI}\def\RMA/{RMA}
-%%       \def\mpifunc##1{\texttt{##1}}
-%%       \let\mpiarg\mpifunc \let\mpicode\mpifunc
-%%       \let\const\mpifunc  \let\constskip\mpifunc
-%%     \tiny
-%%     \edef\tmp{\lowercase{\def\noexpand\standardroutine{\protoname}}}\tmp
-%%     \IfFileExists
-%%         {standardp/\standardroutine\standardversion.tex}
-%%         {\input{standard/\standardroutine\standardversion}}
-%%         {% if no standard file, then maybe handwritten file
-%%           \IfFileExists
-%%               {standardp/\protoname.tex}
-%%               {\verbatiminput{standardp/\protoname}}{}}
-%%         %\expandafter\mpiRoutineRef\expandafter{\protoname}
-%%   \end{frame}\egroup
-%% }
-%% \end{python}
 
 \newcommand\ListingFileInsert[2]{
     \IfFileExists

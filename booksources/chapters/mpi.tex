@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2025
+%%%% by Victor Eijkhout, copyright 2012-2026
 %%%%
 %%%% mpi.tex : leftover MPI topics
 %%%%
@@ -12,6 +12,43 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \lstset{language=C}
+
+\Level 0 {Application Binary Interface (ABI)}
+
+As of \mpistandard{4}, MPI has an \acf{ABI},
+which specifies
+\begin{itemize}
+\item the memor layout of opaque handle objects, and
+\item the values of integer constants, as well as
+\item other aspects that require a defined \ac{ABI}.
+\end{itemize}
+
+The \ac{ABI} immediately supports the following query functions:
+\begin{itemize}
+\item \indexmpidef{MPI_Abi_get_version}, returning
+  the major and minor version
+  (or \lstinline{-1} if not suported); and
+\item \indexmpidef{MPI_Abi_get_info},
+  returning a~(pointer to~an) \indexmpishow{MPI_Info} object.
+\end{itemize}
+
+The \ac{ABI} info object contains at least the following
+predefined keys:
+\begin{itemize}
+\item \indexmpidef{mpi_aint_size} for the size of
+  an \indexmpishow{MPI_Aint} in bytes;
+\item \indexmpidef{mpi_count_size} for the size of
+  an \indexmpishow{MPI_Count} in bytes;
+\item \indexmpidef{mpi_offset_size} for the size of
+  an \indexmpishow{MPI_Offset} in bytes;
+\end{itemize}
+
+\Level 1 {Header and library}
+
+The (?any?) \ac{ABI} must be implemented with a header \lstinline{mpi.h},
+and the library implementing the standard \ac{ABI} must be named \lstinline{mpi_abi},
+plus any prefix and/or suffix, for instance \lstinline{libmpi_abi.so}.
+
 \Level 0 {Contextual information, attributes, etc.}
 \label{sec:context}
 

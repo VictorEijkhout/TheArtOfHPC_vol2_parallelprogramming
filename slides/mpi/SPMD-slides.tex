@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the lecture slides for
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2025
+%%%% by Victor Eijkhout, copyright 2012-2026
 %%%%
 %%%% SPMD-slides.tex : slides about MPI's SPMD mode
 %%%%
@@ -28,38 +28,6 @@
 
 \Level 2 {Practicalities}
 
-\begin{tacc}
-\begin{numberedframe}{Lab setup}
-  \begin{itemize}
-  \item Clone the repository\\
-    \url{https://github.com/VictorEijkhout/TheArtOfHPC_vol2_parallelprogramming}
-  \item Directory: \n{exercises-mpi-c} or \n{cxx} or \n{f} or \n{f08}
-    or \n{p} or \n{mpl}
-  \item Open a terminal window on a TACC cluster.
-  \item Type \n{idev -N 2 -n 10 -t 2:0:0 } which gives
-    you an interactive session of 2~nodes, 10~cores, for the next
-    2~hours.
-  \item Type \n{make exercisename} to compile it
-  \item Run with \n{ibrun} or \n{mpiexec} 
-  \end{itemize}
-\end{numberedframe}
-\end{tacc}
-
-\begin{python}
-  \addtocounter{slidecount}{-1}
-\begin{numberedframe}{Python}
- Python: setup once per session
-\begin{lstlisting}[language=bash]
-module load python3
-\end{lstlisting}
-No compilation needed. Run:
-\begin{lstlisting}[language=bash]
-ibrun python3 yourprogram.py
-\end{lstlisting}
-(on a compute node!)
-\end{numberedframe}
-\end{python}
-
 \begin{numberedframe}{Compiling}
   MPI compilers are usually called \indextermtt{mpicc},
   \indextermtt{mpif90}, \indextermtt{mpicxx}.
@@ -78,13 +46,24 @@ icx -I/intel/include/stuff -L/intel/lib/stuff -Wwarnings # et cetera
 
 \begin{tacc}
 \begin{numberedframe}{Running (at TACC)}
-  In your batch job indicate node and core count
+  In your batch script indicate node and core count
 \begin{lstlisting}[language=bash]
 #SBATCH -N 4
 #SBATCH -n 200
 ibrun yourprog
 \end{lstlisting}
 No specification on \n{ibrun} needed!
+\end{numberedframe}
+
+\begin{numberedframe}{Interactive development}
+  Interactive development
+\begin{lstlisting}[language=bash]
+idev # and maybe optional 
+# and now you get an interactive development node
+\end{lstlisting}
+This is limited in time and resources:\\
+use this only for development, not production\\
+
 \end{numberedframe}
 \end{tacc}
 
@@ -164,10 +143,19 @@ mpirun -np 4 hostfile ... yourprogram arguments
   Not in this course\ldots
 \end{numberedframe}
 
+\begin{numberedframe}{MPI `mindset'}
+  MPI acts as if processes in their own grey box\\
+  connected through a network cable.
+
+  (Of course MPI implementations are optimized
+  to use current architectures.)
+\end{numberedframe}
+
 \begin{numberedframe}{Terminology}
   `Processor' is ambiguous: is that a chip or one independent
   instruction processing unit?
   \begin{itemize}
+  \item Node: a board with one or more sockets
   \item Socket: the processor chip
   \item Processor: we don't use that word
   \item Core: one instruction-stream processing unit
@@ -349,9 +337,13 @@ from mpi4py import MPI
 
 \begin{numberedframe}{Process identification}
   \label{sl:comm-world}
+  Processes are organized in `communicators':\\
+  groups of processes.
   \begin{itemize}
-  \item Processes are organized in `communicators'.
-  \item For now only the `world' communicator
+  \item For now only the `world' communicator: \\
+    all the processes you start out with.
+  \item Processes can only interact if they are
+    in the same communicator.
   \item Each process has a unique `rank' wrt the communicator.
   \end{itemize}
 \lstset{language=C}
@@ -398,8 +390,8 @@ comm = MPI.COMM_WORLD
 \end{lstlisting}
 \end{numberedframe}
 
-\mpiproto{MPI_Comm_size}
-\mpiproto{MPI_Comm_rank}
+\mpiprotocombined{MPI_Comm_size}
+\mpiprotocombined{MPI_Comm_rank}
 
 \begin{numberedframe}{About routine signatures: C/C++}
   \label{sec:protos}
@@ -550,7 +542,7 @@ MPI_Init(0,0);
 
 \Level 2 {Processor name}
 
-\mpiproto{MPI_Get_processor_name}
+\mpiprotocombined{MPI_Get_processor_name}
 
 \begin{exerciseframe}
   \input ex:procname

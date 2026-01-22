@@ -4,9 +4,9 @@
 %%%%
 %%%% This text file is part of the lecture slides for
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2025
+%%%% by Victor Eijkhout, copyright 2012-2026
 %%%%
-%%%% Collective-slides.tex : slides about collective operations
+%%%% collective-slides.tex : slides about collective operations
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -37,17 +37,17 @@
 \begin{numberedframe}{Collectives}
   Gathering and spreading information:
   \begin{itemize}
-  \item Every process has data, you want to bring it together;
   \item One process has data, you want to spread it around.
+  \item Every process has data, you want to bring it together;
   \end{itemize}
   Root process: the one doing the collecting or disseminating.
 
   Basic cases:
   \begin{itemize}
-  \item Collect data: gather.
-  \item Collect data and compute some overall value (sum, max): reduction.
   \item Send the same data to everyone: broadcast.
   \item Send individual data to each process: scatter.
+  \item Collect data: gather.
+  \item Collect data and compute some overall value (sum, max): reduction.
   \end{itemize}
 \end{numberedframe}
 
@@ -60,7 +60,7 @@
 \subsection{All-reduce}
 
 \begin{numberedframe}{Allreduce: reduce-to-all}
-  Exercise 2 above contains a common case:\\
+  Case 2 in the exercise above contains a common case:\\
   do a reduction, but everyone needs the result.
   \begin{itemize}
   \item \lstinline{MPI_Allreduce} does the same as:\\
@@ -87,6 +87,16 @@
   \item Question: what kind of reduction do you use for an inf-norm? One-norm? Two-norm?
   \end{itemize}
 \end{numberedframe}
+
+\begin{exerciseframe}
+  How many objections can you come up to this strategy:
+  \begin{enumerate}
+  \item Gather vector~\lstinline{x} on some root process;
+  \item Compute the reduction on that root;
+  \item Construct the scaled vector on the root;
+  \item Scatter the scaled vector.
+  \end{enumerate}
+\end{exerciseframe}
 
 \begin{numberedframe}{Another Allreduce}
 Standard deviation:
@@ -134,7 +144,7 @@ How do we compute this?
 \end{itemize}
 \end{numberedframe}
 
-\mpiproto{MPI_Allreduce}
+\mpiprotocombined{MPI_Allreduce}
 
 \begin{exerciseframe}[randommax]
   %% this is {ex:randommaxscale}
@@ -429,8 +439,11 @@ MPI_Allreduce( &local_inprod, &global_inprod,
 \end{comment}
 
 \begin{numberedframe}{Reduction to single process}
-    Regular reduce: great for printing out summary information at the
+  Reduce with a single root process: great for printing out summary information at the
   end of your job.
+
+  Can you think of a case were a rooted reduce is appropriate
+  or unavoidable? (Hint:~tree)
 \end{numberedframe}
 
 \begin{numberedframe}{Reduction to root}
@@ -502,7 +515,7 @@ int MPI_Bcast(
   \url{https://youtu.be/aQYuwatlWME}
 \end{numberedframe}
 
-\mpiproto{MPI_Bcast}
+\mpiprotocombined{MPI_Bcast}
 
 \begin{exerciseframe}[jordan]
   \small
@@ -544,8 +557,8 @@ Scan or `parallel prefix': reduction with partial results
 \]
 \end{numberedframe}
 
-\mpiproto{MPI_Scan}
-\mpiproto{MPI_Exscan}
+\mpiprotocombined{MPI_Scan}
+\mpiprotocombined{MPI_Exscan}
 
 %% \begin{numberedframe}{For the next exercise}
 %%   \label{fig:scanints}
@@ -587,7 +600,7 @@ buffer; instead, it is the amount of data to/from each process.
   symmetrically parallel. 
 \end{numberedframe}
 
-\mpiproto{MPI_Allgather}
+\mpiprotocombined{MPI_Allgather}
 
 \begin{numberedframe}{Allgather pictured}
   \includegraphics[scale=.4]{allgather}
@@ -732,7 +745,7 @@ INTEGER :: length, mpitype
 \end{numberedframe}
 \end{fortran}
 
-\mpiproto{MPI_Op_create}
+\mpiprotocombined{MPI_Op_create}
 
 \begin{numberedframe}{Example}
   Smallest nonzero:

@@ -1,0 +1,4 @@
+template<typename T>
+void mpl::communicator::ssend
+   (const T &data, int destination, tag_t t = tag_t{0}) const;
+   (const T *data, const layout<T> &l, int destination, tag_t t = tag_t{0}) const;

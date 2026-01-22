@@ -87,7 +87,7 @@
     max,min,denorm_min,epsilon,lowest,sqrt,pow,to_ulong,conj,exp,abs,fabs,norm,polar,
     add_sat,
     cmp_equal,cmp_not_equal,cmp_greater,isnan,isinf,isfinite,isnormal,numeric_limits,
-    quiet_NaN,has_quiet_NaN,signaling_NaN
+    quiet_NaN,has_quiet_NaN,signaling_NaN,
     % container functions
     emplace,push_back,pop,size,ssize,capacity,back,front,last,
     begin,end,rbegin,rend,at,insert,erase,next,prev,advance,
@@ -118,7 +118,7 @@
     iostream,sstream,cstdlib,cstdio,functional,memory,limits,climits,
     algorithm,numeric,ranges,execution,iterator,
     chrono,random,rand,srand,
-    cstdint,cmath,bit,stdfloat,
+    cstdint,cmath,bit,stdfloat,linalg,
     TEST_CASE,SECTION,REQUIRE,REQUIRE_NOTHROW,REQUIRE_THROWS,INFO,
   },
   keywordstyle=\bfseries\color{green!40!blue!60},
@@ -366,8 +366,9 @@
    morestring=[b]",
   classoffset=0,
   morekeywords={
+    cat,echo,
     if,then,else,fi,for,while,do,done,
-    cd,ar,nm,ld,pwd,grep,
+    cd,ar,nm,ld,ls,pwd,grep,
   },
   keywordstyle=\bfseries\color{indianred},
   classoffset=1,
@@ -383,10 +384,10 @@
   },
 }
 
-\lstdefinelanguage{git}[]{shell}{
+\lstdefinelanguage{git}{ % []{shell}{
   morekeywords={
     git,add,branch,checkout,clone,commit,diff,
-    init,log,pull,push,remote,revert,status,touch,
+    init,log,pull,push,remote,reset,revert,show,status,touch,
     stash,drop,pop,reset,
     HEAD,
     },
