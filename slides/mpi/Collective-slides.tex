@@ -75,6 +75,9 @@
   Example: normalizing a vector
   \[ y \leftarrow x/\|x\| \]
   \includegraphics[scale=.4]{mpi-array}
+
+  Norm needs to be known everywhere.\\
+  How do you compute it?
 \end{numberedframe}
 
 \begin{numberedframe}{Structure of allreduce}
@@ -88,6 +91,14 @@
   \end{itemize}
 \end{numberedframe}
 
+\begin{numberedframe}{Conceptual picture}
+  Recall SPMD: every process has the input and output variable
+
+  \includegraphics[scale=.4]{allreduce}
+
+  (What actually happens is a different story!)
+\end{numberedframe}
+
 \begin{exerciseframe}
   How many objections can you come up to this strategy:
   \begin{enumerate}
@@ -98,33 +109,26 @@
   \end{enumerate}
 \end{exerciseframe}
 
-\begin{numberedframe}{Another Allreduce}
+\begin{exerciseframe}{Standard deviation}
 Standard deviation:
 \[ \sigma = \sqrt{\frac1N \sum_i^N (x_i-\mu) }
 \qquad\hbox{where}\qquad \mu = \frac{\sum_i^Nx_i}N
 \]
 and assume that every process stores just one~$x_i$ value.
 
-How do we compute this?
-\begin{enumerate}
-\item The calculation of the average~$\mu$ is a reduction.
-\item Every
-  process needs to compute~$x_i-\mu$ for its value~$x_i$, so use
-  allreduce operation, which does the reduction and leaves
-  the result on all processes.
-\item $\sum_i(x_i-\mu)$ is another sum of
-  distributed data, so we need another reduction operation. Might as
-  well use allreduce.
-\end{enumerate}
-\end{numberedframe}
+Argue that there is one all-reduce and one reduce with a root.
+\end{exerciseframe}
 
-\begin{numberedframe}{Conceptual picture}
-  Recall SPMD: every process has the input and output variable
-
-  \includegraphics[scale=.4]{allreduce}
-
-  (What actually happens is a different story!)
-\end{numberedframe}
+  %% \begin{enumerate}
+  %% \item The calculation of the average~$\mu$ is a reduction.
+  %% \item Every
+  %%   process needs to compute~$x_i-\mu$ for its value~$x_i$, so use
+  %%   allreduce operation, which does the reduction and leaves
+  %%   the result on all processes.
+  %% \item $\sum_i(x_i-\mu)$ is another sum of
+  %%   distributed data, so we need another reduction operation. Might as
+  %%   well use allreduce.
+  %% \end{enumerate}
 
 \begin{numberedframe}{Allreduce syntax}
 \begin{lstlisting}

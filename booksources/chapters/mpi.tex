@@ -14,6 +14,7 @@
 \lstset{language=C}
 
 \Level 0 {Application Binary Interface (ABI)}
+\label{sec:mpi-abi}
 
 As of \mpistandard{4}, MPI has an \acf{ABI},
 which specifies
@@ -23,15 +24,20 @@ which specifies
 \item other aspects that require a defined \ac{ABI}.
 \end{itemize}
 
-The \ac{ABI} immediately supports the following query functions:
+The version of the \ac{ABI} is available:
 \begin{itemize}
-\item \indexmpidef{MPI_Abi_get_version}, returning
+\item through compile-time constants
+  \indexmpidef{MPI_ABI_VERSION} and \indexmpidef{MPI_ABI_SUBVERSION}; and
+\item through a query function
+  \indexmpidef{MPI_Abi_get_version}, returning
   the major and minor version
-  (or \lstinline{-1} if not suported); and
-\item \indexmpidef{MPI_Abi_get_info},
-  returning a~(pointer to~an) \indexmpishow{MPI_Info} object.
+  (or \lstinline{-1} if not suported).
 \end{itemize}
 
+Further information on the \ac{ABI} can be obtained through 
+\indexmpidef{MPI_Abi_get_info},
+returning a~(pointer to~an) \indexmpishow{MPI_Info} object.
+%
 The \ac{ABI} info object contains at least the following
 predefined keys:
 \begin{itemize}
@@ -48,6 +54,32 @@ predefined keys:
 The (?any?) \ac{ABI} must be implemented with a header \lstinline{mpi.h},
 and the library implementing the standard \ac{ABI} must be named \lstinline{mpi_abi},
 plus any prefix and/or suffix, for instance \lstinline{libmpi_abi.so}.
+
+\Level 0 {Versioning}
+\label{sec:mpi-version}
+
+There are a number of routines for querying versions.
+
+The \emph{MPI standard version}\index{MPI!standard!version} is available:
+\begin{itemize}
+\item  through compile-time parameters
+  \indexmpidef{MPI_VERSION} and \indexmpidef{MPI_SUBVERSION};
+\item through the function \indexmpiref{MPI_Get_version}.
+  (This function can be called at any time.)
+\end{itemize}
+
+\begin{pythonnote}{MPI Version}
+  A function is available for version and subversion, as well as explicit parameters:
+  \psnippetwithoutput{mpiversionp}{examples/mpi/p}{version}
+\end{pythonnote}
+
+The \emph{MPI library version}\index{MPI!library!version} is available
+only through a function \indexmpiref{MPI_Get_library_version},
+which returns a string of length maximally \indexmpiref{MPI_MAX_LIBRARY_VERSION_STRING}.
+
+As of \mpistandard{5}, MPI has a defined \ac{ABI}; see section~\ref{sec:mpi-abi}.
+Its version and subversion can be queried with
+\indexmpiref{MPI_Abi_get_version} and \indexmpiref{MPI_Abi_get_info}.
 
 \Level 0 {Contextual information, attributes, etc.}
 \label{sec:context}
@@ -286,21 +318,6 @@ This name need not be unique between different processor ranks.
 You have to pass in the character storage:
 the character array must be at least \indexmpishow{MPI_MAX_PROCESSOR_NAME} characters long.
 The actual length of the name is returned in the \n{resultlen} parameter.
-
-\Level 1 {Version information}
-
-For runtime determination,
-The \indextermbus{MPI}{version} is available through two parameters
-\indexmpidef{MPI_VERSION} and \indexmpidef{MPI_SUBVERSION}
-or the function \indexmpiref{MPI_Get_version}.
-
-The library version can be queried with \indexmpidef{MPI_Get_library_version}.
-The result string has to fit in \indexmpidef{MPI_MAX_LIBRARY_VERSION_STRING}.
-
-\begin{pythonnote}{MPI Version}
-  A function is available for version and subversion, as well as explicit parameters:
-  \psnippetwithoutput{mpiversionp}{examples/mpi/p}{version}
-\end{pythonnote}
 
 \Level 1 {Python utility functions}
 

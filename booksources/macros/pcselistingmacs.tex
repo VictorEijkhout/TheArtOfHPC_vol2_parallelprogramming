@@ -4,7 +4,7 @@
 %%%%
 %%%% This LaTeX file is part of the source of 
 %%%% `Parallel Computing in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2018-2024
+%%%% by Victor Eijkhout, copyright 2018-2026
 %%%%
 %%%% listingmacs.tex : listing-related macros.
 %%%% THIS FILE IS INCLUDED BY bookmacs/slidemacs
@@ -19,19 +19,6 @@
 \newcommand\finline[1]{{\lstset{language=Fortran}\lstinline{#1}}}
 
 \def\codefontsize{\footnotesize}
-%% \lstdefinestyle{reviewcode}{
-%%   belowcaptionskip=1\baselineskip, frame=L,
-%%   breaklines=true, breakatwhitespace=true,
-%%   postbreak=\hbox{{$\hookrightarrow$}}, % \textcolor{green}
-%%   xleftmargin=.5\unitindent, showstringspaces=false,
-%%   basicstyle=\codefontsize\ttfamily,
-%%   keywordstyle=\bfseries\color{blue},
-%%   commentstyle=\color{red!60!black},
-%%   identifierstyle=\slshape\color{black},
-%%   stringstyle=\color{green!60!black}, columns=fullflexible,
-%%   keepspaces=true,tabsize=8,
-%%   %% alsoletter={(),&*}
-%% }
 \lstdefinestyle{slidecode}{
   belowcaptionskip=1\baselineskip, frame=none, numbers=left,numberstyle=\tiny,
   breaklines=true, breakatwhitespace=true,
@@ -55,7 +42,8 @@
     MPI_Something,MPI_Something_c,PMPI_Something,MPI_Ixxx,MPI_Xxx_init,
     MPI_Init,MPI_Initialized,MPI_Finalize,MPI_Finalized,MPI_Abort,
     MPI_Init_thread,MPI_Query_thread,MPI_Is_thread_main,
-    MPI_Get_processor_name,MPI_Get_library_version,
+    MPI_Get_processor_name,MPI_Get_version,MPI_Get_library_version,
+    MPI_Abi_get_version,MPI_Abi_get_info,
     % comm stuff
     MPI_Comm_size,MPI_Comm_rank,
     MPI_Comm_dup,MPI_Comm_dup_with_info,MPI_Comm_idup,MPI_Comm_idup_with_info,

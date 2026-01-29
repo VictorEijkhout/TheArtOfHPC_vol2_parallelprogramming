@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2022
+%%%% by Victor Eijkhout, copyright 2012-2026
 %%%%
 %%%% mpi-started.tex : introductory chapter about MPI
 %%%%
@@ -504,21 +504,24 @@ MPI.Request.Waitall(requests)
 \Level 0 {Review}
 
 \begin{review}
+  \label{ex:mpi-review1}
   What determines the parallelism of an MPI job?
   \begin{enumerate}
   \item The size of the cluster you run on.
   \item The number of cores per cluster node.
-  \item\label{it:ans:mpiexec} The parameters of the MPI starter (\indextermtt{mpiexec},
-    \n{ibrun},\ldots)
+  \item\label{it:ans:mpiexec}
+    The parameters of the MPI starter (\indextermtt{mpiexec}, \n{ibrun},\ldots)
   \end{enumerate}
 \end{review}
 
 \begin{review}
+  \label{ex:mpi-review2}
   T/F: the number of cores of your laptop is the limit of how many MPI
   proceses you can start up.
 \end{review}
 
 \begin{review}
+  \label{ex:mpi-review3}
   Do the following languages have an object-oriented interface to MPI? In what sense?
   \begin{enumerate}
   \item C

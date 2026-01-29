@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2025
+%%%% by Victor Eijkhout, copyright 2012-2026
 %%%%
 %%%% mpi-collective.tex : driver file for the collectives chapter
 %%%%
@@ -68,7 +68,8 @@ collective operation
   \begin{enumerate}
   \item Let each process compute a random number. You want to print the
     maximum of these numbers to your screen.
-  \item Each process computes a random number again. Now you want to
+  \item\label{ex:coll-cases-allreduce}
+    Each process computes a random number again. Now you want to
     scale these numbers by their maximum. 
   \item Let each process compute a random number. You want to print on what processor the
     maximum value is computed. 
@@ -87,8 +88,10 @@ run.
 
 However, a more common scenario is 
 that the result of a collective is needed on all processes.
+You already saw that in exercise~\ref{ex:collective-cases},
+item~\ref{ex:coll-cases-allreduce}.
 
-Consider the computation of the \indexterm{standard deviation}:
+A practical example would be the computation of the \indexterm{standard deviation}:
 \[ \sigma = \sqrt{\frac1{N-1} \sum_i^N (x_i-\mu)^2 }
 \qquad\hbox{where}\qquad \mu = \frac{\sum_i^Nx_i}N
 \]

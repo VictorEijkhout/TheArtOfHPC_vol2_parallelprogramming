@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2025
+%%%% by Victor Eijkhout, copyright 2012-2026
 %%%%
 %%%% mpi-bcastreduce.tex : about broadcast & reduce collectives
 %%%%
@@ -114,6 +114,7 @@ Each of these needs some elucidation.
   Note the parentheses after the operator.
   Also note that the operator comes first, not last as in the C~\ac{API}.
 
+  \lstset{language=mpl}
   Available: \lstinline{max}, \lstinline{min}, \lstinline{plus}, \lstinline{multiplies},
   \lstinline{logical_and}, \lstinline{logical_or}, \lstinline{logical_xor},
   \lstinline{bit_and}, \lstinline{bit_or}, \lstinline{bit_xor}.
@@ -357,8 +358,7 @@ data item, and these are all brought together into a single item.
 
 Here are the essential elements of a reduction operation:
 \begin{lstlisting}
-MPI_Reduce( senddata, recvdata..., operator,
-    root, comm ); 
+MPI_Reduce( senddata, recvdata..., operator, root, comm ); 
 \end{lstlisting}
 \begin{itemize}
 \item There is the original data, and the data resulting from the
