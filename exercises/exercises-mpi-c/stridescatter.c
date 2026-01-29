@@ -30,7 +30,7 @@ int main(int argc,char **argv) {
     printf("This program needs at least two processes\n");
     return -1;
   }
-  int sender = 0, localsize = 3;
+  int sender = 0, localsize = 10;
 
   // big data array, will only be created on the root
   int *data = NULL;
@@ -59,7 +59,6 @@ int main(int argc,char **argv) {
     MPI_Aint l,e;
     count = localsize; stride = nprocs; blocklength = 1;
     MPI_Type_vector(count,blocklength,stride,MPI_INT,&scattertype);
-    MPI_Type_commit(&scattertype);
 /**** your code here ****/
   }
 

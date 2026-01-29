@@ -16,10 +16,7 @@
 
 int main(int argc,char **argv) {
 
-  printf("Hello world1\n");
-  MPI_Init( 0,0 );
-  printf("Hello world2\n");
-  MPI_Finalize();
-
+/**** your code here ****/
+  
   return 0;
 }

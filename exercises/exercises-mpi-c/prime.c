@@ -30,16 +30,10 @@ int main(int argc,char **argv) {
   // -- If a processors finds a factor, print it to the screen.
 
   // 1. Set loop bounds
-  int blocksize = maxfactor/nprocs;
-  int myfirst = procno*blocksize,
-    mylast = (procno+1)*blocksize-1 ;
-  if (procno==0) myfirst = 2;
-  if (procno==nprocs-1) mylast = maxfactor;
+/**** your code here ****/
   // 2. Fill in loop header
   for ( int myfactor=
-	  // this is sequential: 2; myfactor<bignum;
-	  myfirst; myfactor<mylast;
-	myfactor++
+/**** your code here ****/
        ) {
     if (bignum%myfactor==0) {
       printf("Processor %d found factor %d\n",procno,myfactor);

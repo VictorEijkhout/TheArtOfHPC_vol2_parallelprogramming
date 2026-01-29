@@ -37,29 +37,27 @@ int main(int argc,char **argv) {
   // -- for first/last process use MPI_PROC_NULL
 
   // get data from the left: who are you communicating with?
-  sendto = procno<nprocs-1 ? procno+1 : MPI_PROC_NULL;
-  recvfrom = procno>0 ? procno-1 : MPI_PROC_NULL;
+/**** your code here ****/
   MPI_Isend(&mydata,1,MPI_DOUBLE, sendto,0, comm,
-	    &(requests[0])
+/**** your code here ****/
 	    );
   MPI_Irecv(&leftdata,1,MPI_DOUBLE, recvfrom,0, comm,
-	    &(requests[1])
+/**** your code here ****/
 	    );
 
   // get data from the right: who are you communicating with?
-  recvfrom = procno<nprocs-1 ? procno+1 : MPI_PROC_NULL;
-  sendto = procno>0 ? procno-1 : MPI_PROC_NULL;
+/**** your code here ****/
   MPI_Isend(&mydata,1,MPI_DOUBLE, sendto,0, comm,
-	    requests+2
+/**** your code here ****/
 	    );
   MPI_Irecv(&rightdata,1,MPI_DOUBLE, recvfrom,0, comm,
-	    requests+3
+/**** your code here ****/
 	    );
 
   //
   // Now make sure all Isend/Irecv operations are completed
   //
-  MPI_Waitall( 4,requests,MPI_STATUSES_IGNORE );
+/**** your code here ****/
   
   /*
    * Correctness check:
@@ -68,7 +66,6 @@ int main(int argc,char **argv) {
    * - `nprocs' if no error.
    */
   // check correctness
-  // actual computation
   mydata = mydata+leftdata+rightdata;
 
   double res;

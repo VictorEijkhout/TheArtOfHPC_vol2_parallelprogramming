@@ -42,28 +42,25 @@ int main(int argc,char **argv) {
     MPI_Abort(comm,0);
   }
   ncols = nprocs/nrows;
+
   //
   // Exercise:
   // - compute the coordinates of this process
   //
   int row_no,col_no;
-  row_no = procno/ncols;
-  col_no = procno%ncols;
-  printf("%d = (%d,%d)\n",procno,row_no,col_no);
+/**** your code here ****/
 
   //
   // Make a `col_comm' communicator with all processes in this column
   //
   MPI_Comm_split(comm,
-		 col_no,0,
-		 &col_comm
+/**** your code here ****/
 		 );
   //
   // Make a `row_comm' communicator with all processes in this row
   //
   MPI_Comm_split(comm,
-		 row_no,0,
-		 &row_comm
+/**** your code here ****/
 		 );
 
   //
@@ -71,16 +68,14 @@ int main(int argc,char **argv) {
   // by using MPI_Comm_rank
   //
   MPI_Comm_rank(
-		row_comm,
-		&rank_in_row
+/**** your code here ****/
 		);
   //
   // also find `rank_in_col': the number I am in my column
   // by using MPI_Comm_rank
   //
   MPI_Comm_rank(
-		col_comm,
-		&rank_in_col
+/**** your code here ****/
 		);
 
   /*
