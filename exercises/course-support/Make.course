@@ -48,7 +48,7 @@ course ::
 	 ; fi
 	@if [ "${COURSEPREP}" = "1" ] ; then \
 	  make --no-print-directory course_prep ; fi 
-	@make --no-print-directory pdf FILE=${COURSE}_course
+	@make --no-print-directory pdf FILE=${COURSE}_course INPUT=0
 	@make --no-print-directory diagnostics FILE=${COURSE}_course
 	@cp ../course-support/lang_all.tex ./lang.tex
 lecture ::
@@ -61,9 +61,24 @@ lecture ::
 	 ; else \
 	    cp ../course-support/lang_${LANGUAGE}.tex ./lang.tex \
 	 ; fi
-	@make --no-print-directory pdf FILE=${LECTURE}
+	@make --no-print-directory pdf FILE=${LECTURE} INPUT=0
 	@make --no-print-directory diagnostics FILE=${LECTURE}
 	@cp ../course-support/lang_all.tex ./lang.tex
+companion ::
+	@if [ -z "${LECTURE}" ] ; then \
+	    echo "Error: no LECTURE variable defined" && exit 1 \
+	 ; else echo "Formatting LECTURE=${LECTURE}" \
+	 ; fi 
+	@if [ -z "${LANGUAGE}" ] ; then \
+	    cp ../course-support/lang_all.tex ./lang.tex \
+	 ; else \
+	    cp ../course-support/lang_${LANGUAGE}.tex ./lang.tex \
+	 ; fi
+	@make --no-print-directory pdf FILE=${LECTURE} INPUT=1
+	@make --no-print-directory diagnostics FILE=${LECTURE}
+	mv ${LECTURE}.pdf ${LECTURE}_companion.pdf
+	@cp ../course-support/lang_all.tex ./lang.tex
+
 no_acro_rule :
 	@acro=`cat ${LECTURE}_course.log | grep "Acronym.*not defined" | wc -l` \
 	 && if [ $$acro -gt 0 ] ; then \
@@ -79,7 +94,8 @@ pdf :: beamerfiles
 	@if [ -z "${FILE}" ] ; then \
 	    echo "Please set FILE variable" && exit 1 ; fi
 	@echo && echo "First pass..." && echo \
-	 && make --no-print-directory onepassformat FORMAT="${FORMAT}" FILE=${FILE} \
+	 && make --no-print-directory onepassformat \
+	        FORMAT="${FORMAT}" FILE=${FILE} INPUT="${INPUT}" \
 	 && if [ -z "${BIB}" ] ; then \
 	        bib=0 ; else bib=1 ; fi \
 	 && if [ $${bib} -eq 1 ] ; then \

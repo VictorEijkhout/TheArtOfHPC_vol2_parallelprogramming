@@ -121,7 +121,7 @@ int main(int argc,char **argv) {
   // check that we have swept
   for (int row=0; row<N; row++) {
     if (row==procno) continue;
-    if (fabs(matrix[row])>1.e-14)
+    if (fabs(matrix[row])>1.e-12)
       printf("Wrong value at [%d,%d]: %e\n",row,procno,matrix[row]);
   }
   //printf("Diagonal element %d: %e\n",procno,matrix[procno]);

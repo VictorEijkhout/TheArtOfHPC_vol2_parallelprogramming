@@ -27,9 +27,14 @@ onepassformat :
 	    && exit 1 \
 	    ; fi
 	@echo && echo "One pass over file: ${FILE}" && echo \
-	 && TEXINPUTS=${LOCALTEXINPUTS}:${TEXINPUTS} ${LATEXENGINE} \
-	        $$( if [ ! -z "${FORMAT}" ] ; then echo \&${FORMAT} ; fi ) \
-	        ${FILE}
+	 && cmdline="TEXINPUTS=${LOCALTEXINPUTS}:${TEXINPUTS} ${LATEXENGINE} ${FILE}" \
+	 && if [ ! -z "${INPUT}" ] ; then \
+	      eval "echo ${INPUT} | $${cmdline}" \
+	    ; else \
+	      eval "$${cmdline}" \
+	    ; fi 
+
+# 	        $$( if [ ! -z "${FORMAT}" ] ; then echo \&${FORMAT} ; fi ) 
 
 .PHONY: filename
 filename :

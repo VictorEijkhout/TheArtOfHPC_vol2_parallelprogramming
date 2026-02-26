@@ -1,5 +1,6 @@
 // vectorpadsend.c
-for (int i=0; i<max_elements; i++) sendbuffer[i] = i;
-MPI_Type_vector(count,blocklength,stride,MPI_INT,&stridetype);
-MPI_Type_commit(&stridetype);
-MPI_Send( sendbuffer,ntypes,stridetype, receiver,0, comm );
+int count = 3, stride = 2, blocklength = 1, ntypes = 2;
+  for (int i=0; i<max_elements; i++) sendbuffer[i] = i;
+  MPI_Type_vector(count,blocklength,stride,MPI_INT,&stridetype);
+  MPI_Type_commit(&stridetype);
+  MPI_Send( sendbuffer,ntypes,stridetype, receiver,0, comm );

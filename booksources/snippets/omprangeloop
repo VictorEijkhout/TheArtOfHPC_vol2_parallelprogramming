@@ -1,5 +1,6 @@
 // vecdata.cpp
-vector<float> values(100);
+vector<float> values(N);
+double tstart = omp_get_wtime();
 
 #pragma omp parallel for 
 for ( auto& elt : values ) {
