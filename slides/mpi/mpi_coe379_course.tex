@@ -13,14 +13,27 @@
 
 \documentclass[10pt]{beamer}
 
+{\endlinechar=-1 \global\read 16 to \isinstructor }
+
 \input courseformat
   
 \def\qrcode{qrvol2}
+
+\def\yes{1}
+\ifx\isinstructor\yes
+\specialcomment
+    {instructor}
+    {\begin{frame}[containsverbatim]\frametitle{\sl Instructor's note}}
+    {\end{frame}}
+\else
+\excludecomment{instructor}
+\fi
+  
 \begin{document}
 
 \author[Eijkhout]{Victor Eijkhout}
-%%\date[2025]{2025 COE 379L / CSE 392}
-\date[2025]{2025 TACC APPI}
+\date[2026]{2026 COE 379L / CSE 392}
+%% \date[2025]{2025 TACC APPI}
 %% \normalsize last formatted \today}
 \title[MPI]{MPI Course}
 \maketitle
@@ -80,12 +93,6 @@
 \label{sec:ptp}
 \input ptp-slides
 
-\iffalse
-\begin{exerciseframe}[serialsend]
-  \input ex:serialsend
-\end{exerciseframe}
-\fi
-
 \begin{frame}[containsverbatim]\frametitle{Where to go from here\ldots}
   \begin{itemize}
   \item Derived data types: send strided/irregular/inhomogeneous data
@@ -113,12 +120,12 @@
 %% \coursesection
 \Level 1 {Derived Datatypes}
 \label{sec:derived}
-\input Data-slides
+\input datatypes-slides
 
 %% \coursesection
 \Level 1 {Communicator manipulations}
 \label{sec:comm}
-\input Subcomm-slides
+\input communicator-slides
 
 %% \coursesection
 \Level 1 {MPI File I/O}

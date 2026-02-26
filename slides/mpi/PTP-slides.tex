@@ -30,12 +30,16 @@
 \Level 2 {Point-to-point communication}
 
 \begin{numberedframe}{MPI point-to-point mechanism}
-  \begin{itemize}
-  \item Two-sided communication
-  \item Matched send and receive calls
-  \item One process sends to a specific other process
-  \item Other process does a specific receive.
-  \end{itemize}
+  \begin{multicols}{2}
+    \includegraphics[scale=.12]{passnote}
+    \columnbreak
+    \begin{itemize}
+    \item Two-sided communication
+    \item Matched send and receive calls
+    \item One process sends to a specific other process
+    \item Other process does a specific receive.
+    \end{itemize}
+  \end{multicols}
 \end{numberedframe}
 
 \setbox1=\vbox{
@@ -202,7 +206,7 @@ Result:
   Most common operation: matrix vector product
   \[ y\leftarrow Ax,\qquad
   A = \begin{pmatrix}
-      2&-1\\ -1&2&-1\\ &\ddots&\ddots&\ddots
+      2&-1& &\emptyset\\ -1&2&-1\\ \emptyset&\ddots&\ddots&\ddots
     \end{pmatrix}
     \begin{pmatrix}
       u_1\\ u_2\\ \vdots
@@ -232,6 +236,17 @@ This leads to communication:
 \includegraphics[scale=.09]{threepoint.png}
 
 so we need a point-to-point mechanism.
+\end{numberedframe}
+
+\begin{numberedframe}{Halo regions}
+  \label{sl:halo-buffer}
+  Each process needs buffers for receiving data
+  from the left and right:
+  
+  \includegraphics[scale=.5]{halo1d}
+
+  (This complicates the code from the single-processor case. Agree?\\
+  How can you simplify this?)
 \end{numberedframe}
 
 \Level 2 {Blocking communication}
@@ -288,8 +303,8 @@ Definition of `small message' controlled by environment variables:\\
 \end{exerciseframe}
 
 \begin{numberedframe}{TAU trace: serialization}
-  \includegraphics[scale=.4]{graphics/linear-serial}
   \label{fig:serialization}
+  \includegraphics[scale=.4]{graphics/linear-serial}
 \end{numberedframe}
 
 \begin{numberedframe}{The problem here\ldots}
@@ -304,6 +319,9 @@ Definition of `small message' controlled by environment variables:\\
 
 \begin{exerciseframe}[rightsend]
   \input{ex:linear-sequential}
+
+  (This is half of the three-point stencil computation;\\
+  see slide~\ref{sl:halo-buffer})
 \end{exerciseframe}
 
 \begin{numberedframe}{Synchronous send}
@@ -311,7 +329,8 @@ Definition of `small message' controlled by environment variables:\\
   \begin{itemize}
   \item sender and receiver synchronize
   \item No `eager' sends
-  \item $\Rightarrow$ enforced always blocking behavior
+  \item $\Rightarrow$~enforce always blocking behavior\\
+    $\Rightarrow$~reproducible behavior    
   \end{itemize}
 \end{numberedframe}
 

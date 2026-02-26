@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%% "Parallel Computing"
-   %%%% by Victor Eijkhout, copyright 2021
+   %%%% by Victor Eijkhout, copyright 2021-2026
    %%%%
    %%%% MPI example for resized vector type 
    %%%%
@@ -34,8 +34,10 @@ int main(int argc,char **argv) {
    * Datatype for strided destinations
    */
   MPI_Datatype stridetype;
-  int count = 3, stride = 2, blocklength = 1;
-  int ntypes = 2, max_elements = ntypes*stride*count;
+  //codesnippet twovectorsend
+  int count = 3, stride = 2, blocklength = 1, ntypes = 2;
+  //codesnippet end
+  int max_elements = ntypes*stride*count;
   if (procno==sender) {
     int *sendbuffer = (int*)malloc( max_elements*sizeof(int) );
     //codesnippet twovectorsend

@@ -1,0 +1,419 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the lecture slides for
+%%%% `Parallel Computing'
+%%%% by Victor Eijkhout, copyright 2012-2025
+%%%%
+%%%% Data-slides.tex : slides about data types
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{numberedframe}{Overview}
+  In this section you will learn about derived data types.
+
+  Commands learned:
+  \begin{itemize}
+  \item \indexmpishow{MPI_Type_contiguous}\n{/vector/indexed/struct}
+    \indexmpishow{MPI_Type_create_subarray}
+  \item \indexmpishow{MPI_Pack}~/ \indexmpishow{MPI_Unpack}
+  \item F90 types
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Motivation: datatypes in MPI}
+  All examples so far: 
+  \begin{itemize}
+  \item contiguous buffer
+  \item elements of single type
+  \end{itemize}
+  We need data structures with gaps, or heterogeneous types.
+  \begin{itemize}
+  \item Send real or imaginary parts out of complex array.
+  \item Gather/scatter cyclicly.
+  \item Send \lstinline{struct} or \lstinline{Type} data.
+  \end{itemize}
+  MPI allows for recursive construction of data types.
+\end{numberedframe}
+
+\begin{numberedframe}{Datatype topics}
+  \begin{itemize}
+  \item Elementary types: built-in.
+  \item Derived types: user-defined.
+  \item Packed data: not really a datatype.
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Elementary datatypes}
+  \begin{tabular}{|l|l|}
+    \hline
+    \texttt{C/C++}&\texttt{Fortran}\\ \hline
+\indexmpishow{MPI_CHAR}& %only for text data, do not use for small integers&
+ \indexmpishow{MPI_CHARACTER}\\ %&Character(Len=1)\\
+\indexmpishow{MPI_UNSIGNED_CHAR}&\\
+\indexmpishow{MPI_SIGNED_CHAR}&\\
+&\indexmpishow{MPI_LOGICAL}\\
+\indexmpishow{MPI_SHORT}&\\
+\indexmpishow{MPI_UNSIGNED_SHORT}&\\
+\indexmpishow{MPI_INT}& \indexmpishow{MPI_INTEGER}\\
+\indexmpishow{MPI_UNSIGNED}&\\
+\indexmpishow{MPI_LONG}&\\
+\indexmpishow{MPI_UNSIGNED_LONG}&\\
+\indexmpishow{MPI_FLOAT}& \indexmpishow{MPI_REAL}\\
+\indexmpishow{MPI_DOUBLE}& \indexmpishow{MPI_DOUBLE_PRECISION}\\
+\indexmpishow{MPI_LONG_DOUBLE}&\\
+&\indexmpishow{MPI_COMPLEX}\\
+&\indexmpishow{MPI_DOUBLE_COMPLEX}\\ %&Complex(Kind=Kind(0.d0))\\
+\hline
+\end{tabular}
+\end{numberedframe}
+
+\begin{numberedframe}{How to use derived types}
+\label{sl:derive-howto}
+Create, commit, use, free:
+\lstset{language=C}
+\begin{lstlisting}
+MPI_Datatype newtype;
+MPI_Type_xxx( ... oldtype ... &newtype);
+MPI_Type_commit ( &newtype );
+
+  // code using the new type
+
+MPI_Type_free ( &newtype );
+\end{lstlisting}
+\lstset{language=Fortran}
+\begin{lstlisting}
+Type(MPI_Datatype) :: newtype ! F2008
+Integer            :: newtype ! F90
+\end{lstlisting}
+The \lstinline{oldtype} can be elementary or derived.\\
+Recursively constructed types.
+\end{numberedframe}
+
+\begin{instructor}
+  The datatype variable is of type \lstinline{MPI_Datatype};
+  another use of the C~PreProcessor.
+  
+  Don't forget the commit. It does some internal optimization,
+  like `can a recursively defined type be simplified?'
+
+  Note that the type is always passed by reference,
+  so the `free' call is a de-allocation and the pointer is nulled.
+  Omitting the free call gives memory leaks
+\end{instructor}
+
+\begin{mpl}
+\begin{numberedframe}{MPL layouts}
+  MPL derived types are derived classes from \lstinline{mpl::layout}.\\
+  The commit call is done in the constructor.\\
+  The free call is done in the destructor.
+\end{numberedframe}
+\end{mpl}
+
+\begin{numberedframe}{Contiguous type}
+\lstset{language=C}
+\begin{lstlisting}
+int MPI_Type_contiguous(
+  int count, MPI_Datatype old_type, MPI_Datatype *new_type_p)  
+\end{lstlisting}
+  \includegraphics[scale=.06]{data-contiguous.png}
+
+This one is indistinguishable from sending \lstinline{count} instances
+of the \lstinline{old_type}.
+\end{numberedframe}
+
+\begin{instructor}
+  This one is rarely used.
+
+  You can imagine that your code always assumes a data type,
+  sometimes contiguous, sometimes strided.
+  In that case using the contiguous type makes the code more elegant.
+\end{instructor}
+
+\begin{numberedframe}{Example: non-contiguous data}
+  Matrix in column storage:
+  \begin{itemize}
+  \item Columns are contiguous
+  \item Rows are not contiguous
+  \end{itemize}
+  \includegraphics[scale=.1]{densearray.png}
+\end{numberedframe}
+
+\begin{numberedframe}{Vector type}
+\begin{lstlisting}
+int MPI_Type_vector(
+  int count, int blocklength, int stride,
+  MPI_Datatype old_type, MPI_Datatype *newtype_p
+);  
+\end{lstlisting}
+  \includegraphics[scale=.08]{data-vector}
+
+Used to pick a regular subset of elements from an array.
+\end{numberedframe}
+
+\begin{instructor}
+  Note that the stride is from start of block to start of block;
+  it is not the gap.
+\end{instructor}
+
+\begin{mpl}
+\begin{numberedframe}{MPL strided vector layout}
+
+  %%\catcode`_=12
+  \ListingFileInsert{mplreference}{MPI_Type_vector}
+
+  \mplverbatimsnippet{vectormpl}
+\end{numberedframe}
+\end{mpl}
+
+\begin{numberedframe}{Different send and receive types}
+  Send and receive type can differ. Example:\\
+  sender type: vector\\ receiver type: contiguous or elementary
+
+  \includegraphics[scale=.1]{data-vector-to-contiguous.png}
+
+  Receiver has no knowledge of the stride of the sender.
+\end{numberedframe}
+
+\begin{numberedframe}{Send vs recv type}
+\cverbatimsnippet{vector}
+\end{numberedframe}
+
+\begin{numberedframe}{Illustration of the next exercise}
+  \label{fig:stridesend}
+  \includegraphics[scale=.3]{stridesend}
+
+  Sending strided data from process zero to all others
+\end{numberedframe}
+
+\begin{exerciseframe}[stridesend]
+  \input ex:stridesend
+\end{exerciseframe}
+
+\begin{optexerciseframe}
+  \input ex:col-to-row
+\end{optexerciseframe}
+
+\begin{numberedframe}{Indexed type}
+  \includegraphics[scale=.07]{data-indexed.png}
+\begin{lstlisting}
+int MPI_Type_indexed(
+  int count, int blocklens[], int displacements[],
+  MPI_Datatype old_type, MPI_Datatype *newtype);
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{numberedframe}{Hindexed type}
+  Similar to indexed but using byte offsets:\\
+  explicit memory address.
+
+  Example usage scenario: send linked list.\\
+  Use \indexmpiref{MPI_Get_address}
+\end{numberedframe}
+
+\begin{numberedframe}{Heterogeneous: Structure type}
+\begin{lstlisting}
+int MPI_Type_create_struct(
+  int count, int blocklengths[], MPI_Aint displacements[],
+  MPI_Datatype types[], MPI_Datatype *newtype);
+\end{lstlisting}
+  \includegraphics[scale=.07]{data-struct.png}
+
+This gets very tedious\ldots
+\end{numberedframe}
+
+\begin{instructor}
+  Computing the displacements is tricky:
+  it can involve padding of types.
+
+  Therefore we consider packing. Next.
+\end{instructor}
+
+\Level 2 {Packed data}
+
+\begin{numberedframe}{Packing into buffer}
+  \begin{itemize}
+  \item
+    Construct a buffer with \lstinline{MPI_Pack}
+  \item Send with \lstinline{MPI_Send} and such
+  \item Receive
+  \item Unpack buffer elements with \lstinline{MPI_Unpack}
+  \end{itemize}
+\end{numberedframe}
+
+\mpiproto{MPI_Pack}
+\mpiproto{MPI_Unpack}
+
+\begin{numberedframe}{Example}
+\small
+\cverbatimsnippet{packunpack}
+\end{numberedframe}
+
+\begin{instructor}
+  This examples is a `self-documenting message'.\\
+  Compare this to the python \lstinline{pickle} module.\\
+  The `native' interface to \texttt{mpi4py} probably uses
+  this `serialization' mechanism.
+\end{instructor}
+
+\Level 2 {Subarray type}
+
+\begin{numberedframe}{Submatrix storage}
+  \includegraphics[scale=.11]{denselda}
+
+  \begin{itemize}
+  \item Location of first element
+  \item Stride, blocksize
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{BLAS/Lapack storage}
+  Three parameter description:
+
+  \includegraphics[scale=.1]{blasmatrix.png}
+
+  How about as a `block within a block'?
+\end{numberedframe}
+
+\begin{instructor}
+  Talk the class through how a 2D subsection can be done
+  through a Vector type.\\
+  What are blocksize, count, and stride?
+
+  However, a 3D subsection will probably be a
+  vector-of-vectors and very tedious. \\
+  Hence the SubArray type.
+\end{instructor}
+
+\begin{numberedframe}{Subarray type}
+  \begin{itemize}
+  \item Vector type is convenient for 2D subarrays,
+  \item it gets tedious in higher dimensions.
+  \item Better solution: \indexmpishow{MPI_Type_create_subarray}
+  \end{itemize}
+\begin{lstlisting}
+MPI_Type_create_subarray(
+    ndims, array_of_sizes, array_of_subsizes,
+    array_of_starts, order, oldtype, newtype)  
+\end{lstlisting}
+Subtle: data does not start at the buffer start
+\end{numberedframe}
+
+\begin{exerciseframe}[cubegather]
+  \input ex:cubegather
+\end{exerciseframe}
+
+\begin{fortran}
+\begin{numberedframe}{Fortran `kind' types}
+  Check out
+\indexmpishow{MPI_Type_create_f90_integer},
+\indexmpishow{MPI_Type_create_f90_real},
+\indexmpishow{MPI_Type_create_f90_complex}
+
+Example:
+\lstset{language=Fortran}
+\begin{lstlisting}
+REAL ( KIND = SELECTED_REAL_KIND(15 ,300) ) , &
+ DIMENSION(100) :: array
+Type(MPI_Datatype) :: realtype
+CALL MPI_Type_create_f90_real( 15 , 300 , realtype , error )
+\end{lstlisting}
+\end{numberedframe}
+\end{fortran}
+
+\Level 2 {Extent and resizing}
+
+\begin{numberedframe}{Extent}
+  Extent: `size' of a type,\\
+  especially useful for derived types.
+
+  \includegraphics[scale=.5]{extent358.png}
+%%  \includegraphics{extentvector.jpg}
+\end{numberedframe}
+
+\begin{numberedframe}{Naive code}
+  Send multiple derived types
+  from
+\begin{verbatim}
+0 1 2 3 4 5 6 7 8 9 10
+\end{verbatim}
+
+\cverbatimsnippet{twovectorsend}
+  Receive as single block:
+  \cverbatimsnippet{twovectorrecv}
+giving an output of:
+\begin{verbatim}
+Receive 6 elements: 0 2 4 5 7 9
+\end{verbatim}
+\end{numberedframe}
+
+\begin{instructor}
+  Note that \lstinline{max elements} is used as the size of the receive buffer,
+  but fewer elements than that are received.
+\end{instructor}
+
+\begin{numberedframe}{Extent resizing: enlarging}
+  Multiple derived types may not be what you intended\\
+  extent resizing makes it artificually larger:
+
+  \includegraphics[scale=.7]{extent359.png}
+%%  \includegraphics[scale=.8]{extentpad.jpg}  
+\end{numberedframe}
+
+\begin{numberedframe}{Extent computation}
+  Use \indexmpishow{MPI_Type_get_extent} to query extent\\
+  note: parameters are measured in bytes.
+
+  \cverbatimsnippet{vectortypeextent}
+\end{numberedframe}
+
+\begin{numberedframe}{Resizing code}
+  Extend the vector type with padding:
+\cverbatimsnippet{twovectorpad}
+giving:
+\begin{verbatim}
+Strided type l=0 e=20
+Padded  type l=0 e=24
+Receive 6 elements: 0 2 4 6 8 10
+\end{verbatim}
+\end{numberedframe}
+
+\mpiproto{MPI_Type_create_resized}
+
+\begin{numberedframe}{Extent resizing: shrinking}
+  Elements are placed at distance equal to extent:
+
+  \includegraphics[scale=.35]{stride-extent}
+\end{numberedframe}
+
+\begin{exerciseframe}[stridescatter]
+  Change the \n{stridesend} code to use a scatter call,
+  rather than a sequence of sends.
+\end{exerciseframe}
+
+\begin{numberedframe}{Extent of subarray type}
+  The `subarray' type: \\
+  data does not start at the start of the type.
+
+  \indexmpiref{MPI_Type_get_true_extent} returns
+  non-zero lower bound.
+\end{numberedframe}
+
+\begin{numberedframe}{Transposition}
+  \begin{itemize}
+  \item Basic block of FFT
+  \item Before: Each process stores a block column,
+  \item After: Each process stores a block row
+  \end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{in a picture}
+  \includegraphics[scale=.7]{transpose1d}
+\end{numberedframe}
+
+\begin{exerciseframe}[transposeblock]
+  Fill in the missing bits of the skeleton code.  
+\end{exerciseframe}
+

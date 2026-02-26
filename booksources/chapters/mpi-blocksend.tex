@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2026
 %%%%
 %%%% mpi-blocksend.tex : blocking sends
 %%%%
@@ -214,7 +214,7 @@ they need to be in the same communicator.
 
 \begin{comment}
   \begin{mplnote}{Iterator buffers}
-    It is possible to to send containers by iterators
+    It is possible to send containers by iterators
     %
     \mplverbatimsnippet[examples/mpi/mpl/sendrange.cxx]{mplsendrange}
   \end{mplnote}
@@ -397,7 +397,7 @@ Sending a message takes several steps:
 \item the receiver returns a `ready-to-send' message;
 \item the sender sends the actual data.
 \end{enumerate}
-The purpose of this is to to prepare the receiver buffer space
+The purpose of this is to prepare the receiver buffer space
 for large messages. However, it implies that the sender has to
 wait for some return message from the receiver,
 making the behavior a \indextermsub{synchronous}{message}.
@@ -541,6 +541,24 @@ one processor is active at any time, so what should have been a
 parallel operation becomes a sequential one. This is illustrated in
 figure~\ref{fig:serialization}.
 
+\begin{figure}[ht]
+  \includegraphics[scale=.7]{halo1d}
+  \caption{Halo regions for left/right communication}
+  \label{fig:halo1d}
+\end{figure}
+
+If we implement this scheme we encounter a phenomenon
+known as a~`halo region':
+a~process needs some buffer space for storing the data
+that comes from the left and/or right.
+This is illustrated in figure~\ref{fig:halo1d}.
+
+For now, in the case of only passing data from the left neighbor,
+only one buffer is needed, but in more general cases
+more buffer space can be required.
+The case of two-dimensional \acp{PDE} is discussed
+in \HPSCref{sec:spmvp}.
+
 \begin{exercise}
   \label{ex:linear-sequential}
   Implement the above algorithm using \indexmpishow{MPI_Send} and \indexmpishow{MPI_Recv} calls.
@@ -678,7 +696,7 @@ count zero.
 
 \begin{exercise}
   \label{ex:rightsendrecv}
-  Revisit exercise~\ref{ex:serialsend} and solve it using
+  Revisit exercise~\ref{ex:linear-sequential} and solve it using
   \indexmpishow{MPI_Sendrecv}.
 
   If you have TAU installed, make a trace. Does it look different

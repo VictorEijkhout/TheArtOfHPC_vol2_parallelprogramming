@@ -1,0 +1,43 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `Parallel Computing'
+%%%% by Victor Eijkhout, copyright 2012-2026
+%%%%
+%%%% datatypes.tex : about derived datatypes
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[10pt]{beamer}
+
+{\endlinechar=-1 \global\read 16 to \isinstructor }
+
+\input courseformat
+\excludecomment{advanced}
+  
+\def\qrcode{qrvol2}
+
+\def\yes{1}
+\ifx\isinstructor\yes
+\specialcomment
+    {instructor}
+    {\begin{frame}[containsverbatim]\frametitle{\sl Instructor's note}}
+    {\end{frame}}
+\else
+\excludecomment{instructor}
+\fi
+  
+\begin{document}
+
+\author[Eijkhout]{Victor Eijkhout\\Jack Gaither}
+\date[2026]{2026 PCSE}
+\title[datatypes]{Derived Datatypes}
+\maketitle
+
+\lstset{language=mpi}
+\input datatypes-slides
+
+\end{document}

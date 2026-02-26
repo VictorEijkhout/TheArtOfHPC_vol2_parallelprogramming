@@ -127,17 +127,20 @@ on $2\times 2$ block form.
 
 \begin{exercise}
   \label{ex:recursivetranspose}
-  Implement a recursive algorithm for matrix transposition:
+  Implement a recursive algorithm for matrix transposition,
+  where each process stores one matrix element initially.
   
+  \begin{multicols}{2}
   \includegraphics[scale=.06]{recursive-transpose}
-
+  \columnbreak
   \begin{itemize}
   \item Swap blocks $(1,2)$ and $(2,1)$; then
-  \item Divide the processors into four subcommunicators, and
+  \item Divide the processes into four subcommunicators, and
     apply this algorithm recursively on each;
   \item If the communicator has only one process, transpose the matrix in place.
   \end{itemize}
-  (assume one element per process)
+  \end{multicols}
+  Implement a gather to print out the final result.
 \end{exercise}
 
 \Level 1 {Splitting by type}

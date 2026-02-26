@@ -57,6 +57,24 @@
   \input ex:collective-cases
 \end{exerciseframe}
 
+\begin{instructor}
+  Finding the max is a reduction with a max operator.\\
+  You could gather and then traverse the array of values,
+  but that's a time and space bottleneck:\\
+  the `root' needs as much space as the other processes combined,
+  and the root is active while the other processes are idle.
+
+  Scaling by the max is a reduction followed by a broadcast.
+  Again, solutions based on gather are sub-optimal.
+
+  Printing the max can be done with a gather,
+  or do a broadcast of the max and whoever has that value
+  prints. \\
+  Another option is a reduction on a data~/ index pair;
+  if someone comes up with that, mention that it exists,
+  otherwise ignore.
+\end{instructor}
+
 \subsection{All-reduce}
 
 \begin{numberedframe}{Allreduce: reduce-to-all}
@@ -80,6 +98,16 @@
   How do you compute it?
 \end{numberedframe}
 
+\begin{instructor}
+  Talk about `distributed array': a~mental construct of
+  a very large array that is spread over the processes.\\
+  Each process has a local array numbered zero-to-whatever,
+  but conceptually they are a very large array.
+
+  Remember; one of the reasons for MPI is that on multiple machines
+  you can handle larger problems.
+\end{instructor}
+
 \begin{numberedframe}{Structure of allreduce}
   \begin{itemize}
   \item Vectors \lstinline{x,y} are distributed: every process has certain
@@ -90,6 +118,12 @@
   \item Question: what kind of reduction do you use for an inf-norm? One-norm? Two-norm?
   \end{itemize}
 \end{numberedframe}
+
+\begin{instructor}
+  Mathematically inclined students may know about different norms:
+  \[ \|\cdots\|_2, \|\cdot\|_1, \|\cdot\|_\infty \]
+  No harm if not: they all know about sum-of-squares.
+\end{instructor}
 
 \begin{numberedframe}{Conceptual picture}
   Recall SPMD: every process has the input and output variable
@@ -109,52 +143,145 @@
   \end{enumerate}
 \end{exerciseframe}
 
-\begin{exerciseframe}{Standard deviation}
+\begin{instructor}
+  Time bottleneck: all the computation happens on the root
+
+  Memory bottleneck: root needs to have as much memory as all
+  processes combined.
+\end{instructor}
+
+\begin{exerciseframe}
 Standard deviation:
 \[ \sigma = \sqrt{\frac1N \sum_i^N (x_i-\mu) }
 \qquad\hbox{where}\qquad \mu = \frac{\sum_i^Nx_i}N
 \]
-and assume that every process stores just one~$x_i$ value.
+and assume that every process stores just one~$x_i$ value;\\
+the standard deviation is printed out, and not further used
+in computations.
 
 Argue that there is one all-reduce and one reduce with a root.
 \end{exerciseframe}
 
-  %% \begin{enumerate}
-  %% \item The calculation of the average~$\mu$ is a reduction.
-  %% \item Every
-  %%   process needs to compute~$x_i-\mu$ for its value~$x_i$, so use
-  %%   allreduce operation, which does the reduction and leaves
-  %%   the result on all processes.
-  %% \item $\sum_i(x_i-\mu)$ is another sum of
-  %%   distributed data, so we need another reduction operation. Might as
-  %%   well use allreduce.
-  %% \end{enumerate}
+\mpiprotocombined{MPI_Allreduce}
 
-\begin{numberedframe}{Allreduce syntax}
+\begin{numberedframe}{Allreduce arguments}
+  Scalar buffer
 \begin{lstlisting}
-  int MPI_Allreduce(
-    const void* sendbuf,
-    void* recvbuf, int count, MPI_Datatype datatype,
-    MPI_Op op, MPI_Comm comm)  
+double in_x,out_x;
+MPI_Allreduce( &in_x,&out_x,1,MPI_DOUBLE, ... )
 \end{lstlisting}
+Note: count$=1$ because reduction on single scalar.
+
+General buffer:
+\begin{lstlisting}
+double in_x[5],out_x[5];
+MPI_Allreduce( in_x,out_x,5,MPI_DOUBLE, ... )
+\end{lstlisting}
+
+C++
+\begin{lstlisting}
+vector<double> x(5);
+MPI_Comm_allreduce( x.data(), ...,5,... )
+\end{lstlisting}
+
 \begin{itemize}
-\item All processes have send and recv buffer
-\item (No root argument)
-\item \lstinline{count} is number of items in the buffer: 1~for scalar.\\
-  $>1$: pointwise application of the reduction operator
-\item \indexmpishow{MPI_Datatype} is \indexmpishow{MPI_INT}, \indexmpishow{MPI_FLOAT},
-  \indexmpishow{MPI_REAL8} et cetera.
+\item \indexmpishow{MPI_Datatype} is
+  \indexmpishow{MPI_INT}, \indexmpishow{MPI_FLOAT} (for~C),
+  \indexmpishow{MPI_REAL8} (for Fortran) et cetera.
 \item \indexmpishow{MPI_Op} is \indexmpishow{MPI_SUM}, \indexmpishow{MPI_MAX} et cetera.
 \end{itemize}
 \end{numberedframe}
 
-\mpiprotocombined{MPI_Allreduce}
+\begin{cxx}
+\begin{mpl}
+  \addtocounter{slidecount}{-1}
+\begin{numberedframe}{Allreduce arguments, MPL}
+  Elementary types handled through overloading~/ templating.
+\begin{lstlisting}
+float proc_data,reduce_data;
+comm_world.allreduce(mpl::plus<float>(), proc_data,reduce_data);
+
+vector<float> x(2),y(2);
+mpl::contiguous_layout<float> two_floats(2);
+comm_world.allreduce
+    (mpl::plus<float>(), x.data(),y.data(),two_floats);
+\end{lstlisting}
+
+Operators:
+  \mplverbatimsnippet{mplallreduce}
+  General type:
+\begin{lstlisting}[numbers=none]
+T(T&)
+\end{lstlisting}
+    Available: \lstinline{max}, \lstinline{min}, \lstinline{plus}, \lstinline{multiplies},
+  \lstinline{logical_and}, \lstinline{logical_or}, \lstinline{logical_xor},
+  \lstinline{bit_and}, \lstinline{bit_or}, \lstinline{bit_xor}.
+
+\end{numberedframe}
+\end{mpl}
+\end{cxx}
+
+\begin{numberedframe}{Elementary datatypes}
+\begin{tabular}{|l|l|l|l|}
+  \hline
+  C&Fortran&Python&meaning\\
+  \hline
+  \indexmpishow{MPI_CHAR}&  \indexmpishow{MPI_CHARACTER}&&only for text\\
+  \indexmpishow{MPI_SHORT}&  \indexmpishow{MPI_BYTE}&&8 bits\\
+  \indexmpishow{MPI_INT}&  \indexmpishow{MPI_INTEGER}&&like the C/F types\\
+  \indexmpishow{MPI_FLOAT}&  \indexmpishow{MPI_REAL}&&\\
+  \indexmpishow{MPI_DOUBLE}&  \indexmpishow{MPI_DOUBLE_PRECISION}&
+      \indexmpishow{MPI.DOUBLE}&\\
+  &\indexmpishow{MPI_COMPLEX}&&\\
+  &\indexmpishow{MPI_LOGICAL}&&\\  
+  \hline
+  unsigned&extensions&&\\
+  \hline
+  &&&\indexmpishow{MPI_Aint}\\
+  &&&\indexmpishow{MPI_Offset}\\
+  \hline
+\end{tabular}  
+
+A bunch more.
+\end{numberedframe}
+
+\begin{python}
+  \addtocounter{slidecount}{-1}
+\begin{numberedframe}{Python datatypes}
+  \begin{itemize}
+  \item Elementary types not needed: type can be deduced from the Numpy buffer
+  \item Buffer / count / datatype triples can be used
+    in exceptional circumstances.
+  \end{itemize}
+\end{numberedframe}
+\end{python}
+
+\begin{numberedframe}{Reduction operators}
+  \scriptsize
+  \input{mpi-opstable}
+\end{numberedframe}
+
+\begin{instructor}
+  Point out the obvious ones.
+
+  Operators such as \lstinline{MPI_MAXLOC} are tricky to use.
+\end{instructor}
 
 \begin{exerciseframe}[randommax]
-  %% this is {ex:randommaxscale}
   \input ex:randommaxscale
 \end{exerciseframe}
 
+\begin{instructor}
+  The code has suggestively named variables,
+  so this exercise `should be obvious'.
+
+  Point out the correctness test and the use of computer arithmetic in it:\\
+  single precision is $10^{-7}$ accurate, so count on 5 or~6 digits;
+  double is~$10^{-16}$ so 14 or~15 digits.\\
+  But it depends on the algorithm!
+\end{instructor}
+
+\begin{advanced}
 \Level 2 {Buffers}
 
 \begin{c}
@@ -271,84 +398,7 @@ comm.Recv(result, ...)
 \begin{exerciseframe}
   \input ex:randommaxarray
 \end{exerciseframe}
-
-\Level 2 {Collective basics}
-
-\begin{numberedframe}{Elementary datatypes}
-\begin{tabular}{|l|l|l|l|}
-  \hline
-  C&Fortran&Python&meaning\\
-  \hline
-  \indexmpishow{MPI_CHAR}&  \indexmpishow{MPI_CHARACTER}&&only for text\\
-  \indexmpishow{MPI_SHORT}&  \indexmpishow{MPI_BYTE}&&8 bits\\
-  \indexmpishow{MPI_INT}&  \indexmpishow{MPI_INTEGER}&&like the C/F types\\
-  \indexmpishow{MPI_FLOAT}&  \indexmpishow{MPI_REAL}&&\\
-  \indexmpishow{MPI_DOUBLE}&  \indexmpishow{MPI_DOUBLE_PRECISION}&
-      \indexmpishow{MPI.DOUBLE}&\\
-  &\indexmpishow{MPI_COMPLEX}&&\\
-  &\indexmpishow{MPI_LOGICAL}&&\\  
-  \hline
-  unsigned&extensions&&\\
-  \hline
-  &&&\indexmpishow{MPI_Aint}\\
-  &&&\indexmpishow{MPI_Offset}\\
-  \hline
-\end{tabular}  
-
-A bunch more.
-\end{numberedframe}
-
-\begin{mpl}
-  \addtocounter{slidecount}{-1}
-\begin{numberedframe}{MPL datatypes}
-  Elementary types derived through overloading~/ templating.
-\end{numberedframe}
-\end{mpl}
-
-\begin{python}
-  \addtocounter{slidecount}{-1}
-\begin{numberedframe}{Python datatypes}
-  \begin{itemize}
-  \item Elementary types not needed: type can be deduced from the Numpy buffer
-  \item Buffer / count / datatype triples can be used
-    in exceptional circumstances.
-  \end{itemize}
-\end{numberedframe}
-\end{python}
-
-\begin{numberedframe}{Reduction operators}
-  \scriptsize
-  \input{mpi-opstable}
-\end{numberedframe}
-
-\begin{cxx}
-\begin{mpl}
-  \addtocounter{slidecount}{-1}
-
-\begin{numberedframe}{MPL operators}
-Operators need to have type:
-\begin{lstlisting}[numbers=none]
-T(T&)
-\end{lstlisting}
-Elementary operators:
-\begin{lstlisting}[numbers=none]
-comm_world.allreduce(mpl::plus<float>(), rank2p2p1, p2layout);
-\end{lstlisting}
-User-defined operator:
-\begin{lstlisting}[numbers=none]
-comm_world.reduce(lcm<int>(), 0, v, result);
-\end{lstlisting}
-\end{numberedframe}
-
-\begin{numberedframe}{MPL operators}
-    Available: \lstinline{max}, \lstinline{min}, \lstinline{plus}, \lstinline{multiplies},
-  \lstinline{logical_and}, \lstinline{logical_or}, \lstinline{logical_xor},
-  \lstinline{bit_and}, \lstinline{bit_or}, \lstinline{bit_xor}.
-
-  \mplverbatimsnippet{mplallreduce}
-\end{numberedframe}
-\end{mpl}
-\end{cxx}
+\end{advanced}
 
 \begin{comment}
 \begin{numberedframe}{Random numbers in C}
@@ -471,11 +521,18 @@ int MPI_Reduce
   \cverbatimsnippet{allreduceinplace}
 \end{numberedframe}
 
+\begin{instructor}
+  Point out that the sendbuffer is omitted;
+  every places their data in the receive buffer.
+\end{instructor}
+
+\begin{advanced}
 \begin{numberedframe}{More in-place operations}
   \cverbatimsnippet[examples/mpi/c/allreduceinplace.c]{onereduceinplace}
   or
   \cverbatimsnippet[examples/mpi/c/allreduceinplace.c]{tworeduceinplace}
 \end{numberedframe}
+\end{advanced}
 
 \begin{fortran}
   \addtocounter{slidecount}{-1}
@@ -515,6 +572,11 @@ int MPI_Bcast(
 \end{itemize}
 \end{numberedframe}
 
+\begin{instructor}
+  Ask in class: `why is there only one buffer? Why not
+  send and receive buffer?'
+\end{instructor}
+
 \begin{numberedframe}{Gauss-Jordan elimination}
   \url{https://youtu.be/aQYuwatlWME}
 \end{numberedframe}
@@ -545,6 +607,15 @@ Scan or `parallel prefix': reduction with partial results
 \end{itemize}
 \end{numberedframe}
 
+\begin{instructor}
+  Draw an irregular object (airplane?)
+  and its division over processes.
+
+  Now every process knows how many elements it has,
+  it needs to apply scan to ask what the global number
+  of its first element is.
+\end{instructor}
+
 \begin{numberedframe}{In vs Exclusive}
   \def\strut{\vrule height 25pt width 0pt\relax}
 \[
@@ -561,13 +632,15 @@ Scan or `parallel prefix': reduction with partial results
 \]
 \end{numberedframe}
 
+\begin{instructor}
+  Originally there was only inclusive scan:
+  if you needed the exclusive, you could `divide out' the local element.
+
+  Class: when does that not work? Answer: operations like max or logical-and.
+\end{instructor}
+
 \mpiprotocombined{MPI_Scan}
 \mpiprotocombined{MPI_Exscan}
-
-%% \begin{numberedframe}{For the next exercise}
-%%   \label{fig:scanints}
-%%   \includegraphics[scale=.5]{scangather0}
-%% \end{numberedframe}
 
 \begin{exerciseframe}[scangather]
   \label{fig:scanints}
@@ -578,6 +651,13 @@ Scan or `parallel prefix': reduction with partial results
 \Level 2 {Gather/Scatter, Barrier, and others}
 
 \mpiproto{MPI_Gather}
+\begin{instructor}
+  Point out the two buffer-count-datatype triples.
+
+  Important: the count in the long buffer is still
+  the size of each individual message.
+\end{instructor}
+
 \mpiproto{MPI_Scatter}
 
 \begin{numberedframe}{Gather/Scatter}
@@ -702,6 +782,15 @@ buffer; instead, it is the amount of data to/from each process.
   \includegraphics[scale=.4]{reducescatter}
 \end{numberedframe}
 
+\begin{instructor}
+  I know of only two applications: sparse matrix setup
+  and the scalable dense matrix-vector product.
+
+  They haven't seen the sparse picture yet (it's in point-to-point)
+  and the scalable dense will come later in theory,
+  so go easy on this.
+\end{instructor}
+
 \begin{numberedframe}{Barrier}
 \begin{lstlisting}
 int MPI_Barrier( MPI_Comm comm )
@@ -762,6 +851,19 @@ INTEGER :: length, mpitype
   
   \slackpollTF+The sum of squares norm needs a custom operators+
 \end{reviewframe}
+
+\begin{mpl}
+\begin{numberedframe}{User-defined operators, MPL}
+  General type:
+\begin{lstlisting}[numbers=none]
+T(T&)
+\end{lstlisting}
+User-defined operator:
+\begin{lstlisting}[numbers=none]
+comm_world.reduce(lcm<int>(), 0, v, result);
+\end{lstlisting}
+\end{numberedframe}
+\end{mpl}
 
 \Level 2 {Performance of collectives}
 

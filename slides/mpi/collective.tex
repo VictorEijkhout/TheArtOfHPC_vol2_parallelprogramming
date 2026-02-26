@@ -13,9 +13,23 @@
 
 \documentclass[10pt]{beamer}
 
+{\endlinechar=-1 \global\read 16 to \isinstructor }
+
 \input courseformat
+\excludecomment{advanced}
   
 \def\qrcode{qrvol2}
+
+\def\yes{1}
+\ifx\isinstructor\yes
+\specialcomment
+    {instructor}
+    {\begin{frame}[containsverbatim]\frametitle{\sl Instructor's note}}
+    {\end{frame}}
+\else
+\excludecomment{instructor}
+\fi
+
 \begin{document}
 
 \author[Eijkhout]{Victor Eijkhout\\Jack Gaither}
@@ -23,6 +37,7 @@
 \title[collective]{Collective operations}
 \maketitle
 
+\lstset{language=mpi}
 \input collective-slides
 
 \end{document}
