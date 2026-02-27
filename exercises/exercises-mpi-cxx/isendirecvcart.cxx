@@ -47,21 +47,26 @@ int main(int argc,char **argv) {
   // Exercise:
   // -- set `successor' and `predecessor' for all four directions
   //    note that MPI_Cart_shift gives you two neighbors
-  // -- first horizontal
+  /*
+   * First horizontal
+   */
 /**** your code here ****/
 /**** your code here ****/
       );
   // is this process on the border?
   border_count += 
-    ( predecessor==MPI_PROC_NULL ? 1 : 0 )
-    + ( successor==MPI_PROC_NULL ? 1 : 0 );
+    ( predecessor==MPI_PROC_NULL ? 1 : 0 ) +
+    ( successor==MPI_PROC_NULL ? 1 : 0 );
+
   // data to the right
   MPI_Isend(&mydata,1,MPI_DOUBLE, successor,0, comm, &(requests[0]) );
   MPI_Irecv(&(neighbor_data[0]),1,MPI_DOUBLE, predecessor,0, comm, &(requests[1]) );
   // data to the left
 /**** your code here ****/
 
-  // now vertical
+  /*
+   * Now vertical
+   */
   MPI_Cart_shift
     ( cart_comm,
 /**** your code here ****/

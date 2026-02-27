@@ -2,7 +2,7 @@
 ################################################################
 ####
 #### This makefile is part of `Parallel Programming in MPI and OpenMP'
-#### by Victor Eijkhout, copyright 2013-2025
+#### by Victor Eijkhout, copyright 2013-2026
 #### eijkhout@tacc.utexas.edu
 ####
 #### Makefile for MPI course exercises in C++ through MPL
@@ -22,7 +22,7 @@ info ::
 EXERCISES = hello \
     commrank prime randommax onenorm sumsquares \
     pingpong pingpongbuffer sendrecv sendrecvarray jordan \
-    isendirecv isendirecvarray setdiff \
+    isendirecv isendirecvarray isendirecvcart setdiff \
     bucketblock bucketpipenonblock scangather \
     stridesend stridescatter cubegather procgrid procgridnonblock transposeblock \
     rightsend rightgraph \
@@ -39,7 +39,7 @@ MODE = mpl
 LANGUAGE = CXX
 EXTRA_OBJS = tools.o
 include ../course-support/Make.compile
-CPPSTANDARD = 17
+CPPSTANDARD = 20
 EXTRA_OPTIONS = -I${TACC_MPL_INC}
 EXTRA_LIBS = -lstdc++
 ${OBJS} tools.o : tools.h
