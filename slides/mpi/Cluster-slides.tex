@@ -35,15 +35,9 @@
   \end{itemize}
 \end{numberedframe}
 
-\begin{numberedframe}{Batch run}
-  \begin{itemize}
-  \item Submit batch job with \indextermtt{sbatch} \\
-    (on other clusters: \indextermtt{qsub})
-  \item Your job will be executed~\ldots Real Soon Now.
-  \item See userguide for details about queues, sizes, runtimes,~\ldots
-  \end{itemize}
-  \includegraphics[scale=.15]{job_sbatch}
-\end{numberedframe}
+\begin{instructor}
+  Get them to \lstinline{who | wc -l}. How do you weed out duplicates?
+\end{instructor}
 
 \begin{numberedframe}{Interactive run}
   \begin{itemize}
@@ -68,30 +62,27 @@ idev -t hh:mm:ss -N nodes -n cores -p queue
   \end{itemize}
 \end{numberedframe}
 
-\begin{numberedframe}{Batch job}
-\begin{lstlisting}
-sbatch batchfile.slurm
-\end{lstlisting}
+\begin{numberedframe}{Batch run}
   \begin{itemize}
-  \item \lstinline{sbatch}: submit
-  \item \lstinline{squeue}: job status
+  \item Submit batch job with \indextermtt{sbatch} \\
+    (on other clusters: \indextermtt{qsub})
+  \item Your job will be executed~\ldots Real Soon Now.
+  \item
+    \begin{itemize}
+    \item \lstinline{sbatch}: submit
+    \item \lstinline{squeue}: job status
+    \end{itemize}
+  \item See userguide for details about queues, sizes, runtimes,~\ldots
   \end{itemize}
+  \includegraphics[scale=.15]{job_sbatch}
 \end{numberedframe}
 
-\begin{exerciseframe}
-  \begin{itemize}
-  \item Connect to your favorite cluster\\
-    what is the hostname? how many users are logged in?
-  \item Start an interactive session with \n{idev};\\
-    what is the hostname? how many users are logged in?
-  \item Run: \n{ibrun hostname}\\
-    also \n{ibrun -n 3 hostname}
-  \item Same, but \n{idev} on two nodes.
-  \item Create a job script that will run on 10 nodes;\\
-    again let it run the \n{hostname} command.\\
-    Submit with \lstinline{sbatch}
-  \end{itemize}
-\end{exerciseframe}
+\begin{instructor}
+  Give them a batch script, let it execute \lstinline{hostname},
+  and submit that to at least two nodes.
+\end{instructor}
+
+\endinput
 
 \Level 1 {Course practicalities}
 

@@ -70,9 +70,11 @@
 %%%%
 \usepackage{outliner}
 \newcounter{sectionframe}
+\newcounter{subsectionframe}[sectionframe]
 \OutlineLevelStart 0{\refstepcounter{sectionframe}
-  \frame{\part{#1}\Large\bf #1}}
-\OutlineLevelStart 1{\frame{\section{#1}\Large\bf #1}}
+  \frame{\part{#1}\Large\bf \arabic{sectionframe}. #1}}
+\OutlineLevelStart 1{\refstepcounter{subsectionframe}
+  \frame{\section{#1}\large\bf \arabic{sectionframe}.\arabic{subsectionframe}. #1}}
 \OutlineLevelStart 2{\frame{\subsection{#1}\large\bf #1}}
 \OutlineLevelStart 3{\frame{\subsubsection*{#1}\large\bf #1}}
 \setcounter{tocdepth}{3}
