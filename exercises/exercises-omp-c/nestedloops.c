@@ -42,12 +42,14 @@ int main( int argc,char **argv ) {
    * Do you initialize the loops?
    * You may get some interesting behavior differences
    */
-  for (int i = 1; i < nloops; i++) {
-      for (int j = 0; j < vectorsize; j++) {
-        a[INDEX(i,j)] = 1.; b[INDEX(i,j)] = 1.;
-      }
-    }
+  // MISSING
 
+  for (int i = 1; i < nloops; i++) {
+    for (int j = 0; j < vectorsize; j++) {
+      a[INDEX(i,j)] = 1.; b[INDEX(i,j)] = 1.;
+    }
+  }
+  /*
   {
     /*
      * Sequential version
@@ -67,12 +69,7 @@ int main( int argc,char **argv ) {
      * OpenMP version
      */
     double tstart = omp_get_wtime();
-    for (int i = 1; i < nloops; i++) {
-      #pragma omp parallel for
-      for (int j = 0; j < vectorsize; j++) {
-        a[INDEX(i,j)] = a[INDEX(i-1,j)] + b[INDEX(i,j)];
-      }
-    }
+    // MISSING
     double duration = omp_get_wtime()-tstart;
     printf("OpenMP     t= %8.5f sec\n",duration);
   }
