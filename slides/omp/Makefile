@@ -3,7 +3,7 @@
 ####
 #### This makefile is part of the source of 
 #### "Parallel Programming in MPI and OpenMP"
-#### by Victor Eijkhout, copyright 2013-2025
+#### by Victor Eijkhout, copyright 2013-2026
 ####
 #### Makefile for OpenMP course slides
 ####
@@ -18,6 +18,17 @@ info::
 
 COURSE = omp
 COURSES = omp ompcases ompcpp
+LECTURE = forkjoin
+LECTURES = forkjoin parloop workshare ompdata sync tasks affinity memory other
+LONGNAME_forkjoin = 07 Fork-Join model
+LONGNAME_parloop = 08 Parallel Loops
+LONGNAME_workshare = 09 Worksharing
+LONGNAME_ompdata = 10 Data Model
+LONGNAME_sync = 11 Synchronization
+LONGNAME_tasks = 12 Tasks
+LONGNAME_affinity = 13 Affinity
+LONGNAME_memory = 14 Memory
+
 INEX = tacc-full
 
 include ../course-support/Make.course

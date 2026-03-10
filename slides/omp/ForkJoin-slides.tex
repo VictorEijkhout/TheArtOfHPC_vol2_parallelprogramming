@@ -4,12 +4,22 @@
 %%%%
 %%%% This text file is part of the lecture slides for
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2026
 %%%%
 %%%% ForkJoin-slides.tex : slides about OpenMP's fork-join model
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Level 0 {Fork/join Model}
+
+\begin{instructor}
+  The terms `fork/join' come from traditional thread models
+  such as `pThreads'.
+
+  OpenMP offers an abstraction over this, that is geared towards
+  HPC. In particular, there are no explicit forks and joins.
+\end{instructor}
 
 \begin{numberedframe}{Computer architecture terminology}
   One cluster node:
@@ -20,6 +30,15 @@
   chips.\\
   There may be a co-processor attached.
 \end{numberedframe}
+
+\begin{instructor}
+  Point out the memory DIMMs. These constitute shared memory
+  for all the cores on the two sockets
+  (though maybe not for the co-processor).
+
+  However, DIMMs are still attached to one socket,
+  so accessing them from the other may incur a penalty.
+\end{instructor}
 
 \begin{numberedframe}{Structure of a socket}
 
@@ -36,19 +55,20 @@
 \end{numberedframe}
 
 \begin{numberedframe}{Modern chip design}
-\includegraphics[scale=.5]{amd-chiplet}
-\begin{itemize}
-\item Shared memory
-\item Shared caches
-\item Local caches
-\item `cc-Numa': Cache-coherent Non-Uniform Memory Access
-\end{itemize}
+  AMD socket with 64 cores
+
+  \includegraphics[scale=.45]{amd-chiplet}
+  \begin{itemize}
+  \item Shared memory
+  \item Both shared and local caches
+  \item `cc-Numa': Cache-coherent Non-Uniform Memory Access
+  \end{itemize}
 \end{numberedframe}
 
 \begin{numberedframe}{OpenMP history}
   \begin{itemize}
   \item First standard 1997, Fortran directives
-  \item Current standard 5.2 as of 2021
+  \item Current standard 6.1 as of 2026
   \end{itemize}
   History of shared memory computers:
   \begin{itemize}
@@ -61,9 +81,10 @@
 
 \begin{numberedframe}{Threads}
   Process: stream of instructions\\
-  Thread: process can duplicate itself, same code, access to same data
+  Thread: process can duplicate itself, same code, access to same data,
+  some local data
 
-  \includegraphics[scale=.07]{fork-join}
+  \includegraphics[scale=.06]{fork-join}
 
   The OS will place threads on different cores: parallel
   performance.\\
@@ -72,10 +93,13 @@
 \end{numberedframe}
 
 \begin{numberedframe}{To write an OpenMP program}
+C/C++:
 \begin{lstlisting}
 #include "omp.h"
 \end{lstlisting}
-in C, and 
+
+\begin{fortran}
+Fortran:
 \begin{lstlisting}
 use omp_lib
 \end{lstlisting}
@@ -83,17 +107,16 @@ or
 \begin{lstlisting}
 #include "omp_lib.h"
 \end{lstlisting}
-for Fortran.  
+\end{fortran}
+
 \end{numberedframe}
 
 \begin{numberedframe}{To compile an OpenMP program}
 \begin{verbatim}
 # gcc
 gcc -o foo foo.c -fopenmp
-# Intel compiler 23 and later
-icc -o foo foo.c -fopenmp
-# Intel compiler before 23 
-icc -o foo foo.c -qopenmp
+# Intel compiler
+icx -o foo foo.c -qopenmp
 \end{verbatim}
 Run as ordinary program.
 \end{numberedframe}
@@ -110,30 +133,34 @@ target_link_libraries( ${program} PUBLIC OpenMP::OpenMP_Fortran )
 
 \begin{numberedframe}{Let's try an example}
   How many cores do we have?
-\begin{lstlisting}
+\begin{lstlisting}[numbers=none]
 int omp_get_num_procs();
 \end{lstlisting}
 Compile and run
 \end{numberedframe}
 
 \begin{numberedframe}{Query threads}
-\begin{lstlisting}
+\begin{lstlisting}[numbers=none]
 int omp_get_num_threads();
 \end{lstlisting}
 Compile and run. Observe?
 \end{numberedframe}
 
+\begin{instructor}
+  This returns~1 because we are in the sequential part of the program.
+\end{instructor}
+
 \begin{numberedframe}{To run an OpenMP program}
-\begin{verbatim}
+\begin{lstlisting}[language=shell]
 export OMP_NUM_THREADS=8
 ./my_omp_program
-\end{verbatim}
+\end{lstlisting}
 Quick experiment:
-\begin{verbatim}
+\begin{lstlisting}[language=shell]
 for t in 1 2 4 8 12 16; do
   OMP_NUM_THREADS=$t ./my_omp_program
 done
-\end{verbatim}
+\end{lstlisting}
 \end{numberedframe}
 
 \begin{numberedframe}{Query threads'}
@@ -144,7 +171,7 @@ Use a parallel region:
   statements
 }
 \end{lstlisting}
-or
+or for Fortran:
 \begin{lstlisting}[language=Fortran]
 !$omp parallel
   statements
@@ -163,20 +190,17 @@ int t;
   printf("%d\n",t);
 }
 \end{lstlisting}
-\begin{multicols}{2}
-\begin{lstlisting}
-{
-  int t; t = // ...
-  printf( ... );
-}
-\end{lstlisting}
-\columnbreak
-\begin{lstlisting}
-int t;
-#pragma omp parallel private(t)
-\end{lstlisting}
-\end{multicols}
+If you see a problem, can you suggest a solution?
 \end{numberedframe}
+
+\begin{instructor}
+  This is a race condition:
+  setting and reporting the variable~\lstinline{t}
+  is not atomic.
+
+  Solution is either a local variable (obviously),
+  or a \lstinline{private} clause.
+\end{instructor}
 
 \begin{exerciseframe}[parallel]
   \input{ex:omp-helloworld}
@@ -186,45 +210,51 @@ int t;
   \input{ex:omp-procthread}
 \end{exerciseframe}
 
+\begin{instructor}
+  Unlike with MPI, now there is a clear parallel region.
+  The `before' and `after' statements are executed only once.
+\end{instructor}
+
 \begin{numberedframe}{What happens if I press that button?}
   Who of you has tried setting the number of threads (much) larger
   than the number of cores? What happened?
 \end{numberedframe}
 
-\begin{numberedframe}{Enclosed scopes}
-  Data is (usually) shared in a parallel region:
-  \input{sl:omp:enclosed}
-  Note: this is usually the case,
-  but strictly not the default.
-\end{numberedframe}
+\begin{instructor}
+  Threads are a software construct. You can create more threads
+  than the number of cores, but this may be inefficient.
+\end{instructor}
 
 \begin{numberedframe}{Thread-local variables}
   \input{sl:omp:thread-local}
 \end{numberedframe}
 
+\begin{instructor}
+  A parallel region is a scope, so the usual rules
+  about shadowing apply.
+\end{instructor}
+
 \begin{numberedframe}{Locality of variables}
   \includegraphics[scale=.1]{fork-join-vars}
 \end{numberedframe}
 
+\begin{instructor}
+  Variables declared before a parallel region are `shared'
+  and all threads can change their global value.
+  Locally declared variables are per thread.
+\end{instructor}
+
 \begin{numberedframe}{Thread control}
   \begin{itemize}
-  \item Environment variable \indexompshow{OMP_NUM_THREADS=4}
+  \item Environment variable \lstinline[language=shell]{OMP_NUM_THREADS=4}
   \item Clause \indexompshow{num_threads(4)}\\
-\begin{lstlisting}
+\begin{lstlisting}[numbers=none]
 #pragma omp parallel num_threads(4)
 \end{lstlisting}
     usually not the best solution.
-  \item Environment variable \indexompshow{OMP_THREAD_LIMIT=56}\\
+  \item Environment variable \lstinline[language=shell]{OMP_THREAD_LIMIT=56}\\
     (useful for nested parallelism)
   \end{itemize}
-\end{numberedframe}
-
-\begin{numberedframe}{Limits on paralleism}
-\begin{lstlisting}
-#pragma omp parallel if(N>50)
-\end{lstlisting}
-Can you think of an application?\\
-I mean, what's the harm of doing one small loop inefficiently?
 \end{numberedframe}
 
 \begin{numberedframe}{Threads and threads}
@@ -232,10 +262,20 @@ I mean, what's the harm of doing one small loop inefficiently?
   \item Threads are software, cores are hardware.
   \item The OS can move threads between cores: not a good idea for
     performance.
-  \item Set: \n{export OMP_PROC_BIND=true} and you'll be good in
+  \item Set: \lstinline[language=shell]{export OMP_PROC_BIND=true} and you'll be good in
     most of the cases.
   \item Look up `affinity' in the OMP standard for all the details.
   \end{itemize}
+\end{numberedframe}
+
+\Level 0 {Advanced parallelism}
+
+\begin{numberedframe}{Limits on paralleism}
+\begin{lstlisting}[numbers=none]
+#pragma omp parallel if(N>50)
+\end{lstlisting}
+Can you think of an application?\\
+I mean, what's the harm of doing one small loop inefficiently?
 \end{numberedframe}
 
 \begin{numberedframe}{Nested parallelism}
@@ -250,9 +290,9 @@ void omp_set_max_active_levels(int);
 int omp_get_max_active_levels(void);
 \end{lstlisting}
 or 
-\begin{verbatim}
+\begin{lstlisting}[language=shell]
 OMP_MAX_ACTIVE_LEVELS=3
-\end{verbatim}
+\end{lstlisting}
 (Deprecated: boolean switch \indexompshow{OMP_NESTED})
 \end{numberedframe}
 

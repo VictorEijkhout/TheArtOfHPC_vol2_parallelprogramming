@@ -4,12 +4,14 @@
 %%%%
 %%%% This text file is part of the lecture slides for
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2025
+%%%% by Victor Eijkhout, copyright 2012-2026
 %%%%
-%%%% ParLoop-slides.tex : slides about OpenMP's fork-join model
+%%%% ParLoop-slides.tex : slides about OpenMP's parallel loops
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\Level 0 {Loop basics}
 
 \begin{numberedframe}{Loop parallelism}
   Much of parallelism in scientific computing is in loops:
@@ -22,6 +24,7 @@
 \end{numberedframe}
 
 \begin{numberedframe}{Work distribution}
+  Basic idea:
   \begin{itemize}
   \item Suppose loop iterations are independent:
   \item Distribute them over the threads:
@@ -41,8 +44,8 @@
 Discuss.
 \end{numberedframe}
 
-\begin{numberedframe}{Loops are easy}
-\indexompshow{for} directive before a loop:
+\begin{numberedframe}{Parallelizing Loops }
+ Put \indexompshow{for} directive before a loop:
 \begin{lstlisting}
 #pragma omp parallel
 {
@@ -87,7 +90,7 @@ Fortran: optional matching end directive
 Parallel and workshare together
 \begin{lstlisting}
 #pragma omp parallel for
-  for (i=0; i<N; i++)
+  for (int i=0; i<N; i++)
     ... something with i ...
 \end{lstlisting}
 \end{numberedframe}
@@ -99,9 +102,9 @@ Parallel and workshare together
 \begin{numberedframe}{Ranges library}
   \input{cppnote-c++20-ranges-header.cut}
 \end{numberedframe}
-\begin{numberedframe}{Index ranges}
-  \input{cppnote-ranges-and-indices.cut}
-\end{numberedframe}  
+%% \begin{numberedframe}{Index ranges}
+%%   \input{cppnote-ranges-and-indices.cut}
+%% \end{numberedframe}  
 \end{cxx}
 
 \begin{numberedframe}{Stuff inside a parallel region}
@@ -125,7 +128,11 @@ Parallel and workshare together
 \begin{numberedframe}{Loops are static}
   \begin{itemize}
   \item No \lstinline{break} or so.
-  \item \lstinline{continue} or \lstinline{cycle} allowed.
+  \item \lstinline{continue}
+\begin{fortran}
+    or \lstinline{cycle}
+\end{fortran}
+    allowed.
   \item Fixed upper bound;
   \item Simple loop increment;
   \item $\Rightarrow$~OpenMP needs to be able to calculate
@@ -135,7 +142,7 @@ Parallel and workshare together
 \end{numberedframe}
 
 \begin{numberedframe}{When is a loop parallel?}
-  It's up to you!
+  It's up to you to tell OpenMP.
 
   This is parallelizable:
 \begin{lstlisting}
@@ -150,23 +157,32 @@ for (int i=low; i<hi; i++)
 Histograms / binning.
 \end{numberedframe}
 
+\begin{instructor}
+  A long time ago there was the dream of a `parallelizing compiler':
+  a~compiler that would look at the code and make a parallel version.
+
+  This dream is long dead.
+  It's more productive for the programmer to tell the compiler
+  that a loop is parallel.
+\end{instructor}
+
 \begin{exerciseframe}
   \input{sl:omp:loop-over-2}
 \end{exerciseframe}
 
-\begin{exerciseframe}[vectorsum]
+\begin{exerciseframe}[nestedloops]
   Run the following snippet
-  \cverbatimsnippet{exvectorsum}
+  \cverbatimsnippet{matexchseq}
   \begin{enumerate}
   \item Sequentially
   \item On one thread
   \item With more than one thread.
   \end{enumerate}
   Do a scaling study.
-  What all can you do to improve performance? Read back through previous slides.
+  What do you observe?
 \end{exerciseframe}
 
-\Level 1 {More about loops}
+\Level 0 {More about loops}
 
 \begin{numberedframe}{Loop schedules}
   \begin{itemize}
@@ -233,7 +249,7 @@ for ( i=... ) {
   \end{itemize}
 \end{numberedframe}
 
-\Level 1 {Loop data}
+\Level 0 {Loop data}
 
 \begin{numberedframe}{Private vs shared}
 Statements such as:
@@ -265,11 +281,15 @@ Is there a different way of handling \lstinline{temp}?
 \end{numberedframe}
 
 \begin{numberedframe}{More private/shared}
+\lstinline{firstprivate}: private, but initialized
 \begin{lstlisting}
 float x=5.5;
 #pragma omp parallel firstprivate(x)
   // x is now private, and has value 5.5
+\end{lstlisting}
 
+\lstinline{lastprivate}: private variable persisting after the loop
+\begin{lstlisting}
 float y;
 #pragma omp parallel for lastprivate(y)
 for ( /* looping */ ) {
@@ -280,7 +300,7 @@ for ( /* looping */ ) {
 \end{lstlisting}
 \end{numberedframe}
 
-\Level 1 {Reduction}
+\Level 0 {Reduction}
 
 \begin{exerciseframe}
   \input{ex:omp-procthreadn}
@@ -411,9 +431,9 @@ Results can be indeterminate:
   \lstinputlisting[language=bash]{reductcoord.runout}
 \end{numberedframe}
 
-\endinput
+%%\endinput
 
-\Level 1 {Exercises}
+\Level 0 {Exercises}
 
 \begin{exerciseframe}[jacobi]
   \input{ex:omp-jacobi1}

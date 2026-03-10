@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2025
+%%%% by Victor Eijkhout, copyright 2012-2026
 %%%%
 %%%% omp_course.tex : master file for an OpenMP course
 %%%%
@@ -14,14 +14,6 @@
 \documentclass[10pt]{beamer}
 
 \input courseformat
-\usepackage{pdfpages}
-
-\newenvironment{frameblock}[1]
-               {\begin{quote}}
-               {\end{quote}}
-
-%%\newcounter{chapter} % how is this handled in ISP?
-%%\input blockmacs
 
 \def\qrcode{qrvol2}
 \begin{document}
@@ -29,7 +21,11 @@
 \author[Eijkhout]{Victor Eijkhout}
 \date[2024]{2024 COE 379L / CSE 392}
 %% \normalsize last formatted \today}
-\title[OMP]{OpenMP Course}
+\ifisinstructor
+  \title[OMP]{OpenMP Course\\ (instructor notes)}
+\else
+  \title[OMP]{OpenMP Course}
+\fi
 \maketitle
 
 \begin{frame}{Justification}
@@ -40,28 +36,32 @@
 \end{frame}
 
 \Level 0 {The Fork-Join model}
-\input Forkjoin-slides
+\IncreaseBaseLevel 1
+\input forkjoin-slides
+\DecreaseBaseLevel 1
 
 \Level 0 {Loop parallelism}
-\input ParLoop-slides
+\IncreaseBaseLevel 1
+\input parloop-slides
+\DecreaseBaseLevel 1
 
 \Level 0 {Workshare constructs}
-\input Workshare-slides
+\input workshare-slides
 
 \Level 0 {Thread data}
-\input OmpData-slides
+\input ompdata-slides
 
 \Level 0 {Synchronization}
-\input Sync-slides
+\input sync-slides
 
 \Level 0 {Tasks}
-\input Tasks-slides
+\input tasks-slides
 
 \Level 0 {Affinity and other memory issues}
-\input Affinity-slides
+\input affinity-slides
 
 \Level 0 {Memory model}
-\input Memory-slides
+\input memory-slides
 
 \Level 0 {Remaining topics}
 \input OmpOther-slides
