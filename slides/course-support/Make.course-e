@@ -25,9 +25,15 @@ info::
 LANGUAGE = coe379
 LANGUAGES = c f p x
 course_prep ::
+	@if [ -z "${COURSE}" ] ; then \
+	    echo "Error: no COURSE variable defined" && exit 1 ; fi 
+	@if [ -z "${LANGUAGE}" ] ; then \
+	    cp ../course-support/lang_all.tex ./lang.tex \
+	 ; else \
+	    cp ../course-support/lang_${LANGUAGE}.tex ./lang.tex \
+	 ; fi
 	@echo && echo "Setting up for language <<${LANGUAGE}>>" && echo
 	@cp ${COURSE}_course.tex ${COURSE}_${LANGUAGE}_course.tex 
-	@cp ../course-support/lang_${LANGUAGE}.tex ../course-support/lang.tex
 	@cd ../.. && make --no-print-directory getfiles
 languages :
 	@if [ -z "${LANGUAGES}" ] ; then \
@@ -38,19 +44,21 @@ languages :
 	         && rm -f ${COURSE}_$${l}_course.tex \
 	    ; done 
 COURSEPREP = 1
+info ::
+	@echo "make course course_companion [ COURSE=... (default: ${COURSE}) ]"
 course ::
-	@if [ -z "${COURSE}" ] ; then \
-	    echo "Error: no COURSE variable defined" && exit 1 ; fi 
-	@if [ -z "${LANGUAGE}" ] ; then \
-	    cp ../course-support/lang_all.tex ./lang.tex \
-	 ; else \
-	    cp ../course-support/lang_${LANGUAGE}.tex ./lang.tex \
-	 ; fi
 	@if [ "${COURSEPREP}" = "1" ] ; then \
 	  make --no-print-directory course_prep ; fi 
 	@make --no-print-directory pdf FILE=${COURSE}_course INPUT=0
 	@make --no-print-directory diagnostics FILE=${COURSE}_course
 	@cp ../course-support/lang_all.tex ./lang.tex
+course_companion ::
+	@if [ "${COURSEPREP}" = "1" ] ; then \
+	  make --no-print-directory course_prep ; fi 
+	@make --no-print-directory pdf FILE=${COURSE}_course INPUT=1
+	@make --no-print-directory diagnostics FILE=${COURSE}_course
+	@cp ../course-support/lang_all.tex ./lang.tex
+	mv ${COURSE}_course.pdf ${COURSE}_companion.pdf
 lecture ::
 	@if [ -z "${LECTURE}" ] ; then \
 	    echo "Error: no LECTURE variable defined" && exit 1 \

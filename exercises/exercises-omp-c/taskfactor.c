@@ -31,22 +31,17 @@ int main() {
     maxfactor = sqrt(bignum)+1;
   bool found = 0;
 
-#pragma omp parallel
-#pragma omp single
-  {
+/**** your code here ****/
     for (long int f=2; f<maxfactor; f++) {
-#pragma omp task
-      {
-	bool found_ = try_as_factor(f,bignum);
-#pragma omp atomic
-	found += found_;
-      }
+/**** your code here ****/
+	try_as_factor(f,bignum);
       /*
        * Can you make the whole process stopp
        * when any factor has been found?
        */
-      if (found) break;
+/**** your code here ****/
     }
+/**** your code here ****/
   }
 
   return 0;

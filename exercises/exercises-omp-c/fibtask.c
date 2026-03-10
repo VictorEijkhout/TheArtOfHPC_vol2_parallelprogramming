@@ -19,11 +19,11 @@ long fib(int n) {
   if (n<2) return n;
   else {
     long f1,f2;
-#pragma omp task shared(f1)
+/**** your code here ****/
     f1 = fib(n-1);
-#pragma omp task shared(f2)
+/**** your code here ****/
     f2 = fib(n-2);
-#pragma omp taskwait
+/**** your code here ****/
     return f1+f2;
   }
 }

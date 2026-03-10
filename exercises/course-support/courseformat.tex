@@ -12,7 +12,23 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \usepackage{comment}
+\usepackage{pdfpages}
 
+{\endlinechar=-1 \global\read 16 to \isinstructor }
+\def\yes{1}
+\newif\ifisinstructor
+\ifx\isinstructor\yes
+  \isinstructortrue
+  \specialcomment
+    {instructor}
+    {\begin{frame}[containsverbatim]\frametitle{\sl Instructor's note}}
+    {\end{frame}}
+\else
+  \isinstructorfalse
+  \excludecomment{instructor}
+\fi
+
+\newif\ifFormatAsBook \FormatAsBookfalse
 %%
 %% beamer setup
 %%
@@ -41,6 +57,7 @@
 %%
 \input pcsecommonmacs
 \input acromacs
+\input blockmacs
 \input commonmacs
 \input listingmacs
 \input slidemacs

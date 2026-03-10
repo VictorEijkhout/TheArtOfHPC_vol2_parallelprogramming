@@ -2,7 +2,7 @@
 ################################################################
 ####
 #### This makefile is part of `Parallel Programming in MPI and OpenMP'
-#### by Victor Eijkhout, copyright 2017-2024
+#### by Victor Eijkhout, copyright 2017-2026
 #### eijkhout@tacc.utexas.edu
 ####
 #### Makefile for short course OpenMP templates in C
@@ -19,7 +19,8 @@ info ::
 	@echo "================================================================"
 	@echo "available rules:"
 
-EXERCISES = parallel pi piadapt histogramlock fibtask jacobi taskfactor vectorsum core
+EXERCISES = parallel pi piadapt histogramlock fibtask jacobi taskfactor \
+    nestedloops vectorsum
 
 MODE = omp
 LANGUAGE = C

@@ -22,7 +22,7 @@ Program CommRank
   !! -- fill in the routine that reports the nummber of threads.
 !$omp parallel
   how_many_threads = &
-!!!! your code here !!!!
+!! **** your code here **** !!
   print *,"There are",how_many_threads,"active threads"
 !$omp end parallel
 
@@ -34,7 +34,7 @@ Program CommRank
   sum = 0
 !$omp parallel
   sum = sum + &
-!!!! your code here !!!!
+!! **** your code here **** !!
 !$omp end parallel
 
   sumcheck = how_many_threads*(how_many_threads-1)/2

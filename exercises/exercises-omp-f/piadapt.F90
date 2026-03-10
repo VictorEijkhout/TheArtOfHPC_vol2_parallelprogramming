@@ -51,7 +51,7 @@ Program PiAdapt
         nsamples = nsamples+1
      end do
   end do
-!!!! your code here !!!!
+!! **** your code here **** !!
   pi = 4*quarterpi;
 
   !$omp end parallel

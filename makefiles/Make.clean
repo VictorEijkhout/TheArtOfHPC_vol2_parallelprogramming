@@ -42,7 +42,6 @@ clean :: localclean
 	       && if [ -f Makefile ] ; then \
 	             echo "${INDENT} recursive cleaning in $${d}" \
 	              && make --no-print-directory INDENT=" .. ${INDENT}" \
-	                 MAKEFILESDIR="../${MAKEFILESDIR}" \
 	                 clean ; \
 	          else \
 	             echo "${INDENT} local cleaning in $${d}" \

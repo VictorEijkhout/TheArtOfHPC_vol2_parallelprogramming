@@ -25,13 +25,13 @@ Program TaskFactor
   !$OMP parallel
   !$OMP single
   do f=2,4000
-!!!! your code here !!!!
+!! **** your code here **** !!
      !! see if `f' is a factor
      if (MOD(N,f).eq.0) then !! found factor!
-!!!! your code here !!!!
+!! **** your code here **** !!
          end if
       end if
-!!!! your code here !!!!
+!! **** your code here **** !!
       if (factor>0) goto 10
    end do
 10 continue
