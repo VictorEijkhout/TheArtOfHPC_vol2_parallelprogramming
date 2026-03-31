@@ -1,11 +1,11 @@
 // commcompare.cxx
 const mpl::communicator &comm =
   mpl::environment::comm_world();
-cout << "same: " << boolalpha << (comm==comm) << endl;
+println( "same: {}",(comm==comm) );
 
 mpl::communicator copy =
   mpl::environment::comm_world();
-cout << "copy: " << boolalpha << (comm==copy) << endl;
+println( "copy: {}",(comm==copy) );
 
 mpl::communicator init = comm;
-cout << "init: " << boolalpha << (init==comm) << endl;
+println( "init: {}",(comm==init) );

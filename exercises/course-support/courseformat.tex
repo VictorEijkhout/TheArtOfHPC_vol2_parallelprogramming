@@ -3,7 +3,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%
 %%%% This text file is part of the source of 
-%%%% `Parallel Computing'
+%%%% `Scientific Computation', volume 1 of `The Art of HPC'
 %%%% by Victor Eijkhout, copyright 2012-2026
 %%%%
 %%%% courseformat.tex : common preable for courses
@@ -17,14 +17,15 @@
 {\endlinechar=-1 \global\read 16 to \isinstructor }
 \def\yes{1}
 \newif\ifisinstructor
+\newif\ifIncludeAnswers
 \ifx\isinstructor\yes
-  \isinstructortrue
+  \isinstructortrue \IncludeAnswerstrue
   \specialcomment
     {instructor}
     {\begin{frame}[containsverbatim]\frametitle{\sl Instructor's note}}
     {\end{frame}}
 \else
-  \isinstructorfalse
+  \isinstructorfalse \IncludeAnswersfalse
   \excludecomment{instructor}
 \fi
 
