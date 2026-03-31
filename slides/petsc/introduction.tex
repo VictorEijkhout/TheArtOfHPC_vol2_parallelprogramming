@@ -4,7 +4,7 @@
 %%%% This TeX file is part of the tutorial
 %%%% `Introduction to the PETSc library'
 %%%% Victor Eijkhout, eijkhout@tacc.utexas.edu
-%%%% copyright Victor Eijkhout 2012-2022
+%%%% copyright Victor Eijkhout 2012-2026
 %%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -38,6 +38,7 @@ Why use it? It's big, powerful, well supported.
   \item Linear system solvers (sparse/dense, iterative/direct)
   \item Nonlinear system solvers
   \item Optimization: \n{TAO} (used to be separate library)
+  \item Eigenvalue solvers (including SVD): \n{SLEPc} (integrated)
   \item Tools for distributed matrices
   \item Support for profiling, debugging, graphical output
   \end{itemize}
@@ -72,8 +73,6 @@ PETSc does not do everything, but it interfaces to other software:
   \item Dense linear algebra: \n{Scalapack}, \n{Plapack}, \n{Elemental}
   \item Grid partitioning software: \n{ParMetis}, \n{Jostle}, \n{Chaco}, \n{Party}
   \item ODE solvers: \n{PVODE}
-  \item Optimization: \n{TAO} (now integrated)
-  \item Eigenvalue solvers (including SVD): \n{SLEPc} (integrated)
   \end{itemize}
 \end{numberedframe}
 \end{details}
@@ -102,9 +101,6 @@ user can use shared memory programming.
 \item
 Likewise, threading is kept outside of PETSc code.
 \item Limited \ac{GPU} support; know what you're doing!
-\begin{taccnote}
-Only available on the Frontera RTX nodes (single precision).
-\end{taccnote}
 \end{itemize}
 \end{numberedframe}
 

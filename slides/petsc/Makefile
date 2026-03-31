@@ -16,6 +16,7 @@ info::
 	@echo "================================================================"
 	@echo
 
+COURSE = petsc
 LECTURE = petsc
 LECTURES = petsc
 FILE = petsc_course
