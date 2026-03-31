@@ -25,9 +25,10 @@ LONGNAME_parloop = 08 Parallel Loops
 LONGNAME_workshare = 09 Worksharing
 LONGNAME_ompdata = 10 Data Model
 LONGNAME_sync = 11 Synchronization
-LONGNAME_tasks = 12 Tasks
-LONGNAME_affinity = 13 Affinity
-LONGNAME_memory = 14 Memory
+LONGNAME_performance = 12 OpenMP Performance
+LONGNAME_tasks = 13 Tasks
+LONGNAME_affinity = 14 Affinity
+LONGNAME_memory = 15 Memory
 
 INEX = tacc-full
 

@@ -1,0 +1,53 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the lecture slides for
+%%%% `Parallel Computing'
+%%%% by Victor Eijkhout, copyright 2012-2026
+%%%%
+%%%% performance-slides.tex
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%\Level 0 {Fork/join Model}
+
+\begin{numberedframe}{Improvement}
+\begin{itemize}
+\item Does your code improve over the sequential?
+\item Note: The one-thread code need not behave the same
+  as the sequential because of compiler options.
+\item Can your compiler generate reports? Intel: \n{-qopt-report}
+\end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Scaling}
+\begin{itemize}
+\item Run large enough problems; is there overhead in small problems?
+\item Run for multiple core counts. Do you get linear speedup? Linear
+  up to a certain core count?
+\item Hint: set \lstinline{OMP_PROC_BIND=true}, this may help
+  at large core counts.
+\end{itemize}
+\end{numberedframe}
+
+\begin{numberedframe}{Testing setup}
+\begin{itemize}
+\item The first measurement is likely anomalous: setup, allocation,
+  thread team creation, et cetera.
+\item First a dummy execution, then a timed one --~in the same program run of course.
+\item (Technically: page instantiation, thread team creation, `warm cache')
+\end{itemize}
+\end{numberedframe}
+
+\endinput
+
+\begin{numberedframe}{}
+\begin{lstlisting}
+\end{lstlisting}
+\begin{itemize}
+\item
+\end{itemize}
+\end{numberedframe}
+

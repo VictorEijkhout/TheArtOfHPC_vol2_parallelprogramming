@@ -86,8 +86,9 @@ void f() {
 
 \begin{numberedframe}{Task data space}
   \begin{itemize}
-  \item Environment captured as \lstinline{firstprivate}
-    unless explicitly otherwise
+  \item Private data of the parallel region is
+    captured as \lstinline{firstprivate}
+    unless explicitly specified otherwise.
   \item Makes sense: execution is deferred
 \begin{lstlisting}
 #pragma omp parallel
@@ -96,11 +97,14 @@ for ( int i /* ... */ )
   #pragma omp task
   f(i);
 \end{lstlisting}
+so you need value when the task was created.
   \item Shared data has to be captured explicitly
   \end{itemize}
 \end{numberedframe}
 
 \begin{numberedframe}{Task data: tricky exception}
+  Shared data of the parallel region is shared in the task;
+  if you want \lstinline{firstprivate}, specify explicitly:
 \begin{lstlisting}
 #pragma omp parallel shared(i)
 #pragma omp single
@@ -117,7 +121,7 @@ for ( i /* ... */ ) // note: no `int'
   \item Tasks can also be undeferred: executed here and now.
   \item Prime example: with \lstinline{if} clause
   \end{itemize}
-\begin{lstlisting}
+\begin{lstlisting}[numbers=none]
 #pragma omp task if (level>5)
 \end{lstlisting}
 \end{numberedframe}
@@ -199,22 +203,22 @@ long fib(int n) {
 \end{numberedframe}
 
 \begin{numberedframe}{Task cancelling}
-\begin{lstlisting}[language=omp]
-!$omp cancel construct [if (expr)]
+\begin{lstlisting}[numbers=none]
+#pragma omp cancel construct [if (expr)]
 \end{lstlisting}
 where construct is
-\lstinline[language=omp]{parallel},
-\lstinline[language=omp]{sections},
-\lstinline[language=omp]{do}
+\lstinline{parallel},
+\lstinline{sections},
+\lstinline{do}
 or
-\lstinline[language=omp]{taskgroup}.
+\lstinline{taskgroup}.
 \end{numberedframe}
 
 \begin{numberedframe}{More cancelling}
   Need to set  \indexompdef{OMP_CANCELLATION} explicitly.
 
   Set more cancellation points:
-\begin{lstlisting}[language=omp]
+\begin{lstlisting}[numbers=none]
 #pragma omp cancellation point <construct>
 \end{lstlisting}
 \end{numberedframe}
@@ -245,7 +249,24 @@ or
   \end{itemize}
 \end{numberedframe}
 
-\begin{numberedframe}{Exercise: dependencies}
+\begin{numberedframe}{Complicated dependencies}
+  Multiple dependencies:
+\begin{lstlisting}
+#pragma omp task depend(in:x,y)
+
+#pragma omp task depend(in:x) depend(out:y)
+\end{lstlisting}
+Dependencies on array sections:
+\begin{lstlisting}
+#pragma omp task depend(in:x[1:n-1) depend(out:y[:m])
+\end{lstlisting}
+\end{numberedframe}
+
+\begin{exerciseframe}
+  \input{ex:taskio}
+\end{exerciseframe}
+
+\begin{exerciseframe}
 \begin{lstlisting}
 for i in [1:N]:
     x[0,i] = some_function_of(i)
@@ -259,7 +280,7 @@ for i in [1:N]:
   \item Use tasks
   \item Is there a different way to do this?
   \end{itemize}
-\end{numberedframe}
+\end{exerciseframe}
 
 \begin{numberedframe}{Fibonacci memo'ization}
 \begin{lstlisting}

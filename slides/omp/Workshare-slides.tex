@@ -46,7 +46,7 @@ int a;
   for ( ... i ... )
     x += // something
   #pragma omp single
-    y = fx();
+    y = f(x);
   #pragma omp for
   for ( ... i ... )
     z[i] = ... i ... y ...
