@@ -287,22 +287,26 @@ comm.bcast( 0,x ); // note: root first
 \begin{mplnote}{Vector buffers}
   \label{mpl:vec-buf}
 If your buffer is a \lstinline+std::vector+ you need
-to take the \lstinline+.data()+ component of it:
+to take the \lstinline+.data()+ component of it
+and explicitly indicate a `layout'.
+
+The simplest layout is a \indexmplshow{contiguous_layout}:
 \begin{lstlisting}
 vector<float> xx(2),yy(2);
 comm.allreduce( mpl::plus<float>(),
     xx.data(), yy.data(), mpl::contiguous_layout<float>(2) );
 \end{lstlisting}
-  The \indexmplshow{contiguous_layout} is a `derived type';
-this will be discussed in more detail elsewhere
-(see note~\ref{mpl:derived} and later).
+
+More about layouts later; 
+see note~\ref{mpl:derived} and on.
+
 For now, interpret it as a way of indicating the count/type
 part of a buffer specification.
 \end{mplnote}
 
 \begin{mplnote}{Array buffers}
   \label{mpl:vec-arr}
-  You can pass a C-style array as buffer, requiring a layout:
+  You can pass a C-style `automatic array' as buffer, requiring a layout:
   %% \mplverbatimsnippet[examples/mpi/mpl/collectarray.cxx]{mplallreducearray}
 \begin{lstlisting}
 // vector of 50 floats
@@ -327,7 +331,7 @@ comm_world::bcast( root,data,layout );
 \begin{mplnote}{Send vs recv buffer}
   There are separate variants for root vs non-root processes
   in rooted collectives:
-  \mplverbatimsnippet{mplreduceroot}
+  \mplverbatimsnippet{mplreduceroot}%also mplmaxonroot
 \end{mplnote}
 
 \Level 0 {Rooted collectives: broadcast, reduce}

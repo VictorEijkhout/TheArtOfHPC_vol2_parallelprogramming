@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%% "Parallel Computing"
-   %%%% by Victor Eijkhout, copyright 2020-2023
+   %%%% by Victor Eijkhout, copyright 2020-2026
    %%%%
    %%%% commcompare.c : basics in MPL
    %%%%
@@ -14,6 +14,8 @@
 #include <cstdlib>
 #include <iostream>
 #include <iomanip>
+#include <print>
+using std::println;
 using namespace std;
 
 #include <mpl/mpl.hpp>
@@ -23,15 +25,18 @@ int main() {
   //codesnippet mplcompare
   const mpl::communicator &comm =
     mpl::environment::comm_world();
-  cout << "same: " << boolalpha << (comm==comm) << endl;
+  println( "same: {}",(comm==comm) );
 
   mpl::communicator copy =
     mpl::environment::comm_world();
-  cout << "copy: " << boolalpha << (comm==copy) << endl;
+  println( "copy: {}",(comm==copy) );
 
   mpl::communicator init = comm;
-  cout << "init: " << boolalpha << (init==comm) << endl;
+  println( "init: {}",(comm==init) );
   //codesnippet end
+
+  //  cout << "copy: " << boolalpha << (comm==copy) << endl;
+  //  cout << "init: " << boolalpha << (init==comm) << endl;
 
   // WRONG: copy = comm;
   // error: overload resolution selected deleted operator '='

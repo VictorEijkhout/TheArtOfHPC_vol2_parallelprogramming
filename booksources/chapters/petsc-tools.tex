@@ -514,27 +514,35 @@ The corresponding routine is \indexpetscdef{PetscLogView}.
 \Level 0 {Memory management}
 \label{sec:petscmalloc}
 
-Allocate the memory for a given pointer: \indexpetscdef{PetscNew},
-allocate arbitrary memory with \indexpetscdef{PetscMalloc},
-allocate a number of objects with \indexpetscref{PetscMalloc1}
-(this does not zero the memory allocated,
- use \indexpetscdef{PetscCalloc1} to obtain memory that has been zeroed);
-use \indexpetscref{PetscFree} to free.
+There are various way to allocate memory.
+\begin{itemize}
+\item \indexpetscdef{PetscMalloc} is analogous to \lstinline{malloc}:
 \begin{lstlisting}
-PetscInt *idxs;
-PetscMalloc1(10,&idxs);
-// better than:
-// PetscMalloc(10*sizeof(PetscInt),&idxs);
-for (PetscInt i=0; i<10; i++)
-  idxs[i] = f(i);
-PetscFree(idxs);
+PetscInt *ii;
+PetscMalloc( 10*sizeof(PetscInt),&ii );
 \end{lstlisting}
+\item the routine \indexpetscdef{PetscMalloc1} does the \lstinline{sizeof} for you:
+\begin{lstlisting}
+PetscInt *ii;
+PetscMalloc1( 10,&ii );
+\end{lstlisting}
+\item to have additionally the memory zeroed, use \indexpetscdef{PetscCalloc1}
+\begin{lstlisting}
+PetscInt *ii;
+PetscCalloc1( 10,&ii );
+\end{lstlisting}
+\end{itemize}
+
+There is also \indexpetscdef{PetscNew}
+and \indexpetscref{PetscFree}.
+
 Allocated memory is aligned to \indexpetscdef{PETSC_MEMALIGN}.
 
 The state of memory allocation can be written to file or standard out
-with \indexpetscdef{PetscMallocDump}. The commandline option
-\indexpetscshow{-malloc_dump} outputs all not-freed memory during
-\indexpetscshow{PetscFinalize}.
+with \indexpetscdef{PetscMallocDump}.
+%
+The commandline option \indexpetscshow{-malloc_dump} outputs all
+not-freed memory during \indexpetscshow{PetscFinalize}.
 
 \Level 1 {GPU allocation}
 

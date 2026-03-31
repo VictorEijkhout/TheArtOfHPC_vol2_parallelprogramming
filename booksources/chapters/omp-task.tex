@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2026
 %%%%
 %%%% omp-task.tex : openmp tasking
 %%%%
@@ -120,9 +120,11 @@ that the loop bound needs to be known before the loop executes.
   \begin{itemize}
   \item Turn the factor finding block into a task.
   \item Run your program a number of times:
-\begin{verbatim}
-for i in `seq 1 1000` ; do ./taskfactor ; done | grep -v 2999
-\end{verbatim}
+\begin{lstlisting}[language=shell]
+for i in $( seq 1 1000 ) ; do
+    ./taskfactor
+done | grep -v 2999
+\end{lstlisting}
     Does it find the wrong factor? Why? Try to fix this.
 \item Once a factor has been found, you should stop generating
     tasks.
@@ -193,13 +195,13 @@ int count = 100;
 \end{multicols}
 
 In the first example,
-the variable \n{count} is declared outside the
+the variable \lstinline{count} is declared outside the
 parallel region and is therefore shared. When the print statement is
-executed, all tasks will have been generated, and so \n{count} will be
-zero. Thus, the output will likely be \n{0,50}.
+executed, all tasks will have been generated, and so \lstinline{count} will be
+zero. Thus, the output will likely be \lstinline{0,50}.
 
 In the second example,
-the \n{count} variable is private to the thread creating the tasks,
+the \lstinline{count} variable is private to the thread creating the tasks,
 and so it will be \indexompshow{firstprivate} in the task, preserving the value
 that was current when the task was created.
 
@@ -218,8 +220,8 @@ x = f();
 { y = g(x); }
 z = h(y);  
 \end{lstlisting}
-Explanation: when the statement computing \n{z} is executed, the task
-computing~\n{y} has only been scheduled;
+Explanation: when the statement computing \lstinline{z} is executed, the task
+computing~\lstinline{y} has only been scheduled;
 it has not necessarily been executed yet.
 
 \Level 1 {Deferred vs undeferred tasks}
@@ -338,6 +340,10 @@ possibly leading to an incorrect result. This is remedied by specifying:
 \begin{itemize}
 \item
   These dependencies only hold between sibling tasks.
+\item Dependencies can be based on scalars or on array sections:
+\begin{lstlisting}
+#pragma omp task depend(in:array[0:5]) depend(out:barray[6:])
+\end{lstlisting}
 \item The depending data items of the various tasks
   are either identical or disjoint.
   In particular, dependencies on different sections of an array
@@ -364,6 +370,33 @@ for i in [1:N]:
 \item Use tasks with dependencies to make this code parallel without
   any rewriting: the only change is to add OpenMP directives.
 \end{itemize}
+\end{exercise}
+
+\begin{exercise}
+  \label{ex:taskio}
+  Assume input files \lstinline[language=shell]{input0,input1,...},
+  each containing a single integer.
+  The following code reads these integers, transforms them into another integer,
+  and then writes out the results to files
+  \lstinline[language=shell]{output0,output1,...}:
+\begin{lstlisting}
+for ( int ifile=0; ifile<nfiles; ifile++ ) {
+  inputs[ifile] = read_input(ifile);
+  outputs[ifile] = transform( inputs,ifile );
+  write_output( ifile,outputs[ifile] );
+}
+\end{lstlisting}
+  With the \lstinline{transform} function defined as:
+\begin{lstlisting}
+int transform( int *inputs,int ifile ) {
+  int output = 0;
+  for (int iifile=0; iifile<=ifile; iifile++ )
+    output += inputs[iifile];
+  return output;
+}
+\end{lstlisting}
+Use a task for each of the three lines in the loop body.
+Use dependencies to ensure correct synchronization.
 \end{exercise}
 
 Tasks dependencies are used to indicated how two uses of one data item

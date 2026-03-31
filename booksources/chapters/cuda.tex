@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2025
+%%%% by Victor Eijkhout, copyright 2012-2026
 %%%%
 %%%% cuda.tex : cuda
 %%%%
@@ -14,7 +14,7 @@
 \lstset{language=cuda}
 \acf{CUDA} is the C/C++/Fortran extension for programming
 \emph{NVidia}\index{NVidia!and CUDA} \acp{GPU}.
-(In this book we so far only cover the C/C++ variant.)
+(In this book only cover the C/C++ variant.)
 While it is proprietary to NVidia hardware,
 the \emph{AMD} equivalent \emph{HIP}\index{AMD!HIP} is very similar.
 It is also similar in spirit to portable systems
@@ -51,12 +51,7 @@ coordinate structure:
 The coordinate of the block and the thread within the block can now be
 found through the \indexcudashow{blockIdx} and \indexcudashow{threadIdx}
 coordinates, which are implicitly defined in each kernel.
-\begin{lstlisting}
-__global__ helloij() {
-  printf("Hello from thread %d in block %d\n",
-         threadIdx.x,blockIdx.x);
-}
-\end{lstlisting}
+\cudaverbatimsnippet{cuhelloij}
 
 We give a translation between loop parallelism
 and CUDA parallelism.

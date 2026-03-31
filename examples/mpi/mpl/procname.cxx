@@ -3,7 +3,7 @@
    %%%%
    %%%% This program file is part of the book and course
    %%%% "Parallel Computing"
-   %%%% by Victor Eijkhout, copyright 2020-2024
+   %%%% by Victor Eijkhout, copyright 2020-2026
    %%%%
    %%%% procname.cxx : processor name
    %%%%
@@ -17,6 +17,8 @@ using std::cout;
 using std::string;
 #include <sstream>
 using std::stringstream;
+#include <print>
+using std::println;
 
 #include <mpl/mpl.hpp>
 
@@ -30,10 +32,9 @@ int main(int argc,char **argv) {
   procno = comm_world.rank();
   string procname =
     mpl::environment::processor_name();
-  stringstream ss;
-  ss << "[" << procno << "] "
-     << " Running on: " << procname;
-  cout << ss.str() << '\n';
+  std::println
+    ( "[{}] running on: {}",
+      procno,procname );
   //codesnippet end
 
   return EXIT_SUCCESS;
