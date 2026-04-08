@@ -2,7 +2,7 @@
 ################################################################
 ####
 #### This makefile is part of `Parallel Programming in MPI and OpenMP'
-#### by Victor Eijkhout, copyright 2017-2025
+#### by Victor Eijkhout, copyright 2017-2026
 #### eijkhout@tacc.utexas.edu
 ####
 #### Makefile for CUDA exercises
@@ -22,7 +22,7 @@ info ::
 EXERCISES = hello add1m
 
 MODE = cuda
-LANGUAGE = CXX
+LANGUAGE = cu
 MODULES = cxxopts
 include ../course-support/Make.compile
 include ../course-support/Make.cuda

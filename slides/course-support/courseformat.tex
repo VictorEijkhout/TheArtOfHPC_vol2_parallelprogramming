@@ -37,8 +37,6 @@
 %\usepackage{beamerthemeHPC}
 \usepackage{beamerthemeTACC}
 
-\usepackage{morewrites,multicol}
-
 \usepackage{comment}
 %%
 %% customize what programming languages we cover
@@ -56,6 +54,7 @@
 %% many are common to all volumes the TheArtOfHPC,
 %% in which case some makefile copies them from Volume 1
 %%
+\input scimacs
 \input pcsecommonmacs
 \input acromacs
 \input blockmacs
@@ -67,7 +66,6 @@
 \input snippetmacs
 \input standardmacs
 
-\usepackage{morewrites}
 \usepackage[original,nonewpage]{imakeidx}
 \makeindex % default index
 \input idxmacs

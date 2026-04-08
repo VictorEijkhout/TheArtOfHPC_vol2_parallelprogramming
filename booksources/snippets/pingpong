@@ -2,7 +2,9 @@
 if (procno==processA) {
   t = MPI_Wtime();
   for (int n=0; n<NEXPERIMENTS; n++) {
-    MPI_Send(send,1,MPI_DOUBLE,
-    MPI_Recv(recv,1,MPI_DOUBLE,
+    MPI_Send(send_buf,1,MPI_DOUBLE,
+    MPI_Recv(recv_buf,1,MPI_DOUBLE,
   }
-  t = MPI_Wtime()-t; t /= NEXPERIMENTS;
+  /* total time */      t = MPI_Wtime()-t;
+  /* per experiment */  t /= NEXPERIMENTS;
+  /* single message: */ t /= 2.;

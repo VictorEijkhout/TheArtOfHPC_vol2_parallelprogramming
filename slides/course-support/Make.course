@@ -15,15 +15,7 @@
 LATEXENGINE =  xelatex -shell-escape
 # pdflatex
 
-info::
-	@echo "make lecture LECTURE=... (in: ${LECTURES}, default=${LECTURE})"
-	@echo "make lectures : all lectures;"
-	@if [ ! -z "${LANGUAGES}" ] ; then \
-	    echo "make languages (using LANGUAGES=${LANGUAGES}) [ LECTURE=... ]" \
-	 ; fi
 .PHONY: lecture languages course course_prep
-LANGUAGE = coe379
-LANGUAGES = c f p x
 course_prep ::
 	@if [ -z "${COURSE}" ] ; then \
 	    echo "Error: no COURSE variable defined" && exit 1 ; fi 
@@ -44,8 +36,14 @@ languages :
 	         && rm -f ${COURSE}_$${l}_course.tex \
 	    ; done 
 COURSEPREP = 1
+# COURSE / LANGUAGE are set in the individual teaching/slides-whatever directories
 info ::
-	@echo "make course course_companion [ COURSE=... (default: ${COURSE}) ]"
+	@echo "make course course_companion"
+	@echo "    [ COURSE=.... ( default: ${COURSE}, from: ${COURSES} ) ]"
+	@echo "    [ LANGUAGE=... ( default: ${LANGUAGE}, from: ${LANGUAGES} ) ]"
+	@if [ ! -z "${LANGUAGES}" ] ; then \
+	    echo "make languages (using LANGUAGES=${LANGUAGES}) [ LECTURE=... ]" \
+	 ; fi
 course ::
 	@if [ "${COURSEPREP}" = "1" ] ; then \
 	  make --no-print-directory course_prep ; fi 
