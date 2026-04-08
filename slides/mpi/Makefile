@@ -19,6 +19,7 @@ info::
 COURSE = mpi
 COURSES  = mpi mpl mpiadvanced mpibasics mpiintermediate \
     test
+
 LECTURE =  cluster
 LECTURES = cluster spmd collective ptp communicator
 LONGNAME_cluster      = 01 Supercomputer Clusters
@@ -27,6 +28,10 @@ LONGNAME_collective   = 03 Collective operations
 LONGNAME_ptp          = 04 Point-to-point
 LONGNAME_datatypes    = 05 Derived Datatypes
 LONGNAME_communicator = 06 Communicators
+
+LANGUAGE = coe379
+LANGUAGES = c f p x
+
 EXTRATEXINPUTS =
 
 include ../course-support/Make.course

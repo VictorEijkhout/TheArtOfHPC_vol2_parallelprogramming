@@ -26,82 +26,6 @@
   \end{itemize}
 \end{numberedframe}
 
-\Level 2 {Practicalities}
-
-\begin{numberedframe}{Compiling}
-  MPI compilers are usually called \indextermtt{mpicc},
-  \indextermtt{mpif90}, \indextermtt{mpicxx}.
-
-  These are not separate compilers,
-  but scripts around the regular C/Fortran compiler. You can use all
-  the usual flags.
-\begin{lstlisting}[language=bash,numbers=none]
-$ mpicc -show
-icx -I/intel/include/stuff -L/intel/lib/stuff -Wwarnings # et cetera
-\end{lstlisting}
-(Python of course no compilation needed)
-
-  (For CMake see slide~\ref{sl:mpi-cmake}.)
-\end{numberedframe}
-
-\begin{tacc}
-\begin{numberedframe}{Running (at TACC)}
-  In your batch script indicate node and core count
-\begin{lstlisting}[language=bash]
-#SBATCH -N 4
-#SBATCH -n 200
-ibrun yourprog
-\end{lstlisting}
-No specification on \n{ibrun} needed!
-\end{numberedframe}
-
-\begin{numberedframe}{Interactive development}
-  Interactive development
-\begin{lstlisting}[language=bash]
-idev # and maybe optional 
-# and now you get an interactive development node
-\end{lstlisting}
-This is limited in time and resources:\\
-use this only for development, not production\\
-
-\end{numberedframe}
-\end{tacc}
-
-\begin{numberedframe}{Running (in general)}
-On non-TACC machines:
-\begin{lstlisting}[language=bash,numbers=none]
-mpiexec -n 4 hostfile ... yourprogram arguments
-mpirun -np 4 hostfile ... yourprogram arguments
-\end{lstlisting}
-\end{numberedframe}
-
-\begin{exerciseframe}[hello]
-  \input ex:hello1
-
-  \begin{enumerate}
-  \item In the directories \n{exercises-mpi-xxx} do 
-    \n{make hello} to compile;
-  \item do \n{ibrun hello} to execute.
-  \end{enumerate}
-
-\begin{python}
-  \begin{pythonnote}
-    For python no make, only:\\
-    \n{ibrun python3 hello.py}\\
-    to execute.
-  \end{pythonnote}
-\end{python}
-
-\end{exerciseframe}
-
-\begin{numberedframe}{In a picture}
-  \moveleft .3in \hbox\bgroup
-  \includegraphics[scale=.32]{hello-parallel}
-  \egroup
-\end{numberedframe}
-
-\Level 2 {The MPI worldview: SPMD}
-
 \begin{numberedframe}{SPMD}
   The basic model of MPI is\\
   `Single Program Multiple Data':\\
@@ -150,6 +74,31 @@ mpirun -np 4 hostfile ... yourprogram arguments
   (Of course MPI implementations are optimized
   to use current architectures.)
 \end{numberedframe}
+
+\begin{exerciseframe}[hello]
+  \input ex:hello1
+
+  \begin{enumerate}
+  \item In the directories \n{exercises-mpi-xxx} do 
+    \n{make hello} to compile;
+  \item do \n{ibrun hello} to execute.
+  \end{enumerate}
+\begin{python}
+  \begin{pythonnote}
+    For python no make, only:\\
+    \n{ibrun python3 hello.py}\\
+    to execute.
+  \end{pythonnote}
+\end{python}
+
+\end{exerciseframe}
+
+\begin{numberedframe}{In a picture}
+  \moveleft .3in \hbox\bgroup
+  \includegraphics[scale=.32]{hello-parallel}
+  \egroup
+\end{numberedframe}
+
 
 \begin{numberedframe}{Terminology}
   `Processor' is ambiguous: is that a chip or one independent
@@ -508,6 +457,7 @@ Note: most functions are methods of the \lstinline{MPI.Comm} class.\\
   \includegraphics[scale=.35]{rank-parallel}
 \end{numberedframe}
 
+\begin{advanced}
 \begin{numberedframe}{About errors}
   MPI routines invoke an error handler;
 \begin{full}
@@ -535,11 +485,13 @@ MPI_Init(0,0);
   very hard to recover from errors in parallel.\\
   By default code bombs with (hopefully informative) message.
 \end{numberedframe}
+\end{advanced}
 
 %% \begin{numberedframe}{Have you been paying attention?}
 %%   \input{ex:mpi01rank}
 %% \end{numberedframe}
 
+\begin{fullcourse}
 \Level 2 {Processor name}
 
 \mpiprotocombined{MPI_Get_processor_name}
@@ -590,6 +542,7 @@ MPI_Init(0,0);
   \pverbatimsnippet{procnamep}
 \end{numberedframe}
 \end{python}
+\end{fullcourse}
 
 \Level 2 {Your first useful parallel program}
 

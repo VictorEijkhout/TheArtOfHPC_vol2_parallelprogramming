@@ -1,0 +1,83 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the source of 
+%%%% `The Art of HPC, vol 1: The Science of Computing'
+%%%% by Victor Eijkhout, copyright 2012-2024
+%%%%
+%%%% This book is distributed under a Creative Commons Attribution 3.0
+%%%% Unported (CC BY 3.0) license and made possible by funding from
+%%%% The Saylor Foundation \url{http://www.saylor.org}.
+%%%%
+%%%% common macros for book and slides
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{array,arydshln,multirow,multicol}
+\usepackage{listings,verbatim,xcolor}% needed for parsing some aux files
+
+{\catcode`\^^I=13 \globaldefs=1
+\newcommand\srclisting[2]{\begingroup\small\par\vspace{1ex}
+  \catcode`\^^I=13 \def^^I{\leavevmode\hspace{40pt}}
+  \noindent \textbf{File:} \texttt{#1}\par %\fbox{#1}
+  \lstinputlisting{#2}\endgroup
+  }
+\newcommand\codelisting[1]{\begingroup\small\par\vspace{1ex}
+  \catcode`\^^I=13 \def^^I{\leavevmode\hspace{40pt}}
+  \noindent\fbox{#1}
+  \verbatiminput{#1}\endgroup}
+}
+
+\newenvironment{footnoteenv}[1]{\unskip\nobreak\footnote{#1}}{\unskip}
+
+%%%%%%%%%%%%%%%%
+%%%% Titles
+%%%%%%%%%%%%%%%%
+\def\chaptertitle{\csname\chaptername title\endcsname}
+\def\chaptershorttitle{\csname\chaptername shorttitle\endcsname}
+
+\def\sequentialtitle{Processor Architecture}
+\def\sequentialshorttitle{CPU}
+
+\def\paralleltitle{Parallel Computer Architecture}
+\def\parallelshorttitle{Parallelism}
+
+\def\arithmetictitle{Computer Arithmetic}
+\def\arithmeticshorttitle{Arithmetic}
+
+\def\odepdetitle{Ordinary and Partial Differential Equations}
+\def\odedeshorttitle{PDEs}
+
+\def\lineartitle{Numerical Linear Algebra}
+\def\linearshorttitle{Algebra}
+
+\def\parallellineartitle{High Performance Linear Algebra}
+\def\parallellinearshorttitle{HPC}
+
+\def\mdtitle{Molecular Dynamics}
+\def\mdshorttitle{MD}
+
+\def\combinatoricstitle{Combinatorics}
+\def\combinatoricsshorttitle{Combinatorics}
+
+%% tutorials
+\def\unixtitle{Introduction to Unix}
+\def\unixshorttitle{unix}
+
+\def\latextitle{Introduction to \LaTeX}
+\def\latexshorttitle{latex}
+
+\def\gnumaketitle{Managing software projects with Make}
+\def\gnumakeshorttitle{gnumake}
+
+\def\gnuplottitle{Plotting data with GnuPlot}
+\def\gnuplotshorttitle{gnuplot}
+
+\def\svntitle{Source code control with Subversion}
+\def\svnshorttitle{svn}
+
+%% appendices
+\def\petsctitle{The Portable Extendable Toolkit for Scientific
+  Computing (PETSc)}
+\def\petscshorttitle{petsc}

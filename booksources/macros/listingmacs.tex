@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `The Art of HPC, vol 1: The Science of Computing'
-%%%% by Victor Eijkhout, copyright 2012-2025
+%%%% by Victor Eijkhout, copyright 2012-2026
 %%%%
 %%%% This book is distributed under a Creative Commons Attribution 3.0
 %%%% Unported (CC BY 3.0) license and made possible by funding from
@@ -395,6 +395,14 @@
   morekeywords={
     make,cmake,mkdir,
   },
+}
+
+\lstdefinelanguage{slurm}[]{shell}{
+  keywordstyle=\bfseries\color{green},
+  classoffset=2,
+  morekeywords={
+    sbatch,squeue,idev,ibrun,
+  }
 }
 
 \lstdefinelanguage{git}{ % []{shell}{

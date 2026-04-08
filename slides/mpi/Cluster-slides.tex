@@ -77,6 +77,21 @@ idev -t hh:mm:ss -N nodes -n cores -p queue
   \includegraphics[scale=.15]{job_sbatch}
 \end{numberedframe}
 
+\begin{exerciseframe}{}
+  \begin{itemize}
+  \item  Connect to your cluster.\\
+    What is the hostname? How many users are logged in?
+  \item Start an interactive session with \lstinline{idev}.\\
+    What is the hostname? How many users are logged in?
+  \item Run \lstinline{ibrun hostname},
+    also  \lstinline{ibrun -n 3 hostname}.
+  \item Same but use \lstinline{idev -N 2} to get two nodes.
+  \item Create a jobscript that will run on 10~nodes
+    and run \lstinline{hostname} again.\\
+    Submit it with \lstinline{sbatch}.
+  \end{itemize}
+\end{exerciseframe}
+
 \begin{instructor}
   Give them a batch script, let it execute \lstinline{hostname},
   and submit that to at least two nodes.
@@ -120,11 +135,11 @@ idev -t hh:mm:ss -N nodes -n cores -p queue
   \end{itemize}
 \end{numberedframe}
 
-\begin{numberedframe}{}
+\begin{exerciseframe}{}
   \begin{itemize}
   \item 
   \end{itemize}
-\end{numberedframe}
+\end{exerciseframe}
 
   Hostfile: the description of where your job runs. Usually generated
   by a \indexterm{job scheduler}.

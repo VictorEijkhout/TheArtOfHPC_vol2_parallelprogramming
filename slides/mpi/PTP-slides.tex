@@ -100,7 +100,10 @@ MPI_Recv( y,10,MPI_DOUBLE, src,0,comm,&status );
   \end{itemize}
 \begin{lstlisting}
 int s = status.MPI_SOURCE;
+MPI_Status_get_source( &status,&s ); // mpi-4
 int t = status.MPI_TAG;
+MPI_Status_get_tag( &status,&t ); // mpi-4
+MPI_Status_get_error( &status,&e ); // mpi-4
 MPI_Get_count(status,MPI_FLOAT,&c);
 \end{lstlisting}
 \end{numberedframe}
@@ -110,6 +113,7 @@ MPI_Get_count(status,MPI_FLOAT,&c);
 \end{exerciseframe}
 
 \mpiprotocombined{MPI_Wtime}
+\mpiprotocombined{MPI_Wtick}
 
 \Level 2 {Distributed data}
 
@@ -553,6 +557,10 @@ Basic wait:
 \begin{lstlisting}
 MPI_Wait( MPI_Request*, MPI_Status* );
 \end{lstlisting}
+\begin{itemize}
+\item Status object or \indexmpishow{MPI_STATUS_IGNORE};
+\item Request gets deallocated.
+\end{itemize}
 
 Most common way of waiting for completion:
 \begin{lstlisting}
@@ -560,8 +568,9 @@ int MPI_Waitall(int count, MPI_Request array_of_requests[],
   MPI_Status array_of_statuses[])
 \end{lstlisting}
 \begin{itemize}
-\item ignore status: \indexmpishow{MPI_STATUSES_IGNORE}
-\item also \indexmpishow{MPI_Wait}, \indexmpishow{MPI_Waitany}, \indexmpishow{MPI_Waitsome}
+\item Ignore status array: \indexmpishow{MPI_STATUSES_IGNORE};
+\item Other wait calls:
+  \indexmpishow{MPI_Wait}, \indexmpishow{MPI_Waitany}, \indexmpishow{MPI_Waitsome}.
 \end{itemize}
 \end{numberedframe}
 
@@ -673,15 +682,27 @@ MPI_Waitsomething(.....)
   You can match blocking and non-blocking:
 \begin{lstlisting}
 if ( /* I am Process A */ ) {
-  MPI_Irecv( /* from B */, &req1 );
   MPI_Isend( /* to B */, &req2 );
+  MPI_Irecv( /* from B */, &req1 );
   MPI_Waitall( /* requests 1 and 2 */ );
 } else if ( /* I am Process B */ ) {
   MPI_Recv( /* from A */ );
   MPI_Send( /* to A */ );
 }
 \end{lstlisting}
+\begin{itemize}
+\item Can you flip the Isend/Irecv?
+\item Can you change the Recv/Send for process~B to Irecv/Isend?
+\end{itemize}
 \end{numberedframe}
+\begin{instructor}
+  \begin{itemize}
+  \item Process A can switch the two because non-blocking calls
+    are unordered.
+  \item Changing the process~B calls is not allowed: they need to be in that order.
+    You could sequence them as Irecv/Wait/Isend/Wait, but that's pointless.
+  \end{itemize}
+\end{instructor}
 
 \begin{numberedframe}{Test: non-blocking wait}
   \begin{itemize}

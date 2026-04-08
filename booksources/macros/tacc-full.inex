@@ -1,6 +1,6 @@
 % -*- latex -*-
 %%%%%%%%%%%%%%%%
-%%%% full course settings
+%%%% PCSE full course settings
 %%%%%%%%%%%%%%%%
 
 \includecomment{full}
@@ -8,9 +8,9 @@
 \excludecomment{online}
 \excludecomment{lulu}
 
-%\excludecomment{tacc}
 \specialcomment{tacc}{\stepcounter{tacc}\def\CommentCutFile{tacc\arabic{tacc}.cut}}{}
 \newcounter{tacc}
+\excludecomment{nontacc}
 
 \excludecomment{imperial}
 %\specialcomment{imperial}{\stepcounter{imperial}\def\CommentCutFile{imperial\arabic{imperial}.cut}}{}

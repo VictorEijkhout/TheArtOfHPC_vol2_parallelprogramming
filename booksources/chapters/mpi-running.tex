@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of
 %%%% `Parallel Programming in MPI and OpenMP'
-%%%% by Victor Eijkhout, copyright 2012-2024
+%%%% by Victor Eijkhout, copyright 2012-2026
 %%%%
 %%%% mpi-running.tex : about running MPI programs
 %%%%
@@ -37,7 +37,14 @@ The following exercise demonstrates this point.
 \begin{exercise}
   \label{ex:hello1}
   Write a `hello world' program, without any MPI in it,
-  and run it in parallel with \indextermtt{mpiexec} or your local equivalent. 
+  and run it in parallel with
+\begin{tacc}
+    \indextermtt{ibrun}
+\end{tacc}
+\begin{nontacc}
+  \indextermtt{mpiexec}
+\end{nontacc}  
+  or equivalent. 
   Explain the output.
 
   \skeleton{hello}

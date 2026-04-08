@@ -4,7 +4,7 @@
 %%%%
 %%%% This text file is part of the source of 
 %%%% `Parallel Computing'
-%%%% by Victor Eijkhout, copyright 2012-2025
+%%%% by Victor Eijkhout, copyright 2012-2026
 %%%%
 %%%% mpi_course.tex : master file for an MPI course
 %%%%
@@ -16,11 +16,12 @@
 \input courseformat
   
 \def\qrcode{qrvol2}
+
 \begin{document}
 
 \author[Eijkhout]{Victor Eijkhout}
-%%\date[2025]{2025 COE 379L / CSE 392}
-\date[2025]{2025 TACC APPI}
+\date[2026]{2026 COE 379L / CSE 392}
+%% \date[2025]{2025 TACC APPI}
 %% \normalsize last formatted \today}
 \title[MPI]{MPI Course}
 \maketitle
@@ -55,36 +56,30 @@
   \end{enumerate}
 \end{frame}
 
-\frame{\tableofcontents}
-%% \coursepart
+%% \frame{\tableofcontents}
+
 \Level 0 {Basics}
 
 \renewcommand\standardversion{3}
 
 \Level 1 {Supercomputer clusters}
-\input Cluster-slides
+\input cluster-slides
 
 %% \coursesection
 \Level 1 {The SPMD model}
 \label{sec:spmd}
-\input SPMD-slides
+\input spmd-slides
 
 %% \coursesection
 \Level 1 {Collectives}
 \label{sec:collectives}
-\input Collective-slides
+\input collective-slides
 
 %% \end{document}
 %% \coursesection
 \Level 1 {Point-to-point communication}
 \label{sec:ptp}
-\input PTP-slides
-
-\iffalse
-\begin{exerciseframe}[serialsend]
-  \input ex:serialsend
-\end{exerciseframe}
-\fi
+\input ptp-slides
 
 \begin{frame}[containsverbatim]\frametitle{Where to go from here\ldots}
   \begin{itemize}
@@ -113,12 +108,12 @@
 %% \coursesection
 \Level 1 {Derived Datatypes}
 \label{sec:derived}
-\input Data-slides
+\input datatypes-slides
 
 %% \coursesection
 \Level 1 {Communicator manipulations}
 \label{sec:comm}
-\input Subcomm-slides
+\input communicator-slides
 
 %% \coursesection
 \Level 1 {MPI File I/O}

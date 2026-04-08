@@ -1,0 +1,29 @@
+% -*- latex -*-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%
+%%%% This text file is part of the lecture slides for
+%%%% `Parallel Computing'
+%%%% by Victor Eijkhout, copyright 2012-2026
+%%%%
+%%%% SPMD-slides.tex : slides about MPI's SPMD mode
+%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{numberedframe}{Compiling}
+  MPI compilers are usually called \indextermtt{mpicc},
+  \indextermtt{mpif90}, \indextermtt{mpicxx}.
+
+  These are not separate compilers,
+  but scripts around the regular C/Fortran compiler. You can use all
+  the usual flags.
+\begin{lstlisting}[language=bash,numbers=none]
+$ mpicc -show
+icx -I/intel/include/stuff -L/intel/lib/stuff -Wwarnings # et cetera
+\end{lstlisting}
+(Python of course no compilation needed)
+
+  (For CMake see slide~\ref{sl:mpi-cmake}.)
+\end{numberedframe}
+
