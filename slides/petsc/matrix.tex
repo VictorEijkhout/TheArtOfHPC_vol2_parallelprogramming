@@ -322,9 +322,7 @@ row 1: (0, 0.5)  (1, 0.333333)  (2, 0.25)  (3, 0.2)
   \item Sparse: only allocated positions listed
   \item other viewers: for instance \n{-mat_view_draw} (X~terminal)
   \end{itemize}
-
 \end{numberedframe}
-
 \end{details}
 
 \begin{numberedframe}{General viewers}
@@ -346,9 +344,7 @@ PetscViewerDestroy(fd);
 \end{lstlisting}
 \end{numberedframe}
 
-%% \begin{exerciseframe}[viewer]
-%%   Fill in the blanks.
-%% \end{exerciseframe}
+\end{longstory}
 
 %\subsection{Shell matrices}
 
@@ -368,6 +364,8 @@ MatShellSetOperation(Mat mat,MatOperation MATOP_MULT,
 Inside iterative solvers, PETSc calls \lstinline{MatMult(A,x,y)}: \\
 no difference between stored matrices and shell matrices
 \end{numberedframe}
+
+\begin{longstory}
 
 \begin{numberedframe}{Shell matrix context}
 Shell matrices need custom data

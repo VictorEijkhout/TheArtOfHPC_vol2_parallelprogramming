@@ -213,17 +213,7 @@ VecShift(Vec x,PetscScalar s);
 
 \begin{longstory}
 
-\begin{exerciseframe}[vec]
-  Create a vector where the values are a single sine wave.
-  using \indexpetscshow{VecGetSize}, \indexpetscshow{VecGetLocalSize},
-  \indexpetscshow{VecGetOwnershipRange}.
-  Quick visual inspection:
-\begin{verbatim}
-ibrun vec -n 12 -vec_view
-\end{verbatim}
-\end{exerciseframe}
-
-\begin{exerciseframe}[vec]
+\begin{exerciseframe}[ortho]
 Use the routines \lstinline{VecDot}, \lstinline{VecScale} and \lstinline{VecNorm} to
 compute the inner product of vectors \lstinline{x,y}, scale the vector~\lstinline{x},
 and check its norm:
@@ -234,6 +224,16 @@ x \leftarrow x/p\\
 n \leftarrow \|x\|_2\\
 \end{array}
 \]
+\end{exerciseframe}
+
+\begin{exerciseframe}[vec]
+  Create a vector where the values are a single sine wave.
+  using \indexpetscshow{VecGetSize}, \indexpetscshow{VecGetLocalSize},
+  \indexpetscshow{VecGetOwnershipRange}.
+  Quick visual inspection:
+\begin{verbatim}
+ibrun vec -n 12 -vec_view
+\end{verbatim}
 \end{exerciseframe}
 
 \begin{details}

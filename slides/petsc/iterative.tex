@@ -287,6 +287,8 @@ PCASMSetOverlap(PC pc,int overlap);
   \end{itemize}
 \end{exerciseframe}
 
+\begin{longstory}
+
 \begin{exerciseframe}[shell]
   After the main program, a routine \lstinline{mymatmult} is
   declared, which is attached by \lstinline{MatShellSetOperation} to the matrix
@@ -304,8 +306,6 @@ PCASMSetOverlap(PC pc,int overlap);
   The code uses a preconditioner \lstinline{PCNONE}. What happens if you run it
   with option \n{-pc_type jacobi}?
 \end{exerciseframe}
-
-\begin{longstory}
 
 \begin{numberedframe}{Monitors and convergence tests}
 \begin{lstlisting}
