@@ -4,7 +4,7 @@
  **** `Introduction to the PETSc library'
  **** by Victor Eijkhout eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-2023
+ **** copyright Victor Eijkhout 2012-2025
  ****
  ****************************************************************/
 
@@ -125,7 +125,7 @@ int main(int argc,char **args)
   PetscCall( VecDestroy(&Sol) ); 
   
   PetscFinalize();
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 
 #undef __FUNCT__
@@ -215,5 +215,5 @@ PetscErrorCode FivePointMatrix
   PetscCall( MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY) ); 
 
   *rA = A;
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }

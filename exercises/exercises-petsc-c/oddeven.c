@@ -3,7 +3,7 @@
  **** This program file is part of the tutorial
  **** `Introduction to the PETSc library'
  **** by Victor Eijkhout eijkhout@tacc.utexas.edu
- **** copyright Victor Eijkhout 2012-2024
+ **** copyright Victor Eijkhout 2012-2025
  ****
  **** 
  **** oddeven.c : split a parallel vector into odd/even indices
@@ -43,25 +43,25 @@ int main(int argc,char **args)
    */
   {
     PetscInt x=4;
-    PetscCall( PetscOptionsGetInt(PETSC_NULL,PETSC_NULL,"-x",&x,NULL) ); 
+    PetscCall( PetscOptionsGetInt(NULL,NULL,"-x",&x,NULL) );
     Nglobal *= x;
   }
 
   Vec in,out;
-  PetscCall( VecCreate(comm,&in) ); 
-  PetscCall( VecSetType(in,VECMPI) ); 
-  PetscCall( VecSetSizes(in,PETSC_DECIDE,Nglobal) ); 
-  PetscCall( VecDuplicate(in,&out) ); 
+  PetscCall( VecCreate(comm,&in) );
+  PetscCall( VecSetType(in,VECMPI) );
+  PetscCall( VecSetSizes(in,PETSC_DECIDE,Nglobal) );
+  PetscCall( VecDuplicate(in,&out) );
   
   {
     PetscInt myfirst,mylast;
-    PetscCall( VecGetOwnershipRange(in,&myfirst,&mylast) ); 
+    PetscCall( VecGetOwnershipRange(in,&myfirst,&mylast) );
     for (PetscInt index=myfirst; index<mylast; index++) {
       PetscScalar v = index;
-      PetscCall( VecSetValue(in,index,v,INSERT_VALUES) ); 
+      PetscCall( VecSetValue(in,index,v,INSERT_VALUES) );
     }
-    PetscCall( VecAssemblyBegin(in) ); 
-    PetscCall( VecAssemblyEnd(in) ); 
+    PetscCall( VecAssemblyBegin(in) );
+    PetscCall( VecAssemblyEnd(in) );
   }
 
   /*
@@ -76,28 +76,28 @@ int main(int argc,char **args)
      * here is code for the original ordering, first enable this,
      * then figure out how to reverse it.
      */
-    //    PetscCall( ISCreateStride(comm,Nglobal/2,0,2,&oddeven) ); 
+    //    PetscCall( ISCreateStride(comm,Nglobal/2,0,2,&oddeven) );
 /**** your code here ****/
   } else {
-    //    PetscCall( ISCreateStride(comm,Nglobal/2,1,2,&oddeven) ); 
+    //    PetscCall( ISCreateStride(comm,Nglobal/2,1,2,&oddeven) );
 /**** your code here ****/
   }
   ISView(oddeven,0);
 
   VecScatter separate;
-  PetscCall( VecScatterCreate(in,oddeven,out,NULL,&separate) ); 
-  PetscCall( VecScatterBegin(separate,in,out,INSERT_VALUES,SCATTER_FORWARD) ); 
-  PetscCall( VecScatterEnd(separate,in,out,INSERT_VALUES,SCATTER_FORWARD) ); 
+  PetscCall( VecScatterCreate(in,oddeven,out,NULL,&separate) );
+  PetscCall( VecScatterBegin(separate,in,out,INSERT_VALUES,SCATTER_FORWARD) );
+  PetscCall( VecScatterEnd(separate,in,out,INSERT_VALUES,SCATTER_FORWARD) );
 
-  PetscCall( ISDestroy(&oddeven) ); 
-  PetscCall( VecScatterDestroy(&separate) ); 
+  PetscCall( ISDestroy(&oddeven) );
+  PetscCall( VecScatterDestroy(&separate) );
 
-  PetscCall( VecView(in,0) ); 
-  PetscCall( VecView(out,0) ); 
+  PetscCall( VecView(in,0) );
+  PetscCall( VecView(out,0) );
 
-  PetscCall( VecDestroy(&in) ); 
-  PetscCall( VecDestroy(&out) ); 
+  PetscCall( VecDestroy(&in) );
+  PetscCall( VecDestroy(&out) );
 
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
 

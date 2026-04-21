@@ -15,7 +15,7 @@
 int main(int argc,char **argv) {
 
   PetscErrorCode ierr;
-  PetscCall( PetscInitialize(&argc,&argv,0,0) ); 
+  PetscCall( PetscInitialize(&argc,&argv,0,0) );
 
   MPI_Comm comm = MPI_COMM_WORLD;
   int nprocs,procno;
@@ -23,7 +23,7 @@ int main(int argc,char **argv) {
   MPI_Comm_rank(comm,&procno);
 
   int iprocs=1,jprocs;
-  PetscCall( PetscOptionsGetInt(PETSC_NULL,PETSC_NULL,"-pi",&iprocs,PETSC_NULL) ); 
+  PetscCall( PetscOptionsGetInt(NULL,NULL,"-pi",&iprocs,NULL) );
   if (nprocs%iprocs!=0) {
     PetscPrintf(comm,"ip value %d does not divide nprocs=%d\n",iprocs,nprocs);
     iprocs = 1;

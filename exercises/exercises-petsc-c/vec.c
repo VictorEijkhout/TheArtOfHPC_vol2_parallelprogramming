@@ -30,7 +30,7 @@ int main(int argc,char **argv)
   /*
    * Get a commandline argument for the size of the problem
    */
-  PetscCall( PetscOptionsGetInt(NULL,NULL,"-n",&n,NULL) ); 
+  PetscCall( PetscOptionsGetInt(NULL,NULL,"-n",&n,NULL) );
 
   /*
    * Create vector `x' with a default layout
@@ -59,20 +59,21 @@ int main(int argc,char **argv)
      *    Set the correct index
      */
     PetscInt myfirst,mylast,localsize,globalsize;
-    PetscCall( VecGetSize(y,&globalsize) ); 
-    PetscCall( VecGetLocalSize(y,&localsize) ); 
-    PetscCall( VecGetOwnershipRange(y,&myfirst,&mylast) ); 
+    PetscCall( VecGetSize(y,&globalsize) );
+    PetscCall( VecGetLocalSize(y,&localsize) );
+    PetscCall( VecGetOwnershipRange(y,&myfirst,&mylast) );
     for (PetscInt index=
 /**** your code here ****/
 	 index++) {
       PetscScalar value = sin( index * 2. * 3.14159 / globalsize );
-      PetscCall( VecSetValue(y,
+      PetscCall( 
+	    VecSetValue(y,
 /**** your code here ****/
-        	     value,INSERT_VALUES) );
+			value,INSERT_VALUES) );
     }
-    PetscCall( VecAssemblyBegin(y) ); 
-    PetscCall( VecAssemblyEnd(y) ); 
-    //PetscCall( VecSet(y,two) );
+    PetscCall( VecAssemblyBegin(y) );
+    PetscCall( VecAssemblyEnd(y) );
+    //PetscCall( VecSet(y,two ) );
   }
 
   /*
@@ -81,7 +82,8 @@ int main(int argc,char **argv)
    */
   PetscScalar inprod;
 /**** your code here ****/
-  PetscCall( PetscPrintf(comm,"Computed inner product as %f, should be about zero\n",inprod) ); 
+  PetscCall( PetscPrintf
+     (comm,"Computed inner product as %f, should be about zero\n",inprod) );
 
   /* 
    * Exercise 3:
@@ -99,6 +101,7 @@ int main(int argc,char **argv)
   PetscCall( VecDestroy(&x) );
   PetscCall( VecDestroy(&y) );
 
-  PetscFinalize();
+  PetscCall( PetscFinalize() );
+
   return 0;
 }

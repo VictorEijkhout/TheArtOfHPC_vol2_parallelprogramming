@@ -5,7 +5,7 @@
 #### `Introduction to the PETSc library'
 #### by Victor Eijkhout eijkhout@tacc.utexas.edu
 ####
-#### copyright Victor Eijkhout 2012-2023
+#### copyright Victor Eijkhout 2012-2026
 ####
 #### Makefile for petsc C exercises
 ####
@@ -23,7 +23,7 @@ endif
 LOCDIR = csolutions
 
 EXERCISE = hello
-EXERCISES = hello root vec matvec ksp shell oddeven grid plex viewer
+EXERCISES = hello root vec ortho matvec ksp shell oddeven grid plex viewer
 #grid mat ksp shell ex46 ex46a
 np_root = 1
 np_oddeven = 2
@@ -33,7 +33,15 @@ MODE = petsc
 include ../course-support/Make.compile
 include ../course-support/Make.mpi_run
 
-##skip
+##
+## CMake support
+##
+CMAKEFILESDIR = ../course-support
+include ../course-support/Make.cmake
+
+##
+## Regression tests
+##
 info ::
 	@echo "make regression"
 .PHONY: regression

@@ -28,38 +28,38 @@ PetscErrorCode CreateMatrix(MPI_Comm comm,int nlocal,Mat *rA) {
   PetscErrorCode ierr;
   int procno,nglobal;
 
-  PetscCall( MatCreate(comm,&A) ); 
-  PetscCall( MatSetType(A,MATMPIAIJ) ); 
+  PetscCall( MatCreate(comm,&A) );
+  PetscCall( MatSetType(A,MATMPIAIJ) );
 
   MPI_Comm_rank(comm,&procno);
   if (procno==0)
     nlocal = 1;
-  PetscCall( MatSetSizes(A,nlocal,nlocal,PETSC_DECIDE,PETSC_DECIDE) ); 
+  PetscCall( MatSetSizes(A,nlocal,nlocal,PETSC_DECIDE,PETSC_DECIDE) );
   /*
    * Exercise
    * - what happens if you preallocate insufficient space?
    */
-  PetscCall( MatMPIAIJSetPreallocation(A,3,NULL,1,NULL) ); 
+  PetscCall( MatMPIAIJSetPreallocation(A,3,NULL,1,NULL) );
 
-  PetscCall( MatAssemblyBegin(A,MAT_FLUSH_ASSEMBLY) ); 
-  PetscCall( MatAssemblyEnd(A,MAT_FLUSH_ASSEMBLY) ); 
+  PetscCall( MatAssemblyBegin(A,MAT_FLUSH_ASSEMBLY) );
+  PetscCall( MatAssemblyEnd(A,MAT_FLUSH_ASSEMBLY) );
 
-  PetscCall( MatGetSize(A,&nglobal,PETSC_NULL) ); 
-  PetscCall( MatGetOwnershipRange(A,&first,&last) ); 
+  PetscCall( MatGetSize(A,&nglobal,NULL) );
+  PetscCall( MatGetOwnershipRange(A,&first,&last) );
   for (int row=first; row<last; row++) {
     PetscInt col = row; PetscScalar v = 2.;
-    PetscCall( MatSetValue(A,row,col,v,INSERT_VALUES) ); 
+    PetscCall( MatSetValue(A,row,col,v,INSERT_VALUES) );
     col = row-1; v = -1.;
     if (col>=0) {
-      PetscCall( MatSetValue(A,row,col,v,INSERT_VALUES) ); 
+      PetscCall( MatSetValue(A,row,col,v,INSERT_VALUES) );
     }
     col = row+1; v = -1.;
     if (col<nglobal) {
-      PetscCall( MatSetValue(A,row,col,v,INSERT_VALUES) ); 
+      PetscCall( MatSetValue(A,row,col,v,INSERT_VALUES) );
     }
   }
-  PetscCall( MatAssemblyBegin(A,MAT_FINAL_ASSEMBLY) ); 
-  PetscCall( MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY) ); 
+  PetscCall( MatAssemblyBegin(A,MAT_FINAL_ASSEMBLY) );
+  PetscCall( MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY) );
 
   *rA = A;
   return 0;
@@ -83,21 +83,21 @@ int main(int argc,char **argv)
   /*
    * Get a commandline argument for the size of the problem
    */
-  PetscCall( PetscOptionsGetInt(NULL,NULL,"-n",&nlocal,NULL) ); 
+  PetscCall( PetscOptionsGetInt(NULL,NULL,"-n",&nlocal,NULL) );
 
   /*
    * Call the matrix creation routine.
    * (Note the way we are treating the pointer to the matrix object.)
    */
-  PetscCall( CreateMatrix(comm,nlocal,&A) ); 
+  PetscCall( CreateMatrix(comm,nlocal,&A) );
   // just checking: screen output
   //MatView(A,PETSC_VIEWER_STDOUT_WORLD);
 
   /*
    * Start creating a vector
    */
-  PetscCall( VecCreate(comm,&x) ); 
-  PetscCall( VecSetType(x,VECMPI) ); 
+  PetscCall( VecCreate(comm,&x) );
+  PetscCall( VecSetType(x,VECMPI) );
 
   /*
    * Exercise:
@@ -107,14 +107,11 @@ int main(int argc,char **argv)
     PetscInt rowsize;
     PetscCall( MatGetLocalSize
       (A,
-       &rowsize,NULL
+/**** your code here ****/
        ) );
-    PetscInt globalsize;
-    MatGetSize(A,&globalsize,NULL);
     PetscCall( VecSetSizes
       (x,
-       PETSC_DECIDE,globalsize
-       //rowsize,PETSC_DETERMINE
+/**** your code here ****/
        ) );
   }
 
@@ -122,14 +119,13 @@ int main(int argc,char **argv)
    * Duplicate some work vectors (of the same format and
    * partitioning as the initial vector).
   */
-  PetscCall( VecDuplicate(x,&y) ); 
+  PetscCall( VecDuplicate(x,&y) );
 
   /*
    * Set x to constant one
    */
   PetscScalar    one = 1.0;
-  PetscCall( VecSet(x,one) ); 
-
+  PetscCall( VecSet(x,one) );
   /*
    * Exercise:
    * -- fill in the correct parameters to compute 
@@ -137,21 +133,22 @@ int main(int argc,char **argv)
    */
   PetscCall( MatMult
     (
-     A,x,y
+/**** your code here ****/
      ) );
 
   /*
    * First check on the product
    */
   double norm;
-  PetscCall( VecNorm(y,NORM_1,&norm) ); 
+  PetscCall( VecNorm(y,NORM_1,&norm) );
   if ( fabs(2.-norm)>1.e-14) {
-    PetscCall( PetscPrintf(comm,"Wrong norm: %e should be 2.\n",norm) ); 
+    PetscCall( PetscPrintf(comm,"Wrong norm: %e should be 2.\n",norm) );
   } else {
-    PetscCall( PetscPrintf(comm,"Global norm test succeeds on all %d processes\n",nprocs) ); 
+    PetscCall( PetscPrintf(comm,
+       "Global norm test succeeds on all %d processes\n",nprocs) );
   }
 
-  #if 0
+  //#if 0
   /*
    * Second, more funky test
    */
@@ -163,10 +160,10 @@ int main(int argc,char **argv)
     /*
      * Create a single-process vector with the size of the local part of y
      */
-    PetscCall( VecCreate(PETSC_COMM_SELF,&localvec) ); 
-    PetscCall( VecSetType(localvec,VECSEQ) ); 
-    PetscCall( VecGetLocalSize(y,&localsize) ); 
-    PetscCall( VecSetSizes(localvec,localsize,PETSC_DECIDE) ); 
+    PetscCall( VecCreate(PETSC_COMM_SELF,&localvec) );
+    PetscCall( VecSetType(localvec,VECSEQ) );
+    PetscCall( VecGetLocalSize(y,&localsize) );
+    PetscCall( VecSetSizes(localvec,localsize,PETSC_DECIDE) );
     /*
      * Exercise:
      * -- put y's data into the local vector,
@@ -179,7 +176,7 @@ int main(int argc,char **argv)
      * Compute the norm: it should be 1 on the first & last process,
      * zero elsewhere
      */
-    PetscCall( VecNorm(localvec,NORM_1,&norm) ); 
+    PetscCall( VecNorm(localvec,NORM_1,&norm) );
     if (procno==0 || procno==nprocs-1)
       norm_shouldbe = 1.;
     else norm_shouldbe = 0.;
@@ -196,18 +193,19 @@ int main(int argc,char **argv)
      *    (this mostly serves to prevent memory leaks)
      */
 /**** your code here ****/
-    PetscCall( VecDestroy(&localvec) ); 
+    PetscCall( VecDestroy(&localvec) );
   }
-  #endif
+  //#endif
 
   /*
      Free work space.  All PETSc objects should be destroyed when they
      are no longer needed.
   */
-  PetscCall( MatDestroy(&A) ); 
-  PetscCall( VecDestroy(&x) ); 
-  PetscCall( VecDestroy(&y) ); 
+  PetscCall( MatDestroy(&A) );
+  PetscCall( VecDestroy(&x) );
+  PetscCall( VecDestroy(&y) );
 
-  PetscFinalize();
+  PetscCall( PetscFinalize() );
+
   return 0;
 }

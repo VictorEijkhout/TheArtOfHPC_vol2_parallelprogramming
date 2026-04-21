@@ -4,7 +4,7 @@
  **** `Introduction to the PETSc library'
  **** by Victor Eijkhout eijkhout@tacc.utexas.edu
  ****
- **** copyright Victor Eijkhout 2012-2024
+ **** copyright Victor Eijkhout 2012-2025
  ****
  ****************************************************************/
 
@@ -33,7 +33,7 @@ int main(int argc,char **args)
   /*
    * Write or read the matrix
    */
-  PetscCall( PetscOptionsGetInt(NULL,NULL,"-n",&n,&flag) ); 
+  PetscCall( PetscOptionsGetInt(NULL,NULL,"-n",&n,&flag) );
   if (flag) {
     /*
      * If the user supplies a size flag: "-n 123", a new matrix 
@@ -41,14 +41,14 @@ int main(int argc,char **args)
      *
      * First we create a matrix.
      */
-    PetscCall( MatCreateSeqAIJ(MPI_COMM_WORLD,n,n,n,0,&A) ); 
+    PetscCall( MatCreateSeqAIJ(MPI_COMM_WORLD,n,n,n,0,&A) );
     for (i=0; i<n; i++)
       for (j=0; j<n; j++) {
 	v = 1./(i+j+1);
-	PetscCall( MatSetValues(A,1,&i,1,&j,&v,INSERT_VALUES) ); 
+	PetscCall( MatSetValues(A,1,&i,1,&j,&v,INSERT_VALUES) );
       }
-    PetscCall( MatAssemblyBegin(A,MAT_FINAL_ASSEMBLY) ); 
-    PetscCall( MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY) ); 
+    PetscCall( MatAssemblyBegin(A,MAT_FINAL_ASSEMBLY) );
+    PetscCall( MatAssemblyEnd(A,MAT_FINAL_ASSEMBLY) );
 
     /*
      * Exercise:
@@ -61,7 +61,7 @@ int main(int argc,char **args)
 /**** your code here ****/
 	&fd) );
     // now use the viewer object to 'view' the matrix
-    PetscCall( MatView(A,fd) );
+    PetscCall( MatView(A,fd ) );
     // for cleanliness, delete the viewer again
 /**** your code here ****/
 
@@ -79,8 +79,8 @@ int main(int argc,char **args)
 	// find the right mode:
 /**** your code here ****/
 	&fd) );
-    PetscCall( MatCreate(MPI_COMM_WORLD,&A) ); 
-    PetscCall( MatSetType(A,MATSEQAIJ) ); 
+    PetscCall( MatCreate(MPI_COMM_WORLD,&A) );
+    PetscCall( MatSetType(A,MATSEQAIJ) );
 
     /*
      * Exercise:
@@ -88,18 +88,18 @@ int main(int argc,char **args)
      */
     // supply the correct routine for matrix loading
 /**** your code here ****/
-    PetscCall( PetscViewerDestroy(&fd) );
+    PetscCall( PetscViewerDestroy(&fd ) );
 
     /*
      * To ensure that we read the matrix correctly, we print the size.
      *  This should match the "-n" flag used to create the binary file.
      */
-    PetscCall( MatGetSize(A,&n,NULL) ); 
+    PetscCall( MatGetSize(A,&n,NULL) );
     PetscCall( PetscPrintf(MPI_COMM_WORLD,"Read matrix of size %d\n",n) );
   }
 
-  PetscCall( MatDestroy(&A) ); 
+  PetscCall( MatDestroy(&A) );
 
   PetscFinalize();
-  PetscFunctionReturn(0);
+  PetscFunctionReturn(PETSC_SUCCESS);
 }
