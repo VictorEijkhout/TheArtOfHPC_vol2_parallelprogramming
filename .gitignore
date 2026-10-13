@@ -276,3 +276,9 @@ TSWLatexianTemp*
 *.lpz
 booksources/exercises/*.tex
 booksources/graphics/petsc_graphics/*.cdd
+booksources/snippets/*
+booksources/acronyms.tex
+booksources/chapternames.tex
+booksources/makefiles/repos.inc
+exercises/*/exe
+exercises/*/build
